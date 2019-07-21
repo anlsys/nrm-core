@@ -1,0 +1,10 @@
+dist
+result
+.shake
+*.log
+*/build
+*/new-build
+*/dist
+dist*
+.direnv
+.ghc.*
