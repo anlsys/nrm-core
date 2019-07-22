@@ -29,10 +29,11 @@ import           System.Environment
 ghcidTarget :: [Text]
 ghcidTarget =
   [ "--command"
-  , "cabal " <> "new-repl hnrm"
+  , "cabal " <> "new-repl hnrmd"
   , "--restart=dhrun.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"
+  , "--test=Main.main"
   ]
 
 runGhcid :: IO ()

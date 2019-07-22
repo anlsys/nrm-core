@@ -90,7 +90,14 @@ in    prelude.defaults.Package
                   ⫽ { main-is =
                         "hnrmd.hs"
                     , build-depends =
-                        nobounds [ "base", "protolude", "typed-process" ]
+                        nobounds
+                        [ "base"
+                        , "pretty-simple"
+                        , "protolude"
+                        , "typed-process"
+                        , "hxt"
+                        , "hxt-xpath"
+                        ]
                     , hs-source-dirs =
                         [ "src" ]
                     }
