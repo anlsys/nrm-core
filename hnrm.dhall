@@ -68,7 +68,7 @@ in    prelude.defaults.Package
       , category =
           "tools"
       , description =
-          "reads process information from a dhall configuration and executes asynchronous processes."
+          "haskell node resource manager prototype"
       , executables =
           [ { executable =
                   λ(config : types.Config)
@@ -97,6 +97,7 @@ in    prelude.defaults.Package
                         , "typed-process"
                         , "hxt"
                         , "hxt-xpath"
+                        , "refined"
                         ]
                     , hs-source-dirs =
                         [ "src" ]

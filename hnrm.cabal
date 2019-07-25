@@ -63,4 +63,5 @@ executable hnrmd
         protolude -any,
         typed-process -any,
         hxt -any,
-        hxt-xpath -any
+        hxt-xpath -any,
+        refined -any
