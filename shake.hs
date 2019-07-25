@@ -26,20 +26,20 @@ import "Glob"    System.FilePath.Glob
 import           System.Environment
 
 
-ghcidTarget :: [Text]
-ghcidTarget =
+ghcidTarget :: Text -> [Text]
+ghcidTarget target =
   [ "--command"
-  , "cabal " <> "new-repl hnrm-lib"
+  , "cabal " <> "new-repl " <> target
   , "--restart=dhrun.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"
   , "--test=Main.main"
   ]
 
-runGhcid :: IO ()
-runGhcid = do
+runGhcid :: Text -> IO ()
+runGhcid target = do
   runProcess_ "rm -f .ghc.*"
-  executeFile "ghcid" True (toS <$> ghcidTarget) Nothing
+  executeFile "ghcid" True (toS <$> ghcidTarget target) Nothing
 
 main :: IO ()
 main = SIO.hSetBuffering SIO.stdout SIO.NoBuffering
@@ -49,7 +49,9 @@ main = SIO.hSetBuffering SIO.stdout SIO.NoBuffering
   opts = hsubparser
     (  OA.command
         "ghcid"
-        (info (pure runGhcid) (progDesc "Run an argo-compatible nix-build."))
+        (info (runGhcid <$> targetParser)
+              (progDesc "Run an argo-compatible nix-build.")
+        )
     <> OA.command "britt"
                   (info (pure runbritt) (progDesc "inplace brittany."))
     <> OA.command "cabal"
@@ -69,6 +71,10 @@ main = SIO.hSetBuffering SIO.stdout SIO.NoBuffering
          )
     <> help "Type of operation to run."
     )
+
+targetParser :: OA.Parser Text
+targetParser = OA.strArgument
+  (OA.metavar "TARGET" <> OA.showDefault <> OA.help "The ghcid target")
 
 
 runbritt =

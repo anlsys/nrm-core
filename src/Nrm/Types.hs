@@ -7,8 +7,8 @@ Maintainer  : fre@freux.fr
 -}
 
 module Nrm.Types
-  ( module Nrm.Types.Hwloc
+  ( module Nrm.Types.Topo
   )
 where
 
-import Nrm.Types.Hwloc
+import           Nrm.Types.Topo
