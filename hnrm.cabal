@@ -10,13 +10,13 @@ cabal-version: 2.0
 -- * * * * * * * * * * * * WARNING * * * * * * * * * * * *
 name: hnrm
 version: 1.0.0
-license: MIT
+license: BSD3
 license-file: LICENSE
 maintainer: fre@freux.fr
 author: Valentin Reis
 synopsis: hnrm configuration
 description:
-    reads process information from a dhall configuration and executes asynchronous processes.
+    haskell node resource manager prototype
 category: tools
 build-type: Simple
 extra-source-files:
@@ -24,33 +24,18 @@ extra-source-files:
 
 source-repository head
     type: git
-    location: https://github.com/freuk/hnrm
+    location: https://xgitlab.cels.anl.gov/vreis/hnrm.git
 
-executable hnrm
-    main-is: hnrm.hs
+library dhrun-lib
+    exposed-modules:
+        Nrm.Node
+        Nrm.Node.Hwloc
+        Nrm.Types
     hs-source-dirs: src
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
                         NoImplicitPrelude OverloadedStrings ViewPatterns
-    ghc-options: -threaded -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns
-    build-depends:
-        base -any,
-        protolude -any,
-        typed-process -any
-
-executable hnrmd
-    main-is: hnrmd.hs
-    hs-source-dirs: src
-    default-language: Haskell2010
-    default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
-                        NoImplicitPrelude OverloadedStrings ViewPatterns
-    ghc-options: -threaded -Wall -Wcompat -Wincomplete-uni-patterns
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
                  -fwarn-unused-imports -fwarn-missing-signatures
@@ -65,3 +50,37 @@ executable hnrmd
         hxt -any,
         hxt-xpath -any,
         refined -any
+
+executable hnrm
+    main-is: hnrm.hs
+    hs-source-dirs: src
+    default-language: Haskell2010
+    default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
+                        NoImplicitPrelude OverloadedStrings ViewPatterns
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns -threaded
+    build-depends:
+        base -any,
+        hnrm-lib -any
+
+executable hnrmd
+    main-is: hnrmd.hs
+    hs-source-dirs: src
+    default-language: Haskell2010
+    default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
+                        NoImplicitPrelude OverloadedStrings ViewPatterns
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns -threaded
+    build-depends:
+        base -any,
+        hnrm-lib -any
