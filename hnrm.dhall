@@ -49,13 +49,7 @@ let copts =
             deflang
         }
 
-let map = https://prelude.dhall-lang.org/List/map
-
 let nobound = λ(p : Text) → { bounds = prelude.anyVersion, package = p }
-
-let nobounds =
-        λ(ps : List Text)
-      → map Text { bounds : types.VersionRange, package : Text } nobound ps
 
 let deps =
       { base =
@@ -111,7 +105,7 @@ in    prelude.defaults.Package
                     }
                   ⫽ copts ([] : List Text)
             , name =
-                "dhrun-lib"
+                "hnrm-lib"
             }
           ]
       , executables =
@@ -121,9 +115,7 @@ in    prelude.defaults.Package
                   ⫽ { main-is =
                         "hnrm.hs"
                     , build-depends =
-                        [ deps.base
-                        , deps.hnrm-lib
-                        ]
+                        [ deps.base, deps.hnrm-lib ]
                     , hs-source-dirs =
                         [ "src" ]
                     }
@@ -137,9 +129,7 @@ in    prelude.defaults.Package
                   ⫽ { main-is =
                         "hnrmd.hs"
                     , build-depends =
-                        [ deps.base
-                        , deps.hnrm-lib
-                        ]
+                        [ deps.base, deps.hnrm-lib ]
                     , hs-source-dirs =
                         [ "src" ]
                     }

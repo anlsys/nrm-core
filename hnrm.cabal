@@ -26,7 +26,7 @@ source-repository head
     type: git
     location: https://xgitlab.cels.anl.gov/vreis/hnrm.git
 
-library dhrun-lib
+library hnrm-lib
     exposed-modules:
         Nrm.Node
         Nrm.Node.Hwloc
