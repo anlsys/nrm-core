@@ -3,5 +3,5 @@
 }:
 rec {
   hnrm = pkgs.hnrm;
-  hack = pkgs.lib.getHackEnv pkgs.bleeding pkgs pkgs.bleedingHaskellPackages hnrm;
+  hack = pkgs.lib.getHackEnv pkgs.pkgs pkgs pkgs.haskellPackages hnrm;
 }

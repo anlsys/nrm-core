@@ -2,7 +2,7 @@
 Module      : Nrm.Types
 Description : Types
 Copyright   : (c) UChicago Argonne, 2019
-License     : MIT
+License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 

@@ -1,8 +1,8 @@
 {-|
 Module      : Nrm
 Description : Node
-Copyright   : (c) Valentin Reis, Argonne National Laboratory, 2019
-License     : MIT
+Copyright   : (c) 2019, UChicago Argonne, LLC.
+License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 

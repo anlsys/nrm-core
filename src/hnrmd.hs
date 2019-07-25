@@ -1,3 +1,11 @@
+{-|
+Module      : hnrmd
+Description : hnrmd
+Copyright   : (c) 2019, UChicago Argonne, LLC.
+License     : BSD3
+Maintainer  : fre@freux.fr
+-}
+
 {-# language NoImplicitPrelude #-}
 module Main
   ( main

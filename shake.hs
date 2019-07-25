@@ -29,7 +29,7 @@ import           System.Environment
 ghcidTarget :: [Text]
 ghcidTarget =
   [ "--command"
-  , "cabal " <> "new-repl hnrmd"
+  , "cabal " <> "new-repl hnrm-lib"
   , "--restart=dhrun.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"

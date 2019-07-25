@@ -1,5 +1,13 @@
+{-|
+Module      : Nrm.Node.Hwloc
+Description : Hwloc tree queries
+Copyright   : (c) 2019, UChicago Argonne, LLC.
+License     : BSD3
+Maintainer  : fre@freux.fr
+-}
+
 {-# language NoImplicitPrelude #-}
-module 
+module Nrm.Node.Hwloc
   ( main
   )
 where
