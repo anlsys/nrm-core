@@ -5,6 +5,9 @@ let types = ./cabal/types.dhall
 let defexts =
       [ types.Extension.LambdaCase True
       , types.Extension.RecordWildCards True
+      , types.Extension.TypeSynonymInstances True
+      , types.Extension.FlexibleInstances True
+      , types.Extension.MultiParamTypeClasses True
       , types.Extension.ScopedTypeVariables True
       , types.Extension.ImplicitPrelude False
       , types.Extension.OverloadedStrings True
@@ -68,7 +71,28 @@ let deps =
           nobound "refined"
       , hnrm-lib =
           nobound "hnrm-lib"
+      , directory =
+          nobound "directory"
       }
+
+let modules =
+      [ "Nrm.Node"
+      , "Nrm.Node.Hwloc"
+      , "Nrm.Node.Sysfs"
+      , "Nrm.Types"
+      , "Nrm.Types.Topo"
+      ]
+
+let libdep =
+      [ deps.base
+      , deps.pretty-simple
+      , deps.protolude
+      , deps.typed-process
+      , deps.hxt
+      , deps.hxt-xpath
+      , deps.refined
+      , deps.directory
+      ]
 
 in    prelude.defaults.Package
     ⫽ { name =
@@ -90,22 +114,11 @@ in    prelude.defaults.Package
                   λ(config : types.Config)
                 →   prelude.defaults.Library
                   ⫽ { build-depends =
-                        [ deps.base
-                        , deps.pretty-simple
-                        , deps.protolude
-                        , deps.typed-process
-                        , deps.hxt
-                        , deps.hxt-xpath
-                        , deps.refined
-                        ]
+                        libdep
                     , hs-source-dirs =
                         [ "src" ]
                     , exposed-modules =
-                        [ "Nrm.Node"
-                        , "Nrm.Node.Hwloc"
-                        , "Nrm.Types"
-                        , "Nrm.Types.Topo"
-                        ]
+                        modules
                     }
                   ⫽ copts ([] : List Text)
             , name =
@@ -115,24 +128,11 @@ in    prelude.defaults.Package
                   λ(config : types.Config)
                 →   prelude.defaults.Library
                   ⫽ { build-depends =
-                        [ deps.base
-                        , deps.protolude
-                        , deps.pretty-simple
-                        , deps.typed-process
-                        , deps.hxt
-                        , deps.hxt-xpath
-                        , deps.refined
-                        ]
+                        libdep
                     , hs-source-dirs =
                         [ "src", "app" ]
                     , exposed-modules =
-                        [ "Nrm.Node"
-                        , "Nrm.Node.Hwloc"
-                        , "Nrm.Types"
-                        , "Nrm.Types.Topo"
-                        , "Hnrmd"
-                        , "Hnrm"
-                        ]
+                        modules # [ "Hnrmd", "Hnrm" ]
                     }
                   ⫽ copts ([] : List Text)
             , name =

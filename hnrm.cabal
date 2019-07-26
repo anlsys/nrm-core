@@ -30,11 +30,13 @@ library hnrm-lib
     exposed-modules:
         Nrm.Node
         Nrm.Node.Hwloc
+        Nrm.Node.Sysfs
         Nrm.Types
         Nrm.Types.Topo
     hs-source-dirs: src
     default-language: Haskell2010
-    default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
+    default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
+                        FlexibleInstances MultiParamTypeClasses ScopedTypeVariables
                         NoImplicitPrelude OverloadedStrings ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
@@ -50,19 +52,22 @@ library hnrm-lib
         typed-process -any,
         hxt -any,
         hxt-xpath -any,
-        refined -any
+        refined -any,
+        directory -any
 
 library monolith
     exposed-modules:
         Nrm.Node
         Nrm.Node.Hwloc
+        Nrm.Node.Sysfs
         Nrm.Types
         Nrm.Types.Topo
         Hnrmd
         Hnrm
     hs-source-dirs: src app
     default-language: Haskell2010
-    default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
+    default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
+                        FlexibleInstances MultiParamTypeClasses ScopedTypeVariables
                         NoImplicitPrelude OverloadedStrings ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
@@ -73,18 +78,20 @@ library monolith
                  -fwarn-incomplete-patterns
     build-depends:
         base -any,
-        protolude -any,
         pretty-simple -any,
+        protolude -any,
         typed-process -any,
         hxt -any,
         hxt-xpath -any,
-        refined -any
+        refined -any,
+        directory -any
 
 executable hnrm
     main-is: Hnrm.hs
     hs-source-dirs: app
     default-language: Haskell2010
-    default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
+    default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
+                        FlexibleInstances MultiParamTypeClasses ScopedTypeVariables
                         NoImplicitPrelude OverloadedStrings ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
@@ -102,7 +109,8 @@ executable hnrmd
     main-is: Hnrmd.hs
     hs-source-dirs: app
     default-language: Haskell2010
-    default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
+    default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
+                        FlexibleInstances MultiParamTypeClasses ScopedTypeVariables
                         NoImplicitPrelude OverloadedStrings ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities

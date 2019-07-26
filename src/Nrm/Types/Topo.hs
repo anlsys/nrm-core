@@ -1,3 +1,5 @@
+{-# LANGUAGE StandaloneDeriving #-}
+
 {-|
 Module      : Nrm.Types.Topo
 Description : Topology related types
@@ -15,36 +17,39 @@ module Nrm.Types.Topo
 where
 
 import Protolude
+import Refined
 import Prelude (String)
 
-newtype CoreId = CoreId Integer
+newtype CoreId = CoreId (Refined Positive Int)
   deriving (Show)
 
-newtype PUId = PUId Integer
+newtype PUId = PUId (Refined NonNegative Int)
   deriving (Show)
 
-newtype PackageId = PackageId Integer
+newtype PackageId = PackageId (Refined NonNegative Int)
   deriving (Show)
 
+-- | reading from hwloc XML data
 class IdFromString a where
 
   idFromString :: String -> Maybe a
 
-instance IdFromString CoreId where
-
-  idFromString s = CoreId <$> readMaybe s
-
-instance IdFromString PUId where
-
-  idFromString s = PUId <$> readMaybe s
-
-instance IdFromString PackageId where
-
-  idFromString s = PackageId <$> readMaybe s
-
+-- | translating to hwloc XML "type" field.
 class ToHwlocType a where
 
   getType :: Proxy a -> Text
+
+instance IdFromString CoreId where
+
+  idFromString s = CoreId <$> readMaybe ("Refined " <> s)
+
+instance IdFromString PUId where
+
+  idFromString s = PUId <$> readMaybe ("Refined " <> s)
+
+instance IdFromString PackageId where
+
+  idFromString s = PackageId <$> readMaybe ("Refined " <> s)
 
 instance ToHwlocType PUId where
 

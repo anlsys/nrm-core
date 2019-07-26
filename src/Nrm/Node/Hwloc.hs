@@ -6,10 +6,15 @@ Description : Hwloc tree queries
 Copyright   : (c) 2019, UChicago Argonne, LLC.
 License     : BSD3
 Maintainer  : fre@freux.fr
+
+This module offers a minimalistic interface to @hwloc@.
 -}
 module Nrm.Node.Hwloc
-  ( getHwlocData
-  , selectCoreIDs
+  ( -- * Retrieving Hwloc XML data
+    HwlocData
+  , getHwlocData
+  , -- * Running queries
+    selectCoreIDs
   , selectPUIDs
   , selectPackageIDs
   )
@@ -39,7 +44,7 @@ selectPUIDs = extractOSindexes (Proxy :: Proxy PUId)
 selectPackageIDs :: HwlocData -> [PackageId]
 selectPackageIDs = extractOSindexes (Proxy :: Proxy PackageId)
 
--- | Runs the "hwloc" binary in $PATH to retrieve XML topology information.
+-- | Runs the @hwloc@ binary in @$PATH@ to retrieve XML topology information.
 getHwlocData :: IO HwlocData
 getHwlocData =
   readProcessStdout_ "hwloc-ls -p --whole-system --of xml" <&> xreadDoc . toS

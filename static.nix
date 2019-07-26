@@ -1,11 +1,11 @@
-{ nixpkgs ? (import ./nix {}).pkgs.pkgsMusl, compiler ? "default", doBenchmark ? false }:
+{ nixpkgs ? import ./nix {}, compiler ? "default", doBenchmark ? false }:
 
 let
 
   inherit (nixpkgs) pkgs;
 
-  f = { mkDerivation, base, hxt, hxt-xpath, pretty-simple
-      , protolude, refined, stdenv, typed-process
+  f = { mkDerivation, base, directory, hxt, hxt-xpath
+      , pretty-simple, protolude, refined, stdenv, typed-process
       }:
       mkDerivation {
         pname = "hnrm";
@@ -14,19 +14,21 @@ let
         isLibrary = false;
         isExecutable = true;
         libraryHaskellDepends = [
-          base hxt hxt-xpath pretty-simple protolude refined typed-process
+          base directory hxt hxt-xpath pretty-simple protolude refined
+          typed-process
         ];
         executableHaskellDepends = [ base protolude ];
         doHaddock = false;
         description = "hnrm configuration";
         license = stdenv.lib.licenses.bsd3;
-        enableSharedExecutables = false;
-        enableSharedLibraries = false;
-     configureFlags = [
-          "--ghc-option=-optl=-static"
-          "--extra-lib-dirs=${pkgs.gmp6.override { withStatic = true; }}/lib"
-          "--extra-lib-dirs=${pkgs.zlib.static}/lib"
-          "--extra-lib-dirs=${pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })}/lib"
+enableSharedExecutables = false;
+enableSharedLibraries = false;
+configureFlags = [
+  "--ghc-option=-optl=-static"
+  "--ghc-option=-optl=-pthread"
+  "--ghc-option=-optl=-L${pkgs.gmp6.override { withStatic = true; }}/lib"
+  "--ghc-option=-optl=-L${pkgs.zlib.static}/lib"
+  "--ghc-option=-optl=-L${pkgs.glibc.static}/lib"
 ];
       };
 
