@@ -52,8 +52,36 @@ library hnrm-lib
         hxt-xpath -any,
         refined -any
 
+library monolith
+    exposed-modules:
+        Nrm.Node
+        Nrm.Node.Hwloc
+        Nrm.Types
+        Nrm.Types.Topo
+        Hnrmd
+        Hnrm
+    hs-source-dirs: src app
+    default-language: Haskell2010
+    default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
+                        NoImplicitPrelude OverloadedStrings ViewPatterns
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns
+    build-depends:
+        base -any,
+        protolude -any,
+        pretty-simple -any,
+        typed-process -any,
+        hxt -any,
+        hxt-xpath -any,
+        refined -any
+
 executable hnrm
-    main-is: hnrm.hs
+    main-is: Hnrm.hs
     hs-source-dirs: app
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
@@ -71,7 +99,7 @@ executable hnrm
         hnrm-lib -any
 
 executable hnrmd
-    main-is: hnrmd.hs
+    main-is: Hnrmd.hs
     hs-source-dirs: app
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards ScopedTypeVariables

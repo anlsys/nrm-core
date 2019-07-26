@@ -8,7 +8,7 @@ Maintainer  : fre@freux.fr
 module Nrm.Types.Topo
   ( CoreId
   , PUId
-  , PkgId
+  , PackageId
   , IdFromString (..)
   , ToHwlocType (..)
   )
@@ -23,8 +23,8 @@ newtype CoreId = CoreId Integer
 newtype PUId = PUId Integer
   deriving (Show)
 
-newtype PkgId = PkgId Integer
-  deriving (Read)
+newtype PackageId = PackageId Integer
+  deriving (Show)
 
 class IdFromString a where
 
@@ -38,6 +38,10 @@ instance IdFromString PUId where
 
   idFromString s = PUId <$> readMaybe s
 
+instance IdFromString PackageId where
+
+  idFromString s = PackageId <$> readMaybe s
+
 class ToHwlocType a where
 
   getType :: Proxy a -> Text
@@ -49,3 +53,7 @@ instance ToHwlocType PUId where
 instance ToHwlocType CoreId where
 
   getType _ = "Core"
+
+instance ToHwlocType PackageId where
+
+  getType _ = "Package"

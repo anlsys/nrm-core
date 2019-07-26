@@ -110,14 +110,42 @@ in    prelude.defaults.Package
                   ⫽ copts ([] : List Text)
             , name =
                 "hnrm-lib"
-            }
+            },
+            {library =
+                  λ(config : types.Config)
+                →   prelude.defaults.Library
+                  ⫽ { build-depends =
+                        [ deps.base
+                        , deps.protolude
+                        , deps.pretty-simple
+                        , deps.typed-process
+                        , deps.hxt
+                        , deps.hxt-xpath
+                        , deps.refined
+                        ]
+                    , hs-source-dirs =
+                        [ "src", "app" ]
+                    , exposed-modules =
+                        [ "Nrm.Node"
+                        , "Nrm.Node.Hwloc"
+                        , "Nrm.Types"
+                        , "Nrm.Types.Topo"
+                        , "Hnrmd"
+                        , "Hnrm"
+                        ]
+                    }
+                  ⫽ copts ([] : List Text)
+            , name =
+                "monolith"
+
+              }
           ]
       , executables =
           [ { executable =
                   λ(config : types.Config)
                 →   prelude.defaults.Executable
                   ⫽ { main-is =
-                        "hnrm.hs"
+                        "Hnrm.hs"
                     , build-depends =
                         [ deps.base, deps.protolude, deps.hnrm-lib ]
                     , hs-source-dirs =
@@ -131,7 +159,7 @@ in    prelude.defaults.Package
                   λ(config : types.Config)
                 →   prelude.defaults.Executable
                   ⫽ { main-is =
-                        "hnrmd.hs"
+                        "Hnrmd.hs"
                     , build-depends =
                         [ deps.base, deps.protolude, deps.hnrm-lib ]
                     , hs-source-dirs =

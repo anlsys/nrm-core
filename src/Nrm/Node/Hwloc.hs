@@ -11,6 +11,7 @@ module Nrm.Node.Hwloc
   ( getHwlocData
   , selectCoreIDs
   , selectPUIDs
+  , selectPackageIDs
   )
 where
 
@@ -26,12 +27,19 @@ import Text.XML.HXT.XPath.XPathEval
 
 type HwlocData = XmlTrees
 
+-- | Lists all Core IDs from Hwloc topology information.
 selectCoreIDs :: HwlocData -> [CoreId]
 selectCoreIDs = extractOSindexes (Proxy :: Proxy CoreId)
 
+-- | Lists all Processing Unit IDs from Hwloc topology information.
 selectPUIDs :: HwlocData -> [PUId]
 selectPUIDs = extractOSindexes (Proxy :: Proxy PUId)
 
+-- | Lists all Package IDs from Hwloc topology information.
+selectPackageIDs :: HwlocData -> [PackageId]
+selectPackageIDs = extractOSindexes (Proxy :: Proxy PackageId)
+
+-- | Runs the "hwloc" binary in $PATH to retrieve XML topology information.
 getHwlocData :: IO HwlocData
 getHwlocData =
   readProcessStdout_ "hwloc-ls -p --whole-system --of xml" <&> xreadDoc . toS
