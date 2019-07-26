@@ -110,8 +110,8 @@ in    prelude.defaults.Package
                   ⫽ copts ([] : List Text)
             , name =
                 "hnrm-lib"
-            },
-            {library =
+            }
+          , { library =
                   λ(config : types.Config)
                 →   prelude.defaults.Library
                   ⫽ { build-depends =
@@ -137,8 +137,7 @@ in    prelude.defaults.Package
                   ⫽ copts ([] : List Text)
             , name =
                 "monolith"
-
-              }
+            }
           ]
       , executables =
           [ { executable =
@@ -151,7 +150,7 @@ in    prelude.defaults.Package
                     , hs-source-dirs =
                         [ "app" ]
                     }
-                  ⫽ copts [ "-threaded" ]
+                  ⫽ copts [ "-threaded", "-main-is", "Hnrm" ]
             , name =
                 "hnrm"
             }
@@ -165,7 +164,7 @@ in    prelude.defaults.Package
                     , hs-source-dirs =
                         [ "app" ]
                     }
-                  ⫽ copts [ "-threaded" ]
+                  ⫽ copts [ "-threaded", "-main-is", "Hnrmd" ]
             , name =
                 "hnrmd"
             }

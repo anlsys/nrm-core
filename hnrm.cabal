@@ -92,7 +92,7 @@ executable hnrm
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -threaded
+                 -fwarn-incomplete-patterns -threaded -main-is Hnrm
     build-depends:
         base -any,
         protolude -any,
@@ -110,7 +110,7 @@ executable hnrmd
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -threaded
+                 -fwarn-incomplete-patterns -threaded -main-is Hnrmd
     build-depends:
         base -any,
         protolude -any,

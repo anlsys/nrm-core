@@ -1,7 +1,7 @@
 { # host package set (unused aside for fetching nixpkgs)
-  hostPkgs         ? import <nixpkgs> {}
-, # versioned nixpkgs
-  pkgs             ? import (hostPkgs.nix-update-source.fetch ./pkgs.json).src {}
+  hostPkgs             ? import <nixpkgs> {}
+ # versioned nixpkgs
+,  pkgs             ? import (hostPkgs.nix-update-source.fetch ./pkgs.json).src {}
 , # source path for hnrm
   hnrm-src        ? ../.
 }:
