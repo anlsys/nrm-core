@@ -30,10 +30,9 @@ ghcidTarget :: Text -> [Text]
 ghcidTarget target =
   [ "--command"
   , "cabal " <> "new-repl " <> target
-  , "--restart=dhrun.cabal"
+  , "--restart=hnrm.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"
-  , "--test=Main.main"
   ]
 
 runGhcid :: Text -> IO ()

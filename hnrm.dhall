@@ -101,7 +101,11 @@ in    prelude.defaults.Package
                     , hs-source-dirs =
                         [ "src" ]
                     , exposed-modules =
-                        [ "Nrm.Node", "Nrm.Node.Hwloc", "Nrm.Types" ]
+                        [ "Nrm.Node"
+                        , "Nrm.Node.Hwloc"
+                        , "Nrm.Types"
+                        , "Nrm.Types.Topo"
+                        ]
                     }
                   ⫽ copts ([] : List Text)
             , name =
@@ -115,9 +119,9 @@ in    prelude.defaults.Package
                   ⫽ { main-is =
                         "hnrm.hs"
                     , build-depends =
-                        [ deps.base, deps.hnrm-lib ]
+                        [ deps.base, deps.protolude, deps.hnrm-lib ]
                     , hs-source-dirs =
-                        [ "src" ]
+                        [ "app" ]
                     }
                   ⫽ copts [ "-threaded" ]
             , name =
@@ -129,9 +133,9 @@ in    prelude.defaults.Package
                   ⫽ { main-is =
                         "hnrmd.hs"
                     , build-depends =
-                        [ deps.base, deps.hnrm-lib ]
+                        [ deps.base, deps.protolude, deps.hnrm-lib ]
                     , hs-source-dirs =
-                        [ "src" ]
+                        [ "app" ]
                     }
                   ⫽ copts [ "-threaded" ]
             , name =

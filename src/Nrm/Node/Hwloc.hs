@@ -1,3 +1,5 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+
 {-|
 Module      : Nrm.Node.Hwloc
 Description : Hwloc tree queries
@@ -5,48 +7,30 @@ Copyright   : (c) 2019, UChicago Argonne, LLC.
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-
-{-# language NoImplicitPrelude #-}
 module Nrm.Node.Hwloc
-  ( main
+  ( getHwlocData
+  , selectCoreIDs
+  , selectPUIDs
   )
 where
-import           Protolude
-import           Prelude                        ( String )
-import           System.Process.Typed
-import           Text.XML.HXT.Parser.XmlParsec
-import           Text.XML.HXT.XPath.XPathEval
-import           Text.XML.HXT.DOM.TypeDefs      ( XmlTrees )
-import           Text.Pretty.Simple
-import           Control.Arrow.ArrowTree        ( deep )
 
-import           Text.XML.HXT.Arrow.XmlArrow
-import           Control.Arrow.ListArrow        ( runLA )
+import Control.Arrow.ArrowTree (deep)
+import Control.Arrow.ListArrow (runLA)
+import Nrm.Types.Topo
+import Protolude
+import System.Process.Typed
+import Text.XML.HXT.Arrow.XmlArrow
+import Text.XML.HXT.DOM.TypeDefs (XmlTrees)
+import Text.XML.HXT.Parser.XmlParsec
+import Text.XML.HXT.XPath.XPathEval
 
 type HwlocData = XmlTrees
-newtype CoreId = CoreId Integer deriving (Show)
-newtype PUId = PUId Integer deriving (Show)
-newtype PkgId = PkgId Integer deriving Read
 
-class IdFromString a where
-  idFromString :: String -> Maybe a
-instance IdFromString CoreId where
-  idFromString s = CoreId <$> readMaybe s
-instance IdFromString PUId where
-  idFromString s = PUId <$> readMaybe s
+selectCoreIDs :: HwlocData -> [CoreId]
+selectCoreIDs = extractOSindexes (Proxy :: Proxy CoreId)
 
-class ToHwlocType a where
-  getType :: Proxy a -> Text
-instance ToHwlocType PUId where
-  getType _ = "PU"
-instance ToHwlocType CoreId where
-  getType _ = "Core"
-
-main :: IO ()
-main = do
-  hwlocData <- getHwlocData
-  pPrint $ extractOSindexes (Proxy :: Proxy PUId) hwlocData
-  pPrint $ extractOSindexes (Proxy :: Proxy CoreId) hwlocData
+selectPUIDs :: HwlocData -> [PUId]
+selectPUIDs = extractOSindexes (Proxy :: Proxy PUId)
 
 getHwlocData :: IO HwlocData
 getHwlocData =
@@ -54,12 +38,13 @@ getHwlocData =
 
 extractOSindexes
   :: (ToHwlocType a, IdFromString a) => Proxy a -> HwlocData -> [a]
-extractOSindexes typeAttr xml = catMaybes
-  (idFromString <$> concat
-    (   runLA (deep (getAttrValue "os_index"))
-    <$> selectSubtreesOfType (getType typeAttr) xml
-    )
-  )
+extractOSindexes typeAttr xml =
+  catMaybes $
+    idFromString <$>
+    concat
+      ( runLA (deep (getAttrValue "os_index")) <$>
+        selectSubtreesOfType (getType typeAttr) xml
+      )
 
 selectSubtreesOfType :: Text -> HwlocData -> XmlTrees
 selectSubtreesOfType typeAttr hwld =

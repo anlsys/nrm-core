@@ -1,3 +1,5 @@
+{-# LANGUAGE NoImplicitPrelude #-}
+
 {-|
 Module      : hnrmd
 Description : hnrmd
@@ -5,17 +7,16 @@ Copyright   : (c) 2019, UChicago Argonne, LLC.
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-
-{-# language NoImplicitPrelude #-}
 module Main
   ( main
   )
 where
-import           Protolude
-import Nrm.Node.Hwloc (getHwlocData)
+
+import Nrm.Node.Hwloc (getHwlocData, selectCoreIDs, selectPUIDs)
+import Protolude
 
 main :: IO ()
 main = do
   hwlocData <- getHwlocData
-  pPrint $ extractOSindexes (Proxy :: Proxy PUId) hwlocData
-  pPrint $ extractOSindexes (Proxy :: Proxy CoreId) hwlocData
+  print $ selectPUIDs hwlocData
+  print $ selectCoreIDs hwlocData

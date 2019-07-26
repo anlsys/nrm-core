@@ -31,6 +31,7 @@ library hnrm-lib
         Nrm.Node
         Nrm.Node.Hwloc
         Nrm.Types
+        Nrm.Types.Topo
     hs-source-dirs: src
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
@@ -53,7 +54,7 @@ library hnrm-lib
 
 executable hnrm
     main-is: hnrm.hs
-    hs-source-dirs: src
+    hs-source-dirs: app
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
                         NoImplicitPrelude OverloadedStrings ViewPatterns
@@ -66,11 +67,12 @@ executable hnrm
                  -fwarn-incomplete-patterns -threaded
     build-depends:
         base -any,
+        protolude -any,
         hnrm-lib -any
 
 executable hnrmd
     main-is: hnrmd.hs
-    hs-source-dirs: src
+    hs-source-dirs: app
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards ScopedTypeVariables
                         NoImplicitPrelude OverloadedStrings ViewPatterns
@@ -83,4 +85,5 @@ executable hnrmd
                  -fwarn-incomplete-patterns -threaded
     build-depends:
         base -any,
+        protolude -any,
         hnrm-lib -any
