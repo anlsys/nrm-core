@@ -73,6 +73,8 @@ let deps =
           nobound "hnrm-lib"
       , directory =
           nobound "directory"
+      , regex =
+          nobound "regex"
       }
 
 let modules =
@@ -92,6 +94,7 @@ let libdep =
       , deps.hxt-xpath
       , deps.refined
       , deps.directory
+      , deps.regex
       ]
 
 in    prelude.defaults.Package

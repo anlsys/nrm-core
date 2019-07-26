@@ -53,7 +53,8 @@ library hnrm-lib
         hxt -any,
         hxt-xpath -any,
         refined -any,
-        directory -any
+        directory -any,
+        regex -any
 
 library monolith
     exposed-modules:
@@ -84,7 +85,8 @@ library monolith
         hxt -any,
         hxt-xpath -any,
         refined -any,
-        directory -any
+        directory -any,
+        regex -any
 
 executable hnrm
     main-is: Hnrm.hs
