@@ -13,6 +13,7 @@ hnrm-src ? ../. }: rec {
   haskellPackages = pkgs.haskellPackages.override {
     overrides = self: super:
       with pkgs.haskell.lib; rec {
+        regex = pkgs.haskell.lib.doJailbreak super.regex;
         hnrm = (self.callCabal2nix "hnrm" (lib.filter hnrm-src)) { };
       };
   };
