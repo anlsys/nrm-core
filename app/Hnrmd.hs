@@ -12,12 +12,22 @@ module Hnrmd
   )
 where
 
-import Nrm.Node.Hwloc (getHwlocData, selectCoreIDs, selectPUIDs, selectPackageIDs)
+import Nrm.Node.Hwloc
+import Nrm.Node.Sysfs
 import Protolude
 
 main :: IO ()
 main = do
   hwlocData <- getHwlocData
+  putText "Internal representation check..."
+  putText "PUs:"
   print $ selectPUIDs hwlocData
+  putText "Cores:"
   print $ selectCoreIDs hwlocData
+  putText "Packages:"
   print $ selectPackageIDs hwlocData
+  putText "Locating relevant directories."
+  raplDir <- getDefaultRaplDirs
+  hwmonDir <- getDefaultHwmonDirs
+  print raplDir
+  print hwmonDir

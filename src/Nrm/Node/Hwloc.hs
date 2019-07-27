@@ -11,7 +11,7 @@ This module offers a minimalistic interface to @hwloc@.
 -}
 module Nrm.Node.Hwloc
   ( -- * Retrieving Hwloc XML data
-    HwlocData
+    HwlocData(..)
   , getHwlocData
   , -- * Running queries
     selectCoreIDs
@@ -30,7 +30,7 @@ import Text.XML.HXT.DOM.TypeDefs (XmlTrees)
 import Text.XML.HXT.Parser.XmlParsec
 import Text.XML.HXT.XPath.XPathEval
 
-type HwlocData = XmlTrees
+newtype HwlocData = HwlocData XmlTrees
 
 -- | Lists all Core IDs from Hwloc topology information.
 selectCoreIDs :: HwlocData -> [CoreId]
@@ -47,7 +47,7 @@ selectPackageIDs = extractOSindexes (Proxy :: Proxy PackageId)
 -- | Runs the @hwloc@ binary in @$PATH@ to retrieve XML topology information.
 getHwlocData :: IO HwlocData
 getHwlocData =
-  readProcessStdout_ "hwloc-ls -p --whole-system --of xml" <&> xreadDoc . toS
+  HwlocData <$> (readProcessStdout_ "hwloc-ls -p --whole-system --of xml" <&> xreadDoc . toS)
 
 extractOSindexes
   :: (ToHwlocType a, IdFromString a) => Proxy a -> HwlocData -> [a]
@@ -60,5 +60,5 @@ extractOSindexes typeAttr xml =
       )
 
 selectSubtreesOfType :: Text -> HwlocData -> XmlTrees
-selectSubtreesOfType typeAttr hwld =
+selectSubtreesOfType typeAttr (HwlocData hwld) =
   concat $ getXPath (".//*[@type='" <> toS typeAttr <> "']") <$> hwld

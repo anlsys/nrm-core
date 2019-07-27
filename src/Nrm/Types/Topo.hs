@@ -1,5 +1,3 @@
-{-# LANGUAGE StandaloneDeriving #-}
-
 {-|
 Module      : Nrm.Types.Topo
 Description : Topology related types

@@ -7,7 +7,9 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types
   ( module Nrm.Types.Topo
+  , module Nrm.Types.Units
   )
 where
 
 import Nrm.Types.Topo
+import Nrm.Types.Units

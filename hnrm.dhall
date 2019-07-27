@@ -6,6 +6,8 @@ let defexts =
       [ types.Extension.LambdaCase True
       , types.Extension.RecordWildCards True
       , types.Extension.TypeSynonymInstances True
+      , types.Extension.StandaloneDeriving True
+      , types.Extension.DataKinds True
       , types.Extension.FlexibleInstances True
       , types.Extension.TupleSections True
       , types.Extension.MultiParamTypeClasses True
@@ -76,6 +78,10 @@ let deps =
           nobound "directory"
       , regex =
           nobound "regex"
+      , units-defs =
+          nobound "units-defs"
+      , units =
+          nobound "units"
       }
 
 let modules =
@@ -84,6 +90,7 @@ let modules =
       , "Nrm.Node.Sysfs"
       , "Nrm.Types"
       , "Nrm.Types.Topo"
+      , "Nrm.Types.Units"
       ]
 
 let libdep =
@@ -96,6 +103,8 @@ let libdep =
       , deps.refined
       , deps.directory
       , deps.regex
+      , deps.units
+      , deps.units-defs
       ]
 
 in    prelude.defaults.Package

@@ -33,12 +33,13 @@ library hnrm-lib
         Nrm.Node.Sysfs
         Nrm.Types
         Nrm.Types.Topo
+        Nrm.Types.Units
     hs-source-dirs: src
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        FlexibleInstances TupleSections MultiParamTypeClasses
-                        ScopedTypeVariables NoImplicitPrelude OverloadedStrings
-                        ViewPatterns
+                        StandaloneDeriving DataKinds FlexibleInstances TupleSections
+                        MultiParamTypeClasses ScopedTypeVariables NoImplicitPrelude
+                        OverloadedStrings ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -55,7 +56,9 @@ library hnrm-lib
         hxt-xpath -any,
         refined -any,
         directory -any,
-        regex -any
+        regex -any,
+        units -any,
+        units-defs -any
 
 library monolith
     exposed-modules:
@@ -64,14 +67,15 @@ library monolith
         Nrm.Node.Sysfs
         Nrm.Types
         Nrm.Types.Topo
+        Nrm.Types.Units
         Hnrmd
         Hnrm
     hs-source-dirs: src app
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        FlexibleInstances TupleSections MultiParamTypeClasses
-                        ScopedTypeVariables NoImplicitPrelude OverloadedStrings
-                        ViewPatterns
+                        StandaloneDeriving DataKinds FlexibleInstances TupleSections
+                        MultiParamTypeClasses ScopedTypeVariables NoImplicitPrelude
+                        OverloadedStrings ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -88,16 +92,18 @@ library monolith
         hxt-xpath -any,
         refined -any,
         directory -any,
-        regex -any
+        regex -any,
+        units -any,
+        units-defs -any
 
 executable hnrm
     main-is: Hnrm.hs
     hs-source-dirs: app
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        FlexibleInstances TupleSections MultiParamTypeClasses
-                        ScopedTypeVariables NoImplicitPrelude OverloadedStrings
-                        ViewPatterns
+                        StandaloneDeriving DataKinds FlexibleInstances TupleSections
+                        MultiParamTypeClasses ScopedTypeVariables NoImplicitPrelude
+                        OverloadedStrings ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -115,9 +121,9 @@ executable hnrmd
     hs-source-dirs: app
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        FlexibleInstances TupleSections MultiParamTypeClasses
-                        ScopedTypeVariables NoImplicitPrelude OverloadedStrings
-                        ViewPatterns
+                        StandaloneDeriving DataKinds FlexibleInstances TupleSections
+                        MultiParamTypeClasses ScopedTypeVariables NoImplicitPrelude
+                        OverloadedStrings ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
