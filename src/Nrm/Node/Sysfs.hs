@@ -1,3 +1,4 @@
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 {-|
@@ -8,34 +9,43 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Node.Sysfs
-  ( -- * Hwmon
-    defaultGetHwmonDirs
+  ( -- * RAPL
+    getDefaultRaplDirs
+  , defaultRaplDir
+  , getRaplDirs
+  , -- * Hwmon
+    getDefaultHwmonDirs
   , defaultHwmonDir
   , getHwmonDirs
   )
 where
 
-import Nrm.Types.Topo (PackageId)
+import Nrm.Types.Topo
 import Protolude
 import System.Directory
 import Text.RE.TDFA.Text
 
+getDefaultRaplDirs :: IO [(PackageId, FilePath)]
+getDefaultRaplDirs = getRaplDirs defaultRaplDir
+
 defaultRaplDir :: FilePath
 defaultRaplDir = "/sys/devices/virtual/powercap/intel-rapl"
 
-getRaplDirs :: FilePath -> IO [FilePath]
-getRaplDirs basedir = listDirectory basedir >>= fmap catMaybes . mapM hasCoretempInNameFile
+-- | Lists available rapl directories.
+getRaplDirs :: FilePath -> IO [(PackageId, FilePath)]
+getRaplDirs = listDirFilter hasPackageIdNameFile
 
 -- | Checks if the hwmon directory has "coretemp" in its name file.
-hasPackageIdNameFile :: FilePath -> IO (Maybe PackageId)
-hasPackageIdNameFile fp =
-  readFile (fp <> "/name") >>= \case
-    "coretemp" -> return $ Just fp
-    _ -> return Nothing
+hasPackageIdNameFile :: FilePath -> IO (Maybe (PackageId, FilePath))
+hasPackageIdNameFile fp = do
+  namecontent <- readFile (fp <> "/name")
+  return $ (,fp <> "/name") <$> (matchedText (namecontent ?=~ rx) >>= idFromString . toS)
+  where
+    rx = [re|package-([0-9]+)(/\S+)?|]
 
 -- | Lists hwmon directories at the default location.
-defaultGetHwmonDirs :: IO [FilePath]
-defaultGetHwmonDirs = getHwmonDirs defaultHwmonDir
+getDefaultHwmonDirs :: IO [FilePath]
+getDefaultHwmonDirs = getHwmonDirs defaultHwmonDir
 
 -- | The default hwmon directory location
 defaultHwmonDir :: FilePath
@@ -43,7 +53,7 @@ defaultHwmonDir = "/sys/class/hwmon/"
 
 -- | Lists available hwmon directories.
 getHwmonDirs :: FilePath -> IO [FilePath]
-getHwmonDirs basedir = listDirectory basedir >>= fmap catMaybes . mapM hasCoretempInNameFile
+getHwmonDirs = listDirFilter hasCoretempInNameFile
 
 -- | Checks if the hwmon directory has "coretemp" in its name file.
 hasCoretempInNameFile :: FilePath -> IO (Maybe FilePath)
@@ -51,3 +61,6 @@ hasCoretempInNameFile fp =
   readFile (fp <> "/name") >>= \case
     "coretemp" -> return $ Just fp
     _ -> return Nothing
+
+listDirFilter :: (FilePath -> IO (Maybe a)) -> FilePath -> IO [a]
+listDirFilter condition basedir = listDirectory basedir >>= fmap catMaybes . mapM condition

@@ -7,6 +7,7 @@ let defexts =
       , types.Extension.RecordWildCards True
       , types.Extension.TypeSynonymInstances True
       , types.Extension.FlexibleInstances True
+      , types.Extension.TupleSections True
       , types.Extension.MultiParamTypeClasses True
       , types.Extension.ScopedTypeVariables True
       , types.Extension.ImplicitPrelude False

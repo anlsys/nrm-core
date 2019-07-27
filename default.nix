@@ -16,7 +16,12 @@
     ];
   });
 
-  hack = pkgs.lib.getHackEnv pkgs.pkgs pkgs pkgs.haskellPackages hnrm;
+  hack = (pkgs.lib.getHackEnv pkgs.pkgs pkgs pkgs.haskellPackages hnrm).overrideAttrs(o:{
+    #shellHook = ''
+      #source <(./shake --bash-completion-script ./shake)
+      #complete -o filenames -F _shake.hs ./shake
+    #'';
+  });
 
   #for Musl use pkgsMusl and:
   #enableSharedExecutables = false;

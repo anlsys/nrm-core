@@ -36,8 +36,9 @@ library hnrm-lib
     hs-source-dirs: src
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        FlexibleInstances MultiParamTypeClasses ScopedTypeVariables
-                        NoImplicitPrelude OverloadedStrings ViewPatterns
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        ScopedTypeVariables NoImplicitPrelude OverloadedStrings
+                        ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -68,8 +69,9 @@ library monolith
     hs-source-dirs: src app
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        FlexibleInstances MultiParamTypeClasses ScopedTypeVariables
-                        NoImplicitPrelude OverloadedStrings ViewPatterns
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        ScopedTypeVariables NoImplicitPrelude OverloadedStrings
+                        ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -93,8 +95,9 @@ executable hnrm
     hs-source-dirs: app
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        FlexibleInstances MultiParamTypeClasses ScopedTypeVariables
-                        NoImplicitPrelude OverloadedStrings ViewPatterns
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        ScopedTypeVariables NoImplicitPrelude OverloadedStrings
+                        ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -112,8 +115,9 @@ executable hnrmd
     hs-source-dirs: app
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        FlexibleInstances MultiParamTypeClasses ScopedTypeVariables
-                        NoImplicitPrelude OverloadedStrings ViewPatterns
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        ScopedTypeVariables NoImplicitPrelude OverloadedStrings
+                        ViewPatterns
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
