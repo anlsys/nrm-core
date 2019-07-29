@@ -18,12 +18,15 @@ import Protolude
 import Refined
 import Prelude (String)
 
+-- | A CPU Core OS identifier.
 newtype CoreId = CoreId (Refined Positive Int)
   deriving (Show)
 
+-- | A Processing Unit OS identifier.
 newtype PUId = PUId (Refined NonNegative Int)
   deriving (Show)
 
+-- | A Package OS identifier.
 newtype PackageId = PackageId (Refined NonNegative Int)
   deriving (Show)
 

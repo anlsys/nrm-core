@@ -12,5 +12,6 @@ where
 
 import Prelude
 
+-- | The main client process
 main :: IO ()
 main = undefined

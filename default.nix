@@ -1,4 +1,8 @@
-{ pkgs ? import ./nix { }, }: rec {
+{ pkgs ? import ./nix { }, pkgsStatic ? import ./nix {
+  pkgs = import (builtins.fetchTarball
+    "https://github.com/NixOS/nixpkgs-channels/archive/08d245eb31a3de0ad73719372190ce84c1bf3aee.tar.gz")
+    { };
+} }: rec {
 
   hnrm = pkgs.hnrm;
 
@@ -16,12 +20,15 @@
     ];
   });
 
-  hack = (pkgs.lib.getHackEnv pkgs.pkgs pkgs pkgs.haskellPackages hnrm).overrideAttrs(o:{
-    #shellHook = ''
+  hack =
+    (pkgs.lib.getHackEnv pkgs.pkgs pkgs pkgs.haskellPackages hnrm).overrideAttrs
+    (o:
+    {
+      #shellHook = ''
       #source <(./shake --bash-completion-script ./shake)
       #complete -o filenames -F _shake.hs ./shake
-    #'';
-  });
+      #'';
+    });
 
   #for Musl use pkgsMusl and:
   #enableSharedExecutables = false;

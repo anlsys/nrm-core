@@ -6,17 +6,32 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Units
-  ( Watt (..)
+  ( Joule
+  , Watt
+  , Second
+  , Time
+  , Energy
   , Power
+  , uJ
   , uW
+  , uS
   )
 where
 
-import Data.Metrology as DM ((%))
-import Data.Metrology.SI (Power)
-import Data.Units.SI (Watt (..))
+import Data.Metrology ((%))
+import Data.Metrology.SI (Energy, Power, Time)
+import Data.Units.SI (Joule (..), Second (..), Watt (..))
 import Data.Units.SI.Prefixes (micro)
-import Protolude
+import Protolude hiding ((%))
 
+-- | microjoule value constructor
+uJ :: Double -> Energy
+uJ = (% micro Joule)
+
+-- | microwatt value constructor
 uW :: Double -> Power
-uW = (DM.% micro Watt)
+uW = (% micro Watt)
+
+-- | microsecond value constructor
+uS :: Double -> Time
+uS = (% micro Second)

@@ -16,6 +16,7 @@ import Nrm.Node.Hwloc
 import Nrm.Node.Sysfs
 import Protolude
 
+-- | The main daemon process
 main :: IO ()
 main = do
   hwlocData <- getHwlocData
@@ -27,7 +28,7 @@ main = do
   putText "Packages:"
   print $ selectPackageIDs hwlocData
   putText "Locating relevant directories."
-  raplDir <- getDefaultRaplDirs
+  raplDir <- getDefaultRAPLDirs
   hwmonDir <- getDefaultHwmonDirs
   print raplDir
   print hwmonDir

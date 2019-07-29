@@ -14,7 +14,7 @@ license: BSD3
 license-file: LICENSE
 maintainer: fre@freux.fr
 author: Valentin Reis
-synopsis: hnrm configuration
+synopsis: hnrm
 description:
     haskell node resource manager prototype
 category: tools
@@ -31,6 +31,7 @@ library hnrm-lib
         Nrm.Node
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
+        Nrm.Node.Internal.Sysfs
         Nrm.Types
         Nrm.Types.Topo
         Nrm.Types.Units
@@ -65,6 +66,7 @@ library monolith
         Nrm.Node
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
+        Nrm.Node.Internal.Sysfs
         Nrm.Types
         Nrm.Types.Topo
         Nrm.Types.Units

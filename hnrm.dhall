@@ -88,6 +88,7 @@ let modules =
       [ "Nrm.Node"
       , "Nrm.Node.Hwloc"
       , "Nrm.Node.Sysfs"
+      , "Nrm.Node.Internal.Sysfs"
       , "Nrm.Types"
       , "Nrm.Types.Topo"
       , "Nrm.Types.Units"
@@ -199,5 +200,5 @@ in    prelude.defaults.Package
               }
           ]
       , synopsis =
-          "hnrm configuration"
+          "hnrm"
       }
