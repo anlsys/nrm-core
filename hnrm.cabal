@@ -26,6 +26,29 @@ source-repository head
     type: git
     location: https://xgitlab.cels.anl.gov/vreis/hnrm.git
 
+library ffi-nh2
+    exposed-modules:
+        FFI.Anything.TH
+        FFI.Anything.TypeUncurry
+        FFI.Anything.TypeUncurry.Msgpack
+        FFI.Anything.TypeUncurry.DataKinds
+    hs-source-dirs: ffi-nh2
+    default-language: Haskell2010
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns
+    build-depends:
+        base -any,
+        bytestring -any,
+        data-msgpack -any,
+        storable-endian -any,
+        template-haskell -any,
+        mtl -any
+
 library hnrm-lib
     exposed-modules:
         Nrm.Node
@@ -35,6 +58,12 @@ library hnrm-lib
         Nrm.Types
         Nrm.Types.Topo
         Nrm.Types.Units
+        Nrm.Types.Uuids
+        Nrm.Control
+        Nrm.Containers
+        Nrm.Containers.Nodeos
+        Nrm.Containers.Singularity
+        Nrm.Containers.Dummy
     hs-source-dirs: src
     default-language: Haskell2010
     default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
@@ -59,7 +88,9 @@ library hnrm-lib
         directory -any,
         regex -any,
         units -any,
-        units-defs -any
+        uuid -any,
+        units-defs -any,
+        ffi-nh2 -any
 
 library monolith
     exposed-modules:
@@ -70,6 +101,12 @@ library monolith
         Nrm.Types
         Nrm.Types.Topo
         Nrm.Types.Units
+        Nrm.Types.Uuids
+        Nrm.Control
+        Nrm.Containers
+        Nrm.Containers.Nodeos
+        Nrm.Containers.Singularity
+        Nrm.Containers.Dummy
         Hnrmd
         Hnrm
     hs-source-dirs: src app
@@ -96,7 +133,34 @@ library monolith
         directory -any,
         regex -any,
         units -any,
-        units-defs -any
+        uuid -any,
+        units-defs -any,
+        ffi-nh2 -any
+
+executable hnrm.so
+    main-is: Export.hs
+    hs-source-dirs: app
+    default-language: Haskell2010
+    default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
+                        StandaloneDeriving DataKinds FlexibleInstances TupleSections
+                        MultiParamTypeClasses ScopedTypeVariables NoImplicitPrelude
+                        OverloadedStrings ViewPatterns
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns -threaded -fPIC -shared -dynamic
+                 -no-hs-main
+    build-depends:
+        base -any,
+        protolude -any,
+        hnrm-lib -any,
+        ffi-nh2 -any,
+        bytestring -any,
+        data-msgpack -any,
+        mtl -any
 
 executable hnrm
     main-is: Hnrm.hs

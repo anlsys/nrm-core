@@ -23,7 +23,7 @@ module Nrm.Node.Internal.Sysfs
   , getRAPLDirs
   , measureRAPLDir
   , readRAPLConfiguration
-  , applyRAPLPcap
+  {-, applyRAPLPcap-}
   , -- * Hwmon
     HwmonDirs
   , HwmonDir (..)
@@ -143,8 +143,8 @@ processRAPLFolder fp = do
     rx = [re|package-([0-9]+)(/\S+)?|]
 
 -- | Applies powercap commands.
-applyRAPLPcap :: RAPLDirs -> RAPLCommand -> IO ()
-applyRAPLPcap rdirs RAPLCommand {..} =  undefined
+{-applyRAPLPcap :: RAPLDirs -> RAPLCommand -> IO ()-}
+{-applyRAPLPcap _ RAPLCommand {..} = return ()-}
 
 -- | The default RAPL directory.
 defaultRAPLDir :: FilePath

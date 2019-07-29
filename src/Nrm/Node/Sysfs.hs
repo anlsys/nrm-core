@@ -12,7 +12,7 @@ module Nrm.Node.Sysfs
     getDefaultRAPLDirs
   , readRAPLConfigurations
   , measureRAPLDirs
-  , setRAPLPowercaps
+  {-, setRAPLPowercaps-}
   , -- * Hwmon
     getDefaultHwmonDirs
   )
@@ -34,8 +34,8 @@ measureRAPLDirs :: RAPLDirs -> IO [RAPLMeasurement]
 measureRAPLDirs rapldirpaths = catMaybes <$> for rapldirpaths (measureRAPLDir . path)
 
 -- | Setting powercap values.
-setRAPLPowercaps :: RAPLDirs -> RAPLCommands -> IO ()
-setRAPLPowercaps rds = mapM_ (applyRAPLPcap rds)
+{-setRAPLPowercaps :: RAPLDirs -> RAPLCommands -> IO ()-}
+{-setRAPLPowercaps rds = mapM_ (applyRAPLPcap rds)-}
 
 -- | Retreives Hwmon directories at the default location.
 getDefaultHwmonDirs :: IO HwmonDirs

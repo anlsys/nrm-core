@@ -82,6 +82,20 @@ let deps =
           nobound "units-defs"
       , units =
           nobound "units"
+      , uuid =
+          nobound "uuid"
+      , bytestring =
+          nobound "bytestring"
+      , data-msgpack =
+          nobound "data-msgpack"
+      , storable-endian =
+          nobound "storable-endian"
+      , template-haskell =
+          nobound "template-haskell"
+      , mtl =
+          nobound "mtl"
+      , ffi-nh2 =
+          nobound "ffi-nh2"
       }
 
 let modules =
@@ -92,6 +106,12 @@ let modules =
       , "Nrm.Types"
       , "Nrm.Types.Topo"
       , "Nrm.Types.Units"
+      , "Nrm.Types.Uuids"
+      , "Nrm.Control"
+      , "Nrm.Containers"
+      , "Nrm.Containers.Nodeos"
+      , "Nrm.Containers.Singularity"
+      , "Nrm.Containers.Dummy"
       ]
 
 let libdep =
@@ -105,7 +125,9 @@ let libdep =
       , deps.directory
       , deps.regex
       , deps.units
+      , deps.uuid
       , deps.units-defs
+      , deps.ffi-nh2
       ]
 
 in    prelude.defaults.Package
@@ -125,6 +147,31 @@ in    prelude.defaults.Package
           "haskell node resource manager prototype"
       , sub-libraries =
           [ { library =
+                  λ(config : types.Config)
+                →   prelude.defaults.Library
+                  ⫽ { build-depends =
+                        [ deps.base
+                        , deps.bytestring
+                        , deps.data-msgpack
+                        , deps.storable-endian
+                        , deps.template-haskell
+                        , deps.mtl
+                        ]
+                    , hs-source-dirs =
+                        [ "ffi-nh2" ]
+                    , exposed-modules =
+                        [ "FFI.Anything.TH"
+                        , "FFI.Anything.TypeUncurry"
+                        , "FFI.Anything.TypeUncurry.Msgpack"
+                        , "FFI.Anything.TypeUncurry.DataKinds"
+                        ]
+                    }
+                  ⫽ copts ([] : List Text)
+                  ⫽ { default-extensions = [] : List types.Extension }
+            , name =
+                "ffi-nh2"
+            }
+          , { library =
                   λ(config : types.Config)
                 →   prelude.defaults.Library
                   ⫽ { build-depends =
@@ -155,6 +202,33 @@ in    prelude.defaults.Package
           ]
       , executables =
           [ { executable =
+                  λ(config : types.Config)
+                →   prelude.defaults.Executable
+                  ⫽ { main-is =
+                        "Export.hs"
+                    , build-depends =
+                        [ deps.base
+                        , deps.protolude
+                        , deps.hnrm-lib
+                        , deps.ffi-nh2
+                        , deps.bytestring
+                        , deps.data-msgpack
+                        , deps.mtl
+                        ]
+                    , hs-source-dirs =
+                        [ "app" ]
+                    }
+                  ⫽ copts
+                    [ "-threaded"
+                    , "-fPIC"
+                    , "-shared"
+                    , "-dynamic"
+                    , "-no-hs-main"
+                    ]
+            , name =
+                "hnrm.so"
+            }
+          , { executable =
                   λ(config : types.Config)
                 →   prelude.defaults.Executable
                   ⫽ { main-is =

@@ -24,14 +24,14 @@ import Data.Units.SI (Joule (..), Second (..), Watt (..))
 import Data.Units.SI.Prefixes (micro)
 import Protolude hiding ((%))
 
--- | microjoule value constructor
+-- | Microjoule value constructor.
 uJ :: Double -> Energy
 uJ = (% micro Joule)
 
--- | microwatt value constructor
+-- | Microwatt value constructor.
 uW :: Double -> Power
 uW = (% micro Watt)
 
--- | microsecond value constructor
+-- | Microsecond value constructor.
 uS :: Double -> Time
 uS = (% micro Second)
