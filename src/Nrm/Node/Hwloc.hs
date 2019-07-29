@@ -30,6 +30,7 @@ import Text.XML.HXT.DOM.TypeDefs (XmlTrees)
 import Text.XML.HXT.Parser.XmlParsec
 import Text.XML.HXT.XPath.XPathEval
 
+-- | Full Hwloc data
 newtype HwlocData = HwlocData XmlTrees
 
 -- | Lists all Core IDs from Hwloc topology information.

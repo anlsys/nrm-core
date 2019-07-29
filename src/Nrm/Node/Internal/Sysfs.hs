@@ -129,6 +129,7 @@ processRAPLFolder fp = do
   where
     rx = [re|package-([0-9]+)(/\S+)?|]
 
+-- | The default RAPL directory.
 defaultRAPLDir :: FilePath
 defaultRAPLDir = "/sys/devices/virtual/powercap/intel-rapl"
 
@@ -136,6 +137,7 @@ defaultRAPLDir = "/sys/devices/virtual/powercap/intel-rapl"
 getRAPLDirs :: FilePath -> IO RAPLDirs
 getRAPLDirs = listDirFilter processRAPLFolder
 
+-- | "Utility": filter directories with monadic predicate.
 listDirFilter :: (FilePath -> IO (Maybe a)) -> FilePath -> IO [a]
 listDirFilter condition basedir = listDirectory basedir >>= fmap catMaybes . mapM condition
 
