@@ -142,6 +142,7 @@ processRAPLFolder fp = do
   where
     rx = [re|package-([0-9]+)(/\S+)?|]
 
+-- | Applies powercap commands.
 applyRAPLPcap :: RAPLDirs -> RAPLCommand -> IO ()
 applyRAPLPcap rdirs RAPLCommand {..} =  undefined
 
