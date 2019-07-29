@@ -12,8 +12,9 @@ module Nrm.Node.Sysfs
     getDefaultRAPLDirs
   , readRAPLConfigurations
   , measureRAPLDirs
+  , setRAPLPowercaps
   , -- * Hwmon
-   getDefaultHwmonDirs
+    getDefaultHwmonDirs
   )
 where
 
@@ -24,13 +25,17 @@ import Protolude
 getDefaultRAPLDirs :: IO RAPLDirs
 getDefaultRAPLDirs = getRAPLDirs defaultRAPLDir
 
+-- | Reads RAPL configurations.
+readRAPLConfigurations :: RAPLDirs -> IO [RAPLConfig]
+readRAPLConfigurations rapldirpaths = catMaybes <$> for rapldirpaths (readRAPLConfiguration . path)
+
 -- | Performs RAPL measurements.
 measureRAPLDirs :: RAPLDirs -> IO [RAPLMeasurement]
 measureRAPLDirs rapldirpaths = catMaybes <$> for rapldirpaths (measureRAPLDir . path)
 
--- | Reads RAPL configurations.
-readRAPLConfigurations :: RAPLDirs -> IO [RAPLConfig]
-readRAPLConfigurations rapldirpaths = catMaybes <$> for rapldirpaths (readRAPLConfiguration . path)
+-- | Setting powercap values.
+setRAPLPowercaps :: RAPLDirs -> RAPLCommands -> IO ()
+setRAPLPowercaps rds = mapM_ (applyRAPLPcap rds)
 
 -- | Retreives Hwmon directories at the default location.
 getDefaultHwmonDirs :: IO HwmonDirs

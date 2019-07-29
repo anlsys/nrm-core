@@ -11,16 +11,19 @@ Maintainer  : fre@freux.fr
 module Nrm.Node.Internal.Sysfs
   ( -- * RAPL
     RAPLDirs
+  , RAPLCommands
   , RAPLDir (..)
   , RAPLConfig (..)
   , RAPLMeasurement (..)
   , RAPLConstraint (..)
+  , RAPLCommand (..)
   , MaxPower (..)
   , MaxEnergy (..)
   , defaultRAPLDir
   , getRAPLDirs
   , measureRAPLDir
   , readRAPLConfiguration
+  , applyRAPLPcap
   , -- * Hwmon
     HwmonDirs
   , HwmonDir (..)
@@ -45,6 +48,9 @@ type RAPLDirs = [RAPLDir]
 -- | Hwmon directory locations
 type HwmonDirs = [HwmonDir]
 
+-- | RAPL Powercap command
+type RAPLCommands = [RAPLCommand]
+
 -- | Maximum RAPL power constraint.
 newtype MaxPower = MaxPower Power
   deriving (Show)
@@ -59,6 +65,13 @@ newtype MeasuredEnergy = MeasuredEnergy Energy
 
 -- | Hwmon directory
 newtype HwmonDir = HwmonDir FilePath
+  deriving (Show)
+
+data RAPLCommand
+  = RAPLCommand
+      { commandPkgid :: PackageId
+      , powercap :: Power
+      }
   deriving (Show)
 
 -- | RAPL directory
@@ -128,6 +141,9 @@ processRAPLFolder fp = do
   return $ RAPLDir (fp <> "/name") <$> (matchedText (namecontent ?=~ rx) >>= idFromString . toS) <*> (MaxEnergy . uJ <$> maxRange)
   where
     rx = [re|package-([0-9]+)(/\S+)?|]
+
+applyRAPLPcap :: RAPLDirs -> RAPLCommand -> IO ()
+applyRAPLPcap rdirs RAPLCommand {..} =  undefined
 
 -- | The default RAPL directory.
 defaultRAPLDir :: FilePath
