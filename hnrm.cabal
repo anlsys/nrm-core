@@ -151,8 +151,6 @@ executable hnrm.so
                         TupleSections MultiParamTypeClasses ScopedTypeVariables
                         NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
                         DeriveGeneric
-    extra-libraries: HSrts-ghc8.6.5
-    extra-lib-dirs: /nix/store/fgy416ix2f3vnxlpcymjmkxzcfqvdw8y-ghc-8.6.5-with-packages/lib/ghc-8.6.5/rts/
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs

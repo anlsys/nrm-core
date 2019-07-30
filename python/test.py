@@ -4,20 +4,29 @@ from ctypes import *
 import struct
 import msgpack
 
-def wrap_into_msgpack(foreign_fun):
-    foreign_fun.restype = c_char_p
+so_file_path = './dist/build/hnrm.so/hnrm.so'
 
-    def wrapped_fun(*args):
+free = cdll.LoadLibrary("libc.so.6").free
+lib = cdll.LoadLibrary(so_file_path)
+
+lib.hs_init(0, 0)
+
+# Some shortcuts
+def make_msgpack_fun(fun):
+    fun.restype = POINTER(c_char)
+
+    def f(*args):
         packed = msgpack.packb(args)
-        length_64bits = struct.pack("q", len(packed)) # native-endian
+        length_64bits = struct.pack(">q", len(packed)) # big-endian
         ptr = fun(length_64bits + packed)
-        data_length = cast(ptr[:8], POINTER(c_longlong))[0]
+        data_length = struct.unpack(">q", ptr[:8])[0]
         res = msgpack.unpackb(ptr[8:8+data_length])
         free(ptr)
         return res
 
-    return wrapped_fun
+    return f
 
-getDefaultRAPLDirs = wrap_into_msgpack(cdll.LoadLibrary('./dist/build/hnrm.so/hnrm.so').getDefaultRAPLDirs_export)
+f = make_msgpack_fun(lib.getDefaultRAPLDirsExport)
+print(f())
 
-print(getDefaultRAPLDirs())
+lib.hs_exit()

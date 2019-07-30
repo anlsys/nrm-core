@@ -9,12 +9,12 @@ License     : MIT
 Maintainer  : fre@freux.fr
 -}
 import Control.Monad
-import Development.Shake
+import Development.Shake hiding (getEnv)
 import Development.Shake.FilePath
 import Options.Applicative as OA
 import Protolude
 import System.Directory
-import System.Environment
+import System.Environment (getEnv, withArgs)
 import "Glob" System.FilePath.Glob
 import qualified System.IO as SIO
   ( BufferMode (..)
@@ -100,6 +100,39 @@ runcov = do
   runProcess_ "cabal test"
 
 runshake as =
-  withArgs as $ shakeArgs shakeOptions $ phony "build" $
+  withArgs as $ shakeArgs shakeOptions $
+    phony "build" $ do
+    version <- liftIO $ readProcessStdout_ "ghc --numeric-version"
+    gmp <- liftIO $ getEnv "GHC_GMP"
+    glibc <- liftIO $ getEnv "GHC_GLIBC"
+    zlib <- liftIO $ getEnv "GHC_ZLIB"
+    version <- liftIO $ readProcessStdout_ "ghc --numeric-version"
     liftIO
-      (runProcess_ $ proc "cabal" ["build"])
+      ( runProcess_ $
+        proc "cabal"
+          [ "clean"
+          ]
+      )
+    {-liftIO-}
+      {-( runProcess_ $-}
+        {-proc "cabal"-}
+          {-[ "new-build"-}
+          {-, "lib:ffi-nh2"-}
+          {-]-}
+      {-)-}
+    liftIO
+      ( runProcess_ $
+        proc "cabal"
+          ( [ "new-build"
+            , "--ghc-option=-lHSrts-ghc" <> toS version
+            , "--ghc-option=-optl=-static"
+            , "--ghc-option=-optc=-static"
+            {-, "--enable-shared"-}
+            {-, "--enable-static"-}
+            {-, "--disable-executable-dynamic"-}
+            ] ++
+            ( ("--extra-lib-dirs=" <>) <$>
+              [gmp, zlib, glibc]
+            )
+          )
+      )

@@ -1,5 +1,3 @@
-{-# LANGUAGE DerivingVia #-}
-
 {-|
 Module      : Nrm.Types.Topo
 Description : Topology related types

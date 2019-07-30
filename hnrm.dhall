@@ -222,8 +222,6 @@ let prelude = ./cabal/prelude.dhall
                           ]
                       , hs-source-dirs =
                           [ "app" ]
-                      , extra-libraries =
-                          ["HSrts-ghc$compiler"] : List Text
                       }
                     ⫽ copts
                       [ "-threaded"
