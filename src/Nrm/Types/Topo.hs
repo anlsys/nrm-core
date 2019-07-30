@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-|
 Module      : Nrm.Types.Topo
 Description : Topology related types
@@ -14,9 +16,11 @@ module Nrm.Types.Topo
   )
 where
 
+import Data.Either
+import Data.MessagePack
 import Protolude
 import Refined
-import Prelude (String)
+import Prelude (String, fail)
 
 -- | A CPU Core OS identifier.
 newtype CoreId = CoreId (Refined Positive Int)
@@ -28,7 +32,18 @@ newtype PUId = PUId (Refined NonNegative Int)
 
 -- | A Package OS identifier.
 newtype PackageId = PackageId (Refined NonNegative Int)
-  deriving (Show)
+  deriving (Show, Generic)
+
+instance MessagePack PackageId where
+
+  toObject (PackageId x) = toObject (unrefine x)
+
+  fromObject x =
+    (fromObject x <&> refine) >>= \case
+      Right r -> return $ PackageId r
+      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
+
+{-deriving instance MessagePack (Refined NonNegative Int) where-}
 
 -- | reading from hwloc XML data
 class IdFromString a where

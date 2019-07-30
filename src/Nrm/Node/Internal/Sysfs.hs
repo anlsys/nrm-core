@@ -10,21 +10,21 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Node.Internal.Sysfs
   ( -- * RAPL
-    RAPLDirs
-  , RAPLCommands
-  , RAPLDir (..)
+    RAPLDir (..)
+  , RAPLDirs (..)
   , RAPLConfig (..)
   , RAPLMeasurement (..)
   , RAPLConstraint (..)
   , RAPLCommand (..)
+  , RAPLCommands (..)
   , MaxPower (..)
   , MaxEnergy (..)
   , defaultRAPLDir
   , getRAPLDirs
   , measureRAPLDir
   , readRAPLConfiguration
-  {-, applyRAPLPcap-}
-  , -- * Hwmon
+  , {-, applyRAPLPcap-}
+    -- * Hwmon
     HwmonDirs
   , HwmonDir (..)
   , defaultHwmonDir
@@ -35,6 +35,7 @@ module Nrm.Node.Internal.Sysfs
   )
 where
 
+import Data.MessagePack
 import Data.Metrology.Show ()
 import Nrm.Types.Topo
 import Nrm.Types.Units
@@ -43,13 +44,15 @@ import System.Directory
 import Text.RE.TDFA.Text
 
 -- | RAPL directory locations
-type RAPLDirs = [RAPLDir]
+newtype RAPLDirs = RAPLDirs [RAPLDir]
+  deriving (Show, Generic, MessagePack)
 
 -- | Hwmon directory locations
-type HwmonDirs = [HwmonDir]
+newtype HwmonDirs = HwmonDirs [HwmonDir]
+  deriving (Show, Generic)
 
 -- | RAPL Powercap command
-type RAPLCommands = [RAPLCommand]
+newtype RAPLCommands = RAPLCommands [RAPLCommand]
 
 -- | Maximum RAPL power constraint.
 newtype MaxPower = MaxPower Power
@@ -57,7 +60,18 @@ newtype MaxPower = MaxPower Power
 
 -- | Maximum RAPL energy measurement.
 newtype MaxEnergy = MaxEnergy Energy
-  deriving (Show)
+  deriving (Show, Generic, MessagePack)
+
+{-deriving instance MessagePack MaxEnergy via Int-}
+
+{-instance MessagePack MaxEnergy where-}
+
+{-toObject (PackageId x) = toObject (unrefine x)-}
+
+{-fromObject x =-}
+{-(fromObject x <&> refine) >>= \case-}
+{-Right r -> return $ PackageId r-}
+{-Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"-}
 
 -- | RAPL energy measurement
 newtype MeasuredEnergy = MeasuredEnergy Energy
@@ -81,7 +95,7 @@ data RAPLDir
       , pkgid :: PackageId
       , maxEnergy :: MaxEnergy
       }
-  deriving (Show)
+  deriving (Show, Generic, MessagePack)
 
 -- | RAPL Configuration
 data RAPLConfig
@@ -152,7 +166,7 @@ defaultRAPLDir = "/sys/devices/virtual/powercap/intel-rapl"
 
 -- | Lists available rapl directories.
 getRAPLDirs :: FilePath -> IO RAPLDirs
-getRAPLDirs = listDirFilter processRAPLFolder
+getRAPLDirs d = RAPLDirs <$> listDirFilter processRAPLFolder d
 
 -- | "Utility": filter directories with monadic predicate.
 listDirFilter :: (FilePath -> IO (Maybe a)) -> FilePath -> IO [a]
@@ -171,4 +185,4 @@ defaultHwmonDir = "/sys/class/hwmon/"
 
 -- | Lists available hwmon directories.
 getHwmonDirs :: FilePath -> IO HwmonDirs
-getHwmonDirs = listDirFilter hasCoretempInNameFile
+getHwmonDirs fp = HwmonDirs <$> listDirFilter hasCoretempInNameFile fp

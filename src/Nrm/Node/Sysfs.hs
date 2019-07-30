@@ -27,11 +27,11 @@ getDefaultRAPLDirs = getRAPLDirs defaultRAPLDir
 
 -- | Reads RAPL configurations.
 readRAPLConfigurations :: RAPLDirs -> IO [RAPLConfig]
-readRAPLConfigurations rapldirpaths = catMaybes <$> for rapldirpaths (readRAPLConfiguration . path)
+readRAPLConfigurations (RAPLDirs rapldirpaths) = catMaybes <$> for rapldirpaths (readRAPLConfiguration . path)
 
 -- | Performs RAPL measurements.
 measureRAPLDirs :: RAPLDirs -> IO [RAPLMeasurement]
-measureRAPLDirs rapldirpaths = catMaybes <$> for rapldirpaths (measureRAPLDir . path)
+measureRAPLDirs (RAPLDirs rapldirpaths) = catMaybes <$> for rapldirpaths (measureRAPLDir . path)
 
 -- | Setting powercap values.
 {-setRAPLPowercaps :: RAPLDirs -> RAPLCommands -> IO ()-}

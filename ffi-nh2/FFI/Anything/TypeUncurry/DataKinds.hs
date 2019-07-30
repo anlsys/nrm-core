@@ -1,4 +1,11 @@
-{-# LANGUAGE DataKinds, GADTs, TypeOperators, MultiParamTypeClasses, FlexibleInstances, TypeFamilies, PolyKinds, ScopedTypeVariables #-}
+{-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE PolyKinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE TypeOperators #-}
 
 -- | Converts function arguments to tuple-like types.
 --
@@ -16,8 +23,7 @@
 -- instead of multiple function arguments.
 module FFI.Anything.TypeUncurry.DataKinds where
 
-import           Data.Proxy
-
+import Data.Proxy
 
 -- * Type-level lists (containing types)
 
@@ -39,13 +45,12 @@ data TypeList l where
   (:::) :: a -> TypeList l -> TypeList (a ': l)
 
 -- Right-associativity, like (->)
-infixr :::
+infixr 9 :::
 
 -- Example: You can write:
 --
 -- exampleTypeList :: TypeList '[String, Int]
 -- exampleTypeList = "a" ::: 3 ::: Nil
-
 
 -- * \"Uncurrying\" functions
 
@@ -64,28 +69,28 @@ type family Result f :: * where
   Result (a -> f) = Result f
   Result r = r
 
-
 -- | Function f can be translated to 'TypeList' l with result type r.
 class (Param f ~ l, Result f ~ r) => ToTypeList f l r where
+
   -- | Translates a function taking multiple arguments to a function
   -- taking a single 'TypeList' containing the types of all arguments.
   --
   -- Example: @t1 -> ... -> tn -> r@ becomes @TypeList [t1, ..., tn] -> r@.
   translate :: f -> TypeList l -> r
 
-
 -- | Base case: A "pure" function without arguments
 -- can be translated to @TypeList Nil -> r@.
 instance (ToTypeList f l r) => ToTypeList (a -> f) (a ': l) r where
+
   translate f (a ::: l) = translate (f a) l
 
 -- | Base case: A value @r@ can be translated to @TypeList Nil -> r@.
 instance (Param f ~ '[], Result f ~ r, f ~ r) => ToTypeList f '[] r where
+
   -- Could also be written as
   --   (Param r ~ '[], Result r ~ r) => ToTypeList r '[] r
   -- but I find the other way clearer.
   translate r Nil = r
-
 
 -- Now an example:
 --
@@ -96,20 +101,22 @@ instance (Param f ~ '[], Result f ~ r, f ~ r) => ToTypeList f '[] r where
 --
 -- -- ghci would give as type for this: TypeList ((:) * Int ((:) * Double ([] *))) -> [Char]
 
-
 -- * Length of type-level lists
 
 -- | Allows to calculate the length of a 'TypeList', at compile time.
 --
 -- We need to use a 'Proxy' for this.
 class ParamLength (l :: [*]) where
+
   -- | Calculates the length of a type list, put into a proxy. Usage:
   --
   -- >paramLength (Proxy :: Proxy l)
   paramLength :: Proxy l -> Int
 
 instance ParamLength '[] where
+
   paramLength _ = 0
 
 instance (ParamLength l) => ParamLength (a ': l) where
+
   paramLength _ = succ $ paramLength (Proxy :: Proxy l)

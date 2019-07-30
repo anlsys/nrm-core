@@ -20,14 +20,16 @@
     ];
   });
 
+  pySelector = p: with p; [ msgpack ];
+  pyEnv = pkgs.pkgs.python3.withPackages pySelector;
+
   hack =
     (pkgs.lib.getHackEnv pkgs.pkgs pkgs pkgs.haskellPackages hnrm).overrideAttrs
-    (o:
-    {
-      #shellHook = ''
-      #source <(./shake --bash-completion-script ./shake)
-      #complete -o filenames -F _shake.hs ./shake
-      #'';
+    (o: {
+      buildInputs = o.buildInputs ++ [ pyEnv ];
+      shellHook = ''
+        GHC_VERSION=$(ghc --numeric-version)
+      '';
     });
 
   #for Musl use pkgsMusl and:

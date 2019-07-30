@@ -66,10 +66,11 @@ library hnrm-lib
         Nrm.Containers.Dummy
     hs-source-dirs: src
     default-language: Haskell2010
-    default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving DataKinds FlexibleInstances TupleSections
-                        MultiParamTypeClasses ScopedTypeVariables NoImplicitPrelude
-                        OverloadedStrings ViewPatterns
+    default-extensions: LambdaCase QuasiQuotes RecordWildCards
+                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
+                        TupleSections MultiParamTypeClasses ScopedTypeVariables
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -90,7 +91,8 @@ library hnrm-lib
         units -any,
         uuid -any,
         units-defs -any,
-        ffi-nh2 -any
+        ffi-nh2 -any,
+        data-msgpack -any
 
 library monolith
     exposed-modules:
@@ -109,12 +111,14 @@ library monolith
         Nrm.Containers.Dummy
         Hnrmd
         Hnrm
+        Export
     hs-source-dirs: src app
     default-language: Haskell2010
-    default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving DataKinds FlexibleInstances TupleSections
-                        MultiParamTypeClasses ScopedTypeVariables NoImplicitPrelude
-                        OverloadedStrings ViewPatterns
+    default-extensions: LambdaCase QuasiQuotes RecordWildCards
+                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
+                        TupleSections MultiParamTypeClasses ScopedTypeVariables
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -135,16 +139,20 @@ library monolith
         units -any,
         uuid -any,
         units-defs -any,
-        ffi-nh2 -any
+        ffi-nh2 -any,
+        data-msgpack -any
 
 executable hnrm.so
     main-is: Export.hs
     hs-source-dirs: app
     default-language: Haskell2010
-    default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving DataKinds FlexibleInstances TupleSections
-                        MultiParamTypeClasses ScopedTypeVariables NoImplicitPrelude
-                        OverloadedStrings ViewPatterns
+    default-extensions: LambdaCase QuasiQuotes RecordWildCards
+                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
+                        TupleSections MultiParamTypeClasses ScopedTypeVariables
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric
+    extra-libraries: HSrts-ghc8.6.5
+    extra-lib-dirs: /nix/store/fgy416ix2f3vnxlpcymjmkxzcfqvdw8y-ghc-8.6.5-with-packages/lib/ghc-8.6.5/rts/
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -166,10 +174,11 @@ executable hnrm
     main-is: Hnrm.hs
     hs-source-dirs: app
     default-language: Haskell2010
-    default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving DataKinds FlexibleInstances TupleSections
-                        MultiParamTypeClasses ScopedTypeVariables NoImplicitPrelude
-                        OverloadedStrings ViewPatterns
+    default-extensions: LambdaCase QuasiQuotes RecordWildCards
+                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
+                        TupleSections MultiParamTypeClasses ScopedTypeVariables
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -186,10 +195,11 @@ executable hnrmd
     main-is: Hnrmd.hs
     hs-source-dirs: app
     default-language: Haskell2010
-    default-extensions: LambdaCase RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving DataKinds FlexibleInstances TupleSections
-                        MultiParamTypeClasses ScopedTypeVariables NoImplicitPrelude
-                        OverloadedStrings ViewPatterns
+    default-extensions: LambdaCase QuasiQuotes RecordWildCards
+                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
+                        TupleSections MultiParamTypeClasses ScopedTypeVariables
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs

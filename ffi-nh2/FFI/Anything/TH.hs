@@ -1,60 +1,50 @@
 module FFI.Anything.TH where
 
+import Debug.Trace
 import Language.Haskell.TH
 
-import Debug.Trace
-
-
-
-
-parameters :: Type -> [Type]  -- Result list are "ground" types
+parameters :: Type -> [Type] -- Result list are "ground" types
 parameters t = case t of
   AppT t1 t2 -> parameters t1 ++ parameters t2
-  ArrowT     -> []
-  ConT name  -> [ConT name]
+  ArrowT -> []
+  ConT name -> [ConT name]
   -- TODO handle ListT, TupleT and so on
-  _          -> error $ "parameters: unhandled Type " ++ show t
-
+  _ -> error $ "parameters: unhandled Type " ++ show t
 
 -- TODO better use custom data type, tuples are quite finite
 argTypesToTuple :: [Type] -> Type
 argTypesToTuple types = foldl f (TupleT n) types
   where
-    f a next = AppT a next
+    f a = AppT a
     n = length types
-
 
 debug :: (Show a, Monad m) => a -> m ()
 debug x = trace ("\n" ++ show x ++ "\n") $ return ()
-
 
 deriveCallable :: Name -> String -> Q [Dec]
 deriveCallable funName exportedName = do
   info <- reify funName
   case info of
     VarI name typ _mDec -> do
-      let _nameString   = nameBase name
+      let _nameString = nameBase name
           signatureList = parameters typ
-          paramTypes    = init signatureList
-          returnType    = last signatureList
-
-          typ' = [ SigD
-                     (mkName exportedName)
-                     (AppT
-                       (AppT
-                         ArrowT
-                         (argTypesToTuple paramTypes)
-                       )
-                       returnType
-                     )
-                 ]
-
+          paramTypes = init signatureList
+          returnType = last signatureList
+          typ' =
+            [ SigD
+                (mkName exportedName)
+                ( AppT
+                  ( AppT
+                    ArrowT
+                    (argTypesToTuple paramTypes)
+                  )
+                  returnType
+                )
+            ]
       debug typ'
       debug $ pprint typ'
       return []
-
     _ -> error "deriveCallable: can only derive functions"
-
 
 -- Example:
 --
