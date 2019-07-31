@@ -5,14 +5,9 @@ import struct
 import msgpack
 import sys
 
-# so_file_path = './dist/build/hnrm.so/hnrm.so'
-so_file_path = sys.argv[1]
-
-
 free = ctypes.cdll.LoadLibrary("libc.so.6").free
 
 
-# Some shortcuts
 def _make_msgpack_fun(fun):
     fun.restype = ctypes.POINTER(ctypes.c_char)
 
@@ -41,5 +36,5 @@ class hnrm:
 
 
 if __name__ == "__main__":
-    with hnrm() as h:
+    with hnrm(sys.argv[1]) as h:
         print(h.getDefaultRAPLDirsExport())
