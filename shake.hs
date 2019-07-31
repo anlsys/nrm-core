@@ -9,6 +9,7 @@ License     : MIT
 Maintainer  : fre@freux.fr
 -}
 import Control.Monad
+import Data.Text (dropEnd, strip)
 import Development.Shake hiding (getEnv)
 import Development.Shake.FilePath
 import Options.Applicative as OA
@@ -102,37 +103,16 @@ runcov = do
 runshake as =
   withArgs as $ shakeArgs shakeOptions $
     phony "build" $ do
-    version <- liftIO $ readProcessStdout_ "ghc --numeric-version"
-    gmp <- liftIO $ getEnv "GHC_GMP"
-    glibc <- liftIO $ getEnv "GHC_GLIBC"
-    zlib <- liftIO $ getEnv "GHC_ZLIB"
-    version <- liftIO $ readProcessStdout_ "ghc --numeric-version"
+    version <- liftIO $ toS . strip . toS <$> readProcessStdout_ "ghc --numeric-version"
+    ghcPathRaw <- liftIO $ strip . toS <$> readProcessStdout_ "which ghc"
+    let ghcPath = dropEnd 8 ghcPathRaw
+    {-putText version-}
     liftIO
       ( runProcess_ $
         proc "cabal"
-          [ "clean"
+          [ "v2-build"
+          , "hnrm.so"
+          , "--ghc-option=-lHSrts-ghc" <> version
+          , "--extra-lib-dirs=" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts"
           ]
-      )
-    {-liftIO-}
-      {-( runProcess_ $-}
-        {-proc "cabal"-}
-          {-[ "new-build"-}
-          {-, "lib:ffi-nh2"-}
-          {-]-}
-      {-)-}
-    liftIO
-      ( runProcess_ $
-        proc "cabal"
-          ( [ "new-build"
-            , "--ghc-option=-lHSrts-ghc" <> toS version
-            , "--ghc-option=-optl=-static"
-            , "--ghc-option=-optc=-static"
-            {-, "--enable-shared"-}
-            {-, "--enable-static"-}
-            {-, "--disable-executable-dynamic"-}
-            ] ++
-            ( ("--extra-lib-dirs=" <>) <$>
-              [gmp, zlib, glibc]
-            )
-          )
       )

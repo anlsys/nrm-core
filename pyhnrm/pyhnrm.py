@@ -24,9 +24,13 @@ def _make_msgpack_fun(fun):
 
 
 class hnrm:
-    def __enter__(self, libpath) -> "hnrm":
+    def __init__(self, libpath) -> None:
+        print(libpath)
         self.lib = ctypes.cdll.LoadLibrary(libpath)
         self.lib.hs_init(0, 0)
+
+    def __enter__(self, libpath) -> "hnrm":
+        pass
 
     def __exit__(self, type: Exception, value: Exception, traceback: str) -> None:
         self.lib.hs_exit()
