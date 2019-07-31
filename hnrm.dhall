@@ -120,8 +120,11 @@ let modules =
 
 let libdep =
       [ deps.base
-      , deps.pretty-simple
       , deps.protolude
+      , deps.bytestring
+      , deps.data-msgpack
+      , deps.mtl
+      , deps.pretty-simple
       , deps.typed-process
       , deps.hxt
       , deps.hxt-xpath
@@ -131,8 +134,9 @@ let libdep =
       , deps.units
       , deps.uuid
       , deps.units-defs
-      , deps.ffi-nh2
-      , deps.data-msgpack
+      , deps.storable-endian
+      , deps.template-haskell
+      , deps.mtl
       ]
 
 in    prelude.defaults.Package
@@ -245,7 +249,7 @@ in    prelude.defaults.Package
             , name =
                 "hnrm-monolith.so"
             }
-            { executable =
+          , { executable =
                   λ(config : types.Config)
                 →   prelude.defaults.Executable
                   ⫽ { main-is =

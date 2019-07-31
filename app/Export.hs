@@ -13,16 +13,10 @@ module Export
   )
 where
 
-{-import Data.ByteString (ByteString)-}
-{-import qualified Data.ByteString as BS-}
-{-import qualified Data.ByteString.Lazy as BSL-}
 import FFI.Anything.TypeUncurry.Msgpack
 import Foreign.C
 import Nrm.Node.Sysfs (getDefaultRAPLDirs)
 import Protolude
-
-{-main :: IO ()-}
-{-main = undefined-}
 
 foreign export ccall getDefaultRAPLDirsExport :: CString -> IO CString
 

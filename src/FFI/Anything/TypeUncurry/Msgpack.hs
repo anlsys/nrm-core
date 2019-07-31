@@ -1,7 +1,6 @@
-{-# LANGUAGE DataKinds #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE MonoLocalBinds #-}
 
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
@@ -96,28 +95,28 @@ errorMsg locationStr = "call-haskell-from-anything: " ++ locationStr ++ ": got w
 -- This function throws an 'error' if the de-serialization of the arguments fails!
 -- It is recommended to use 'tryUncurryMsgpack' instead.
 uncurryMsgpack :: (MSG.MessagePack (TypeList l), ToTypeList f l r, MSG.MessagePack r) => f -> (ByteString -> ByteString)
-uncurryMsgpack f = \bs -> BSL.toStrict . MSG.pack $ (translate f $ fromMaybe (error (errorMsg "uncurryMsgpack")) $ MSG.unpack $ BSL.fromStrict bs)
+uncurryMsgpack f bs = BSL.toStrict . MSG.pack $ (translate f $ fromMaybe (error (errorMsg "uncurryMsgpack")) $ MSG.unpack $ BSL.fromStrict bs)
 
 -- | Like 'uncurryMsgpack', but for 'IO' functions.
 --
 -- This function throws an 'error' if the de-serialization of the arguments fails!
 -- It is recommended to use 'tryUncurryMsgpackIO' instead.
 uncurryMsgpackIO :: (MSG.MessagePack (TypeList l), ToTypeList f l (IO r), MSG.MessagePack r) => f -> (ByteString -> IO ByteString)
-uncurryMsgpackIO f = \bs -> BSL.toStrict . MSG.pack <$> (translate f $ fromMaybe (error (errorMsg "uncurryMsgpackIO")) $ MSG.unpack $ BSL.fromStrict bs)
+uncurryMsgpackIO f bs = BSL.toStrict . MSG.pack <$> translate f (fromMaybe (error (errorMsg "uncurryMsgpackIO")) $ MSG.unpack $ BSL.fromStrict bs)
 
 -- | Like 'uncurryMsgpack', but makes it clear when the 'ByteString' containing
 -- the function arguments does not contain the right number/types of arguments.
 tryUncurryMsgpack :: (MSG.MessagePack (TypeList l), ToTypeList f l r, MSG.MessagePack r) => f -> (ByteString -> Maybe ByteString)
-tryUncurryMsgpack f = \bs -> case MSG.unpack $ BSL.fromStrict bs of
+tryUncurryMsgpack f bs = case MSG.unpack $ BSL.fromStrict bs of
   Nothing -> Nothing
-  Just args -> Just . BSL.toStrict . MSG.pack $ (translate f $ args)
+  Just args -> Just . BSL.toStrict . MSG.pack $ (translate f args)
 
 -- | Like 'uncurryMsgpack', but makes it clear when the 'ByteString' containing
 -- the function arguments does not contain the right number/types of arguments.
 tryUncurryMsgpackIO :: (MSG.MessagePack (TypeList l), ToTypeList f l (IO r), MSG.MessagePack r) => f -> (ByteString -> Maybe (IO ByteString))
-tryUncurryMsgpackIO f = \bs -> case MSG.unpack $ BSL.fromStrict bs of
+tryUncurryMsgpackIO f bs = case MSG.unpack $ BSL.fromStrict bs of
   Nothing -> Nothing
-  Just args -> Just $ BSL.toStrict . MSG.pack <$> (translate f $ args)
+  Just args -> Just $ BSL.toStrict . MSG.pack <$> (translate f args)
 
 -- | O(n). Makes a copy of the ByteString's contents into a malloc()ed area.
 -- You need to free() the returned string when you're done with it.

@@ -1,8 +1,8 @@
-module FFI.Anything.TH where
+module FFI.Anything.TH (deriveCallable) where
 
-import Prelude
 import Debug.Trace
 import Language.Haskell.TH
+import Prelude
 
 parameters :: Type -> [Type] -- Result list are "ground" types
 parameters t = case t of

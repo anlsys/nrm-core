@@ -1,9 +1,5 @@
 {-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GADTs #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE PolyKinds #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 
@@ -21,10 +17,15 @@
 -- Using this module, you can write an instance how to unpack the 'TypeList' type,
 -- and then use 'translate' to make any function take such a single 'TypeList'
 -- instead of multiple function arguments.
-module FFI.Anything.TypeUncurry.DataKinds where
+module FFI.Anything.TypeUncurry.DataKinds
+  ( TypeList (..)
+  , ParamLength (..)
+  , ToTypeList (..)
+  )
+where
 
-import Prelude
 import Data.Proxy
+import Prelude
 
 -- * Type-level lists (containing types)
 
