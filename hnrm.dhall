@@ -202,7 +202,13 @@ in    prelude.defaults.Package
                     , hs-source-dirs =
                         [ "src", "app" ]
                     , exposed-modules =
-                        modules # [ "Hnrmd", "Hnrm", "Export" ]
+                          modules
+                        # [ "Hnrm", "Hnrmd" ]
+                        # [ "FFI.Anything.TH"
+                          , "FFI.Anything.TypeUncurry"
+                          , "FFI.Anything.TypeUncurry.Msgpack"
+                          , "FFI.Anything.TypeUncurry.DataKinds"
+                          ]
                     }
                   ⫽ copts ([] : List Text)
             , name =
@@ -247,7 +253,7 @@ in    prelude.defaults.Package
                     }
                   ⫽ copts [ "-fPIC", "-shared", "-dynamic", "-no-hs-main" ]
             , name =
-                "hnrm-monolith.so"
+                "hnrm.so"
             }
           , { executable =
                   λ(config : types.Config)
