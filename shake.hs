@@ -113,6 +113,6 @@ runshake as =
           [ "v2-build"
           , "hnrm.so"
           , "--ghc-option=-lHSrts-ghc" <> version
-          , "--extra-lib-dirs=" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts"
+          , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
           ]
       )

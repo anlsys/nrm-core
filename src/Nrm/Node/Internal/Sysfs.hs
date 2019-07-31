@@ -170,7 +170,7 @@ getRAPLDirs d = RAPLDirs <$> listDirFilter processRAPLFolder d
 
 -- | "Utility": filter directories with monadic predicate.
 listDirFilter :: (FilePath -> IO (Maybe a)) -> FilePath -> IO [a]
-listDirFilter condition basedir = listDirectory basedir >>= fmap catMaybes . mapM condition
+listDirFilter condition basedir = ((((basedir <> "/") <>) <$>) <$> listDirectory basedir) >>= fmap catMaybes . mapM condition
 
 -- | Checks if the hwmon directory has "coretemp" in its name file.
 hasCoretempInNameFile :: FilePath -> IO (Maybe HwmonDir)

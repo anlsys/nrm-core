@@ -27,10 +27,10 @@ class hnrm:
     def __init__(self, libpath) -> None:
         print(libpath)
         self.lib = ctypes.cdll.LoadLibrary(libpath)
-        self.lib.hs_init(0, 0)
 
-    def __enter__(self, libpath) -> "hnrm":
-        pass
+    def __enter__(self) -> "hnrm":
+        self.lib.hs_init(0, 0)
+        return self
 
     def __exit__(self, type: Exception, value: Exception, traceback: str) -> None:
         self.lib.hs_exit()
