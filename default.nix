@@ -41,53 +41,20 @@ let
 in rec {
 
   hnrm = pkgs.hnrm;
-  hnrmShell = pkgs.haskellPackages.shellFor {
-      packages = p: [ hnrm ];
-      #withHoogle = true;
-      #buildInputs = [pkgs.git pkgs.hwloc pkgs.htop pkgs.jq] ++ hnrm.buildInputs;
-      GHC_GMP = "${pkgs.gmp6.override { withStatic = true; }}/lib";
-      GHC_ZLIB = "${pkgs.zlib.static}/lib";
-      GHC_GLIBC = "${pkgs.glibc.static}/lib";
-  };
-
-  hnrm-static = pkgsStatic.hnrm.overrideAttrs (old: {
-    enableSharedExecutables = false;
-    enableSharedLibraries = false;
-    configureFlags = [
-      "--ghc-option=-lHSrts-ghc${pkgsStatic.haskellPackages.ghc.version}"
-      "--ghc-option=-optl=-static"
-      "--ghc-option=-optl=-pthread"
-      "--ghc-option=-optl=-L${pkgs.gmp6.override { withStatic = true; }}/lib"
-      "--ghc-option=-optl=-L${pkgs.zlib.static}/lib"
-      "--ghc-option=-optl=-L${pkgs.glibc.static}/lib"
-    ];
-  });
 
   pySelector = p: with p; [ msgpack ];
   pyEnv = pkgs.pkgs.python3.withPackages pySelector;
 
-  #hack =
-    #(pkgs.lib.getHackEnv pkgs.pkgs pkgs pkgs.haskellPackages hnrm).overrideAttrs
-    #(o: {
-      #buildInputs = o.buildInputs ++ [ pyEnv ];
-    #});
-
-  hack =
-    pkgs.haskellPackages.shellFor {
-      packages = p: [ hnrm (pkgs.haskellPackages.callPackage hackTools { }) ];
-      withHoogle = true;
-      buildInputs = [pkgs.git pkgs.hwloc pkgs.htop pkgs.jq] ++ hnrm.buildInputs;
-      GHC_GMP = "${pkgs.gmp6.override { withStatic = true; }}/lib";
-      GHC_ZLIB = "${pkgs.zlib.static}/lib";
-      GHC_GLIBC = "${pkgs.glibc.static}/lib";
-    };
-
-  hack-build =
-    (pkgsStatic.lib.getHackEnv pkgsStatic pkgsStatic pkgsStatic.haskellPackages pkgsStatic.hnrm).overrideAttrs (o: {
-      buildInputs = o.buildInputs ++ [ pyEnv ];
-      GHC_GMP = "${pkgsStatic.gmp6.override { withStatic = true; }}/lib";
-      GHC_ZLIB = "${pkgsStatic.zlib.static}/lib";
-      GHC_GLIBC = "${pkgsStatic.glibc.static}/lib";
-    });
+  hack = pkgs.haskellPackages.shellFor {
+    packages = p: [ hnrm (pkgs.haskellPackages.callPackage hackTools { }) ];
+    withHoogle = true;
+    buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq pyEnv ] ++ hnrm.buildInputs;
+    GHC_GMP = "${pkgs.gmp6.override { withStatic = true; }}/lib";
+    GHC_ZLIB = "${pkgs.zlib.static}/lib";
+    GHC_GLIBC = "${pkgs.glibc.static}/lib";
+    GHC_FFI =
+      "${pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })}/lib";
+    GHC_VERSION = "${pkgs.haskellPackages.ghc.version}";
+  };
 
 }

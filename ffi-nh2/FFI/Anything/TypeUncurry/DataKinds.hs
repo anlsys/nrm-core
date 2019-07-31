@@ -23,6 +23,7 @@
 -- instead of multiple function arguments.
 module FFI.Anything.TypeUncurry.DataKinds where
 
+import Prelude
 import Data.Proxy
 
 -- * Type-level lists (containing types)

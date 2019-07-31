@@ -142,6 +142,60 @@ library monolith
         ffi-nh2 -any,
         data-msgpack -any
 
+executable hnrm-monolith.so
+    main-is: Export.hs
+    hs-source-dirs: app src ffi-nh2
+    other-modules:
+        Nrm.Node
+        Nrm.Node.Hwloc
+        Nrm.Node.Sysfs
+        Nrm.Node.Internal.Sysfs
+        Nrm.Types
+        Nrm.Types.Topo
+        Nrm.Types.Units
+        Nrm.Types.Uuids
+        Nrm.Control
+        Nrm.Containers
+        Nrm.Containers.Nodeos
+        Nrm.Containers.Singularity
+        Nrm.Containers.Dummy
+        FFI.Anything.TH
+        FFI.Anything.TypeUncurry
+        FFI.Anything.TypeUncurry.Msgpack
+        FFI.Anything.TypeUncurry.DataKinds
+    default-language: Haskell2010
+    default-extensions: LambdaCase QuasiQuotes RecordWildCards
+                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
+                        TupleSections MultiParamTypeClasses ScopedTypeVariables
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns -fPIC -shared -dynamic -no-hs-main
+    build-depends:
+        base -any,
+        protolude -any,
+        bytestring -any,
+        data-msgpack -any,
+        mtl -any,
+        pretty-simple -any,
+        typed-process -any,
+        hxt -any,
+        hxt-xpath -any,
+        refined -any,
+        directory -any,
+        regex -any,
+        units -any,
+        uuid -any,
+        units-defs -any,
+        storable-endian -any,
+        template-haskell -any,
+        mtl -any
+
 executable hnrm.so
     main-is: Export.hs
     hs-source-dirs: app

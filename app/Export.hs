@@ -21,6 +21,9 @@ import Foreign.C
 import Nrm.Node.Sysfs (getDefaultRAPLDirs)
 import Protolude
 
+{-main :: IO ()-}
+{-main = undefined-}
+
 foreign export ccall getDefaultRAPLDirsExport :: CString -> IO CString
 
 getDefaultRAPLDirsExport :: CString -> IO CString

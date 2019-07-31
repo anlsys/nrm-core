@@ -1,5 +1,6 @@
 module FFI.Anything.TH where
 
+import Prelude
 import Debug.Trace
 import Language.Haskell.TH
 

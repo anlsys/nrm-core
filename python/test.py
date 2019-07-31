@@ -1,10 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from ctypes import *
 import struct
 import msgpack
+import sys
 
-so_file_path = './dist/build/hnrm.so/hnrm.so'
+# so_file_path = './dist/build/hnrm.so/hnrm.so'
+so_file_path = sys.argv[1]
 
 free = cdll.LoadLibrary("libc.so.6").free
 lib = cdll.LoadLibrary(so_file_path)
