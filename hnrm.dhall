@@ -163,7 +163,7 @@ in    prelude.defaults.Package
                         , deps.mtl
                         ]
                     , hs-source-dirs =
-                        [ "ffi-nh2" ]
+                        [ "src" ]
                     , exposed-modules =
                         [ "FFI.Anything.TH"
                         , "FFI.Anything.TypeUncurry"
@@ -232,7 +232,7 @@ in    prelude.defaults.Package
                         , deps.mtl
                         ]
                     , hs-source-dirs =
-                        [ "app", "src", "ffi-nh2" ]
+                        [ "app", "src" ]
                     , other-modules =
                           modules
                         # [ "FFI.Anything.TH"
@@ -245,34 +245,7 @@ in    prelude.defaults.Package
             , name =
                 "hnrm-monolith.so"
             }
-          , { executable =
-                  λ(config : types.Config)
-                →   prelude.defaults.Executable
-                  ⫽ { main-is =
-                        "Export.hs"
-                    , build-depends =
-                        [ deps.base
-                        , deps.protolude
-                        , deps.hnrm-lib
-                        , deps.ffi-nh2
-                        , deps.bytestring
-                        , deps.data-msgpack
-                        , deps.mtl
-                        ]
-                    , hs-source-dirs =
-                        [ "app" ]
-                    }
-                  ⫽ copts
-                    [ "-threaded"
-                    , "-fPIC"
-                    , "-shared"
-                    , "-dynamic"
-                    , "-no-hs-main"
-                    ]
-            , name =
-                "hnrm.so"
-            }
-          , { executable =
+            { executable =
                   λ(config : types.Config)
                 →   prelude.defaults.Executable
                   ⫽ { main-is =

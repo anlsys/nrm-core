@@ -42,13 +42,14 @@ in rec {
 
   hnrm = pkgs.hnrm;
 
-  pySelector = p: with p; [ msgpack ];
+  pySelector = p: with p; [ msgpack black flake8 ];
   pyEnv = pkgs.pkgs.python3.withPackages pySelector;
 
   hack = pkgs.haskellPackages.shellFor {
     packages = p: [ hnrm (pkgs.haskellPackages.callPackage hackTools { }) ];
     withHoogle = true;
-    buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq pyEnv ] ++ hnrm.buildInputs;
+    buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq pyEnv ]
+      ++ hnrm.buildInputs;
     GHC_GMP = "${pkgs.gmp6.override { withStatic = true; }}/lib";
     GHC_ZLIB = "${pkgs.zlib.static}/lib";
     GHC_GLIBC = "${pkgs.glibc.static}/lib";
