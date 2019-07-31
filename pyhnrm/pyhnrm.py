@@ -8,10 +8,8 @@ import sys
 # so_file_path = './dist/build/hnrm.so/hnrm.so'
 so_file_path = sys.argv[1]
 
-free = ctypes.cdll.LoadLibrary("libc.so.6").free
-lib = ctypes.cdll.LoadLibrary(so_file_path)
 
-lib.hs_init(0, 0)
+free = ctypes.cdll.LoadLibrary("libc.so.6").free
 
 
 # Some shortcuts
@@ -30,7 +28,18 @@ def _make_msgpack_fun(fun):
     return f
 
 
-getDefaultRAPLDirsExport = _make_msgpack_fun(lib.getDefaultRAPLDirsExport)
-print(getDefaultRAPLDirsExport())
+class hnrm:
+    def __enter__(self, libpath) -> "hnrm":
+        self.lib = ctypes.cdll.LoadLibrary(libpath)
+        self.lib.hs_init(0, 0)
 
-lib.hs_exit()
+    def __exit__(self, type: Exception, value: Exception, traceback: str) -> None:
+        self.lib.hs_exit()
+
+    def getDefaultRAPLDirsExport(self) -> None:
+        return _make_msgpack_fun(self.lib.getDefaultRAPLDirsExport)()
+
+
+if __name__ == "__main__":
+    with hnrm() as h:
+        print(h.getDefaultRAPLDirsExport())

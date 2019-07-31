@@ -14,9 +14,8 @@ parameters t = case t of
 
 -- TODO better use custom data type, tuples are quite finite
 argTypesToTuple :: [Type] -> Type
-argTypesToTuple types = foldl f (TupleT n) types
+argTypesToTuple types = foldl AppT (TupleT n) types
   where
-    f a = AppT a
     n = length types
 
 debug :: (Show a, Monad m) => a -> m ()
