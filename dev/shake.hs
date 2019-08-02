@@ -28,7 +28,7 @@ import System.Process.Typed
 ghcidTarget :: Text -> Maybe Text -> [Text]
 ghcidTarget target test =
   [ "-C"
-  , "hsrnrm"
+  , "hsnrm"
   , "--command"
   , "cabal " <> "new-repl " <> target
   , "--restart=hsnrm.cabal"
@@ -62,8 +62,6 @@ main =
             (info (pure runbritt) (progDesc "inplace brittany.")) <>
           OA.command "cabal"
             (info (pure cabal) (progDesc "generate cabal file.")) <>
-          OA.command "coverage"
-            (info (pure runcov) (progDesc "run code coverage.")) <>
           OA.command "shake" (info (pure (runshake [])) (progDesc "run shake.")) <>
           OA.command
             "readme"

@@ -1,7 +1,7 @@
   --λ(ghcVersion : Text)
-let prelude = ./dhall-to-cabal/prelude.dhall
+let prelude = ../../dhall-to-cabal/prelude.dhall
 
-let types = ./dhall-to-cabal/types.dhall
+let types = ../../dhall-to-cabal/types.dhall
 
 let defexts =
       [ types.Extension.LambdaCase True
@@ -184,7 +184,7 @@ in    prelude.defaults.Package
                         , deps.mtl
                         ]
                     , hs-source-dirs =
-                        [ "src" ]
+                        [ "nrm" ]
                     , exposed-modules =
                         [ "FFI.Anything.TH"
                         , "FFI.Anything.TypeUncurry"
@@ -203,7 +203,7 @@ in    prelude.defaults.Package
                   ⫽ { build-depends =
                         libdep
                     , hs-source-dirs =
-                        [ "src" ]
+                        [ "nrm" ]
                     , exposed-modules =
                         modules
                     }
@@ -217,7 +217,7 @@ in    prelude.defaults.Package
                   ⫽ { build-depends =
                         libdep
                     , hs-source-dirs =
-                        [ "src", "app" ]
+                        [ "nrm", "bin" ]
                     , exposed-modules =
                           modules
                         # [ "Hnrm", "Hnrmd" ]
@@ -261,7 +261,7 @@ in    prelude.defaults.Package
                         , deps.transformers
                         ]
                     , hs-source-dirs =
-                        [ "app", "src" ]
+                        [ "bin", "nrm" ]
                     , other-modules =
                           modules
                         # [ "FFI.Anything.TH"
@@ -282,7 +282,7 @@ in    prelude.defaults.Package
                     , build-depends =
                         [ deps.base, deps.protolude, deps.hsnrm-lib ]
                     , hs-source-dirs =
-                        [ "app" ]
+                        [ "bin" ]
                     }
                   ⫽ copts [ "-threaded", "-main-is", "Hnrm" ]
             , name =
@@ -296,7 +296,7 @@ in    prelude.defaults.Package
                     , build-depends =
                         [ deps.base, deps.protolude, deps.hsnrm-lib ]
                     , hs-source-dirs =
-                        [ "app" ]
+                        [ "bin" ]
                     }
                   ⫽ copts [ "-threaded", "-main-is", "Hnrmd" ]
             , name =

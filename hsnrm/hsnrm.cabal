@@ -5,16 +5,16 @@ cabal-version: 2.0
 -- Do not edit it by hand, because your changes will be over-written!
 --
 -- Instead, edit the source Dhall file, namely
--- 'hnrm.dhall', and re-generate this file by running
--- 'dhall-to-cabal -- hnrm.dhall'.
+-- './dev/pkgs/hsnrm/default.dhall', and re-generate this file by running
+-- 'dhall-to-cabal -- ../dev/pkgs/hsnrm/default.dhall'.
 -- * * * * * * * * * * * * WARNING * * * * * * * * * * * *
-name: hnrm
+name: hsnrm
 version: 1.0.0
 license: BSD3
 license-file: LICENSE
 maintainer: fre@freux.fr
 author: Valentin Reis
-synopsis: hnrm
+synopsis: hsnrm
 description:
     haskell node resource manager prototype
 category: tools
@@ -24,7 +24,7 @@ extra-source-files:
 
 source-repository head
     type: git
-    location: https://xgitlab.cels.anl.gov/vreis/hnrm.git
+    location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
 
 library ffi-nh2
     exposed-modules:
@@ -32,7 +32,7 @@ library ffi-nh2
         FFI.Anything.TypeUncurry
         FFI.Anything.TypeUncurry.Msgpack
         FFI.Anything.TypeUncurry.DataKinds
-    hs-source-dirs: src
+    hs-source-dirs: nrm
     default-language: Haskell2010
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
@@ -49,7 +49,7 @@ library ffi-nh2
         template-haskell -any,
         mtl -any
 
-library hnrm-lib
+library hsnrm-lib
     exposed-modules:
         Nrm.Node
         Nrm.Node.Hwloc
@@ -66,7 +66,7 @@ library hnrm-lib
         Nrm.Containers.Nodeos
         Nrm.Containers.Singularity
         Nrm.Containers.Dummy
-    hs-source-dirs: src
+    hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes RecordWildCards
                         TypeSynonymInstances StandaloneDeriving FlexibleInstances
@@ -126,7 +126,7 @@ library monolith
         FFI.Anything.TypeUncurry
         FFI.Anything.TypeUncurry.Msgpack
         FFI.Anything.TypeUncurry.DataKinds
-    hs-source-dirs: src app
+    hs-source-dirs: nrm bin
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes RecordWildCards
                         TypeSynonymInstances StandaloneDeriving FlexibleInstances
@@ -163,9 +163,9 @@ library monolith
         template-haskell -any,
         mtl -any
 
-executable hnrm.so
+executable hsnrm.so
     main-is: Export.hs
-    hs-source-dirs: app src
+    hs-source-dirs: bin nrm
     other-modules:
         Nrm.Node
         Nrm.Node.Hwloc
@@ -222,9 +222,9 @@ executable hnrm.so
         mtl -any,
         transformers -any
 
-executable hnrm
+executable hsnrm
     main-is: Hnrm.hs
-    hs-source-dirs: app
+    hs-source-dirs: bin
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes RecordWildCards
                         TypeSynonymInstances StandaloneDeriving FlexibleInstances
@@ -242,11 +242,11 @@ executable hnrm
     build-depends:
         base -any,
         protolude -any,
-        hnrm-lib -any
+        hsnrm-lib -any
 
-executable hnrmd
+executable hsnrmd
     main-is: Hnrmd.hs
-    hs-source-dirs: app
+    hs-source-dirs: bin
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes RecordWildCards
                         TypeSynonymInstances StandaloneDeriving FlexibleInstances
@@ -264,4 +264,4 @@ executable hnrmd
     build-depends:
         base -any,
         protolude -any,
-        hnrm-lib -any
+        hsnrm-lib -any

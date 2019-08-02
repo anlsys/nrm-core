@@ -7,7 +7,11 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm
   ( module Nrm.Node
+  , module Nrm.Containers
+  , module Nrm.Types
   )
 where
 
 import Nrm.Node
+import Nrm.Containers
+import Nrm.Types
