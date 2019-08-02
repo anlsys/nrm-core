@@ -1,7 +1,7 @@
   --λ(ghcVersion : Text)
-let prelude = ./cabal/prelude.dhall
+let prelude = ./prelude.dhall
 
-let types = ./cabal/types.dhall
+let types = ./types.dhall
 
 let defexts =
       [ types.Extension.LambdaCase True

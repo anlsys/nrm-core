@@ -1,0 +1,6 @@
+name: "parallel"
+version: 0.0.1
+app:
+  slice:
+    cpus: 24
+    mems: 2

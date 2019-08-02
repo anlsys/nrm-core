@@ -1,0 +1,126 @@
+{
+  "oneOf": [
+    {
+      "required": [
+        "tag",
+        "container_uuid",
+        "application_uuid"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "start"
+          ]
+        },
+        "container_uuid": {
+          "type": "string"
+        },
+        "application_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "application_uuid"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "exit"
+          ]
+        },
+        "application_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "container_uuid",
+        "application_uuid",
+        "payload"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "performance"
+          ]
+        },
+        "payload": {
+          "type": "number"
+        },
+        "container_uuid": {
+          "type": "string"
+        },
+        "application_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "application_uuid",
+        "payload"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "progress"
+          ]
+        },
+        "payload": {
+          "type": "number"
+        },
+        "application_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "cpu",
+        "startcompute",
+        "endcompute",
+        "startbarrier",
+        "endbarrier"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "phasecontext"
+          ]
+        },
+        "endcompute": {
+          "type": "number"
+        },
+        "endbarrier": {
+          "type": "number"
+        },
+        "startbarrier": {
+          "type": "number"
+        },
+        "startcompute": {
+          "type": "number"
+        },
+        "cpu": {
+          "type": "number"
+        }
+      }
+    }
+  ]
+}

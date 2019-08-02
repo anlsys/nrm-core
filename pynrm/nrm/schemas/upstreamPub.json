@@ -1,0 +1,155 @@
+{
+  "oneOf": [
+    {
+      "required": [
+        "tag",
+        "total",
+        "limit"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "power"
+          ]
+        },
+        "total": {
+          "type": "number"
+        },
+        "limit": {
+          "type": "number"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "container_uuid",
+        "errno",
+        "power"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "start"
+          ]
+        },
+        "errno": {
+          "type": "number"
+        },
+        "power": {
+          "type": "string"
+        },
+        "container_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "container_uuid",
+        "profile_data"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "exit"
+          ]
+        },
+        "profile_data": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "type": "object"
+        },
+        "container_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "container_uuid",
+        "payload"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "performance"
+          ]
+        },
+        "payload": {
+          "type": "number"
+        },
+        "container_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "application_uuid",
+        "payload"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "progress"
+          ]
+        },
+        "payload": {
+          "type": "number"
+        },
+        "application_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "powercap",
+        "energy",
+        "performance",
+        "control_time",
+        "feedback_time"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "control"
+          ]
+        },
+        "energy": {
+          "type": "number"
+        },
+        "control_time": {
+          "type": "number"
+        },
+        "powercap": {
+          "type": "number"
+        },
+        "performance": {
+          "type": "number"
+        },
+        "feedback_time": {
+          "type": "number"
+        }
+      }
+    }
+  ]
+}

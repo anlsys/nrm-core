@@ -1,1 +1,1 @@
-haskell node resource manager
+node resource manager experimental architecture

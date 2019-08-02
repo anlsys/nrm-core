@@ -1,0 +1,95 @@
+{
+  "oneOf": [
+    {
+      "required": [
+        "tag"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "list"
+          ]
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "manifest",
+        "path",
+        "args",
+        "container_uuid",
+        "environ"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "run"
+          ]
+        },
+        "environ": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "args": {
+          "uniqueItems": false,
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "path": {
+          "type": "string"
+        },
+        "container_uuid": {
+          "type": "string"
+        },
+        "manifest": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "container_uuid"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "kill"
+          ]
+        },
+        "container_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "limit"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "setpower"
+          ]
+        },
+        "limit": {
+          "type": "string"
+        }
+      }
+    }
+  ]
+}

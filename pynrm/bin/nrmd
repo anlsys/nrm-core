@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+###############################################################################
+# Copyright 2019 UChicago Argonne, LLC.
+# (c.f. AUTHORS, LICENSE)
+#
+# This file is part of the NRM project.
+# For more info, see https://xgitlab.cels.anl.gov/argo/nrm
+#
+# SPDX-License-Identifier: BSD-3-Clause
+###############################################################################
+
+import argparse
+import json
+import sys
+import nrm
+import nrm.daemon
+import os
+
+
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv
+
+    conf_parser = argparse.ArgumentParser(
+      description=__doc__,
+      formatter_class=argparse.RawDescriptionHelpFormatter,
+      add_help=False
+      )
+    conf_parser.add_argument(
+            "-c",
+            "--configuration",
+            help="Specify a config json-formatted config file to override "
+                 "any of the available CLI options. If an option is "
+                 "actually provided on the command-line, it overrides "
+                 "its corresponding value from the configuration file.",
+            metavar="FILE")
+    conf_parser.add_argument("-d", "--print_defaults", action='store_true',
+                             help="Print the default configuration file.")
+    args, remaining_argv = conf_parser.parse_known_args()
+
+    defaults = {"nrm_log": "/tmp/nrm.log",
+                "hwloc": "hwloc",
+                "perf": "perf",
+                "argo_perf_wrapper": "nrm-perfwrapper",
+                "argo_nodeos_config": "argo_nodeos_config",
+                "pmpi_lib": "/usr/lib/libnrm-pmpi.so",
+                "singularity": "singularity",
+                "container_runtime": "nodeos",
+                }
+
+    if args.print_defaults:
+        print defaults
+        return(0)
+
+    if args.configuration:
+        defaults.update(json.load(open(args.configuration)))
+
+    parser = argparse.ArgumentParser(parents=[conf_parser])
+    parser.set_defaults(**defaults)
+    parser.add_argument("-v", "--verbose", help="increase output verbosity",
+                        action="store_true")
+    parser.add_argument(
+           "--nrm_log",
+           help="Main log file. Override default with the NRM_LOG "
+                "environment variable",
+           default=os.environ.get('NRM_LOG',
+                                  '/tmp/nrm.log'))
+    parser.add_argument(
+            '--hwloc',
+            help="Path to the hwloc to use. This path can be "
+                 "relative and makes uses of the $PATH if necessary. "
+                 "Override default with the HWLOC environment "
+                 "variable.",
+            default=os.environ.get('HWLOC',
+                                   'hwloc'))
+    parser.add_argument(
+            '--argo_nodeos_config',
+            help="Path to the argo_nodeos_config to use. This path "
+                 "can be relative and makes uses of the $PATH if "
+                 "necessary. Override default with the "
+                 "ARGO_NODEOS_CONFIG environment variable.",
+            default=os.environ.get('ARGO_NODEOS_CONFIG',
+                                   'argo_nodeos_config'))
+    parser.add_argument(
+            '--perf',
+            help="Path to the linux perf tool to use. This path can be "
+                 "relative and makes uses of the $PATH if necessary. "
+                 "Override default with the PERF environment "
+                 "variable.",
+            default=os.environ.get('PERF',
+                                   'perf'))
+    parser.add_argument(
+            '--pmpi_lib',
+            help="Path to the libnrm PMPI library used for the power policy. "
+                 "Override default with the PMPI environment variable.",
+            default=os.environ.get('PMPI', defaults['pmpi_lib']))
+    parser.add_argument(
+            '--argo_perf_wrapper',
+            help="Path to the linux perf tool to use. This path can "
+                 "be relative and makes uses of the $PATH if "
+                 "necessary. Override default with the PERFWRAPPER "
+                 "environment variable.",
+            default=os.environ.get('ARGO_PERF_WRAPPER',
+                                   'nrm-perfwrapper'))
+    parser.add_argument(
+            '--singularity',
+            help="Path to the singularity command. "
+                 "Override default with the SINGULARITY environment variable.",
+            default=os.environ.get('SINGULARITY', defaults['singularity']))
+    parser.add_argument(
+            '--container-runtime',
+            help="Choice of container runtime. "
+                 "Override default with the ARGO_CONTAINER_RUNTIME "
+                 "environment variable.",
+            choices=['nodeos', 'singularity'],
+            default=os.environ.get('ARGO_CONTAINER_RUNTIME',
+                                   defaults['container_runtime']))
+
+    args = parser.parse_args(remaining_argv)
+    nrm.daemon.runner(config=args)
+    return(0)
+
+
+if __name__ == "__main__":
+    sys.exit(main())

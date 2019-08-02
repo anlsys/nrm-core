@@ -1,0 +1,17 @@
+---
+variables:
+  ARGOPKGS: "https://xgitlab.cels.anl.gov/argo/argopkgs/-/archive/py3/argopkgs-py3.tar.gz"
+  EXTRA: "--nri ./."
+
+stages:
+  - style
+  - build
+  - test
+  - applications
+  - quality
+  - docs
+
+include:
+  - https://xgitlab.cels.anl.gov/argo/argopkgs/raw/py3/gitlab-ci/argonix.yml
+  - https://xgitlab.cels.anl.gov/argo/argopkgs/raw/py3/gitlab-ci/nri.yml
+  - https://xgitlab.cels.anl.gov/argo/argopkgs/raw/py3/gitlab-ci/repoquality.yml

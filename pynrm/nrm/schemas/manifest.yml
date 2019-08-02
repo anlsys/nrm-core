@@ -1,0 +1,207 @@
+# .. DO NOT MODIFY the RST version of this file. Modify only the manifest.yml
+#    file in the NRM source tree. This file is a literate YAML/RST file.
+#    See docs/Makefile for the simple sed command that turns
+#    it into a rst document.
+#
+# Application Manifest
+# ====================
+# 
+# The Node Resource Manager(NRM) runs tasks in resource-arbitrated slices. This resource arbitration is applied on the basis of a task-specific configuration we refer to as an application manifest, which is supplied on `nrmd`'s upstream API by a NRM client (such as the standard `nrm` client shipped with NRM) at the time of starting tasks.
+# 
+# This document describes the NRM application manifest format. These manifests
+# are described via small YAML_ files. The simplest manifest example is perhaps
+# the following, which will allocate two CPUs and one NUMA node to a task::
+# 
+#   name: "basic"
+#   version: 0.0.1
+#   app:
+#     slice:
+#       cpus: 2
+#       mems: 1
+# 
+# Global structure
+# ----------------
+#  
+# The following sections detail the manifest file schema. They are
+# automatically generated from a literal YAML file containing the schema that
+# nrmd checks for. As such, it constitutes an authoritative source of
+# documentation for the version number shown below.  The schema has three
+# required attributes, and a number of optional ones.::
+# 
+# 
+type: object
+required:
+  - name
+  - version
+  - app
+properties:
+# 
+# A name for the manifest is mandatory:::
+# 
+  name:
+    type: string
+# 
+# As well as a version number for the schema, in order to ensure you are running under
+# the right nrm version for your schema specification:::
+# 
+  version:
+    const: 0.0.1
+# 
+# The following two sections detail the required `app` attribute, which 
+# configures the application, and the node options available as optional 
+# top-level attributes.
+# 
+# Required: Application options
+# -----------------------------
+# The `app` attribute is where all the interesting slice configuration lies.
+# It has only one required attribute called "slice", which is the one you can see in 
+# the example above. The following sections detail `slice` and  the available optional attributes.::
+# 
+  app:
+    type: object
+    required:
+    - slice
+    properties:
+# 
+# Container 
+# ~~~~~~~~~ 
+# The slice attribute configures the resource slice to use.
+# The currently available resource boundaries are the number of CPU
+# cores and the number of NUMA nodes to use.::
+# 
+      slice:
+        type: object
+        required:
+        - cpus
+        - mems
+        properties:
+          cpus:
+            type: number
+          mems:
+            type: number
+# 
+# Scheduler
+# ~~~~~~~~~ 
+# The scheduler attribute configures the strategy for resource
+# arbitration at the node level. The SCHED_FIFO setting enforces
+# first-in,first-out scheduling. The SCHED_HPC setting delegates
+# this arbitration to the global scheduler above. The SCHED_OTHER
+# setting enables priority-based list scheduling. ::
+# 
+      scheduler:
+        oneOf:
+        - type: object
+          required:
+          - policy
+          - priority
+          properties:
+            policy:
+              const: SCHED_OTHER
+            priority:
+              type: number
+        - type: object
+          required:
+          - policy
+          properties:
+            policy:
+              type: string
+              enum:
+              - SCHED_FIFO
+              - SCHED_HPC
+# 
+# Perfwrapper
+# ~~~~~~~~~~~
+# The `perfwrapper` attribute is used to enable application
+# performance monitoring.::
+# 
+      perfwrapper:
+        const: true
+# 
+# Power
+# ~~~~~
+# The optional `power` attribute is used to configure the
+# machine power management.::
+# 
+      power:
+        type: object
+        required:
+        - profile
+        - policy
+        - slowdown
+        properties:
+# 
+# `policy` configures which policy to use.::
+# 
+          policy:
+            type: string
+            enum:
+            - NONE
+            - DDCM
+            - DVFS
+            - COMBINED
+# 
+# `profile` enables the power profiling.::
+# 
+          profile:
+            type: boolean
+# 
+# `slowdown` is a parameter for the DVFS policy.::
+# 
+          slowdown:
+            type: number
+            maximum: 1
+            exclusiveMaximum: true
+# 
+# Monitoring
+# ~~~~~~~~~~
+# The optional `monitoring` attribute is used to set
+# the message rate limit for the application progress
+# reporting.::
+# 
+      monitoring:
+        type: object
+        required:
+        - ratelimit
+        properties:
+          ratelimit:
+            type: number
+            minimum: 0
+# 
+# Optional: Node options
+# ----------------------
+# The following node options are available:
+# 
+# Hwbind
+# ~~~~~~
+# 
+# Putting this option on "enabled" enables thread pinning. ::
+# 
+  hwbind:
+    const: enabled
+# 
+# Image
+# ~~~~~
+# 
+# This option is only useful when the daemon is launched in singularity mode.
+# It defines which singularity image to use and what local directories to
+# mount inside the image.::
+# 
+  image:
+    type: object
+    required:
+    - path
+    - type
+    properties:
+      path:
+        type: string
+      type:
+        type: string
+        enum:
+        - sif
+        - docker
+      binds:
+        type: array
+        items:
+          type: string
+# 
+# .. _YAML:  http://www.yaml.org/

@@ -1,0 +1,132 @@
+{
+  "oneOf": [
+    {
+      "required": [
+        "tag",
+        "containers"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "list"
+          ]
+        },
+        "containers": {
+          "uniqueItems": false,
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "container_uuid",
+        "payload"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "stdout"
+          ]
+        },
+        "payload": {
+          "type": "string"
+        },
+        "container_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "container_uuid",
+        "payload"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "stderr"
+          ]
+        },
+        "payload": {
+          "type": "string"
+        },
+        "container_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "container_uuid",
+        "pid"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "start"
+          ]
+        },
+        "pid": {
+          "type": "number"
+        },
+        "container_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "container_uuid",
+        "status"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "exit"
+          ]
+        },
+        "status": {
+          "type": "string"
+        },
+        "container_uuid": {
+          "type": "string"
+        }
+      }
+    },
+    {
+      "required": [
+        "tag",
+        "limit"
+      ],
+      "type": "object",
+      "properties": {
+        "tag": {
+          "type": "string",
+          "enum": [
+            "getPower"
+          ]
+        },
+        "limit": {
+          "type": "string"
+        }
+      }
+    }
+  ]
+}
