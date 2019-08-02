@@ -26,29 +26,6 @@ source-repository head
     type: git
     location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
 
-library ffi-nh2
-    exposed-modules:
-        FFI.Anything.TH
-        FFI.Anything.TypeUncurry
-        FFI.Anything.TypeUncurry.Msgpack
-        FFI.Anything.TypeUncurry.DataKinds
-    hs-source-dirs: nrm
-    default-language: Haskell2010
-    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns
-    build-depends:
-        base -any,
-        bytestring -any,
-        data-msgpack -any,
-        storable-endian -any,
-        template-haskell -any,
-        mtl -any
-
 library hsnrm-lib
     exposed-modules:
         Nrm.Node
@@ -222,7 +199,7 @@ executable hsnrm.so
         mtl -any,
         transformers -any
 
-executable hsnrm
+executable nrm
     main-is: Hnrm.hs
     hs-source-dirs: bin
     default-language: Haskell2010
@@ -239,28 +216,6 @@ executable hsnrm
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
                  -fwarn-incomplete-patterns -threaded -main-is Hnrm
-    build-depends:
-        base -any,
-        protolude -any,
-        hsnrm-lib -any
-
-executable hsnrmd
-    main-is: Hnrmd.hs
-    hs-source-dirs: bin
-    default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes RecordWildCards
-                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
-                        TupleSections MultiParamTypeClasses NoImplicitPrelude
-                        OverloadedStrings ViewPatterns DeriveAnyClass DeriveGeneric
-                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
-                        DataKinds PolyKinds
-    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -threaded -main-is Hnrmd
     build-depends:
         base -any,
         protolude -any,

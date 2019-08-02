@@ -176,31 +176,6 @@ in    prelude.defaults.Package
                   λ(config : types.Config)
                 →   prelude.defaults.Library
                   ⫽ { build-depends =
-                        [ deps.base
-                        , deps.bytestring
-                        , deps.data-msgpack
-                        , deps.storable-endian
-                        , deps.template-haskell
-                        , deps.mtl
-                        ]
-                    , hs-source-dirs =
-                        [ "nrm" ]
-                    , exposed-modules =
-                        [ "FFI.Anything.TH"
-                        , "FFI.Anything.TypeUncurry"
-                        , "FFI.Anything.TypeUncurry.Msgpack"
-                        , "FFI.Anything.TypeUncurry.DataKinds"
-                        ]
-                    }
-                  ⫽ copts ([] : List Text)
-                  ⫽ { default-extensions = [] : List types.Extension }
-            , name =
-                "ffi-nh2"
-            }
-          , { library =
-                  λ(config : types.Config)
-                →   prelude.defaults.Library
-                  ⫽ { build-depends =
                         libdep
                     , hs-source-dirs =
                         [ "nrm" ]
@@ -286,21 +261,7 @@ in    prelude.defaults.Package
                     }
                   ⫽ copts [ "-threaded", "-main-is", "Hnrm" ]
             , name =
-                "hsnrm"
-            }
-          , { executable =
-                  λ(config : types.Config)
-                →   prelude.defaults.Executable
-                  ⫽ { main-is =
-                        "Hnrmd.hs"
-                    , build-depends =
-                        [ deps.base, deps.protolude, deps.hsnrm-lib ]
-                    , hs-source-dirs =
-                        [ "bin" ]
-                    }
-                  ⫽ copts [ "-threaded", "-main-is", "Hnrmd" ]
-            , name =
-                "hsnrmd"
+                "nrm"
             }
           ]
       , extra-source-files =

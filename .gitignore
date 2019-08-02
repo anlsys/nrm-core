@@ -9,3 +9,71 @@ dist*
 .direnv
 .ghc.*
 rts
+hsnrm/a.out
+
+# Based on github/gitignore
+# Byte-compiled / optimized / DLL files
+pynrm/__pycache__/
+pynrm/*.py[cod]
+pynrm/*$py.class
+
+# Distribution / packaging
+pynrm/Python
+pynrm/uild/
+pynrm/evelop-eggs/
+pynrm/ist/
+pynrm/ownloads/
+pynrm/ggs/
+pynrm/eggs/
+pynrm/ib/
+pynrm/ib64/
+pynrm/arts/
+pynrm/dist/
+pynrm/ar/
+pynrm/heels/
+pynrm/.egg-info/
+pynrm/installed.cfg
+pynrm/.egg
+
+# Unit test / coverage reports
+pynrm/htmlcov/
+pynrm/.tox/
+pynrm/.coverage
+pynrm/.coverage.*
+pynrm/.cache
+pynrm/nosetests.xml
+pynrm/coverage.xml
+pynrm/*.cover
+pynrm/.hypothesis/
+
+# Environments
+pynrm/Pipfile
+pynrm/Pipfile.lock
+pynrm/.env
+pynrm/.venv
+pynrm/env/
+pynrm/venv/
+
+# editor files
+*.swp
+*.bak
+*.aux
+*.log
+*.nav
+*.out
+*/*.swp
+*/*.bak
+*/*.aux
+*/*.log
+*/*.nav
+*/*.out
+*/*/*.swp
+*/*/*.bak
+*/*/*.aux
+*/*/*.log
+*/*/*.nav
+*/*/*.out
+
+# documentation
+pynrm/docs/_build
+pynrm/docs/manifest.rst
