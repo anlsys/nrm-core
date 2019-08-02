@@ -35,10 +35,10 @@ class hnrm:
     def __exit__(self, type: Exception, value: Exception, traceback: str) -> None:
         self.lib.hs_exit()
 
-    def getDefaultRAPLDirsExport(self) -> None:
-        return _make_msgpack_fun(self.lib.getDefaultRAPLDirsExport)()
+    def getDefaultRAPLDirs(self) -> None:
+        return _make_msgpack_fun(self.lib.getDefaultRAPLDirs)()
 
 
 if __name__ == "__main__":
     with hnrm(sys.argv[1]) as h:
-        print(h.getDefaultRAPLDirsExport())
+        print(h.getDefaultRAPLDirs())

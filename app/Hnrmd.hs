@@ -21,14 +21,21 @@ main :: IO ()
 main = do
   hwlocData <- getHwlocData
   putText "Internal representation check..."
-  putText "PUs:"
+  putText "\nPUs:"
   print $ selectPUIDs hwlocData
-  putText "Cores:"
+  putText "\nCores:"
   print $ selectCoreIDs hwlocData
-  putText "Packages:"
+  putText "\nPackages:"
   print $ selectPackageIDs hwlocData
-  putText "Locating relevant directories."
-  raplDir <- getDefaultRAPLDirs
+  putText "\nLocating relevant (package related) RAPL directories."
+  raplDirs <- getDefaultRAPLDirs
+  print raplDirs
+  putText "\nReading RAPL configurations."
+  raplConfig <- readRAPLConfigurations raplDirs
+  print raplConfig
+  putText "\nPerforming RAPL measurement."
+  raplMeasurement <- measureRAPLDirs raplDirs
+  print raplMeasurement
+  putText "\nLocating relevant (coretemp related) Hwmon directories."
   hwmonDir <- getDefaultHwmonDirs
-  print raplDir
   print hwmonDir

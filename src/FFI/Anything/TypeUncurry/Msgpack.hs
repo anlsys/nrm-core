@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TypeOperators #-}
 {-# LANGUAGE MonoLocalBinds #-}
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeOperators #-}
 
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 

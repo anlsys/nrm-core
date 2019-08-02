@@ -15,25 +15,15 @@ module Nrm.Containers.Dummy
   )
 where
 
+import Nrm.Containers.Class
+import Protolude
+
 data Dummy = Dummy
 
-{-class DummyRuntime(ContainerRuntime):-}
+instance ContainerRuntime Dummy where
 
-{-"""Implements a dummy runtime that doesn't create any container, but still-}
-{-launches commands."""-}
+  create = return Dummy
 
-{-def __init__(self):-}
-{-pass-}
+  execute = undefined
 
-{-def create(self, container, downstream_uri):-}
-{-pass-}
-
-{-def execute(self, container_uuid, args, environ):-}
-{-import tornado.process as process # type: ignore-}
-{-return process.Subprocess(args,-}
-{-stdout=process.Subprocess.STREAM,-}
-{-stderr=process.Subprocess.STREAM,-}
-{-env=environ)-}
-
-{-def delete(self, container_uuid, kill=False):-}
-{-pass-}
+  stop = undefined

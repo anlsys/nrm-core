@@ -9,19 +9,19 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Export
-  ( getDefaultRAPLDirsExport
+  ( getDefaultRAPLDirs
   )
 where
 
 import FFI.Anything.TypeUncurry.Msgpack
 import Foreign.C
-import Nrm.Node.Sysfs (getDefaultRAPLDirs, readRAPLConfigurations)
+import qualified Nrm.Node.Sysfs as NrmSysfs (getDefaultRAPLDirs, readRAPLConfigurations)
 import Protolude
 
-foreign export ccall getDefaultRAPLDirsExport :: CString -> IO CString
+foreign export ccall getDefaultRAPLDirs :: CString -> IO CString
+getDefaultRAPLDirs = exportIO NrmSysfs.getDefaultRAPLDirs
 
-getDefaultRAPLDirsExport :: CString -> IO CString
-getDefaultRAPLDirsExport = exportIO getDefaultRAPLDirs
+{-getDefaultRAPLDirs :: CString -> IO CString-}
 
 {-foreign export ccall readRAPLConfigurationsExport :: CString -> IO CString-}
 

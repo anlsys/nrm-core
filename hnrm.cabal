@@ -56,21 +56,24 @@ library hnrm-lib
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
         Nrm.Types
-        Nrm.Types.Topo
         Nrm.Types.Units
-        Nrm.Types.Uuids
+        Nrm.Types.Topo
+        Nrm.Types.Containers
+        Nrm.Types.Applications
         Nrm.Control
         Nrm.Containers
+        Nrm.Containers.Class
         Nrm.Containers.Nodeos
         Nrm.Containers.Singularity
         Nrm.Containers.Dummy
     hs-source-dirs: src
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes RecordWildCards
-                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
-                        TupleSections MultiParamTypeClasses ScopedTypeVariables
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns DeriveAnyClass DeriveGeneric
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -81,6 +84,7 @@ library hnrm-lib
     build-depends:
         base -any,
         protolude -any,
+        transformers -any,
         bytestring -any,
         data-msgpack -any,
         mtl -any,
@@ -93,6 +97,7 @@ library hnrm-lib
         regex -any,
         units -any,
         uuid -any,
+        text -any,
         units-defs -any,
         storable-endian -any,
         template-haskell -any,
@@ -105,11 +110,13 @@ library monolith
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
         Nrm.Types
-        Nrm.Types.Topo
         Nrm.Types.Units
-        Nrm.Types.Uuids
+        Nrm.Types.Topo
+        Nrm.Types.Containers
+        Nrm.Types.Applications
         Nrm.Control
         Nrm.Containers
+        Nrm.Containers.Class
         Nrm.Containers.Nodeos
         Nrm.Containers.Singularity
         Nrm.Containers.Dummy
@@ -122,10 +129,11 @@ library monolith
     hs-source-dirs: src app
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes RecordWildCards
-                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
-                        TupleSections MultiParamTypeClasses ScopedTypeVariables
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns DeriveAnyClass DeriveGeneric
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -136,6 +144,7 @@ library monolith
     build-depends:
         base -any,
         protolude -any,
+        transformers -any,
         bytestring -any,
         data-msgpack -any,
         mtl -any,
@@ -148,6 +157,7 @@ library monolith
         regex -any,
         units -any,
         uuid -any,
+        text -any,
         units-defs -any,
         storable-endian -any,
         template-haskell -any,
@@ -162,11 +172,13 @@ executable hnrm.so
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
         Nrm.Types
-        Nrm.Types.Topo
         Nrm.Types.Units
-        Nrm.Types.Uuids
+        Nrm.Types.Topo
+        Nrm.Types.Containers
+        Nrm.Types.Applications
         Nrm.Control
         Nrm.Containers
+        Nrm.Containers.Class
         Nrm.Containers.Nodeos
         Nrm.Containers.Singularity
         Nrm.Containers.Dummy
@@ -176,10 +188,11 @@ executable hnrm.so
         FFI.Anything.TypeUncurry.DataKinds
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes RecordWildCards
-                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
-                        TupleSections MultiParamTypeClasses ScopedTypeVariables
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns DeriveAnyClass DeriveGeneric
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -202,20 +215,23 @@ executable hnrm.so
         regex -any,
         units -any,
         uuid -any,
+        text -any,
         units-defs -any,
         storable-endian -any,
         template-haskell -any,
-        mtl -any
+        mtl -any,
+        transformers -any
 
 executable hnrm
     main-is: Hnrm.hs
     hs-source-dirs: app
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes RecordWildCards
-                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
-                        TupleSections MultiParamTypeClasses ScopedTypeVariables
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns DeriveAnyClass DeriveGeneric
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -233,10 +249,11 @@ executable hnrmd
     hs-source-dirs: app
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes RecordWildCards
-                        TypeSynonymInstances StandaloneDeriving DataKinds FlexibleInstances
-                        TupleSections MultiParamTypeClasses ScopedTypeVariables
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns DeriveAnyClass DeriveGeneric
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs

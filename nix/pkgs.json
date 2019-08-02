@@ -2,8 +2,8 @@
   "fetch": {
     "args": {
       "fetchSubmodules": false,
-      "rev": "b5f5c97f7d67a99b67731a8cfd3926f163c11857",
-      "sha256": "1m9xb3z3jxh0xirdnik11z4hw95bzdz7a4p3ab7y392345jk1wgm",
+      "rev": "239fffc90d792b5362a20ec1a009978de7b8f91a",
+      "sha256": "0z0c438b5q1066x6p9qfriym5cipw8f52a456f91qzg6q1r296f8",
       "url": "https://github.com/nixos/nixpkgs-channels.git"
     },
     "fn": "fetchgit"

@@ -9,7 +9,8 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Node.Sysfs
   ( -- * RAPL
-    getDefaultRAPLDirs
+    RAPLDirs
+  , getDefaultRAPLDirs
   , readRAPLConfigurations
   , measureRAPLDirs
   {-, setRAPLPowercaps-}
@@ -21,7 +22,7 @@ where
 import Nrm.Node.Internal.Sysfs
 import Protolude
 
--- | Retreives RAPL directories at the default location.
+-- | Retreives package RAPL directories at the default location.
 getDefaultRAPLDirs :: IO RAPLDirs
 getDefaultRAPLDirs = getRAPLDirs defaultRAPLDir
 
@@ -37,6 +38,6 @@ measureRAPLDirs (RAPLDirs rapldirpaths) = catMaybes <$> for rapldirpaths (measur
 {-setRAPLPowercaps :: RAPLDirs -> RAPLCommands -> IO ()-}
 {-setRAPLPowercaps rds = mapM_ (applyRAPLPcap rds)-}
 
--- | Retreives Hwmon directories at the default location.
+-- | Retreives coretemp Hwmon directories at the default location.
 getDefaultHwmonDirs :: IO HwmonDirs
 getDefaultHwmonDirs = getHwmonDirs defaultHwmonDir

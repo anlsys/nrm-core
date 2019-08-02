@@ -35,8 +35,10 @@ module Nrm.Node.Internal.Sysfs
   )
 where
 
+import Control.Monad.Trans.Maybe
 import Data.MessagePack
 import Data.Metrology.Show ()
+import Data.Text as T (length, lines)
 import Nrm.Types.Topo
 import Nrm.Types.Units
 import Protolude
@@ -121,48 +123,58 @@ data RAPLMeasurement
       { measurementPath :: FilePath
       , energy :: Energy
       }
+  deriving (Show)
+
+-- | The default RAPL directory.
+defaultRAPLDir :: FilePath
+defaultRAPLDir = "/sys/devices/virtual/powercap/intel-rapl"
+
+-- | The default hwmon directory location
+defaultHwmonDir :: FilePath
+defaultHwmonDir = "/sys/class/hwmon"
 
 -- | Read configuration from a RAPL directory.
 readRAPLConfiguration :: FilePath -> IO (Maybe RAPLConfig)
-readRAPLConfiguration fp = do
-  enabled :: Maybe Bool <- readMaybe . toS <$> readFile (fp <> "/enabled")
-  name0 <- readFile (fp <> "/constraint_0_name")
-  name1 <- readFile (fp <> "/constraint_1_name")
-  constraint0 <- parseConstraint 0
-  constraint1 <- parseConstraint 1
-  return $ case (name0, name1) of
-    ("short_term", "long_term") -> RAPLConfig fp <$> enabled <*> constraint1 <*> constraint0
-    ("long_term", "short_term") -> RAPLConfig fp <$> enabled <*> constraint0 <*> constraint1
-    _ -> Nothing
+readRAPLConfiguration fp =
+  runMaybeT $ do
+    enabled <- (== ("1" :: Text)) <$> maybeTReadLine (fp <> "/enabled")
+    name0 <- maybeTReadLine (fp <> "/constraint_0_name")
+    name1 <- maybeTReadLine (fp <> "/constraint_1_name")
+    constraint0 <- parseConstraint 0
+    constraint1 <- parseConstraint 1
+    case (name0, name1) of
+      ("short_term", "long_term") -> return $ RAPLConfig fp enabled constraint0 constraint1
+      ("long_term", "short_term") -> return $ RAPLConfig fp enabled constraint1 constraint0
+      _ -> mzero
   where
-    parseConstraint :: Int -> IO (Maybe RAPLConstraint)
+    parseConstraint :: Int -> MaybeT IO RAPLConstraint
     parseConstraint i = do
-      maxpower <- readMaybe . toS <$> readFile (fp <> "/constraint_" <> show i <> "_max_power_uw")
-      tw <- readMaybe . toS <$> readFile (fp <> "/constraint_" <> show i <> "_time_window")
-      return (RAPLConstraint <$> (uS <$> tw) <*> (MaxPower . uW <$> maxpower))
+      maxpower <- maybeTReadLine (fp <> "/constraint_" <> show i <> "_max_power_uw") >>= (MaybeT . pure . readMaybe . toS)
+      tw <- maybeTReadLine (fp <> "/constraint_" <> show i <> "_time_window_us") >>= (MaybeT . pure . readMaybe . toS)
+      return $ RAPLConstraint (uS tw) (MaxPower . uW $ maxpower)
 
 -- | Measures power from a RAPL directory.
-measureRAPLDir :: FilePath -> IO (Maybe RAPLMeasurement)
-measureRAPLDir fp = do
-  measured <- readMaybe . toS <$> readFile (fp <> "/energy_uj")
-  return $ RAPLMeasurement fp . uJ <$> measured
+measureRAPLDir :: (MonadIO m) => FilePath -> m (Maybe RAPLMeasurement)
+measureRAPLDir fp =
+  runMaybeT $ do
+    content <- maybeTReadLine $ fp <> "/energy_uj"
+    measured <- MaybeT . pure . readMaybe $ toS content
+    return $ RAPLMeasurement fp (uJ measured)
 
 -- | Checks if the hwmon directory has "coretemp" in its name file.
-processRAPLFolder :: FilePath -> IO (Maybe RAPLDir)
-processRAPLFolder fp = do
-  namecontent <- readFile (fp <> "/name")
-  maxRange <- readMaybe . toS <$> readFile (fp <> "/max_energy_range_uj")
-  return $ RAPLDir (fp <> "/name") <$> (matchedText (namecontent ?=~ rx) >>= idFromString . toS) <*> (MaxEnergy . uJ <$> maxRange)
+processRAPLFolder :: (MonadIO m) => FilePath -> m (Maybe RAPLDir)
+processRAPLFolder fp =
+  runMaybeT $ do
+    namecontent <- maybeTReadLine $ fp <> "/name"
+    maxRange <- maybeTReadLine (fp <> "/max_energy_range_uj") >>= (MaybeT . pure . readMaybe . toS)
+    match <- MaybeT $ pure (matchedText (namecontent ?=~ rx) >>= idFromString . drop (T.length "package") . toS)
+    return $ RAPLDir fp match (MaxEnergy . uJ $ maxRange)
   where
     rx = [re|package-([0-9]+)(/\S+)?|]
 
 -- | Applies powercap commands.
 {-applyRAPLPcap :: RAPLDirs -> RAPLCommand -> IO ()-}
 {-applyRAPLPcap _ RAPLCommand {..} = return ()-}
-
--- | The default RAPL directory.
-defaultRAPLDir :: FilePath
-defaultRAPLDir = "/sys/devices/virtual/powercap/intel-rapl"
 
 -- | Lists available rapl directories.
 getRAPLDirs :: FilePath -> IO RAPLDirs
@@ -175,14 +187,25 @@ listDirFilter condition basedir = ((((basedir <> "/") <>) <$>) <$> listDirectory
 -- | Checks if the hwmon directory has "coretemp" in its name file.
 hasCoretempInNameFile :: FilePath -> IO (Maybe HwmonDir)
 hasCoretempInNameFile fp =
-  readFile (fp <> "/name") >>= \case
-    "coretemp" -> return $ Just (HwmonDir fp)
-    _ -> return Nothing
+  runMaybeT $
+    maybeTReadLine (fp <> "/name") >>= \case
+    "coretemp" -> MaybeT $ pure $ Just $ HwmonDir fp
+    _ -> mzero
 
--- | The default hwmon directory location
-defaultHwmonDir :: FilePath
-defaultHwmonDir = "/sys/class/hwmon/"
+{-where-}
+{-f :: Either SomeException Text -> IO (Maybe HwmonDir)-}
+{-f (Right "coretemp") = return . Just $ HwmonDir fp-}
+{-f _ = return Nothing-}
 
 -- | Lists available hwmon directories.
 getHwmonDirs :: FilePath -> IO HwmonDirs
 getHwmonDirs fp = HwmonDirs <$> listDirFilter hasCoretempInNameFile fp
+
+maybeTReadLine :: (MonadIO m) => FilePath -> MaybeT m Text
+maybeTReadLine fp = maybeTReadFile fp >>= MaybeT . pure . head . lines
+
+maybeTReadFile :: (MonadIO m) => FilePath -> MaybeT m Text
+maybeTReadFile fp = MaybeT . liftIO $ maybeReadFile fp
+
+maybeReadFile :: FilePath -> IO (Maybe Text)
+maybeReadFile fpath = (hush :: Either SomeException Text -> Maybe Text) <$> try (readFile fpath)

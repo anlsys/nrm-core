@@ -9,16 +9,22 @@ let defexts =
       , types.Extension.RecordWildCards True
       , types.Extension.TypeSynonymInstances True
       , types.Extension.StandaloneDeriving True
-      , types.Extension.DataKinds True
       , types.Extension.FlexibleInstances True
       , types.Extension.TupleSections True
       , types.Extension.MultiParamTypeClasses True
-      , types.Extension.ScopedTypeVariables True
+      --, types.Extension.ScopedTypeVariables True
       , types.Extension.ImplicitPrelude False
       , types.Extension.OverloadedStrings True
       , types.Extension.ViewPatterns True
       , types.Extension.DeriveAnyClass True
       , types.Extension.DeriveGeneric True
+      , types.Extension.TemplateHaskell True
+      , types.Extension.BlockArguments True
+      , types.Extension.GADTs True
+      , types.Extension.FlexibleContexts  True
+      , types.Extension.TypeOperators True
+      , types.Extension.DataKinds True
+      , types.Extension.PolyKinds True
       ]
 
 let deflang = Some types.Language.Haskell2010
@@ -80,6 +86,8 @@ let deps =
           nobound "hnrm-lib"
       , directory =
           nobound "directory"
+      , transformers =
+          nobound "transformers"
       , regex =
           nobound "regex"
       , units-defs =
@@ -88,6 +96,8 @@ let deps =
           nobound "units"
       , uuid =
           nobound "uuid"
+      , text =
+          nobound "text"
       , bytestring =
           nobound "bytestring"
       , data-msgpack =
@@ -98,6 +108,8 @@ let deps =
           nobound "template-haskell"
       , mtl =
           nobound "mtl"
+      --, polysemy =
+          --nobound "polysemy"
       , ffi-nh2 =
           nobound "ffi-nh2"
       }
@@ -108,11 +120,13 @@ let modules =
       , "Nrm.Node.Sysfs"
       , "Nrm.Node.Internal.Sysfs"
       , "Nrm.Types"
-      , "Nrm.Types.Topo"
       , "Nrm.Types.Units"
-      , "Nrm.Types.Uuids"
+      , "Nrm.Types.Topo"
+      , "Nrm.Types.Containers"
+      , "Nrm.Types.Applications"
       , "Nrm.Control"
       , "Nrm.Containers"
+      , "Nrm.Containers.Class"
       , "Nrm.Containers.Nodeos"
       , "Nrm.Containers.Singularity"
       , "Nrm.Containers.Dummy"
@@ -121,6 +135,7 @@ let modules =
 let libdep =
       [ deps.base
       , deps.protolude
+      , deps.transformers
       , deps.bytestring
       , deps.data-msgpack
       , deps.mtl
@@ -133,10 +148,12 @@ let libdep =
       , deps.regex
       , deps.units
       , deps.uuid
+      , deps.text
       , deps.units-defs
       , deps.storable-endian
       , deps.template-haskell
       , deps.mtl
+      --, deps.polysemy
       ]
 
 in    prelude.defaults.Package
@@ -236,10 +253,12 @@ in    prelude.defaults.Package
                         , deps.regex
                         , deps.units
                         , deps.uuid
+                        , deps.text
                         , deps.units-defs
                         , deps.storable-endian
                         , deps.template-haskell
                         , deps.mtl
+                        , deps.transformers
                         ]
                     , hs-source-dirs =
                         [ "app", "src" ]

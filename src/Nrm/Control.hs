@@ -6,15 +6,21 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Control
-  ( Sensor(..)
-  , Actuator(..)
+  (
+  {-Actuators-}
   )
 where
 
-import Protolude
+{-import Protolude-}
+{-import Nrm.Node.Sysfs-}
 
-class Sensor config measurement where
-  doSensor :: config -> IO measurement
+{-data Actuators = RAPL -}
 
-class Actuator config action where
-  doAction :: config -> action -> IO ()
+{-class Config config where-}
+  {-getConfig :: a -> IO config-}
+
+{-class (Config config) => Sensor config measurement where-}
+  {-doSensor :: config -> IO measurement-}
+
+{-class (Config config) => Actuator config action where-}
+  {-doAction :: config -> action -> IO ()-}
