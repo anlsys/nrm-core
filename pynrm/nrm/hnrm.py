@@ -23,12 +23,12 @@ def _make_msgpack_fun(fun):
     return f
 
 
-class hnrm:
+class hsnrm:
     def __init__(self, libpath) -> None:
         print(libpath)
         self.lib = ctypes.cdll.LoadLibrary(libpath)
 
-    def __enter__(self) -> "hnrm":
+    def __enter__(self) -> "hsnrm":
         self.lib.hs_init(0, 0)
         return self
 
@@ -40,5 +40,5 @@ class hnrm:
 
 
 if __name__ == "__main__":
-    with hnrm(sys.argv[1]) as h:
+    with hsnrm(sys.argv[1]) as h:
         print(h.getDefaultRAPLDirs())

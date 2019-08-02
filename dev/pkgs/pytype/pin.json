@@ -1,0 +1,15 @@
+{
+  "fetch": {
+    "args": {
+      "fetchSubmodules": true,
+      "rev": "27eb234da9f3477156dc653114867d07fc2353c9",
+      "sha256": "073v7ihdb1n3fr6z2hk371vd4irdpvw5p9z1jk7frdjndkci7x0a",
+      "url": "https://github.com/google/pytype.git"
+    },
+    "fn": "fetchgit"
+  },
+  "rev": "refs/heads/master",
+  "submodules": true,
+  "type": "fetchgit",
+  "url": "https://github.com/google/pytype.git"
+}

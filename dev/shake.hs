@@ -27,9 +27,11 @@ import System.Process.Typed
 
 ghcidTarget :: Text -> Maybe Text -> [Text]
 ghcidTarget target test =
-  [ "--command"
+  [ "-C"
+  , "hsrnrm"
+  , "--command"
   , "cabal " <> "new-repl " <> target
-  , "--restart=hnrm.cabal"
+  , "--restart=hsnrm.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"
   ] ++
@@ -93,12 +95,7 @@ runbritt =
     mapM_
       (\fn -> runProcess_ $ shell ("brittany --write-mode inplace " <> toS fn))
 
-cabal = runProcess_ $ shell "dhall-to-cabal ./cabal.dh"
-
-runcov = do
-  runProcess_ "cabal clean"
-  runProcess_ "cabal configure --enable-tests --enable-coverage"
-  runProcess_ "cabal test"
+cabal = runProcess_ $ shell "dhall-to-cabal ./dev/pkgs/hsnrm/default.dhall --output-dir-cwd hsnrm"
 
 runshake as =
   withArgs as $ shakeArgs shakeOptions $
@@ -111,7 +108,7 @@ runshake as =
       ( runProcess_ $
         proc "cabal"
           [ "v2-build"
-          , "hnrm.so"
+          , "hsnrm.so"
           , "--ghc-option=-lHSrts-ghc" <> version
           , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
           ]
