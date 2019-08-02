@@ -22,22 +22,12 @@ in rec {
 
   nrmPythonPackages = pkgs.python37Packages.override {
     overrides = self: super: rec {
-      cython = super.cython.overridePythonAttrs (o: {
-        testPhase = "true";
-        doCheck = false;
-      });
-      hypothesis = super.hypothesis.overridePythonAttrs (o: {
-        testPhase = "true";
-        doCheck = false;
-      });
-      pytest = super.pytest.overridePythonAttrs (o: {
-        testPhase = "true";
-        doCheck = false;
-      });
-      networkx = super.networkx.overridePythonAttrs (o: {
-        testPhase = "true";
-        doCheck = false;
-      });
+      cython = super.cython.overridePythonAttrs (o: { doCheck = false; });
+      hypothesis =
+        super.hypothesis.overridePythonAttrs (o: { doCheck = false; });
+      black = super.black.overridePythonAttrs (o: { doCheck = false; });
+      pytest = super.pytest.overridePythonAttrs (o: { doCheck = false; });
+      networkx = super.networkx.overridePythonAttrs (o: { doCheck = false; });
       importlab = pkgs.callPackage ./pkgs/importlab { pythonPackages = self; };
       pyzmq = super.pyzmq.override { zeromq3 = pkgs.zeromq; };
       pytype = pkgs.callPackage ./pkgs/pytype {
