@@ -30,7 +30,7 @@ ghcidTarget target test =
   [ "-C"
   , "hsnrm"
   , "--command"
-  , "cabal " <> "new-repl " <> target
+  , "cabal " <> "new-repl " <> target <> " --ghc-option=-fno-code"
   , "--restart=hsnrm.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"
