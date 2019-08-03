@@ -94,6 +94,10 @@ let deps =
           nobound "units-defs"
       , units =
           nobound "units"
+      , unix =
+          nobound "unix"
+      , containers =
+          nobound "containers"
       , uuid =
           nobound "uuid"
       , text =
@@ -138,6 +142,7 @@ let libdep =
       , deps.transformers
       , deps.bytestring
       , deps.data-msgpack
+      , deps.containers
       , deps.mtl
       , deps.pretty-simple
       , deps.typed-process
@@ -147,6 +152,7 @@ let libdep =
       , deps.directory
       , deps.regex
       , deps.units
+      , deps.unix
       , deps.uuid
       , deps.text
       , deps.units-defs
@@ -227,8 +233,10 @@ in    prelude.defaults.Package
                         , deps.directory
                         , deps.regex
                         , deps.units
+                        , deps.unix
                         , deps.uuid
                         , deps.text
+                        , deps.containers
                         , deps.units-defs
                         , deps.storable-endian
                         , deps.template-haskell

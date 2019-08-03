@@ -72,7 +72,9 @@ in rec {
     ];
   });
 
-  hack = hsnrm-hack.overrideAttrs
-    (o: { buildInputs = o.buildInputs ++ pynrm-hack.buildInputs; });
+  hack = hsnrm-hack.overrideAttrs (o: {
+    buildInputs = o.buildInputs
+    ++ [(pkgs.python37.withPackages (ps: [ps.msgpack]))];
+  });
 
 }

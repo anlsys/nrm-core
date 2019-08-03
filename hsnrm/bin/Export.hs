@@ -15,10 +15,13 @@ where
 
 import FFI.Anything.TypeUncurry.Msgpack
 import Foreign.C
-import qualified Nrm.Node.Sysfs as NrmSysfs (getDefaultRAPLDirs, readRAPLConfigurations)
+import qualified Nrm.Node.Sysfs as NrmSysfs (getDefaultRAPLDirs)
+{-import qualified Nrm.Node.Sysfs as NrmSysfs (getDefaultRAPLDirs, readRAPLConfigurations)-}
 import Protolude
 
 foreign export ccall getDefaultRAPLDirs :: CString -> IO CString
+
+getDefaultRAPLDirs :: CString -> IO CString
 getDefaultRAPLDirs = exportIO NrmSysfs.getDefaultRAPLDirs
 
 {-getDefaultRAPLDirs :: CString -> IO CString-}

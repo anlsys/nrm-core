@@ -1,9 +1,10 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
 {-|
-Module      : Nrm.Containers.Dummy
-Description : Dummy container runtime
+Module      : Nrm.Containers.Class
+Description : container runtime interface
 Copyright   : (c) 2019, UChicago Argonne, LLC.
 License     : BSD3
 Maintainer  : fre@freux.fr
@@ -11,34 +12,61 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Containers.Class
   ( ContainerRuntime (..)
+  , ApplicationProcess (..)
   )
 where
 
 import Nrm.Types.Applications
 import Nrm.Types.Containers
 import Protolude
+import System.Posix.Types
 
-class ContainerRuntime a streamInformation prepared where
+data ApplicationProcess
+  = Registered ApplicationUUID ProcessID
+  | Unregistered ApplicationUUID
+  deriving (Eq)
 
-  -- | list runtime returns a list of applications running in the container.
-  lest :: a -> [ApplicationUUID]
+class (MonadIO m) => ContainerRuntime m runtime containerconfig | runtime -> containerconfig where
 
-  -- | initial state of the container runtime
-  init :: a
+  doEnableRuntime :: runtimeConfig -> m (Either Text runtime)
 
-  -- | creates a container using this container runtime.
-  create :: IO (a, ContainerUUID)
+  doDisableRuntime
+    :: runtime
+    -> m (Either Text runtime)
 
-  -- | prepares application for start in a container runtime. This should be
-  -- immediately followed by `exec prepared` in libraries that link this code.
-  execute :: a -> ContainerUUID -> StartData -> a
+  doCreateContainer
+    :: runtime
+    -> containerconfig
+    -> m (Either Text (runtime, ContainerUUID))
 
-  -- | @exec x@ executes the application x using an exec system call.
-  exec :: prepared -> IO ()
+  doPrepareStartApp
+    :: runtime
+    -> ContainerUUID
+    -> AppStartConfig
+    -> m (Either Text (runtime, Command, Arguments))
 
-  -- | execute runtime containerUUID startData executes an application inside
-  -- the container runtime. It returns the container as well as stream location
-  -- information.
-  exec :: a -> ContainerUUID -> StartData -> IO (a, streamInformation)
+  doStopContainer
+    :: runtime
+    -> ContainerUUID
+    -> m (Either Text runtime)
 
-  stop :: a -> IO ()
+  registerStartApp
+    :: runtime
+    -> ContainerUUID
+    -> ApplicationUUID
+    -> ProcessID
+    -> runtime
+
+  registerStopApp
+    :: runtime
+    -> Either ProcessID ApplicationUUID
+    -> runtime
+
+  listApplications
+    :: runtime
+    -> ContainerUUID
+    -> Maybe [ApplicationProcess]
+
+  listContainers
+    :: runtime
+    -> [ContainerUUID]

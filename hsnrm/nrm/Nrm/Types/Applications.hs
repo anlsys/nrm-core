@@ -10,24 +10,29 @@ module Nrm.Types.Applications
   , Arg (..)
   , Command (..)
   , Arguments (..)
-  , StartData (..)
+  , AppStartConfig (..)
+  , nextApplicationUUID
   )
 where
 
 import Data.UUID
+import Data.UUID.V1
 import Protolude
 
-newtype ApplicationUUID = ApplicationUUID UUID
+newtype ApplicationUUID = ApplicationUUID UUID deriving (Eq, Ord)
 
 newtype Arg = Arg Text
 
 newtype Command = Command Text
 
-data Arguments = Arguments [Arg]
+newtype Arguments = Arguments [Arg]
 
-data StartData
-  = StartData
+data AppStartConfig
+  = AppStartConfig
       { command :: Command
-      , argument :: Arguments
-      , uuid :: ApplicationUUID
+      , arguments :: Arguments
+      , applicationUUID :: ApplicationUUID
       }
+
+nextApplicationUUID :: IO (Maybe ApplicationUUID)
+nextApplicationUUID = fmap ApplicationUUID <$> nextUUID
