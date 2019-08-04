@@ -116,6 +116,10 @@ let deps =
           nobound "template-haskell"
       , mtl =
           nobound "mtl"
+      , vector =
+          nobound "vector"
+      , json-schema =
+          nobound "json-schema"
       , ffi-nh2 =
           nobound "ffi-nh2"
       }
@@ -152,7 +156,9 @@ let libdep =
       , deps.typed-process
       , deps.hxt
       , deps.hxt-xpath
+      , deps.json-schema
       , deps.refined
+      , deps.vector
       , deps.directory
       , deps.regex
       , deps.units

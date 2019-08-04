@@ -1,3 +1,5 @@
+{-# language ScopedTypeVariables #-}
+
 {-|
 Module      : Codegen.CHeader
 Description : types
@@ -8,7 +10,6 @@ Maintainer  : fre@freux.fr
 module Codegen.CHeader
   ( CHeader
   , toHeader
-  , convert
   , CHeaderGen (toCHeader)
   , GCHeaderGen (gToCHeader)
   , genericToCHeader
@@ -87,10 +88,10 @@ instance
   (GCHeaderGen a, GCHeaderGen b)
   => GCHeaderGen (a :+: b) where
 
-  gToCHeader _ = gToCHeader a <> gToCHeader b
+  gToCHeader Proxy = gToCHeader x <> gToCHeader y
     where
-      a = Proxy :: Proxy (a p)
-      b = Proxy :: Proxy (b p)
+      x = Proxy :: Proxy (a p)
+      y = Proxy :: Proxy (b p)
 
 instance
   (GCHeaderGenEntries a, GCHeaderGenEntries b)

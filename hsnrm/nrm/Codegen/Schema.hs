@@ -19,9 +19,7 @@ where
 import Codegen.CHeader
 import qualified Data.Aeson as A
 import qualified Data.Aeson.Types as AT
-import Data.HashMap.Strict as H
-  ( fromList
-  )
+import Data.Map as H (fromList)
 import qualified Data.JSON.Schema as S
 import Data.Vector as V
   ( fromList
