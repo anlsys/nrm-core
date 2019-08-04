@@ -7,26 +7,31 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Containers
   ( ContainerRuntime (..)
-  {-, getRuntime-}
   )
 where
 
+{-, getRuntime-}
 import Nrm.Containers.Class
 import Nrm.Containers.Dummy
 import Nrm.Containers.Nodeos
 import Nrm.Containers.Singularity
 import Protolude
 
-data RuntimeName = NameDummy | NameOther
+data MainRuntimeConfig
+  = MainRuntimeConfig
+      { dummy :: ()
+      , dummy2 :: ()
+      }
 
-data Runtime = TagDummy DummyRuntime | TagOther DummyRuntime
+data TaggedRuntimes = TagDummy DummyRuntime | TagOther DummyRuntime
 
-{-instance -}
+{-data Runtimes = Runtimes [TaggedRuntimes]-}
 
-{-instance (MonadIO m) => ContainerRuntime m Runtime () where-}
+{-instance (MonadIO m) => ContainerRuntime m Runtime-}
+
 {-getRuntime-}
-  {-:: (MonadIO m, ContainerRuntime m DummyRuntime ())-}
-  {-=> RuntimeName-}
-  {--> m (Either Text Runtime)-}
+{-:: (MonadIO m, ContainerRuntime m DummyRuntime ())-}
+{-=> RuntimeName-}
+{--> m (Either Text Runtime)-}
 {-getRuntime NameDummy = (TagDummy <$>) <$> doEnableRuntime-}
 {-getRuntime NameOther = (TagOther <$>) <$> doEnableRuntime-}

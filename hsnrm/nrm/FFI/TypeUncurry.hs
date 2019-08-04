@@ -3,10 +3,10 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeOperators #-}
 
-module FFI.Anything.TypeUncurry
+module FFI.TypeUncurry
   ( -- | You see this because your compiler supports DataKinds.
-    module FFI.Anything.TypeUncurry.DataKinds
+    module FFI.TypeUncurry.DataKinds
   )
 where
 
-import FFI.Anything.TypeUncurry.DataKinds
+import FFI.TypeUncurry.DataKinds

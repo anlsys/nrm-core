@@ -26,7 +26,11 @@ data ApplicationProcess
   | Unregistered ApplicationUUID
   deriving (Eq)
 
-class (MonadIO m) => ContainerRuntime m runtime containerconfig | runtime -> containerconfig where
+class
+  (MonadIO m)
+  => ContainerRuntime m runtime containerconfig runtimeconfig
+    | runtime -> containerconfig
+    , runtime -> runtimeconfig where
 
   doEnableRuntime :: runtimeConfig -> m (Either Text runtime)
 

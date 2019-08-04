@@ -28,16 +28,16 @@ source-repository head
 
 library hsnrm-lib
     exposed-modules:
-        Nrm.Node
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
-        Nrm.Types
-        Nrm.Types.Units
         Nrm.Types.Topo
         Nrm.Types.Containers
         Nrm.Types.Applications
         Nrm.Control
+        Nrm.Configuration
+        Nrm.Messaging.Upstream
+        Nrm.Messaging.Downstream
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -45,12 +45,12 @@ library hsnrm-lib
         Nrm.Containers.Dummy
     hs-source-dirs: nrm
     default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes RecordWildCards
-                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
-                        TupleSections MultiParamTypeClasses NoImplicitPrelude
-                        OverloadedStrings ViewPatterns DeriveAnyClass DeriveGeneric
-                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
-                        DataKinds PolyKinds
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        RecordWildCards TypeSynonymInstances StandaloneDeriving
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -66,6 +66,8 @@ library hsnrm-lib
         data-msgpack -any,
         containers -any,
         mtl -any,
+        aeson -any,
+        dhall -any,
         pretty-simple -any,
         typed-process -any,
         hxt -any,
@@ -84,16 +86,16 @@ library hsnrm-lib
 
 library monolith
     exposed-modules:
-        Nrm.Node
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
-        Nrm.Types
-        Nrm.Types.Units
         Nrm.Types.Topo
         Nrm.Types.Containers
         Nrm.Types.Applications
         Nrm.Control
+        Nrm.Configuration
+        Nrm.Messaging.Upstream
+        Nrm.Messaging.Downstream
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -101,18 +103,20 @@ library monolith
         Nrm.Containers.Dummy
         Hnrm
         Hnrmd
-        FFI.Anything.TH
-        FFI.Anything.TypeUncurry
-        FFI.Anything.TypeUncurry.Msgpack
-        FFI.Anything.TypeUncurry.DataKinds
+        FFI.TH
+        FFI.TypeUncurry
+        FFI.TypeUncurry.Msgpack
+        FFI.TypeUncurry.DataKinds
+        Codegen.Schema
+        Codegen.CHeader
     hs-source-dirs: nrm bin
     default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes RecordWildCards
-                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
-                        TupleSections MultiParamTypeClasses NoImplicitPrelude
-                        OverloadedStrings ViewPatterns DeriveAnyClass DeriveGeneric
-                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
-                        DataKinds PolyKinds
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        RecordWildCards TypeSynonymInstances StandaloneDeriving
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -128,6 +132,8 @@ library monolith
         data-msgpack -any,
         containers -any,
         mtl -any,
+        aeson -any,
+        dhall -any,
         pretty-simple -any,
         typed-process -any,
         hxt -any,
@@ -148,32 +154,34 @@ executable hsnrm.so
     main-is: Export.hs
     hs-source-dirs: bin nrm
     other-modules:
-        Nrm.Node
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
-        Nrm.Types
-        Nrm.Types.Units
         Nrm.Types.Topo
         Nrm.Types.Containers
         Nrm.Types.Applications
         Nrm.Control
+        Nrm.Configuration
+        Nrm.Messaging.Upstream
+        Nrm.Messaging.Downstream
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
         Nrm.Containers.Singularity
         Nrm.Containers.Dummy
-        FFI.Anything.TH
-        FFI.Anything.TypeUncurry
-        FFI.Anything.TypeUncurry.Msgpack
-        FFI.Anything.TypeUncurry.DataKinds
+        FFI.TH
+        FFI.TypeUncurry
+        FFI.TypeUncurry.Msgpack
+        FFI.TypeUncurry.DataKinds
+        Codegen.Schema
+        Codegen.CHeader
     default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes RecordWildCards
-                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
-                        TupleSections MultiParamTypeClasses NoImplicitPrelude
-                        OverloadedStrings ViewPatterns DeriveAnyClass DeriveGeneric
-                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
-                        DataKinds PolyKinds
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        RecordWildCards TypeSynonymInstances StandaloneDeriving
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -184,9 +192,13 @@ executable hsnrm.so
     build-depends:
         base -any,
         protolude -any,
+        transformers -any,
         bytestring -any,
         data-msgpack -any,
+        containers -any,
         mtl -any,
+        aeson -any,
+        dhall -any,
         pretty-simple -any,
         typed-process -any,
         hxt -any,
@@ -198,23 +210,21 @@ executable hsnrm.so
         unix -any,
         uuid -any,
         text -any,
-        containers -any,
         units-defs -any,
         storable-endian -any,
         template-haskell -any,
-        mtl -any,
-        transformers -any
+        mtl -any
 
 executable nrm
     main-is: Hnrm.hs
     hs-source-dirs: bin
     default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes RecordWildCards
-                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
-                        TupleSections MultiParamTypeClasses NoImplicitPrelude
-                        OverloadedStrings ViewPatterns DeriveAnyClass DeriveGeneric
-                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
-                        DataKinds PolyKinds
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        RecordWildCards TypeSynonymInstances StandaloneDeriving
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs

@@ -72,9 +72,16 @@ in rec {
     ];
   });
 
+  libnrm-hack = pynrm.overrideAttrs (o: {
+    buildInputs = o.buildInputs ++ [
+      pkgs.astyle
+    ];
+  });
+
   hack = hsnrm-hack.overrideAttrs (o: {
     buildInputs = o.buildInputs
-    ++ [(pkgs.python37.withPackages (ps: [ps.msgpack]))];
+      ++ [ (pkgs.python37.withPackages (ps: [ ps.msgpack ])) ]
+      ++ libnrm-hack.buildInputs;
   });
 
 }

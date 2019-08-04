@@ -6,13 +6,13 @@ let types = ../../dhall-to-cabal/types.dhall
 let defexts =
       [ types.Extension.LambdaCase True
       , types.Extension.QuasiQuotes True
+      , types.Extension.DefaultSignatures True
       , types.Extension.RecordWildCards True
       , types.Extension.TypeSynonymInstances True
       , types.Extension.StandaloneDeriving True
       , types.Extension.FlexibleInstances True
       , types.Extension.TupleSections True
       , types.Extension.MultiParamTypeClasses True
-      --, types.Extension.ScopedTypeVariables True
       , types.Extension.ImplicitPrelude False
       , types.Extension.OverloadedStrings True
       , types.Extension.ViewPatterns True
@@ -21,7 +21,7 @@ let defexts =
       , types.Extension.TemplateHaskell True
       , types.Extension.BlockArguments True
       , types.Extension.GADTs True
-      , types.Extension.FlexibleContexts  True
+      , types.Extension.FlexibleContexts True
       , types.Extension.TypeOperators True
       , types.Extension.DataKinds True
       , types.Extension.PolyKinds True
@@ -82,6 +82,8 @@ let deps =
           nobound "hxt-xpath"
       , refined =
           nobound "refined"
+      , aeson =
+          nobound "aeson"
       , hsnrm-lib =
           nobound "hsnrm-lib"
       , directory =
@@ -102,6 +104,8 @@ let deps =
           nobound "uuid"
       , text =
           nobound "text"
+      , dhall =
+          nobound "dhall"
       , bytestring =
           nobound "bytestring"
       , data-msgpack =
@@ -112,23 +116,21 @@ let deps =
           nobound "template-haskell"
       , mtl =
           nobound "mtl"
-      --, polysemy =
-          --nobound "polysemy"
       , ffi-nh2 =
           nobound "ffi-nh2"
       }
 
 let modules =
-      [ "Nrm.Node"
-      , "Nrm.Node.Hwloc"
+      [ "Nrm.Node.Hwloc"
       , "Nrm.Node.Sysfs"
       , "Nrm.Node.Internal.Sysfs"
-      , "Nrm.Types"
-      , "Nrm.Types.Units"
       , "Nrm.Types.Topo"
       , "Nrm.Types.Containers"
       , "Nrm.Types.Applications"
       , "Nrm.Control"
+      , "Nrm.Configuration"
+      , "Nrm.Messaging.Upstream"
+      , "Nrm.Messaging.Downstream"
       , "Nrm.Containers"
       , "Nrm.Containers.Class"
       , "Nrm.Containers.Nodeos"
@@ -144,6 +146,8 @@ let libdep =
       , deps.data-msgpack
       , deps.containers
       , deps.mtl
+      , deps.aeson
+      , deps.dhall
       , deps.pretty-simple
       , deps.typed-process
       , deps.hxt
@@ -159,7 +163,6 @@ let libdep =
       , deps.storable-endian
       , deps.template-haskell
       , deps.mtl
-      --, deps.polysemy
       ]
 
 in    prelude.defaults.Package
@@ -202,10 +205,12 @@ in    prelude.defaults.Package
                     , exposed-modules =
                           modules
                         # [ "Hnrm", "Hnrmd" ]
-                        # [ "FFI.Anything.TH"
-                          , "FFI.Anything.TypeUncurry"
-                          , "FFI.Anything.TypeUncurry.Msgpack"
-                          , "FFI.Anything.TypeUncurry.DataKinds"
+                        # [ "FFI.TH"
+                          , "FFI.TypeUncurry"
+                          , "FFI.TypeUncurry.Msgpack"
+                          , "FFI.TypeUncurry.DataKinds"
+                          , "Codegen.Schema"
+                          , "Codegen.CHeader"
                           ]
                     }
                   ⫽ copts ([] : List Text)
@@ -220,37 +225,17 @@ in    prelude.defaults.Package
                   ⫽ { main-is =
                         "Export.hs"
                     , build-depends =
-                        [ deps.base
-                        , deps.protolude
-                        , deps.bytestring
-                        , deps.data-msgpack
-                        , deps.mtl
-                        , deps.pretty-simple
-                        , deps.typed-process
-                        , deps.hxt
-                        , deps.hxt-xpath
-                        , deps.refined
-                        , deps.directory
-                        , deps.regex
-                        , deps.units
-                        , deps.unix
-                        , deps.uuid
-                        , deps.text
-                        , deps.containers
-                        , deps.units-defs
-                        , deps.storable-endian
-                        , deps.template-haskell
-                        , deps.mtl
-                        , deps.transformers
-                        ]
+                        libdep
                     , hs-source-dirs =
                         [ "bin", "nrm" ]
                     , other-modules =
                           modules
-                        # [ "FFI.Anything.TH"
-                          , "FFI.Anything.TypeUncurry"
-                          , "FFI.Anything.TypeUncurry.Msgpack"
-                          , "FFI.Anything.TypeUncurry.DataKinds"
+                        # [ "FFI.TH"
+                          , "FFI.TypeUncurry"
+                          , "FFI.TypeUncurry.Msgpack"
+                          , "FFI.TypeUncurry.DataKinds"
+                          , "Codegen.Schema"
+                          , "Codegen.CHeader"
                           ]
                     }
                   ⫽ copts [ "-fPIC", "-shared", "-dynamic", "-no-hs-main" ]

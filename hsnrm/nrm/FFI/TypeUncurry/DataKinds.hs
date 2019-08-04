@@ -18,7 +18,7 @@
 -- Using this module, you can write an instance how to unpack the 'TypeList' type,
 -- and then use 'translate' to make any function take such a single 'TypeList'
 -- instead of multiple function arguments.
-module FFI.Anything.TypeUncurry.DataKinds
+module FFI.TypeUncurry.DataKinds
   ( TypeList (..)
   , ParamLength (..)
   , ToTypeList (..)

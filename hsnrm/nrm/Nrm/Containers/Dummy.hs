@@ -32,7 +32,7 @@ newtype Dummy a = Dummy a
 emptyRuntime :: Dummy (Map ContainerUUID a)
 emptyRuntime = Dummy $ fromList []
 
-instance (MonadIO m) => ContainerRuntime m DummyRuntime () where
+instance (MonadIO m) => ContainerRuntime m DummyRuntime () () where
 
   doEnableRuntime _ = return $ Right emptyRuntime
 
