@@ -18,21 +18,6 @@ let
       && (baseNameOf path != "result") && (baseNameOf path != "README")
       && (baseNameOf path != "dist")) path;
   };
-in rec {
-  hsnrm = import ./pkgs/hsnrm {
-    inherit pkgs;
-    inherit hslib;
-    src = ../hsnrm;
-  };
-  pynrm = pkgs.callPackage ./pkgs/pynrm {
-    pythonPackages = nrmPythonPackages;
-    src = ../pynrm;
-  };
-  libnrm = pkgs.callPackage ./pkgs/pynrm {
-    pythonPackages = nrmPythonPackages;
-    src = ../libnrm;
-  };
-
   nrmPythonPackages = pkgs.python37Packages.override {
     overrides = self: super: rec {
       cython = super.cython.overridePythonAttrs (o: { doCheck = false; });
@@ -49,7 +34,20 @@ in rec {
       };
     };
   };
-
+in rec {
+  hsnrm = import ./pkgs/hsnrm {
+    inherit pkgs;
+    inherit hslib;
+    src = ../hsnrm;
+  };
+  pynrm = pkgs.callPackage ./pkgs/pynrm {
+    pythonPackages = nrmPythonPackages;
+    src = ../pynrm;
+  };
+  libnrm = pkgs.callPackage ./pkgs/pynrm {
+    pythonPackages = nrmPythonPackages;
+    src = ../libnrm;
+  };
   hsnrm-hack = pkgs.haskellPackages.shellFor {
     packages = p: [
       hsnrm
@@ -59,13 +57,6 @@ in rec {
     buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq ]
       ++ hsnrm.buildInputs;
   };
-  #GHC_GMP = "${pkgs.gmp6.override { withStatic = true; }}/lib";
-  #GHC_ZLIB = "${pkgs.zlib.static}/lib";
-  #GHC_GLIBC = "${pkgs.glibc.static}/lib";
-  #GHC_FFI =
-  #"${pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })}/lib";
-  #GHC_VERSION = "${pkgs.haskellPackages.ghc.version}";
-
   pynrm-hack = pynrm.overrideAttrs (o: {
     buildInputs = o.buildInputs ++ [
       nrmPythonPackages.flake8
@@ -76,7 +67,6 @@ in rec {
       nrmPythonPackages.sphinx
     ];
   });
-
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.astyle ]; });
 
@@ -85,5 +75,11 @@ in rec {
       ++ [ (pkgs.python37.withPackages (ps: [ ps.msgpack ])) ]
       ++ libnrm-hack.buildInputs;
   });
-
 }
+
+#GHC_GMP = "${pkgs.gmp6.override { withStatic = true; }}/lib";
+#GHC_ZLIB = "${pkgs.zlib.static}/lib";
+#GHC_GLIBC = "${pkgs.glibc.static}/lib";
+#GHC_FFI =
+#"${pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })}/lib";
+#GHC_VERSION = "${pkgs.haskellPackages.ghc.version}";
