@@ -19,6 +19,19 @@ let
       && (baseNameOf path != "dist")) path;
   };
 in rec {
+  hsnrm = import ./pkgs/hsnrm {
+    inherit pkgs;
+    inherit hslib;
+    src = ../hsnrm;
+  };
+  pynrm = pkgs.callPackage ./pkgs/pynrm {
+    pythonPackages = nrmPythonPackages;
+    src = ../pynrm;
+  };
+  libnrm = pkgs.callPackage ./pkgs/pynrm {
+    pythonPackages = nrmPythonPackages;
+    src = ../libnrm;
+  };
 
   nrmPythonPackages = pkgs.python37Packages.override {
     overrides = self: super: rec {
@@ -36,14 +49,6 @@ in rec {
       };
     };
   };
-
-  hsnrm = import ./pkgs/hsnrm {
-    inherit pkgs;
-    inherit hslib;
-    src = ../hsnrm;
-  };
-
-  pynrm = pkgs.callPackage ./pkgs/pynrm { pythonPackages = nrmPythonPackages; };
 
   hsnrm-hack = pkgs.haskellPackages.shellFor {
     packages = p: [
@@ -72,11 +77,8 @@ in rec {
     ];
   });
 
-  libnrm-hack = pynrm.overrideAttrs (o: {
-    buildInputs = o.buildInputs ++ [
-      pkgs.astyle
-    ];
-  });
+  libnrm-hack = libnrm.overrideAttrs
+    (o: { buildInputs = o.buildInputs ++ [ pkgs.astyle ]; });
 
   hack = hsnrm-hack.overrideAttrs (o: {
     buildInputs = o.buildInputs
