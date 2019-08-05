@@ -9,7 +9,7 @@ module Nrm.Types.Topology
   ( CoreId
   , PUId
   , PackageId
-  , Topology
+  , Topology (..)
   , IdFromString (..)
   , ToHwlocType (..)
   )

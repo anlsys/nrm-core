@@ -1,5 +1,3 @@
-{-# LANGUAGE DerivingVia #-}
-
 {-|
 Module      : Nrm.Types.Configuration
 Description : Nrm configuration
@@ -10,13 +8,14 @@ Maintainer  : fre@freux.fr
 module Nrm.Types.Configuration
   ( Cfg (..)
   , inputCfg
-  , inputCfgIOFlat
+  , inputFlat
+  , defaultFlat
+  , decodeFlat
   )
 where
 
 import Data.Default
 import Data.Flat
-import Data.Flat.Run
 import Dhall
 import Protolude
 
@@ -79,12 +78,18 @@ instance Default Cfg where
 
 inputCfg :: (MonadIO m) => Text -> m Cfg
 inputCfg fn =
-  liftIO $ try (input ft fn) >>= \case
+  liftIO $ try (input dt fn) >>= \case
     Right d -> return d
     Left e -> throwError e
   where
-    ft :: Dhall.Type Cfg
-    ft = Dhall.auto
+    dt :: Dhall.Type Cfg
+    dt = Dhall.auto
 
-inputCfgIOFlat :: Text -> IO ByteString
-inputCfgIOFlat = undefined
+defaultFlat :: ByteString
+defaultFlat = flat (def :: Cfg)
+
+inputFlat :: Text -> IO ByteString
+inputFlat path = flat <$> inputCfg path
+
+decodeFlat :: ByteString -> Decoded Cfg
+decodeFlat = unflat

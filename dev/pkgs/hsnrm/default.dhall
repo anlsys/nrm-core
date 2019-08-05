@@ -76,12 +76,16 @@ let deps =
           nobound "protolude"
       , typed-process =
           nobound "typed-process"
+      , optparse-applicative =
+          nobound "optparse-applicative"
       , hxt =
           nobound "hxt"
       , hxt-xpath =
           nobound "hxt-xpath"
       , refined =
           nobound "refined"
+      , filepath =
+          nobound "filepath"
       , neat-interpolation =
           nobound "neat-interpolation"
       , yaml =
@@ -112,6 +116,8 @@ let deps =
           nobound "unordered-containers"
       , uuid =
           nobound "uuid"
+      , editor-open =
+          nobound "editor-open"
       , text =
           nobound "text"
       , dhall =
@@ -159,6 +165,8 @@ let modules =
       , "Nrm.Node.Sysfs"
       , "Nrm.Node.Internal.Sysfs"
       , "Nrm.Control"
+      , "Nrm.Argparse.Daemon"
+      , "Nrm.Argparse.Client"
       , "Nrm.Behavior"
       ]
 
@@ -186,6 +194,7 @@ let libdep =
       , deps.flat
       , deps.refined
       , deps.vector
+      , deps.optparse-applicative
       , deps.directory
       , deps.regex
       , deps.units
@@ -196,6 +205,8 @@ let libdep =
       , deps.storable-endian
       , deps.template-haskell
       , deps.mtl
+      , deps.filepath
+      , deps.editor-open
       ]
 
 in    prelude.defaults.Package
@@ -276,7 +287,7 @@ in    prelude.defaults.Package
                     }
                   ⫽ copts [ "-fPIC", "-shared", "-dynamic", "-no-hs-main" ]
             , name =
-                "hsnrm.so"
+                "nrm.so"
             }
           , { executable =
                   λ(config : types.Config)
