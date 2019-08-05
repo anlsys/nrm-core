@@ -20,11 +20,11 @@ import Codegen.CHeader
 
 main :: IO ()
 main = do
-  print upstreamPubSchema
-  print upstreamReqSchema
-  print upstreamRepSchema
-  print downstreamEventSchema
-  print libnrmHeader
+  writeFile "../gen/nrm_messaging.h" libnrmHeader
+  writeFile "../gen/upstreamPub.json" upstreamPubSchema
+  writeFile "../gen/upstreamReq.json" upstreamReqSchema
+  writeFile "../gen/upstreamRep.json" upstreamRepSchema
+  writeFile "../gen/downstreamEvent.json" downstreamEventSchema
 
 upstreamReqSchema :: Text
 upstreamReqSchema = generatePretty (Proxy :: Proxy Req)
