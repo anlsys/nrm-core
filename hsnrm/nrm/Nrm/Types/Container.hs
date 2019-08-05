@@ -1,11 +1,11 @@
 {-|
-Module      : Nrm.Types.Containers
-Description : Containers
+Module      : Nrm.Types.Container
+Description : Container
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Types.Containers
+module Nrm.Types.Container
   ( ContainerUUID (..)
   , nextContainerUUID
   )

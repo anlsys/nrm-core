@@ -33,10 +33,12 @@ library hsnrm-lib
         Nrm.Node.Internal.Sysfs
         Nrm.Types.Topo
         Nrm.Types.Units
-        Nrm.Types.Containers
-        Nrm.Types.Applications
+        Nrm.Types.Container
+        Nrm.Types.Application
+        Nrm.Types.Configuration
+        Nrm.Types.Manifest
         Nrm.Control
-        Nrm.Configuration
+        Nrm.Behavior
         Nrm.Messaging.Downstream
         Nrm.Messaging.UpstreamPub
         Nrm.Messaging.UpstreamReq
@@ -80,6 +82,7 @@ library hsnrm-lib
         hxt -any,
         hxt-xpath -any,
         json-schema -any,
+        yaml -any,
         refined -any,
         vector -any,
         directory -any,
@@ -100,10 +103,12 @@ library monolith
         Nrm.Node.Internal.Sysfs
         Nrm.Types.Topo
         Nrm.Types.Units
-        Nrm.Types.Containers
-        Nrm.Types.Applications
+        Nrm.Types.Container
+        Nrm.Types.Application
+        Nrm.Types.Configuration
+        Nrm.Types.Manifest
         Nrm.Control
-        Nrm.Configuration
+        Nrm.Behavior
         Nrm.Messaging.Downstream
         Nrm.Messaging.UpstreamPub
         Nrm.Messaging.UpstreamReq
@@ -156,6 +161,7 @@ library monolith
         hxt -any,
         hxt-xpath -any,
         json-schema -any,
+        yaml -any,
         refined -any,
         vector -any,
         directory -any,
@@ -178,10 +184,12 @@ executable hsnrm.so
         Nrm.Node.Internal.Sysfs
         Nrm.Types.Topo
         Nrm.Types.Units
-        Nrm.Types.Containers
-        Nrm.Types.Applications
+        Nrm.Types.Container
+        Nrm.Types.Application
+        Nrm.Types.Configuration
+        Nrm.Types.Manifest
         Nrm.Control
-        Nrm.Configuration
+        Nrm.Behavior
         Nrm.Messaging.Downstream
         Nrm.Messaging.UpstreamPub
         Nrm.Messaging.UpstreamReq
@@ -233,6 +241,7 @@ executable hsnrm.so
         hxt -any,
         hxt-xpath -any,
         json-schema -any,
+        yaml -any,
         refined -any,
         vector -any,
         directory -any,

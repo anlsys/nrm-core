@@ -1,11 +1,11 @@
 {-|
-Module      : Nrm.Types.Applications
-Description : Applications
+Module      : Nrm.Types.Application
+Description : Application
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Types.Applications
+module Nrm.Types.Application
   ( ApplicationUUID (..)
   , Arg (..)
   , Command (..)

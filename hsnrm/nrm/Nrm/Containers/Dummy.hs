@@ -19,8 +19,8 @@ where
 
 import Data.Map
 import Nrm.Containers.Class
-import Nrm.Types.Applications
-import Nrm.Types.Containers
+import Nrm.Types.Application
+import Nrm.Types.Container
 import Protolude
 import System.Posix.Signals
 

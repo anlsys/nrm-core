@@ -84,6 +84,8 @@ let deps =
           nobound "refined"
       , neat-interpolation =
           nobound "neat-interpolation"
+      , yaml =
+          nobound "yaml"
       , aeson =
           nobound "aeson"
       , hsnrm-lib =
@@ -138,10 +140,12 @@ let modules =
       , "Nrm.Node.Internal.Sysfs"
       , "Nrm.Types.Topo"
       , "Nrm.Types.Units"
-      , "Nrm.Types.Containers"
-      , "Nrm.Types.Applications"
+      , "Nrm.Types.Container"
+      , "Nrm.Types.Application"
+      , "Nrm.Types.Configuration"
+      , "Nrm.Types.Manifest"
       , "Nrm.Control"
-      , "Nrm.Configuration"
+      , "Nrm.Behavior"
       , "Nrm.Messaging.Downstream"
       , "Nrm.Messaging.UpstreamPub"
       , "Nrm.Messaging.UpstreamReq"
@@ -172,6 +176,7 @@ let libdep =
       , deps.hxt
       , deps.hxt-xpath
       , deps.json-schema
+      , deps.yaml
       , deps.refined
       , deps.vector
       , deps.directory
