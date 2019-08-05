@@ -27,6 +27,10 @@ $ nix-shell
 [nix-shell:nrm/]$ ./shake build nrm.so
 ```
 
-### dev workflow
+### dev
 
+#### structure
 - hsnrm dependencies
+
+#### workflow
+- ./shake ghcid monolith Codegen.main

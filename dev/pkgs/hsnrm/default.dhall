@@ -82,6 +82,8 @@ let deps =
           nobound "hxt-xpath"
       , refined =
           nobound "refined"
+      , neat-interpolation =
+          nobound "neat-interpolation"
       , aeson =
           nobound "aeson"
       , hsnrm-lib =
@@ -118,6 +120,8 @@ let deps =
           nobound "template-haskell"
       , mtl =
           nobound "mtl"
+      , aeson-pretty =
+          nobound "aeson-pretty"
       , generic-aeson =
           nobound "generic-aeson"
       , vector =
@@ -159,7 +163,9 @@ let libdep =
       , deps.mtl
       , deps.aeson
       , deps.dhall
+      , deps.neat-interpolation
       , deps.generic-aeson
+      , deps.aeson-pretty
       , deps.pretty-simple
       , deps.typed-process
       , deps.hxt
