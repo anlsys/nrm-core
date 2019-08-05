@@ -1,12 +1,14 @@
 {-|
-Module      : Nrm.Types.Configuration
+Module      : Nrm.Types.Configuration.Dhall
 Description : Nrm configuration
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Types.Configuration
+module Nrm.Types.Configuration.Dhall
   ( Cfg (..)
+  , ContainerRuntime (..)
+  , Verbosity (..)
   , inputCfg
   , inputFlat
   , defaultFlat
@@ -22,10 +24,14 @@ import Protolude
 data ContainerRuntime = Singularity | Nodeos | Dummy
   deriving (Generic, Interpret, Flat)
 
+data Verbosity = Normal | Verbose
+  deriving (Generic, Interpret, Flat)
+
 {-deriving via Int instance MessagePack Integer-}
 data Cfg
   = Cfg
-      { logfile :: Text
+      { verbose :: Verbosity
+      , logfile :: Text
       , hwloc :: Text
       , perf :: Text
       , argo_perf_wrapper :: Text

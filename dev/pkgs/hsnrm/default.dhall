@@ -150,8 +150,12 @@ let modules =
       , "Nrm.Types.Container"
       , "Nrm.Types.Application"
       , "Nrm.Types.NrmState"
-      , "Nrm.Types.Configuration"
-      , "Nrm.Types.Manifest"
+      , "Nrm.Types.Configuration.Internal"
+      , "Nrm.Types.Configuration.Yaml"
+      , "Nrm.Types.Configuration.Dhall"
+      , "Nrm.Types.Manifest.Internal"
+      , "Nrm.Types.Manifest.Yaml"
+      , "Nrm.Types.Manifest.Dhall"
       , "Nrm.Types.Messaging.DownstreamEvent"
       , "Nrm.Types.Messaging.UpstreamPub"
       , "Nrm.Types.Messaging.UpstreamReq"
@@ -309,7 +313,7 @@ in    prelude.defaults.Package
       , license =
           types.License.BSD3
       , license-files =
-          [ "LICENSE" ]
+          [] : List Text
       , maintainer =
           "fre@freux.fr"
       , source-repos =

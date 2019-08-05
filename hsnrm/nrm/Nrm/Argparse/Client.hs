@@ -10,7 +10,7 @@ module Nrm.Argparse.Client
   )
 where
 
-import Nrm.Types.Configuration (Cfg)
+import Nrm.Types.Configuration.Internal (Cfg)
 import Options.Applicative
 import Protolude
 

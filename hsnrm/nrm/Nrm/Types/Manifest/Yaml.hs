@@ -1,11 +1,11 @@
 {-|
-Module      : Nrm.Types.Manifest
+Module      : Nrm.Types.Manifest.Yaml
 Description : Nrm application manifest
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Types.Manifest
+module Nrm.Types.Manifest.Yaml
   ( Manifest (..)
   , App (..)
   , Slice (..)

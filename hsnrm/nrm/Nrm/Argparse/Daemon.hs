@@ -15,7 +15,7 @@ import qualified Data.ByteString as B
   )
 import Dhall
 import GHC.IO.Encoding
-import Nrm.Types.Configuration as DI (Cfg)
+import Nrm.Types.Configuration as DI
 {-import Options.Applicative-}
 import Options.Applicative as OA
 import Protolude
@@ -105,7 +105,7 @@ ext st Nothing = FinallyStdin st
 load :: MainCfg -> IO Cfg
 load MainCfg {..} =
   (if edit then editing else return) =<<
-    overrideV <$> case ext stdinType inputfile of
+    case ext stdinType inputfile of
     (FinallyFile Dhall filename) ->
       (if v then detailed else identity) $
         inputCfg =<<
@@ -125,12 +125,6 @@ load MainCfg {..} =
         )
   where
     v = verbosity == Verbose
-    overrideV x =
-      x
-        { DI.verbosity = if (DI.verbosity x == Verbose) || v
-          then Verbose
-          else Normal
-        }
 
 editing :: Cfg -> IO Cfg
 editing c =
