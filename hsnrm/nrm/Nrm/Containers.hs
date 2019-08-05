@@ -7,16 +7,19 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Containers
   ( ContainerRuntime (..)
+  , MainRuntimeConfig (..)
+  , TaggedRuntimes (..)
+  , Runtimes (..)
   )
 where
 
 {-, getRuntime-}
 import Nrm.Containers.Class
 import Nrm.Containers.Dummy
-import Nrm.Containers.Nodeos
-import Nrm.Containers.Singularity
-import Protolude
 
+{-import Nrm.Containers.Nodeos-}
+{-import Nrm.Containers.Singularity-}
+{-import Protolude-}
 data MainRuntimeConfig
   = MainRuntimeConfig
       { dummy :: ()
@@ -25,7 +28,7 @@ data MainRuntimeConfig
 
 data TaggedRuntimes = TagDummy DummyRuntime | TagOther DummyRuntime
 
-{-data Runtimes = Runtimes [TaggedRuntimes]-}
+newtype Runtimes = Runtimes [TaggedRuntimes]
 
 {-instance (MonadIO m) => ContainerRuntime m Runtime-}
 

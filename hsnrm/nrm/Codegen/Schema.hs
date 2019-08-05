@@ -6,20 +6,17 @@ License     : MIT
 Maintainer  : fre@freux.fr
 -}
 module Codegen.Schema
-  ( upstreamReqSchema
-  , {-, upstreamRepSchema-}
-    {-, upstreamPubSchema-}
-    {-, downstreamEventSchema-}
-    libnrmHeader
-  , main
-  , NSchema (..)
+  ( NSchema (..)
+  , generatePretty
   )
 where
 
-import Codegen.CHeader
+{-import Codegen.CHeader-}
 import qualified Data.Aeson as A
 import qualified Data.Aeson.Types as AT
-import Data.Map as H (fromList)
+import Data.HashMap.Strict as H
+  ( fromList
+  )
 import qualified Data.JSON.Schema as S
 import Data.Vector as V
   ( fromList
@@ -110,20 +107,5 @@ toOP (S.Constant aesonValue) =
   [("const", mkString $ toS (A.encode aesonValue))]
 toOP S.Any = []
 
-{-generatePretty :: (S.JSONSchema a) => Proxy a -> Text-}
-{-generatePretty = toS . A.encode . toAeson . S.schema-}
-
-{-upstreamReqSchema :: Text-}
-{-upstreamReqSchema = generatePretty (Proxy :: Proxy Req.S)-}
-
-{-upstreamRepSchema :: Text-}
-{-upstreamRepSchema = generatePretty (Proxy :: Proxy Rep.S)-}
-
-{-upstreamPubSchema :: Text-}
-{-upstreamPubSchema = generatePretty (Proxy :: Proxy Pub.S)-}
-
-{-downstreamEventSchema :: Text-}
-{-downstreamEventSchema = generatePretty (Proxy :: Proxy Event.S)-}
-
-{-libnrmHeader :: Text-}
-{-libnrmHeader = toHeader $ toCHeader (Proxy :: Proxy Event.S)-}
+generatePretty :: (S.JSONSchema a) => Proxy a -> Text
+generatePretty = toS . A.encode . toAeson . S.schema

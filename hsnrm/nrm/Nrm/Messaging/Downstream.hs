@@ -13,7 +13,7 @@ where
 import Data.Aeson
 import Data.JSON.Schema
 import Generics.Generic.Aeson
-import Nrm.Codegen.CHeader
+import Codegen.CHeader
 import Protolude
 
 data Event

@@ -36,8 +36,10 @@ library hsnrm-lib
         Nrm.Types.Applications
         Nrm.Control
         Nrm.Configuration
-        Nrm.Messaging.Upstream
         Nrm.Messaging.Downstream
+        Nrm.Messaging.UpstreamPub
+        Nrm.Messaging.UpstreamReq
+        Nrm.Messaging.UpstreamRep
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -65,9 +67,11 @@ library hsnrm-lib
         bytestring -any,
         data-msgpack -any,
         containers -any,
+        unordered-containers -any,
         mtl -any,
         aeson -any,
         dhall -any,
+        generic-aeson -any,
         pretty-simple -any,
         typed-process -any,
         hxt -any,
@@ -96,8 +100,10 @@ library monolith
         Nrm.Types.Applications
         Nrm.Control
         Nrm.Configuration
-        Nrm.Messaging.Upstream
         Nrm.Messaging.Downstream
+        Nrm.Messaging.UpstreamPub
+        Nrm.Messaging.UpstreamReq
+        Nrm.Messaging.UpstreamRep
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -105,6 +111,7 @@ library monolith
         Nrm.Containers.Dummy
         Hnrm
         Hnrmd
+        Codegen
         FFI.TH
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
@@ -133,9 +140,11 @@ library monolith
         bytestring -any,
         data-msgpack -any,
         containers -any,
+        unordered-containers -any,
         mtl -any,
         aeson -any,
         dhall -any,
+        generic-aeson -any,
         pretty-simple -any,
         typed-process -any,
         hxt -any,
@@ -166,13 +175,18 @@ executable hsnrm.so
         Nrm.Types.Applications
         Nrm.Control
         Nrm.Configuration
-        Nrm.Messaging.Upstream
         Nrm.Messaging.Downstream
+        Nrm.Messaging.UpstreamPub
+        Nrm.Messaging.UpstreamReq
+        Nrm.Messaging.UpstreamRep
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
         Nrm.Containers.Singularity
         Nrm.Containers.Dummy
+        Codegen
+        Hnrm
+        Hnrmd
         FFI.TH
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
@@ -200,9 +214,11 @@ executable hsnrm.so
         bytestring -any,
         data-msgpack -any,
         containers -any,
+        unordered-containers -any,
         mtl -any,
         aeson -any,
         dhall -any,
+        generic-aeson -any,
         pretty-simple -any,
         typed-process -any,
         hxt -any,

@@ -2,9 +2,10 @@ node resource manager experimental monorepo
 
 ### architecture
 
-- `/libnrm` : c, fortran, python app bindings (hosts generated code in `libnrm/src/messaging.h`)
-- `/pynrm` : runtime (hosts generated code in `pynrm/nrm/pyhnrm.py`)
-- `/hsnrm` : nrm.so and code generator
+- `/pynrm` : daemon runtime
+- `/hsnrm` : nrm.so, code generator
+- `/libnrm` : c, fortran, python app bindings
+- `/gen` : generated code for nrm.so bindings and libnrm header file. symlinked into libnrm and pynrm
 - `/resources` : manifests, configuration code, "cpdl".
 - `/dev` : other development related workflows.
 

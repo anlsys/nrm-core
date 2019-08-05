@@ -100,6 +100,8 @@ let deps =
           nobound "unix"
       , containers =
           nobound "containers"
+      , unordered-containers =
+          nobound "unordered-containers"
       , uuid =
           nobound "uuid"
       , text =
@@ -116,6 +118,8 @@ let deps =
           nobound "template-haskell"
       , mtl =
           nobound "mtl"
+      , generic-aeson =
+          nobound "generic-aeson"
       , vector =
           nobound "vector"
       , json-schema =
@@ -133,8 +137,10 @@ let modules =
       , "Nrm.Types.Applications"
       , "Nrm.Control"
       , "Nrm.Configuration"
-      , "Nrm.Messaging.Upstream"
       , "Nrm.Messaging.Downstream"
+      , "Nrm.Messaging.UpstreamPub"
+      , "Nrm.Messaging.UpstreamReq"
+      , "Nrm.Messaging.UpstreamRep"
       , "Nrm.Containers"
       , "Nrm.Containers.Class"
       , "Nrm.Containers.Nodeos"
@@ -149,9 +155,11 @@ let libdep =
       , deps.bytestring
       , deps.data-msgpack
       , deps.containers
+      , deps.unordered-containers
       , deps.mtl
       , deps.aeson
       , deps.dhall
+      , deps.generic-aeson
       , deps.pretty-simple
       , deps.typed-process
       , deps.hxt
@@ -210,7 +218,7 @@ in    prelude.defaults.Package
                         [ "nrm", "bin" ]
                     , exposed-modules =
                           modules
-                        # [ "Hnrm", "Hnrmd" ]
+                        # [ "Hnrm", "Hnrmd", "Codegen" ]
                         # [ "FFI.TH"
                           , "FFI.TypeUncurry"
                           , "FFI.TypeUncurry.Msgpack"
@@ -236,7 +244,10 @@ in    prelude.defaults.Package
                         [ "bin", "nrm" ]
                     , other-modules =
                           modules
-                        # [ "FFI.TH"
+                        # [ "Codegen"
+                          , "Hnrm"
+                          , "Hnrmd"
+                          , "FFI.TH"
                           , "FFI.TypeUncurry"
                           , "FFI.TypeUncurry.Msgpack"
                           , "FFI.TypeUncurry.DataKinds"

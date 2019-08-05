@@ -6,14 +6,15 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Configuration
-  ( ContainerRuntime (..)
+  ( Configuration (..)
   )
 where
 
-import Protolude
 import Dhall
+{-import Protolude-}
 
 data Configuration
   = Configuration
       { containerRuntimeConfig :: Text
       }
+  deriving (Generic, Interpret)
