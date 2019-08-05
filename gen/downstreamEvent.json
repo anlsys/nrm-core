@@ -1,1 +1,131 @@
-{"oneOf":[{"required":["start"],"type":"object","properties":{"start":{"required":["container_uuid","application_uuid"],"type":"object","properties":{"container_uuid":{"type":"string"},"application_uuid":{"type":"string"}}}}},{"required":["exit"],"type":"object","properties":{"exit":{"required":["application_uuid"],"type":"object","properties":{"application_uuid":{"type":"string"}}}}},{"required":["performance"],"type":"object","properties":{"performance":{"required":["container_uuid","application_uuid","payload"],"type":"object","properties":{"payload":{"type":"number"},"container_uuid":{"type":"string"},"application_uuid":{"type":"string"}}}}},{"required":["progress"],"type":"object","properties":{"progress":{"required":["application_uuid","payload"],"type":"object","properties":{"payload":{"type":"number"},"application_uuid":{"type":"string"}}}}},{"required":["phaseContext"],"type":"object","properties":{"phaseContext":{"required":["cpu","startcompute","endcompute","startbarrier","endbarrier"],"type":"object","properties":{"endcompute":{"type":"number"},"endbarrier":{"type":"number"},"startbarrier":{"type":"number"},"startcompute":{"type":"number"},"cpu":{"type":"number"}}}}}]}
+{
+    "oneOf": [
+        {
+            "required": [
+                "start"
+            ],
+            "type": "object",
+            "properties": {
+                "start": {
+                    "required": [
+                        "container_uuid",
+                        "application_uuid"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "container_uuid": {
+                            "type": "string"
+                        },
+                        "application_uuid": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "exit"
+            ],
+            "type": "object",
+            "properties": {
+                "exit": {
+                    "required": [
+                        "application_uuid"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "application_uuid": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "performance"
+            ],
+            "type": "object",
+            "properties": {
+                "performance": {
+                    "required": [
+                        "container_uuid",
+                        "application_uuid",
+                        "payload"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "payload": {
+                            "type": "number"
+                        },
+                        "container_uuid": {
+                            "type": "string"
+                        },
+                        "application_uuid": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "progress"
+            ],
+            "type": "object",
+            "properties": {
+                "progress": {
+                    "required": [
+                        "application_uuid",
+                        "payload"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "payload": {
+                            "type": "number"
+                        },
+                        "application_uuid": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "phaseContext"
+            ],
+            "type": "object",
+            "properties": {
+                "phaseContext": {
+                    "required": [
+                        "cpu",
+                        "startcompute",
+                        "endcompute",
+                        "startbarrier",
+                        "endbarrier"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "endcompute": {
+                            "type": "number"
+                        },
+                        "endbarrier": {
+                            "type": "number"
+                        },
+                        "startbarrier": {
+                            "type": "number"
+                        },
+                        "startcompute": {
+                            "type": "number"
+                        },
+                        "cpu": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

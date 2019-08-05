@@ -1,1 +1,161 @@
-{"oneOf":[{"required":["power"],"type":"object","properties":{"power":{"required":["total","limit"],"type":"object","properties":{"total":{"type":"number"},"limit":{"type":"number"}}}}},{"required":["containerStart"],"type":"object","properties":{"containerStart":{"required":["container_uuid","errno","power"],"type":"object","properties":{"errno":{"type":"number"},"power":{"type":"string"},"container_uuid":{"type":"string"}}}}},{"required":["containerExit"],"type":"object","properties":{"containerExit":{"required":["container_uuid","profile_data"],"type":"object","properties":{"profile_data":{"additionalProperties":{"type":"string"},"type":"object"},"container_uuid":{"type":"string"}}}}},{"required":["performance"],"type":"object","properties":{"performance":{"required":["container_uuid","payload"],"type":"object","properties":{"payload":{"type":"number"},"container_uuid":{"type":"string"}}}}},{"required":["progress"],"type":"object","properties":{"progress":{"required":["application_uuid","payload"],"type":"object","properties":{"payload":{"type":"number"},"application_uuid":{"type":"string"}}}}},{"required":["control"],"type":"object","properties":{"control":{"required":["powercap","energy","performance","control_time","feedback_time"],"type":"object","properties":{"energy":{"type":"number"},"control_time":{"type":"number"},"powercap":{"type":"number"},"performance":{"type":"number"},"feedback_time":{"type":"number"}}}}}]}
+{
+    "oneOf": [
+        {
+            "required": [
+                "power"
+            ],
+            "type": "object",
+            "properties": {
+                "power": {
+                    "required": [
+                        "total",
+                        "limit"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "total": {
+                            "type": "number"
+                        },
+                        "limit": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "containerStart"
+            ],
+            "type": "object",
+            "properties": {
+                "containerStart": {
+                    "required": [
+                        "container_uuid",
+                        "errno",
+                        "power"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "errno": {
+                            "type": "number"
+                        },
+                        "power": {
+                            "type": "string"
+                        },
+                        "container_uuid": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "containerExit"
+            ],
+            "type": "object",
+            "properties": {
+                "containerExit": {
+                    "required": [
+                        "container_uuid",
+                        "profile_data"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "profile_data": {
+                            "additionalProperties": {
+                                "type": "string"
+                            },
+                            "type": "object"
+                        },
+                        "container_uuid": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "performance"
+            ],
+            "type": "object",
+            "properties": {
+                "performance": {
+                    "required": [
+                        "container_uuid",
+                        "payload"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "payload": {
+                            "type": "number"
+                        },
+                        "container_uuid": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "progress"
+            ],
+            "type": "object",
+            "properties": {
+                "progress": {
+                    "required": [
+                        "application_uuid",
+                        "payload"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "payload": {
+                            "type": "number"
+                        },
+                        "application_uuid": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "control"
+            ],
+            "type": "object",
+            "properties": {
+                "control": {
+                    "required": [
+                        "powercap",
+                        "energy",
+                        "performance",
+                        "control_time",
+                        "feedback_time"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "energy": {
+                            "type": "number"
+                        },
+                        "control_time": {
+                            "type": "number"
+                        },
+                        "powercap": {
+                            "type": "number"
+                        },
+                        "performance": {
+                            "type": "number"
+                        },
+                        "feedback_time": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

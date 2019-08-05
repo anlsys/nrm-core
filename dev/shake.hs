@@ -101,9 +101,8 @@ runshake as =
     version <- liftIO $ toS . strip . toS <$> readProcessStdout_ "ghc --numeric-version"
     ghcPathRaw <- liftIO $ strip . toS <$> readProcessStdout_ "which ghc"
     let ghcPath = dropEnd 8 ghcPathRaw
-    {-putText version-}
     liftIO
-      ( runProcess_ $
+      ( runProcess_ $ setWorkingDir "hsnrm" $
         proc "cabal"
           [ "v2-build"
           , "hsnrm.so"

@@ -19,18 +19,20 @@ at dev time
          -generates-> nrm.so
          -generates-> nrmpy bindings
 
-
-### build workflow
-
-```
-$ nix-shell
-[nix-shell:nrm/]$ ./shake build nrm.so
-```
-
 ### dev
 
 #### structure
+
 - hsnrm dependencies
 
 #### workflow
-- ./shake ghcid monolith Codegen.main
+
+Obtain dependencies:
+```
+$ nix-shell
+```
+
+build hnrm.so and perform code generation step
+```
+[nix-shell:nrm/]$ ./shake build
+```

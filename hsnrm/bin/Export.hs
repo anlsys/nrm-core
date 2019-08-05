@@ -13,7 +13,7 @@ module Export
   )
 where
 
-import FFI.Anything.TypeUncurry.Msgpack
+import FFI.TypeUncurry.Msgpack
 import Foreign.C
 import qualified Nrm.Node.Sysfs as NrmSysfs (getDefaultRAPLDirs)
 {-import qualified Nrm.Node.Sysfs as NrmSysfs (getDefaultRAPLDirs, readRAPLConfigurations)-}

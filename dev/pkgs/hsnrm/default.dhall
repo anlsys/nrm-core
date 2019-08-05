@@ -137,6 +137,7 @@ let modules =
       , "Nrm.Node.Sysfs"
       , "Nrm.Node.Internal.Sysfs"
       , "Nrm.Types.Topo"
+      , "Nrm.Types.Units"
       , "Nrm.Types.Containers"
       , "Nrm.Types.Applications"
       , "Nrm.Control"

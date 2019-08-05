@@ -32,6 +32,7 @@ library hsnrm-lib
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
         Nrm.Types.Topo
+        Nrm.Types.Units
         Nrm.Types.Containers
         Nrm.Types.Applications
         Nrm.Control
@@ -98,6 +99,7 @@ library monolith
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
         Nrm.Types.Topo
+        Nrm.Types.Units
         Nrm.Types.Containers
         Nrm.Types.Applications
         Nrm.Control
@@ -175,6 +177,7 @@ executable hsnrm.so
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
         Nrm.Types.Topo
+        Nrm.Types.Units
         Nrm.Types.Containers
         Nrm.Types.Applications
         Nrm.Control
