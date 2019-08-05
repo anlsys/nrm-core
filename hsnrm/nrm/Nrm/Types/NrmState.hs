@@ -10,10 +10,10 @@ module Nrm.Types.NrmState
   )
 where
 
-import Data.MessagePack
+{-import Data.MessagePack-}
 import Nrm.Types.Configuration
 import Nrm.Types.Topology
-import Protolude
+{-import Protolude-}
 
 data NrmState
   = NrmState

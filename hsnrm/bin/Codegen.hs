@@ -15,10 +15,10 @@ where
 import Codegen.CHeader
 import Codegen.Schema (generatePretty)
 import NeatInterpolation
-import Nrm.Messaging.Downstream
-import Nrm.Messaging.UpstreamPub
-import Nrm.Messaging.UpstreamRep
-import Nrm.Messaging.UpstreamReq
+import Nrm.Types.Messaging.DownstreamEvent
+import Nrm.Types.Messaging.UpstreamPub
+import Nrm.Types.Messaging.UpstreamRep
+import Nrm.Types.Messaging.UpstreamReq
 import Protolude hiding (Rep)
 
 main :: IO ()

@@ -1,11 +1,11 @@
 {-|
-Module      : Nrm.Messaging.UpstreamReq
+Module      : Nrm.Types.Messaging.UpstreamReq
 Description : Nrm upstream messaging
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Messaging.UpstreamReq
+module Nrm.Types.Messaging.UpstreamReq
   ( Req (..)
   )
 where

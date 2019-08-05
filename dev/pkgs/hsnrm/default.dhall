@@ -100,6 +100,10 @@ let deps =
           nobound "units-defs"
       , units =
           nobound "units"
+      , data-default =
+          nobound "data-default"
+      , flat =
+          nobound "flat"
       , unix =
           nobound "unix"
       , containers =
@@ -135,27 +139,27 @@ let deps =
       }
 
 let modules =
-      [ "Nrm.Node.Hwloc"
-      , "Nrm.Node.Sysfs"
-      , "Nrm.Node.Internal.Sysfs"
-      , "Nrm.Types.Topology"
+      [ "Nrm.Types.Topology"
       , "Nrm.Types.Units"
       , "Nrm.Types.Container"
       , "Nrm.Types.Application"
       , "Nrm.Types.NrmState"
       , "Nrm.Types.Configuration"
       , "Nrm.Types.Manifest"
-      , "Nrm.Control"
-      , "Nrm.Behavior"
-      , "Nrm.Messaging.Downstream"
-      , "Nrm.Messaging.UpstreamPub"
-      , "Nrm.Messaging.UpstreamReq"
-      , "Nrm.Messaging.UpstreamRep"
+      , "Nrm.Types.Messaging.DownstreamEvent"
+      , "Nrm.Types.Messaging.UpstreamPub"
+      , "Nrm.Types.Messaging.UpstreamReq"
+      , "Nrm.Types.Messaging.UpstreamRep"
       , "Nrm.Containers"
       , "Nrm.Containers.Class"
       , "Nrm.Containers.Nodeos"
       , "Nrm.Containers.Singularity"
       , "Nrm.Containers.Dummy"
+      , "Nrm.Node.Hwloc"
+      , "Nrm.Node.Sysfs"
+      , "Nrm.Node.Internal.Sysfs"
+      , "Nrm.Control"
+      , "Nrm.Behavior"
       ]
 
 let libdep =
@@ -178,6 +182,8 @@ let libdep =
       , deps.hxt-xpath
       , deps.json-schema
       , deps.yaml
+      , deps.data-default
+      , deps.flat
       , deps.refined
       , deps.vector
       , deps.directory

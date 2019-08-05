@@ -28,9 +28,6 @@ source-repository head
 
 library hsnrm-lib
     exposed-modules:
-        Nrm.Node.Hwloc
-        Nrm.Node.Sysfs
-        Nrm.Node.Internal.Sysfs
         Nrm.Types.Topology
         Nrm.Types.Units
         Nrm.Types.Container
@@ -38,17 +35,20 @@ library hsnrm-lib
         Nrm.Types.NrmState
         Nrm.Types.Configuration
         Nrm.Types.Manifest
-        Nrm.Control
-        Nrm.Behavior
-        Nrm.Messaging.Downstream
-        Nrm.Messaging.UpstreamPub
-        Nrm.Messaging.UpstreamReq
-        Nrm.Messaging.UpstreamRep
+        Nrm.Types.Messaging.DownstreamEvent
+        Nrm.Types.Messaging.UpstreamPub
+        Nrm.Types.Messaging.UpstreamReq
+        Nrm.Types.Messaging.UpstreamRep
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
         Nrm.Containers.Singularity
         Nrm.Containers.Dummy
+        Nrm.Node.Hwloc
+        Nrm.Node.Sysfs
+        Nrm.Node.Internal.Sysfs
+        Nrm.Control
+        Nrm.Behavior
     hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
@@ -84,6 +84,8 @@ library hsnrm-lib
         hxt-xpath -any,
         json-schema -any,
         yaml -any,
+        data-default -any,
+        flat -any,
         refined -any,
         vector -any,
         directory -any,
@@ -99,9 +101,6 @@ library hsnrm-lib
 
 library monolith
     exposed-modules:
-        Nrm.Node.Hwloc
-        Nrm.Node.Sysfs
-        Nrm.Node.Internal.Sysfs
         Nrm.Types.Topology
         Nrm.Types.Units
         Nrm.Types.Container
@@ -109,17 +108,20 @@ library monolith
         Nrm.Types.NrmState
         Nrm.Types.Configuration
         Nrm.Types.Manifest
-        Nrm.Control
-        Nrm.Behavior
-        Nrm.Messaging.Downstream
-        Nrm.Messaging.UpstreamPub
-        Nrm.Messaging.UpstreamReq
-        Nrm.Messaging.UpstreamRep
+        Nrm.Types.Messaging.DownstreamEvent
+        Nrm.Types.Messaging.UpstreamPub
+        Nrm.Types.Messaging.UpstreamReq
+        Nrm.Types.Messaging.UpstreamRep
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
         Nrm.Containers.Singularity
         Nrm.Containers.Dummy
+        Nrm.Node.Hwloc
+        Nrm.Node.Sysfs
+        Nrm.Node.Internal.Sysfs
+        Nrm.Control
+        Nrm.Behavior
         Hnrm
         Hnrmd
         Codegen
@@ -164,6 +166,8 @@ library monolith
         hxt-xpath -any,
         json-schema -any,
         yaml -any,
+        data-default -any,
+        flat -any,
         refined -any,
         vector -any,
         directory -any,
@@ -181,9 +185,6 @@ executable hsnrm.so
     main-is: Export.hs
     hs-source-dirs: bin nrm
     other-modules:
-        Nrm.Node.Hwloc
-        Nrm.Node.Sysfs
-        Nrm.Node.Internal.Sysfs
         Nrm.Types.Topology
         Nrm.Types.Units
         Nrm.Types.Container
@@ -191,17 +192,20 @@ executable hsnrm.so
         Nrm.Types.NrmState
         Nrm.Types.Configuration
         Nrm.Types.Manifest
-        Nrm.Control
-        Nrm.Behavior
-        Nrm.Messaging.Downstream
-        Nrm.Messaging.UpstreamPub
-        Nrm.Messaging.UpstreamReq
-        Nrm.Messaging.UpstreamRep
+        Nrm.Types.Messaging.DownstreamEvent
+        Nrm.Types.Messaging.UpstreamPub
+        Nrm.Types.Messaging.UpstreamReq
+        Nrm.Types.Messaging.UpstreamRep
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
         Nrm.Containers.Singularity
         Nrm.Containers.Dummy
+        Nrm.Node.Hwloc
+        Nrm.Node.Sysfs
+        Nrm.Node.Internal.Sysfs
+        Nrm.Control
+        Nrm.Behavior
         Codegen
         Hnrm
         Hnrmd
@@ -245,6 +249,8 @@ executable hsnrm.so
         hxt-xpath -any,
         json-schema -any,
         yaml -any,
+        data-default -any,
+        flat -any,
         refined -any,
         vector -any,
         directory -any,

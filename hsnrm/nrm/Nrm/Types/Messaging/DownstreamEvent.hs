@@ -1,11 +1,11 @@
 {-|
-Module      : Nrm.Messaging.Downstream
+Module      : Nrm.Types.Messaging.DownstreamEvent
 Description : Nrm downstream messaging
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Messaging.Downstream
+module Nrm.Types.Messaging.DownstreamEvent
   ( Event (..)
   )
 where

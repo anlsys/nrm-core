@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-|
 Module      : Nrm.Types.Configuration
 Description : Nrm configuration
@@ -7,24 +9,21 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Configuration
   ( Cfg (..)
-  , ApplicationManifest (..)
-  , App (..)
-  , Slice (..)
-  , Scheduler (..)
-  , PowerPolicy (..)
-  , Power (..)
-  , Monitoring (..)
-  , ImageType (..)
-  , Image (..)
+  , inputCfg
+  , inputCfgIOFlat
   )
 where
 
+import Data.Default
+import Data.Flat
+import Data.Flat.Run
 import Dhall
 import Protolude
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, Flat)
 
+{-deriving via Int instance MessagePack Integer-}
 data Cfg
   = Cfg
       { logfile :: Text
@@ -35,63 +34,57 @@ data Cfg
       , pmpi_lib :: Text
       , singularity :: Text
       , container_runtime :: ContainerRuntime
+      , downstreamCfg :: DownstreamCfg
+      , upstreamCfg :: UpstreamCfg
       }
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, Flat)
 
-data App
-  = App
-      { slice :: Slice
-      , scheduler :: Maybe Scheduler
-      , perfwrapper :: Maybe Bool
-      , power :: Maybe Power
-      , monitoring :: Maybe Monitoring
+newtype DownstreamCfg
+  = DownstreamCfg
+      { downstreamBindAddress :: Text
       }
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, Flat)
 
-data Slice
-  = Slice
-      { cpus :: Integer
-      , mems :: Integer
-      }
-  deriving (Generic, Interpret)
+-- TODO use Network.Socket.PortNumber
+--
+data UpstreamCfg = UpstreamCfg {upstreamBindAddress :: Text, pubPort :: Integer, rpcPort :: Integer}
+  deriving (Generic, Interpret, Flat)
 
-data Scheduler = FIFO | HPC | Other Integer
-  deriving (Generic, Interpret)
+instance Default UpstreamCfg where
 
-data PowerPolicy = NoPowerPolicy | DDCM | DVFS | Combined
-  deriving (Generic, Interpret)
+  def = UpstreamCfg
+    { upstreamBindAddress = "*"
+    , pubPort = 2345
+    , rpcPort = 3456
+    }
 
-data Power
-  = Power
-      { policy :: PowerPolicy
-      , profile :: Bool
-      , slowdown :: Integer -- TODO shoul be <1
-      }
-  deriving (Generic, Interpret)
+instance Default DownstreamCfg where
 
-newtype Monitoring
-  = Monitoring
-      { ratelimit :: Integer -- TODO >0
-      }
-  deriving (Generic, Interpret)
+  def = DownstreamCfg {downstreamBindAddress = "ipc:///tmp/nrm-downstream-event"}
 
-data ApplicationManifest
-  = Manifest
-      { name :: Text
-      , version :: Text
-      , app :: App
-      , hwbind :: Maybe Bool
-      , image :: Maybe Image
-      }
-  deriving (Generic, Interpret)
+instance Default Cfg where
 
-data ImageType = Sif | Docker
-  deriving (Generic, Interpret)
+  def = Cfg
+    { logfile = "/tmp/nrm.log"
+    , hwloc = "hwloc"
+    , perf = "perf"
+    , argo_perf_wrapper = "nrm-perfwrapper"
+    , argo_nodeos_config = "argo_nodeos_config"
+    , pmpi_lib = "pmpi_lib"
+    , singularity = "singularity"
+    , container_runtime = Dummy
+    , downstreamCfg = def
+    , upstreamCfg = def
+    }
 
-data Image
-  = Image
-      { path :: Text
-      , magetype :: ImageType
-      , binds :: Maybe [Text]
-      }
-  deriving (Generic, Interpret)
+inputCfg :: (MonadIO m) => Text -> m Cfg
+inputCfg fn =
+  liftIO $ try (input ft fn) >>= \case
+    Right d -> return d
+    Left e -> throwError e
+  where
+    ft :: Dhall.Type Cfg
+    ft = Dhall.auto
+
+inputCfgIOFlat :: Text -> IO ByteString
+inputCfgIOFlat = undefined

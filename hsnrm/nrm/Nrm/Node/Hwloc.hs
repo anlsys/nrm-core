@@ -22,7 +22,7 @@ where
 
 import Control.Arrow.ArrowTree (deep)
 import Control.Arrow.ListArrow (runLA)
-import Nrm.Types.Topo
+import Nrm.Types.Topology
 import Protolude
 import System.Process.Typed
 import Text.XML.HXT.Arrow.XmlArrow

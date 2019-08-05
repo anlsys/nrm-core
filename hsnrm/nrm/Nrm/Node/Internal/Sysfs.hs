@@ -39,7 +39,7 @@ import Control.Monad.Trans.Maybe
 import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
-import Nrm.Types.Topo
+import Nrm.Types.Topology
 import Nrm.Types.Units
 import Protolude
 import System.Directory
