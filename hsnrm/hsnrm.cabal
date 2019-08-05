@@ -31,10 +31,11 @@ library hsnrm-lib
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
-        Nrm.Types.Topo
+        Nrm.Types.Topology
         Nrm.Types.Units
         Nrm.Types.Container
         Nrm.Types.Application
+        Nrm.Types.NrmState
         Nrm.Types.Configuration
         Nrm.Types.Manifest
         Nrm.Control
@@ -101,10 +102,11 @@ library monolith
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
-        Nrm.Types.Topo
+        Nrm.Types.Topology
         Nrm.Types.Units
         Nrm.Types.Container
         Nrm.Types.Application
+        Nrm.Types.NrmState
         Nrm.Types.Configuration
         Nrm.Types.Manifest
         Nrm.Control
@@ -182,10 +184,11 @@ executable hsnrm.so
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
-        Nrm.Types.Topo
+        Nrm.Types.Topology
         Nrm.Types.Units
         Nrm.Types.Container
         Nrm.Types.Application
+        Nrm.Types.NrmState
         Nrm.Types.Configuration
         Nrm.Types.Manifest
         Nrm.Control

@@ -1,14 +1,15 @@
 {-|
-Module      : Nrm.Types.Topo
+Module      : Nrm.Types.Topology
 Description : Topology related types
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Types.Topo
+module Nrm.Types.Topology
   ( CoreId
   , PUId
   , PackageId
+  , Topology
   , IdFromString (..)
   , ToHwlocType (..)
   )
@@ -19,6 +20,8 @@ import Data.MessagePack
 import Protolude
 import Refined
 import Prelude (String, fail)
+
+data Topology = Topology
 
 -- | A CPU Core OS identifier.
 newtype CoreId = CoreId (Refined Positive Int)
