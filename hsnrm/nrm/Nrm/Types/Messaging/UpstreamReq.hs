@@ -6,30 +6,83 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Messaging.UpstreamReq
   ( Req (..)
+  , RunRequest (..)
+  , KillRequest (..)
+  , SetPowerRequest (..)
   )
 where
 
 import Data.Aeson
 import Data.JSON.Schema
 import Generics.Generic.Aeson
+import Nrm.Types.Manifest
+import Nrm.Types.Container
 import Protolude
 
-data Req
-  = List
-  | Run
-      { manifest :: Text
+data RunRequest
+  = RunRequest
+      { manifest :: Manifest
       , path :: Text
       , args :: [Text]
-      , runcontainer_uuid :: Text
+      , runcontainer_uuid :: ContainerUUID
       , environ :: [(Text, Text)]
       }
-  | Kill
+  deriving (Generic)
+
+newtype KillRequest
+  = KillRequest
       { container_uuid :: Text
       }
-  | Setpower
+  deriving (Generic)
+
+newtype SetPowerRequest
+  = SetPowerRequest
       { limit :: Text
       }
   deriving (Generic)
+
+data Req
+  = List
+  | Run RunRequest
+  | Kill KillRequest
+  | SetPower SetPowerRequest
+  deriving (Generic)
+
+instance ToJSON RunRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON RunRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema RunRequest where
+
+  schema = gSchema
+
+instance ToJSON SetPowerRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON SetPowerRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema SetPowerRequest where
+
+  schema = gSchema
+
+instance ToJSON KillRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON KillRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema KillRequest where
+
+  schema = gSchema
 
 instance ToJSON Req where
 

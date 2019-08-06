@@ -18,7 +18,9 @@ module Nrm.Types.Manifest
 where
 
 import Data.Aeson
+{-import Generics.Generic.Aeson-}
 import Data.Default
+import Data.JSON.Schema
 import Data.Yaml ()
 import Data.Yaml.Internal ()
 import Dhall
@@ -31,7 +33,7 @@ data Manifest
       , hwbind :: Bool
       , image :: Image
       }
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, ToJSON)
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
   deriving (Generic, Interpret)
@@ -44,7 +46,7 @@ data App
       , power :: Power
       , monitoring :: Monitoring
       }
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, ToJSON)
 
 data Slice
   = Slice
@@ -159,3 +161,39 @@ instance FromJSON ImageType where
 instance FromJSON Image where
 
   parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance JSONSchema Manifest where
+
+  schema = gSchema
+
+instance JSONSchema App where
+
+  schema = gSchema
+
+instance JSONSchema Slice where
+
+  schema = gSchema
+
+instance JSONSchema Image where
+
+  schema = gSchema
+
+instance JSONSchema ImageType where
+
+  schema = gSchema
+
+instance JSONSchema Scheduler where
+
+  schema = gSchema
+
+instance JSONSchema Power where
+
+  schema = gSchema
+
+instance JSONSchema Monitoring where
+
+  schema = gSchema
+
+instance JSONSchema PowerPolicy where
+
+  schema = gSchema

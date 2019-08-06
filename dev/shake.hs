@@ -105,7 +105,7 @@ runshake as =
       ( runProcess_ $ setWorkingDir "hsnrm" $
         proc "cabal"
           [ "v2-build"
-          , "hsnrm.so"
+          , "nrm.so"
           , "--ghc-option=-lHSrts-ghc" <> version
           , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
           ]

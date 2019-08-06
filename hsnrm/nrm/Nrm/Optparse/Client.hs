@@ -13,39 +13,34 @@ import qualified Data.ByteString as B
   ( getContents
   )
 import Dhall
+import Nrm.Types.Container
 import Nrm.Types.Manifest
 import qualified Nrm.Types.Manifest.Dhall as D
 import qualified Nrm.Types.Manifest.Yaml as Y
+import Nrm.Types.Messaging.UpstreamReq
 import Options.Applicative
 import Protolude
 import System.Directory
+import System.Environment
 import System.FilePath.Posix
 import Text.Editor
 import qualified Prelude
   ( print
   )
 
-data ClientVerbosity = Normal | Verbose
-  deriving (Eq)
-
-data MainCfg
-  = MainCfg
-      { inputfile :: Maybe Text
-      , stdinType :: SourceType
-      , verbosity :: ClientVerbosity
+data RunCfg
+  = RunCfg
+      { stdinType :: SourceType
       , edit :: Bool
+      , inputfile :: Maybe Text
+      , containerName :: Maybe Text
+      , cmd :: Text
+      , runargs :: [Text]
       }
 
-commonParser :: Parser MainCfg
-commonParser =
-  MainCfg <$>
-    optional
-      ( strArgument
-        ( metavar "INPUT" <>
-          help
-            "Input manifest with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
-        )
-      ) <*>
+runParser :: Parser RunCfg
+runParser =
+  RunCfg <$>
     flag
       Dhall
       Yaml
@@ -53,26 +48,76 @@ commonParser =
         help
           "Assume stdin to be yaml instead of dhall."
       ) <*>
-    flag Normal
-      Verbose
-      (long "verbose" <> short 'v' <> help "Enable verbose mode.") <*>
     flag
       False
       True
-      (long "edit" <> short 'e' <> help "Edit manifest yaml in $EDITOR before running the NRM client.")
+      (long "edit" <> short 'e' <> help "Edit manifest yaml in $EDITOR before running the NRM client.") <*>
+    optional
+      ( strOption
+        ( long "manifest" <>
+          metavar "MANIFEST" <>
+          help
+            "Input manifest with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
+        )
+      ) <*>
+    optional
+      ( strOption
+        ( long "container" <> short 'c' <>
+          metavar "containerName" <>
+          help
+            "Container name/UUID"
+        )
+      ) <*>
+    strArgument
+      ( metavar "cmd" <>
+        help
+          "Command name"
+      ) <*>
+    some
+      ( strArgument
+        ( metavar "arg" <>
+          help
+            "Command arguments"
+        )
+      )
 
-opts :: Parser (IO Manifest)
+killParser :: Parser Text
+killParser =
+  strArgument
+    ( metavar "container" <>
+      help
+        "Name/UUID of the container to kill"
+    )
+
+setpowerParser :: Parser Text
+setpowerParser =
+  strArgument
+    ( metavar "powerlimit" <>
+      help
+        "Power limit to set"
+    )
+
+opts :: Parser (IO Req)
 opts =
   hsubparser $
-    command
-      "run"
-      (info (load <$> commonParser) $ progDesc "Run the application via NRM") <>
-    command
-      "print"
-      ( info (printY <$> commonParser) $
-        progDesc "Just print the manifest (don't run the NRM application)."
+    command "run"
+      ( info (run <$> runParser) $
+        progDesc "Run the application via NRM"
       ) <>
-    help "Choice of operation."
+    command "kill"
+      ( info (return <$> (Kill . KillRequest <$> killParser)) $
+        progDesc "Kill container"
+      ) <>
+    command
+      "setpower"
+      ( info (return <$> (SetPower . SetPowerRequest <$> setpowerParser)) $
+        progDesc "Set power limit"
+      ) <>
+    command
+      "list"
+      (info (return <$> pure List) $ progDesc "List existing containers") <>
+    help
+      "Choice of operation."
 
 data SourceType = Dhall | Yaml
   deriving (Eq)
@@ -88,11 +133,11 @@ ext _ (Just fn)
     xt = takeExtension $ toS fn
 ext st Nothing = FinallyStdin st
 
-load :: MainCfg -> IO Manifest
-load MainCfg {..} =
+load :: RunCfg -> IO Manifest
+load RunCfg {..} =
   (if edit then editing else return) =<< case ext stdinType inputfile of
     (FinallyFile Dhall filename) ->
-      (if v then detailed else identity) $
+      detailed $
         D.inputManifest =<<
         toS <$>
         makeAbsolute (toS filename)
@@ -108,8 +153,6 @@ load MainCfg {..} =
         ( "couldn't figure out extension for input file. " <>
           "Please use something in {.yml,.yaml,.dh,.dhall} ."
         )
-  where
-    v = verbosity == Verbose
 
 editing :: Manifest -> IO Manifest
 editing c =
@@ -119,8 +162,28 @@ editing c =
   where
     yt = mkTemplate "yaml"
 
-printY :: MainCfg -> IO Manifest
-printY c = do
-  manifest <- load c
-  putText . toS . Y.encodeManifest $ manifest
-  return manifest
+run :: RunCfg -> IO Req
+run rc = do
+  manifest <- load rc
+  cn <-
+    case containerName rc of
+      Nothing -> fromMaybe (panic "Couldn't generate next container UUID") <$> nextContainerUUID
+      Just n -> return $ Name n
+  env <- fmap (\(x, y) -> (toS x, toS y)) <$> getEnvironment
+  return $ Run $ RunRequest
+    { manifest = manifest
+    , path = cmd rc
+    , args = runargs rc
+    , runcontainer_uuid = cn
+    , environ = env
+    }
+
+{-containerName :: Maybe Text-}
+{-cmd :: Text-}
+{-args :: [Text]-}
+
+{-printY :: ManifestLocationCfg -> IO Manifest-}
+{-printY c = do-}
+{-manifest <- load c-}
+{-putText . toS . Y.encodeManifest $ manifest-}
+{-return manifest-}

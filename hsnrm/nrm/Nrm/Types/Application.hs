@@ -18,7 +18,8 @@ import Data.UUID
 import Data.UUID.V1
 import Protolude
 
-newtype ApplicationUUID = ApplicationUUID UUID deriving (Eq, Ord)
+newtype ApplicationUUID = ApplicationUUID UUID
+  deriving (Eq, Ord)
 
 newtype Arg = Arg Text
 
