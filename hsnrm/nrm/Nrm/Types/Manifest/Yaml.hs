@@ -15,120 +15,52 @@ where
 
 import Data.Aeson
 import Data.Yaml
-import Dhall
 import qualified Nrm.Types.Manifest.Dhall as D
 import qualified Nrm.Types.Manifest.Internal as I
 import Protolude
 import System.IO.Error
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Generic, Interpret)
-
-data App
-  = App
-      { slice :: Slice
-      , scheduler :: Maybe Scheduler
-      , perfwrapper :: Maybe Bool
-      , power :: Maybe Power
-      , monitoring :: Maybe Monitoring
-      }
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON App where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-data Slice
-  = Slice
-      { cpus :: Integer
-      , mems :: Integer
-      }
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON Slice where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-data Scheduler = FIFO | HPC | Other Integer
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON Scheduler where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-data PowerPolicy = NoPowerPolicy | DDCM | DVFS | Combined
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON PowerPolicy where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-data Power
-  = Power
-      { policy :: PowerPolicy
-      , profile :: Bool
-      , slowdown :: Integer -- TODO shoul be <1
-      }
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON Power where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-newtype Monitoring
-  = Monitoring
-      { ratelimit :: Integer -- TODO >0
-      }
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON Monitoring where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+  deriving (Generic)
 
 data Manifest
   = Manifest
       { name :: Text
-      , version :: Text
       , app :: App
       , hwbind :: Maybe Bool
-      , image :: Maybe Image
+      , image :: Maybe I.Image
       }
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Generic, ToJSON)
+
+data App
+  = App
+      { slice :: I.Slice
+      , scheduler :: Maybe I.Scheduler
+      , perfwrapper :: Maybe Bool
+      , power :: Maybe I.Power
+      , monitoring :: Maybe I.Monitoring
+      }
+  deriving (Generic, ToJSON)
 
 instance FromJSON Manifest where
 
   parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
-data ImageType = Sif | Docker
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON ImageType where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-data Image
-  = Image
-      { path :: Text
-      , magetype :: ImageType
-      , binds :: Maybe [Text]
-      }
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON Image where
+instance FromJSON App where
 
   parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
 toInternal :: Manifest -> D.Manifest
+toInternal d = undefined
+
 {-toInternal d = D.Manifest-}
-  {-{ cmds = toInternalCmd <$> cmds d-}
-  {-, verbose = fromMaybe False (verbose d)-}
-  {-, cleaning = fromMaybe False (cleaning d)-}
-  {-, pre = fromMaybe [] (pre d)-}
-  {-, post = fromMaybe [] (post d)-}
-  {-, workdir = fromMaybe "./" (workdir d)-}
-  {-}-}
-
-
+{-{ cmds = toInternalCmd <$> cmds d-}
+{-, verbose = fromMaybe False (verbose d)-}
+{-, cleaning = fromMaybe False (cleaning d)-}
+{-, pre = fromMaybe [] (pre d)-}
+{-, post = fromMaybe [] (post d)-}
+{-, workdir = fromMaybe "./" (workdir d)-}
+{-}-}
 fromInternal :: D.Manifest -> Manifest
 fromInternal d = undefined
 

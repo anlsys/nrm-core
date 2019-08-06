@@ -1,6 +1,6 @@
 {-|
 Module      : Codegen.Schema
-Description : types
+Description : JSON schema generation
 Copyright   : (c) 2019, UChicago Argonne, LLC.
 License     : MIT
 Maintainer  : fre@freux.fr

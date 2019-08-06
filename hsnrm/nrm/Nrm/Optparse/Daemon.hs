@@ -1,12 +1,11 @@
 {-|
-Module      : Nrm.Argparse.Daemon
-Description : Daemon argument parsing
+Module      : Nrm.Optparse.Daemon
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Argparse.Daemon
-  ( parseCli
+module Nrm.Optparse.Daemon
+  ( opts
   )
 where
 
@@ -14,7 +13,6 @@ import qualified Data.ByteString as B
   ( getContents
   )
 import Dhall
-import GHC.IO.Encoding
 import qualified Nrm.Types.Configuration.Dhall as D
 import Nrm.Types.Configuration.Internal
 import qualified Nrm.Types.Configuration.Yaml as Y
@@ -22,26 +20,10 @@ import Options.Applicative
 import Protolude
 import System.Directory
 import System.FilePath.Posix
-import qualified System.IO as SIO
 import Text.Editor
 import qualified Prelude
   ( print
   )
-
-parseCli :: IO Cfg
-parseCli =
-  GHC.IO.Encoding.setLocaleEncoding SIO.utf8 >>
-    ( join .
-      customExecParser (prefs showHelpOnError) $
-      info
-        (helper <*> opts)
-        ( fullDesc <> header "dhrun" <>
-          progDesc
-            ( "dhall-configured concurrent process execution" <>
-              " with streaming assertion monitoring"
-            )
-        )
-    )
 
 data MainCfg
   = MainCfg

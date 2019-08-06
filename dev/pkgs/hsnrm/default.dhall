@@ -171,8 +171,7 @@ let modules =
       , "Nrm.Node.Sysfs"
       , "Nrm.Node.Internal.Sysfs"
       , "Nrm.Control"
-      , "Nrm.Argparse.Daemon"
-      , "Nrm.Argparse.Client"
+      , "Nrm.Optparse"
       , "Nrm.Behavior"
       , "Nrm.Version"
       ]
@@ -231,7 +230,7 @@ in    prelude.defaults.Package
       , category =
           "tools"
       , description =
-          "haskell node resource manager prototype"
+          "The Node Resource Manager(NRM) is a linux daemon that enables the dynamic resource optimization for improving the power/performance tradeoff of HPC applications."
       , sub-libraries =
           [ { library =
                   λ(config : types.Config)

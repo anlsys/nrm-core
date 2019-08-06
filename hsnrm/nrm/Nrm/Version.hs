@@ -14,7 +14,7 @@ where
 
 import Distribution.VcsRevision.Git
 import Language.Haskell.TH.Syntax
-import Protolude hiding (lift)
+import Protolude hiding (hash, lift)
 
 version :: Text
 version =

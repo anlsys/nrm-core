@@ -15,7 +15,7 @@ maintainer: fre@freux.fr
 author: Valentin Reis
 synopsis: hsnrm
 description:
-    haskell node resource manager prototype
+    The Node Resource Manager(NRM) is a linux daemon whose goal is to enable the dynamic optimization of hardware for improving the power/performance tradeoff of HPC applications
 category: tools
 build-type: Simple
 extra-source-files:
@@ -51,8 +51,7 @@ library hsnrm-lib
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
         Nrm.Control
-        Nrm.Argparse.Daemon
-        Nrm.Argparse.Client
+        Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
     hs-source-dirs: nrm
@@ -135,8 +134,7 @@ library monolith
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
         Nrm.Control
-        Nrm.Argparse.Daemon
-        Nrm.Argparse.Client
+        Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
         Hnrm
@@ -230,8 +228,7 @@ executable nrm.so
         Nrm.Node.Sysfs
         Nrm.Node.Internal.Sysfs
         Nrm.Control
-        Nrm.Argparse.Daemon
-        Nrm.Argparse.Client
+        Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
         Codegen

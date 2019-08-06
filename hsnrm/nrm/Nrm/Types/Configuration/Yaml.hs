@@ -7,8 +7,6 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Configuration.Yaml
   ( Cfg (..)
-  , ContainerRuntime (..)
-  , Verbosity (..)
   , decodeCfgFile
   , decodeCfg
   , encodeCfg
@@ -16,30 +14,16 @@ module Nrm.Types.Configuration.Yaml
 where
 
 import Data.Aeson
+import Data.Default
 import Data.Yaml
-import Dhall
 import qualified Nrm.Types.Configuration.Dhall as D
 import qualified Nrm.Types.Configuration.Internal as I
 import Protolude
 import System.IO.Error
 
-data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON ContainerRuntime where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-data Verbosity = Normal | Verbose
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON Verbosity where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
 data Cfg
   = Cfg
-      { verbose :: Maybe Verbosity
+      { verbose :: Maybe Bool
       , logfile :: Maybe Text
       , hwloc :: Maybe Text
       , perf :: Maybe Text
@@ -47,66 +31,51 @@ data Cfg
       , argo_nodeos_config :: Maybe Text
       , pmpi_lib :: Maybe Text
       , singularity :: Maybe Text
-      , container_runtime :: Maybe ContainerRuntime
-      , downstreamCfg :: Maybe DownstreamCfg
-      , upstreamCfg :: Maybe UpstreamCfg
+      , container_runtime :: Maybe D.ContainerRuntime
+      , downstreamCfg :: Maybe D.DownstreamCfg
+      , upstreamCfg :: Maybe D.UpstreamCfg
       }
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Generic, ToJSON)
 
 instance FromJSON Cfg where
 
   parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
-newtype DownstreamCfg
-  = DownstreamCfg
-      { downstreamBindAddress :: Text
-      }
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON DownstreamCfg where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-data UpstreamCfg
-  = UpstreamCfg
-      { upstreamBindAddress :: Text
-      , pubPort :: Integer
-      , rpcPort :: Integer
-      }
-  deriving (Generic, Interpret, ToJSON)
-
-instance FromJSON UpstreamCfg where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
 toInternal :: Cfg -> D.Cfg
-toInternal d = undefined
+toInternal d = D.Cfg
+  { verbose = if verbose d == Just True then D.Verbose else D.Normal
+  , logfile = fromDefault logfile D.logfile
+  , hwloc = fromDefault hwloc D.hwloc
+  , perf = fromDefault perf D.perf
+  , argo_perf_wrapper = fromDefault argo_perf_wrapper D.argo_perf_wrapper
+  , argo_nodeos_config = fromDefault argo_nodeos_config D.argo_nodeos_config
+  , pmpi_lib = fromDefault pmpi_lib D.pmpi_lib
+  , singularity = fromDefault singularity D.singularity
+  , container_runtime = fromDefault container_runtime D.container_runtime
+  , downstreamCfg = fromDefault downstreamCfg D.downstreamCfg
+  , upstreamCfg = fromDefault upstreamCfg D.upstreamCfg
+  }
+  where
+    fromDefault :: Default a => (Cfg -> Maybe c) -> (a -> c) -> c
+    fromDefault attr attd = fromMaybe (attd def) (attr d)
 
-{-D.Cfg-}
-{-{ cmds     = toInternalCmd <$> cmds d-}
-{-, verbose  = fromMaybe False (verbose d)-}
-{-, cleaning = fromMaybe False (cleaning d)-}
-{-, pre      = fromMaybe [] (pre d)-}
-{-, post     = fromMaybe [] (post d)-}
-{-, workdir  = fromMaybe "./" (workdir d)-}
-{-}-}
 fromInternal :: D.Cfg -> Cfg
-fromInternal d = undefined
-
-{-fromInternal d = Cfg {..}-}
-{-where-}
-{-workdir = case D.workdir d of-}
-{-"./" -> Nothing-}
-{-w    -> Just w-}
-{-cmds     = fromInternalCmd <$> D.cmds d-}
-{-verbose  = if D.verbose d then Just True else Nothing-}
-{-cleaning = if D.cleaning d then Just True else Nothing-}
-{-pre      = case D.pre d of-}
-{-[] -> Nothing-}
-{-l  -> Just l-}
-{-post = case D.post d of-}
-{-[] -> Nothing-}
-{-l  -> Just l-}
+fromInternal d = Cfg
+  { verbose = if D.verbose d == D.Verbose then Just True else Nothing
+  , logfile = toJust D.logfile
+  , hwloc = toJust D.hwloc
+  , perf = toJust D.perf
+  , argo_perf_wrapper = toJust D.argo_perf_wrapper
+  , argo_nodeos_config = toJust D.argo_nodeos_config
+  , pmpi_lib = toJust D.pmpi_lib
+  , singularity = toJust D.singularity
+  , container_runtime = toJust D.container_runtime
+  , downstreamCfg = toJust D.downstreamCfg
+  , upstreamCfg = toJust D.upstreamCfg
+  }
+  where
+    toJust :: (D.Cfg -> a) -> Maybe a
+    toJust x = Just $ x d
 
 decodeCfgFile :: (MonadIO m) => Text -> m I.Cfg
 decodeCfgFile fn =

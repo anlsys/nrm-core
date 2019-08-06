@@ -1,6 +1,6 @@
 {-|
 Module      : Nrm.Containers
-Description : Containers interface and dispatch methods
+Description : containers interface
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr

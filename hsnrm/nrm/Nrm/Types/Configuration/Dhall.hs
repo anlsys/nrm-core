@@ -10,6 +10,10 @@ module Nrm.Types.Configuration.Dhall
   , toInternal
   , fromInternal
   , I.Cfg (..)
+  , I.DaemonVerbosity (..)
+  , I.ContainerRuntime (..)
+  , I.UpstreamCfg (..)
+  , I.DownstreamCfg (..)
   )
 where
 
@@ -17,25 +21,10 @@ import Dhall
 import qualified Nrm.Types.Configuration.Internal as I
 import Protolude
 
--- TODO : As soon as Internal.Cfg isn't Interpretable,
--- we write a dhall interpretable layer here. As it stands, this is essentially
--- a transitive "identity" placeholder
+-- As soon as Internal.Cfg isn't Interpretable, we write a dhall
+-- interpretable datatype layer here. As it stands, this is a transitive
+-- "identity" placeholder.
 
-{-data Cfg-}
-{-= Cfg-}
-{-{ verbose :: I.Verbosity-}
-{-, logfile :: Text-}
-{-, hwloc :: Text-}
-{-, perf :: Text-}
-{-, argo_perf_wrapper :: Text-}
-{-, argo_nodeos_config :: Text-}
-{-, pmpi_lib :: Text-}
-{-, singularity :: Text-}
-{-, container_runtime :: I.ContainerRuntime-}
-{-, downstreamCfg :: I.DownstreamCfg-}
-{-, upstreamCfg :: I.UpstreamCfg-}
-{-}-}
-{-deriving (Generic, Interpret)-}
 inputDCfg :: (MonadIO m) => Text -> m I.Cfg
 inputDCfg fn =
   liftIO $ try (input dt fn) >>= \case
@@ -46,10 +35,10 @@ inputDCfg fn =
     dt = Dhall.auto
 
 toInternal :: I.Cfg -> I.Cfg
-toInternal I.Cfg {..} = undefined
+toInternal = identity
 
 fromInternal :: I.Cfg -> I.Cfg
-fromInternal I.Cfg {..} = undefined
+fromInternal = identity
 
 inputCfg :: (MonadIO m) => Text -> m I.Cfg
 inputCfg fn = toInternal <$> inputDCfg fn

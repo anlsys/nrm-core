@@ -1,14 +1,18 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 {-|
-Module      : codegen
-Description : codegen
+Module      : Codegen
 Copyright   : (c) 2019, UChicago Argonne, LLC.
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Codegen
   ( main
+  , upstreamPubSchema
+  , upstreamReqSchema
+  , upstreamRepSchema
+  , downstreamEventSchema
+  , libnrmHeader
   )
 where
 
@@ -21,6 +25,7 @@ import Nrm.Types.Messaging.UpstreamRep
 import Nrm.Types.Messaging.UpstreamReq
 import Protolude hiding (Rep)
 
+-- | The main code generation binary.
 main :: IO ()
 main = do
   writeFile "../gen/nrm_messaging.h" $ license <> libnrmHeader
@@ -29,21 +34,27 @@ main = do
   writeFile "../gen/upstreamRep.json" upstreamRepSchema
   writeFile "../gen/downstreamEvent.json" downstreamEventSchema
 
+-- | The upstream Request schema.
 upstreamReqSchema :: Text
 upstreamReqSchema = generatePretty (Proxy :: Proxy Req)
 
+-- | The upstream Reply schema.
 upstreamRepSchema :: Text
 upstreamRepSchema = generatePretty (Proxy :: Proxy Rep)
 
+-- | The upstream Pub schema.
 upstreamPubSchema :: Text
 upstreamPubSchema = generatePretty (Proxy :: Proxy Pub)
 
+-- | The downstream Event schema.
 downstreamEventSchema :: Text
 downstreamEventSchema = generatePretty (Proxy :: Proxy Event)
 
+-- | The libnrm C header.
 libnrmHeader :: Text
 libnrmHeader = toHeader $ toCHeader (Proxy :: Proxy Event)
 
+-- | A license for C headers.
 license :: Text
 license =
   [text|

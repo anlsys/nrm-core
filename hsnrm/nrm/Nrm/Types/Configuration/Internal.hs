@@ -14,17 +14,19 @@ module Nrm.Types.Configuration.Internal
   )
 where
 
+import Data.Aeson
 import Data.Default
 import Data.Flat
-import Data.Yaml.Internal
+import Data.Yaml ()
+import Data.Yaml.Internal ()
 import Dhall
 import Protolude
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Generic, Interpret, Flat)
+  deriving (Generic, ToJSON, Interpret, Flat)
 
 data DaemonVerbosity = Normal | Verbose
-  deriving (Eq, Generic, Interpret, Flat)
+  deriving (Eq, Generic, ToJSON, Interpret, Flat)
 
 data Cfg
   = Cfg
@@ -46,7 +48,7 @@ newtype DownstreamCfg
   = DownstreamCfg
       { downstreamBindAddress :: Text
       }
-  deriving (Generic, Interpret, Flat)
+  deriving (Generic, Interpret, Flat, ToJSON)
 
 data UpstreamCfg
   = UpstreamCfg
@@ -54,7 +56,23 @@ data UpstreamCfg
       , pubPort :: Integer
       , rpcPort :: Integer
       }
-  deriving (Generic, Interpret, Flat)
+  deriving (Generic, Interpret, Flat, ToJSON)
+
+instance FromJSON ContainerRuntime where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON DaemonVerbosity where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON DownstreamCfg where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON UpstreamCfg where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
 instance Default UpstreamCfg where
 

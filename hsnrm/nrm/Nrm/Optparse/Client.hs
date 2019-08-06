@@ -1,12 +1,11 @@
 {-|
-Module      : Nrm.Argparse.Client
-Description : Client argument parsing
+Module      : Nrm.Optparse.Client
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Argparse.Client
-  ( parseCli
+module Nrm.Optparse.Client
+  ( opts
   )
 where
 
@@ -14,7 +13,6 @@ import qualified Data.ByteString as B
   ( getContents
   )
 import Dhall
-import GHC.IO.Encoding
 import qualified Nrm.Types.Manifest.Dhall as D
 import Nrm.Types.Manifest.Internal
 import qualified Nrm.Types.Manifest.Yaml as Y
@@ -22,26 +20,13 @@ import Options.Applicative
 import Protolude
 import System.Directory
 import System.FilePath.Posix
-import qualified System.IO as SIO
 import Text.Editor
 import qualified Prelude
   ( print
   )
 
-parseCli :: IO Manifest
-parseCli =
-  GHC.IO.Encoding.setLocaleEncoding SIO.utf8 >>
-    ( join .
-      customExecParser (prefs showHelpOnError) $
-      info
-        (helper <*> opts)
-        ( fullDesc <> header "dhrun" <>
-          progDesc
-            ( "dhall-configured concurrent process execution" <>
-              " with streaming assertion monitoring"
-            )
-        )
-    )
+data ClientVerbosity = Normal | Verbose
+  deriving (Eq)
 
 data MainCfg
   = MainCfg
@@ -58,7 +43,7 @@ commonParser =
       ( strArgument
         ( metavar "INPUT" <>
           help
-            "Input configuration with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
+            "Input manifest with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
         )
       ) <*>
     flag
@@ -74,18 +59,18 @@ commonParser =
     flag
       False
       True
-      (long "edit" <> short 'e' <> help "Edit yaml in $EDITOR before running the NRM daemon.")
+      (long "edit" <> short 'e' <> help "Edit manifest yaml in $EDITOR before running the NRM client.")
 
 opts :: Parser (IO Manifest)
 opts =
   hsubparser $
     command
       "run"
-      (info (load <$> commonParser) $ progDesc "Run the NRM daemon") <>
+      (info (load <$> commonParser) $ progDesc "Run the application via NRM") <>
     command
       "print"
       ( info (printY <$> commonParser) $
-        progDesc "Just print the daemon configuration (don't run the NRM daemon)."
+        progDesc "Just print the manifest (don't run the NRM application)."
       ) <>
     help "Choice of operation."
 

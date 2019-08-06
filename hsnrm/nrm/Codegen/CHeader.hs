@@ -2,17 +2,14 @@
 
 {-|
 Module      : Codegen.CHeader
-Description : types
+Description : @libnrm@ C header generation
 Copyright   : (c) 2019, UChicago Argonne, LLC.
 License     : MIT
 Maintainer  : fre@freux.fr
 -}
 module Codegen.CHeader
-  ( CHeader
-  , toHeader
+  ( toHeader
   , CHeaderGen (toCHeader)
-  , GCHeaderGen (gToCHeader)
-  , genericToCHeader
   )
 where
 

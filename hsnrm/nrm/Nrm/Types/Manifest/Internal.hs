@@ -15,18 +15,15 @@ module Nrm.Types.Manifest.Internal
   , Monitoring (..)
   , ImageType (..)
   , Image (..)
-  , ClientVerbosity (..)
   )
 where
 
+import Data.Aeson
 import Data.Default
-import Data.Yaml.Internal
+import Data.Yaml ()
+import Data.Yaml.Internal ()
 import Dhall
-import qualified Nrm.Version as V (version)
 import Protolude
-
-data ClientVerbosity = Normal | Verbose
-  deriving (Eq, Generic, Interpret)
 
 data Manifest
   = Manifest
@@ -34,7 +31,6 @@ data Manifest
       , app :: App
       , hwbind :: Bool
       , image :: Image
-      , verbose :: ClientVerbosity
       }
   deriving (Generic, Interpret)
 
@@ -62,13 +58,13 @@ data Slice
       { cpus :: Integer
       , mems :: Integer
       }
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, ToJSON)
 
 data Scheduler = FIFO | HPC | Other Integer
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, ToJSON)
 
 data PowerPolicy = NoPowerPolicy | DDCM | DVFS | Combined
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, ToJSON)
 
 data Power
   = Power
@@ -76,16 +72,16 @@ data Power
       , profile :: Bool
       , slowdown :: Integer -- TODO shoul be <1
       }
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, ToJSON)
 
 newtype Monitoring
   = Monitoring
       { ratelimit :: Integer -- TODO >0
       }
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, ToJSON)
 
 data ImageType = Sif | Docker
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, ToJSON)
 
 data Image
   = Image
@@ -93,4 +89,41 @@ data Image
       , magetype :: ImageType
       , binds :: Maybe [Text]
       }
-  deriving (Generic, Interpret)
+  deriving (Generic, Interpret, ToJSON)
+
+instance FromJSON App where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON Slice where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON Scheduler where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON PowerPolicy where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON Power where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON Monitoring where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON Manifest where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON ImageType where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
+instance FromJSON Image where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
