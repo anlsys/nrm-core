@@ -3,12 +3,11 @@
 
 {-|
 Module      : Nrm.Node.Sysfs
-Description : Sysfs tree queries
 Copyright   : (c) 2019, UChicago Argonne, LLC.
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Node.Internal.Sysfs
+module Nrm.Node.Sysfs.Internal
   ( -- * RAPL
     RAPLDir (..)
   , RAPLDirs (..)

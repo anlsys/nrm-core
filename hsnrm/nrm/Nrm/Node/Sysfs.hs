@@ -19,7 +19,7 @@ module Nrm.Node.Sysfs
   )
 where
 
-import Nrm.Node.Internal.Sysfs
+import Nrm.Node.Sysfs.Internal
 import Protolude
 
 -- | Retreives package RAPL directories at the default location.

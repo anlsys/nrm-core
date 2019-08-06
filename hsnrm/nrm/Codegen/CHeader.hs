@@ -2,7 +2,6 @@
 
 {-|
 Module      : Codegen.CHeader
-Description : @libnrm@ C header generation
 Copyright   : (c) 2019, UChicago Argonne, LLC.
 License     : MIT
 Maintainer  : fre@freux.fr

@@ -1,6 +1,5 @@
 {-|
 Module      : Nrm.Types.Configuration.Yaml
-Description : Nrm configuration yaml reader
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
@@ -17,7 +16,7 @@ import Data.Aeson
 import Data.Default
 import Data.Yaml
 import qualified Nrm.Types.Configuration.Dhall as D
-import qualified Nrm.Types.Configuration.Internal as I
+import qualified Nrm.Types.Configuration as I
 import Protolude
 import System.IO.Error
 

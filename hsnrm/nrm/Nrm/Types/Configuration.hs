@@ -1,11 +1,10 @@
 {-|
 Module      : Nrm.Types.Configuration.Internal
-Description : Nrm configuration
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Types.Configuration.Internal
+module Nrm.Types.Configuration
   ( Cfg (..)
   , ContainerRuntime (..)
   , UpstreamCfg (..)

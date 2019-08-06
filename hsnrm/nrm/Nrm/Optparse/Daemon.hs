@@ -14,7 +14,7 @@ import qualified Data.ByteString as B
   )
 import Dhall
 import qualified Nrm.Types.Configuration.Dhall as D
-import Nrm.Types.Configuration.Internal
+import Nrm.Types.Configuration
 import qualified Nrm.Types.Configuration.Yaml as Y
 import Options.Applicative
 import Protolude

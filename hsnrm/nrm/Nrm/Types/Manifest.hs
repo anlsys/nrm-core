@@ -1,11 +1,10 @@
 {-|
-Module      : Nrm.Types.Manifest.Internal
-Description : Nrm application manifest
+Module      : Nrm.Types.Manifest
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Types.Manifest.Internal
+module Nrm.Types.Manifest
   ( Manifest (..)
   , App (..)
   , Slice (..)
@@ -33,12 +32,6 @@ data Manifest
       , image :: Image
       }
   deriving (Generic, Interpret)
-
-instance Default Manifest where
-
-  def = Manifest
-    { name = "default"
-    }
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
   deriving (Generic, Interpret)
@@ -89,7 +82,47 @@ data Image
       , magetype :: ImageType
       , binds :: Maybe [Text]
       }
+  | NoImage
   deriving (Generic, Interpret, ToJSON)
+
+instance Default Manifest where
+
+  def = Manifest
+    { name = "default"
+    , app = def
+    , hwbind = False
+    , image = def
+    }
+
+instance Default Power where
+
+  def = Power
+    { policy = NoPowerPolicy
+    , profile = False
+    , slowdown = 1
+    }
+
+instance Default App where
+
+  def = App
+    { slice = def
+    , scheduler = FIFO
+    , perfwrapper = False
+    , power = def
+    , monitoring = def
+    }
+
+instance Default Monitoring where
+
+  def = Monitoring {ratelimit = 1}
+
+instance Default Image where
+
+  def = NoImage
+
+instance Default Slice where
+
+  def = Slice {cpus = 1, mems = 1}
 
 instance FromJSON App where
 
@@ -126,4 +159,3 @@ instance FromJSON ImageType where
 instance FromJSON Image where
 
   parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-

@@ -2,7 +2,6 @@
 {-#language UndecidableInstances#-}
 {-|
 Module      : Nrm.Types.Units
-Description : Units
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr

@@ -13,8 +13,8 @@ import qualified Data.ByteString as B
   ( getContents
   )
 import Dhall
+import Nrm.Types.Manifest
 import qualified Nrm.Types.Manifest.Dhall as D
-import Nrm.Types.Manifest.Internal
 import qualified Nrm.Types.Manifest.Yaml as Y
 import Options.Applicative
 import Protolude

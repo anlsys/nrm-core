@@ -152,12 +152,8 @@ let modules =
       , "Nrm.Types.Container"
       , "Nrm.Types.Application"
       , "Nrm.Types.NrmState"
-      , "Nrm.Types.Configuration.Internal"
-      , "Nrm.Types.Configuration.Yaml"
-      , "Nrm.Types.Configuration.Dhall"
-      , "Nrm.Types.Manifest.Internal"
-      , "Nrm.Types.Manifest.Yaml"
-      , "Nrm.Types.Manifest.Dhall"
+      , "Nrm.Types.Configuration"
+      , "Nrm.Types.Manifest"
       , "Nrm.Types.Messaging.DownstreamEvent"
       , "Nrm.Types.Messaging.UpstreamPub"
       , "Nrm.Types.Messaging.UpstreamReq"
@@ -169,11 +165,17 @@ let modules =
       , "Nrm.Containers.Dummy"
       , "Nrm.Node.Hwloc"
       , "Nrm.Node.Sysfs"
-      , "Nrm.Node.Internal.Sysfs"
       , "Nrm.Control"
       , "Nrm.Optparse"
       , "Nrm.Behavior"
       , "Nrm.Version"
+      , "Nrm.Node.Sysfs.Internal"
+      , "Nrm.Optparse.Client"
+      , "Nrm.Optparse.Daemon"
+      , "Nrm.Types.Configuration.Dhall"
+      , "Nrm.Types.Configuration.Yaml"
+      , "Nrm.Types.Manifest.Dhall"
+      , "Nrm.Types.Manifest.Yaml"
       ]
 
 let libdep =
@@ -230,7 +232,7 @@ in    prelude.defaults.Package
       , category =
           "tools"
       , description =
-          "The Node Resource Manager(NRM) is a linux daemon that enables the dynamic resource optimization for improving the power/performance tradeoff of HPC applications."
+          "The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications."
       , sub-libraries =
           [ { library =
                   λ(config : types.Config)

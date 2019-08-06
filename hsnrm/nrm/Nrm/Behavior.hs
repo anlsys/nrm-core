@@ -1,6 +1,5 @@
 {-|
 Module      : Nrm.Behavior
-Description : Nrm Behavior
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr

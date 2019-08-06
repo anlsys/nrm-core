@@ -1,6 +1,5 @@
 {-|
 Module      : Nrm.Types.Manifest.Dhall
-Description : Nrm application manifest dhall reader
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
@@ -22,7 +21,7 @@ module Nrm.Types.Manifest.Dhall
 where
 
 import Dhall
-import qualified Nrm.Types.Manifest.Internal as I
+import qualified Nrm.Types.Manifest as I
 import Protolude
 
 -- As soon as Internal.Cfg isn't Interpretable, we write a dhall
@@ -40,11 +39,11 @@ inputDManifest fn =
 
 -- | converts from internal manifest datatype
 toInternal :: I.Manifest -> I.Manifest
-toInternal I.Manifest {..} = undefined
+toInternal = identity
 
 -- | converts to internal manifest datatype
 fromInternal :: I.Manifest -> I.Manifest
-fromInternal I.Manifest {..} = undefined
+fromInternal = identity
 
 -- | reads a Dhall manifest
 inputManifest :: (MonadIO m) => Text -> m I.Manifest

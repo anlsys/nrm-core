@@ -1,6 +1,5 @@
 {-|
 Module      : Nrm.Types.Manifest.Yaml
-Description : Nrm application manifest yaml reader
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
@@ -14,9 +13,10 @@ module Nrm.Types.Manifest.Yaml
 where
 
 import Data.Aeson
+import Data.Default
 import Data.Yaml
+import qualified Nrm.Types.Manifest as I
 import qualified Nrm.Types.Manifest.Dhall as D
-import qualified Nrm.Types.Manifest.Internal as I
 import Protolude
 import System.IO.Error
 
@@ -51,33 +51,51 @@ instance FromJSON App where
   parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
 toInternal :: Manifest -> D.Manifest
-toInternal d = undefined
+toInternal d = D.Manifest
+  { name = name d
+  , app = toInternalApp $ app d
+  , hwbind = fromDefault hwbind D.hwbind
+  , image = fromDefault image D.image
+  }
+  where
+    fromDefault :: Default a => (Manifest -> Maybe c) -> (a -> c) -> c
+    fromDefault attr attd = fromMaybe (attd def) (attr d)
 
-{-toInternal d = D.Manifest-}
-{-{ cmds = toInternalCmd <$> cmds d-}
-{-, verbose = fromMaybe False (verbose d)-}
-{-, cleaning = fromMaybe False (cleaning d)-}
-{-, pre = fromMaybe [] (pre d)-}
-{-, post = fromMaybe [] (post d)-}
-{-, workdir = fromMaybe "./" (workdir d)-}
-{-}-}
+toInternalApp :: App -> D.App
+toInternalApp app = D.App
+  { slice = slice app
+  , scheduler = fromDefault scheduler D.scheduler
+  , perfwrapper = fromDefault perfwrapper D.perfwrapper
+  , power = fromDefault power D.power
+  , monitoring = fromDefault monitoring D.monitoring
+  }
+  where
+    fromDefault :: Default a => (App -> Maybe c) -> (a -> c) -> c
+    fromDefault attr attd = fromMaybe (attd def) (attr app)
+
 fromInternal :: D.Manifest -> Manifest
-fromInternal d = undefined
+fromInternal m = Manifest
+  { name = D.name m
+  , app = fromInternalApp $ D.app m
+  , hwbind = toJust D.hwbind
+  , image = toJust D.image
+  }
+  where
+    toJust :: (D.Manifest -> a) -> Maybe a
+    toJust x = Just $ x m
 
-{-Manifest {..}-}
-{-where-}
-{-workdir = case DT.workdir d of-}
-{-"./" -> Nothing-}
-{-w    -> Just w-}
-{-cmds     = fromInternalCmd <$> DT.cmds d-}
-{-verbose  = if DT.verbose d then Just True else Nothing-}
-{-cleaning = if DT.cleaning d then Just True else Nothing-}
-{-pre      = case DT.pre d of-}
-{-[] -> Nothing-}
-{-l  -> Just l-}
-{-post = case DT.post d of-}
-{-[] -> Nothing-}
-{-l  -> Just l-}
+fromInternalApp :: D.App -> App
+fromInternalApp a = App
+  { slice = D.slice a
+  , scheduler = toJust D.scheduler
+  , perfwrapper = toJust D.perfwrapper
+  , power = toJust D.power
+  , monitoring = toJust D.monitoring
+  }
+  where
+    toJust :: (D.App -> a) -> Maybe a
+    toJust x = Just $ x a
+
 decodeManifestFile :: (MonadIO m) => Text -> m I.Manifest
 decodeManifestFile fn =
   liftIO $ try (decodeFileEither (toS fn)) >>= \case

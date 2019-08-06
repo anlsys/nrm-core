@@ -2,7 +2,6 @@
 
 {-|
 Module      : Nrm.Version
-Description : Version
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr

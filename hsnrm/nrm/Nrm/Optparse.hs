@@ -1,6 +1,5 @@
 {-|
 Module      : Nrm.Optparse
-Description : Argument parsing
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
@@ -14,8 +13,8 @@ where
 import GHC.IO.Encoding
 import qualified Nrm.Optparse.Client as C
 import qualified Nrm.Optparse.Daemon as D
-import Nrm.Types.Configuration.Internal
-import Nrm.Types.Manifest.Internal
+import Nrm.Types.Configuration
+import Nrm.Types.Manifest
 import Options.Applicative
 import Protolude
 import qualified System.IO as SIO

@@ -1,6 +1,5 @@
 {-|
 Module      : Nrm.Types.Configuration.Dhall
-Description : Nrm configuration dhall reader
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
@@ -18,7 +17,7 @@ module Nrm.Types.Configuration.Dhall
 where
 
 import Dhall
-import qualified Nrm.Types.Configuration.Internal as I
+import qualified Nrm.Types.Configuration as I
 import Protolude
 
 -- As soon as Internal.Cfg isn't Interpretable, we write a dhall
