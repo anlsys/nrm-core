@@ -20,15 +20,15 @@ monorepo version of NRM with libnrm code generation and separated logic via shar
 - message *passing*
 ###### `nrm.so` shared library
 - message schemas, serialization, deserialization
-- configuration management
-- manifest management
+- configuration management (dhall+/yaml)
+- manifest management (dhall+/yaml)
 - topology management
 - handware interactions
 - internal daemon state management
 - daemon control flow behavior decisions
 - control loops
 ###### `hsnrm`
-- code generation for libnrm headers, nrmpy bindings
+- code generation for libnrm (c headers, python downstream schema)
 ###### `libnrm`
 - sending progress reports
 
