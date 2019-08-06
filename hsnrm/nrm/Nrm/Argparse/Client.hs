@@ -10,15 +10,29 @@ module Nrm.Argparse.Client
   )
 where
 
-import Nrm.Types.Configuration.Internal (Cfg)
+import qualified Data.ByteString as B
+  ( getContents
+  )
+import Dhall
+import GHC.IO.Encoding
+import qualified Nrm.Types.Manifest.Dhall as D
+import Nrm.Types.Manifest.Internal
+import qualified Nrm.Types.Manifest.Yaml as Y
 import Options.Applicative
 import Protolude
+import System.Directory
+import System.FilePath.Posix
+import qualified System.IO as SIO
+import Text.Editor
+import qualified Prelude
+  ( print
+  )
 
-parseCli :: IO (Maybe Cfg)
-parseCli = do
-  GHC.IO.Encoding.setLocaleEncoding SIO.utf8
-  cfg <-
-    join . customExecParser (prefs showHelpOnError) $
+parseCli :: IO Manifest
+parseCli =
+  GHC.IO.Encoding.setLocaleEncoding SIO.utf8 >>
+    ( join .
+      customExecParser (prefs showHelpOnError) $
       info
         (helper <*> opts)
         ( fullDesc <> header "dhrun" <>
@@ -27,13 +41,13 @@ parseCli = do
               " with streaming assertion monitoring"
             )
         )
-  return cfg
+    )
 
 data MainCfg
   = MainCfg
       { inputfile :: Maybe Text
       , stdinType :: SourceType
-      , verbosity :: Verbosity
+      , verbosity :: ClientVerbosity
       , edit :: Bool
       }
 
@@ -62,12 +76,12 @@ commonParser =
       True
       (long "edit" <> short 'e' <> help "Edit yaml in $EDITOR before running the NRM daemon.")
 
-opts :: Parser (IO ())
+opts :: Parser (IO Manifest)
 opts =
   hsubparser $
     command
       "run"
-      (info (run <$> commonParser) $ progDesc "Run the NRM daemon") <>
+      (info (load <$> commonParser) $ progDesc "Run the NRM daemon") <>
     command
       "print"
       ( info (printY <$> commonParser) $
@@ -89,22 +103,21 @@ ext _ (Just fn)
     xt = takeExtension $ toS fn
 ext st Nothing = FinallyStdin st
 
-load :: MainCfg -> IO Cfg
+load :: MainCfg -> IO Manifest
 load MainCfg {..} =
-  (if edit then editing else return) =<<
-    overrideV <$> case ext stdinType inputfile of
+  (if edit then editing else return) =<< case ext stdinType inputfile of
     (FinallyFile Dhall filename) ->
       (if v then detailed else identity) $
-        inputCfg =<<
+        D.inputManifest =<<
         toS <$>
         makeAbsolute (toS filename)
     (FinallyFile Yaml filename) ->
-      decodeCfgFile =<< toS <$> makeAbsolute (toS filename)
+      Y.decodeManifestFile =<< toS <$> makeAbsolute (toS filename)
     (FinallyStdin Yaml) ->
-      B.getContents <&> decodeCfg >>= \case
+      B.getContents <&> Y.decodeManifest >>= \case
         Left e -> Prelude.print e >> die "yaml parsing exception."
-        Right cfg -> return cfg
-    (FinallyStdin Dhall) -> B.getContents >>= inputCfg . toS
+        Right manifest -> return manifest
+    (FinallyStdin Dhall) -> B.getContents >>= D.inputManifest . toS
     NoExt ->
       die
         ( "couldn't figure out extension for input file. " <>
@@ -112,23 +125,17 @@ load MainCfg {..} =
         )
   where
     v = verbosity == Verbose
-    overrideV x =
-      x
-        { DI.verbosity = if (DI.verbosity x == Verbose) || v
-          then Verbose
-          else Normal
-        }
 
-editing :: Cfg -> IO Cfg
+editing :: Manifest -> IO Manifest
 editing c =
-  runUserEditorDWIM yt (encodeCfg c) <&> decodeCfg >>= \case
+  runUserEditorDWIM yt (Y.encodeManifest c) <&> Y.decodeManifest >>= \case
     Left e -> Prelude.print e >> die "yaml parsing exception."
-    Right cfg -> return cfg
+    Right manifest -> return manifest
   where
     yt = mkTemplate "yaml"
 
-run :: MainCfg -> IO Cfg
-run = load
-
-printY :: MainCfg -> IO (Maybe Cfg)
-printY c = (load c >>= putText . toS . encodeCfg) >> return Nothing
+printY :: MainCfg -> IO Manifest
+printY c = do
+  manifest <- load c
+  putText . toS . Y.encodeManifest $ manifest
+  return manifest

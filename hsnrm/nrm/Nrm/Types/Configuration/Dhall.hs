@@ -1,101 +1,55 @@
 {-|
 Module      : Nrm.Types.Configuration.Dhall
-Description : Nrm configuration
+Description : Nrm configuration dhall reader
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Configuration.Dhall
-  ( Cfg (..)
-  , ContainerRuntime (..)
-  , Verbosity (..)
-  , inputCfg
-  , inputFlat
-  , defaultFlat
-  , decodeFlat
+  ( inputCfg
+  , toInternal
+  , fromInternal
+  , I.Cfg (..)
   )
 where
 
-import Data.Default
-import Data.Flat
 import Dhall
+import qualified Nrm.Types.Configuration.Internal as I
 import Protolude
 
-data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Generic, Interpret, Flat)
+-- TODO : As soon as Internal.Cfg isn't Interpretable,
+-- we write a dhall interpretable layer here. As it stands, this is essentially
+-- a transitive "identity" placeholder
 
-data Verbosity = Normal | Verbose
-  deriving (Generic, Interpret, Flat)
-
-{-deriving via Int instance MessagePack Integer-}
-data Cfg
-  = Cfg
-      { verbose :: Verbosity
-      , logfile :: Text
-      , hwloc :: Text
-      , perf :: Text
-      , argo_perf_wrapper :: Text
-      , argo_nodeos_config :: Text
-      , pmpi_lib :: Text
-      , singularity :: Text
-      , container_runtime :: ContainerRuntime
-      , downstreamCfg :: DownstreamCfg
-      , upstreamCfg :: UpstreamCfg
-      }
-  deriving (Generic, Interpret, Flat)
-
-newtype DownstreamCfg
-  = DownstreamCfg
-      { downstreamBindAddress :: Text
-      }
-  deriving (Generic, Interpret, Flat)
-
--- TODO use Network.Socket.PortNumber
---
-data UpstreamCfg = UpstreamCfg {upstreamBindAddress :: Text, pubPort :: Integer, rpcPort :: Integer}
-  deriving (Generic, Interpret, Flat)
-
-instance Default UpstreamCfg where
-
-  def = UpstreamCfg
-    { upstreamBindAddress = "*"
-    , pubPort = 2345
-    , rpcPort = 3456
-    }
-
-instance Default DownstreamCfg where
-
-  def = DownstreamCfg {downstreamBindAddress = "ipc:///tmp/nrm-downstream-event"}
-
-instance Default Cfg where
-
-  def = Cfg
-    { logfile = "/tmp/nrm.log"
-    , hwloc = "hwloc"
-    , perf = "perf"
-    , argo_perf_wrapper = "nrm-perfwrapper"
-    , argo_nodeos_config = "argo_nodeos_config"
-    , pmpi_lib = "pmpi_lib"
-    , singularity = "singularity"
-    , container_runtime = Dummy
-    , downstreamCfg = def
-    , upstreamCfg = def
-    }
-
-inputCfg :: (MonadIO m) => Text -> m Cfg
-inputCfg fn =
+{-data Cfg-}
+{-= Cfg-}
+{-{ verbose :: I.Verbosity-}
+{-, logfile :: Text-}
+{-, hwloc :: Text-}
+{-, perf :: Text-}
+{-, argo_perf_wrapper :: Text-}
+{-, argo_nodeos_config :: Text-}
+{-, pmpi_lib :: Text-}
+{-, singularity :: Text-}
+{-, container_runtime :: I.ContainerRuntime-}
+{-, downstreamCfg :: I.DownstreamCfg-}
+{-, upstreamCfg :: I.UpstreamCfg-}
+{-}-}
+{-deriving (Generic, Interpret)-}
+inputDCfg :: (MonadIO m) => Text -> m I.Cfg
+inputDCfg fn =
   liftIO $ try (input dt fn) >>= \case
     Right d -> return d
     Left e -> throwError e
   where
-    dt :: Dhall.Type Cfg
+    dt :: Dhall.Type I.Cfg
     dt = Dhall.auto
 
-defaultFlat :: ByteString
-defaultFlat = flat (def :: Cfg)
+toInternal :: I.Cfg -> I.Cfg
+toInternal I.Cfg {..} = undefined
 
-inputFlat :: Text -> IO ByteString
-inputFlat path = flat <$> inputCfg path
+fromInternal :: I.Cfg -> I.Cfg
+fromInternal I.Cfg {..} = undefined
 
-decodeFlat :: ByteString -> Decoded Cfg
-decodeFlat = unflat
+inputCfg :: (MonadIO m) => Text -> m I.Cfg
+inputCfg fn = toInternal <$> inputDCfg fn

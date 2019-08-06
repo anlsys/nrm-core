@@ -8,6 +8,7 @@ Maintainer  : fre@freux.fr
 module Nrm.Behavior
   ( behavior
   , Behavior (..)
+  , SendAPI (..)
   )
 where
 

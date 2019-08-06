@@ -130,6 +130,8 @@ let deps =
           nobound "storable-endian"
       , template-haskell =
           nobound "template-haskell"
+      , vcs-revision =
+          nobound "vcs-revision"
       , mtl =
           nobound "mtl"
       , aeson-pretty =
@@ -172,11 +174,13 @@ let modules =
       , "Nrm.Argparse.Daemon"
       , "Nrm.Argparse.Client"
       , "Nrm.Behavior"
+      , "Nrm.Version"
       ]
 
 let libdep =
       [ deps.base
       , deps.protolude
+      , deps.vcs-revision
       , deps.transformers
       , deps.bytestring
       , deps.data-msgpack

@@ -15,11 +15,34 @@ module Nrm.Types.Manifest.Internal
   , Monitoring (..)
   , ImageType (..)
   , Image (..)
+  , ClientVerbosity (..)
   )
 where
 
+import Data.Default
+import Data.Yaml.Internal
 import Dhall
+import qualified Nrm.Version as V (version)
 import Protolude
+
+data ClientVerbosity = Normal | Verbose
+  deriving (Eq, Generic, Interpret)
+
+data Manifest
+  = Manifest
+      { name :: Text
+      , app :: App
+      , hwbind :: Bool
+      , image :: Image
+      , verbose :: ClientVerbosity
+      }
+  deriving (Generic, Interpret)
+
+instance Default Manifest where
+
+  def = Manifest
+    { name = "default"
+    }
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
   deriving (Generic, Interpret)
@@ -27,10 +50,10 @@ data ContainerRuntime = Singularity | Nodeos | Dummy
 data App
   = App
       { slice :: Slice
-      , scheduler :: Maybe Scheduler
-      , perfwrapper :: Maybe Bool
-      , power :: Maybe Power
-      , monitoring :: Maybe Monitoring
+      , scheduler :: Scheduler
+      , perfwrapper :: Bool
+      , power :: Power
+      , monitoring :: Monitoring
       }
   deriving (Generic, Interpret)
 
@@ -58,16 +81,6 @@ data Power
 newtype Monitoring
   = Monitoring
       { ratelimit :: Integer -- TODO >0
-      }
-  deriving (Generic, Interpret)
-
-data Manifest
-  = Manifest
-      { name :: Text
-      , version :: Text
-      , app :: App
-      , hwbind :: Maybe Bool
-      , image :: Maybe Image
       }
   deriving (Generic, Interpret)
 

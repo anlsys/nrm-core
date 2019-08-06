@@ -54,6 +54,7 @@ library hsnrm-lib
         Nrm.Argparse.Daemon
         Nrm.Argparse.Client
         Nrm.Behavior
+        Nrm.Version
     hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
@@ -72,6 +73,7 @@ library hsnrm-lib
     build-depends:
         base -any,
         protolude -any,
+        vcs-revision -any,
         transformers -any,
         bytestring -any,
         data-msgpack -any,
@@ -136,6 +138,7 @@ library monolith
         Nrm.Argparse.Daemon
         Nrm.Argparse.Client
         Nrm.Behavior
+        Nrm.Version
         Hnrm
         Hnrmd
         Codegen
@@ -163,6 +166,7 @@ library monolith
     build-depends:
         base -any,
         protolude -any,
+        vcs-revision -any,
         transformers -any,
         bytestring -any,
         data-msgpack -any,
@@ -229,6 +233,7 @@ executable nrm.so
         Nrm.Argparse.Daemon
         Nrm.Argparse.Client
         Nrm.Behavior
+        Nrm.Version
         Codegen
         Hnrm
         Hnrmd
@@ -255,6 +260,7 @@ executable nrm.so
     build-depends:
         base -any,
         protolude -any,
+        vcs-revision -any,
         transformers -any,
         bytestring -any,
         data-msgpack -any,

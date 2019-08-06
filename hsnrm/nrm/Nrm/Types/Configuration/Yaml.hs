@@ -1,6 +1,6 @@
 {-|
 Module      : Nrm.Types.Configuration.Yaml
-Description : Nrm configuration
+Description : Nrm configuration yaml reader
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
@@ -9,93 +9,114 @@ module Nrm.Types.Configuration.Yaml
   ( Cfg (..)
   , ContainerRuntime (..)
   , Verbosity (..)
-  , inputCfg
-  , inputFlat
-  , defaultFlat
-  , decodeFlat
+  , decodeCfgFile
+  , decodeCfg
+  , encodeCfg
   )
 where
 
-import Data.Default
-import Data.Flat
+import Data.Aeson
+import Data.Yaml
 import Dhall
+import qualified Nrm.Types.Configuration.Dhall as D
+import qualified Nrm.Types.Configuration.Internal as I
 import Protolude
+import System.IO.Error
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Generic, Interpret, Flat)
+  deriving (Generic, Interpret, ToJSON)
+
+instance FromJSON ContainerRuntime where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
 data Verbosity = Normal | Verbose
-  deriving (Generic, Interpret, Flat)
+  deriving (Generic, Interpret, ToJSON)
 
-{-deriving via Int instance MessagePack Integer-}
+instance FromJSON Verbosity where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+
 data Cfg
   = Cfg
-      { verbose :: Verbosity
-      , logfile :: Text
-      , hwloc :: Text
-      , perf :: Text
-      , argo_perf_wrapper :: Text
-      , argo_nodeos_config :: Text
-      , pmpi_lib :: Text
-      , singularity :: Text
-      , container_runtime :: ContainerRuntime
-      , downstreamCfg :: DownstreamCfg
-      , upstreamCfg :: UpstreamCfg
+      { verbose :: Maybe Verbosity
+      , logfile :: Maybe Text
+      , hwloc :: Maybe Text
+      , perf :: Maybe Text
+      , argo_perf_wrapper :: Maybe Text
+      , argo_nodeos_config :: Maybe Text
+      , pmpi_lib :: Maybe Text
+      , singularity :: Maybe Text
+      , container_runtime :: Maybe ContainerRuntime
+      , downstreamCfg :: Maybe DownstreamCfg
+      , upstreamCfg :: Maybe UpstreamCfg
       }
-  deriving (Generic, Interpret, Flat)
+  deriving (Generic, Interpret, ToJSON)
+
+instance FromJSON Cfg where
+
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
 newtype DownstreamCfg
   = DownstreamCfg
       { downstreamBindAddress :: Text
       }
-  deriving (Generic, Interpret, Flat)
+  deriving (Generic, Interpret, ToJSON)
 
--- TODO use Network.Socket.PortNumber
---
-data UpstreamCfg = UpstreamCfg {upstreamBindAddress :: Text, pubPort :: Integer, rpcPort :: Integer}
-  deriving (Generic, Interpret, Flat)
+instance FromJSON DownstreamCfg where
 
-instance Default UpstreamCfg where
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
-  def = UpstreamCfg
-    { upstreamBindAddress = "*"
-    , pubPort = 2345
-    , rpcPort = 3456
-    }
+data UpstreamCfg
+  = UpstreamCfg
+      { upstreamBindAddress :: Text
+      , pubPort :: Integer
+      , rpcPort :: Integer
+      }
+  deriving (Generic, Interpret, ToJSON)
 
-instance Default DownstreamCfg where
+instance FromJSON UpstreamCfg where
 
-  def = DownstreamCfg {downstreamBindAddress = "ipc:///tmp/nrm-downstream-event"}
+  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
 
-instance Default Cfg where
+toInternal :: Cfg -> D.Cfg
+toInternal d = undefined
 
-  def = Cfg
-    { logfile = "/tmp/nrm.log"
-    , hwloc = "hwloc"
-    , perf = "perf"
-    , argo_perf_wrapper = "nrm-perfwrapper"
-    , argo_nodeos_config = "argo_nodeos_config"
-    , pmpi_lib = "pmpi_lib"
-    , singularity = "singularity"
-    , container_runtime = Dummy
-    , downstreamCfg = def
-    , upstreamCfg = def
-    }
+{-D.Cfg-}
+{-{ cmds     = toInternalCmd <$> cmds d-}
+{-, verbose  = fromMaybe False (verbose d)-}
+{-, cleaning = fromMaybe False (cleaning d)-}
+{-, pre      = fromMaybe [] (pre d)-}
+{-, post     = fromMaybe [] (post d)-}
+{-, workdir  = fromMaybe "./" (workdir d)-}
+{-}-}
+fromInternal :: D.Cfg -> Cfg
+fromInternal d = undefined
 
-inputCfg :: (MonadIO m) => Text -> m Cfg
-inputCfg fn =
-  liftIO $ try (input dt fn) >>= \case
-    Right d -> return d
+{-fromInternal d = Cfg {..}-}
+{-where-}
+{-workdir = case D.workdir d of-}
+{-"./" -> Nothing-}
+{-w    -> Just w-}
+{-cmds     = fromInternalCmd <$> D.cmds d-}
+{-verbose  = if D.verbose d then Just True else Nothing-}
+{-cleaning = if D.cleaning d then Just True else Nothing-}
+{-pre      = case D.pre d of-}
+{-[] -> Nothing-}
+{-l  -> Just l-}
+{-post = case D.post d of-}
+{-[] -> Nothing-}
+{-l  -> Just l-}
+
+decodeCfgFile :: (MonadIO m) => Text -> m I.Cfg
+decodeCfgFile fn =
+  liftIO $ try (decodeFileEither (toS fn)) >>= \case
     Left e -> throwError e
-  where
-    dt :: Dhall.Type Cfg
-    dt = Dhall.auto
+    Right (Left pa) -> throwError $ userError $ "parse fail:" <> show pa
+    Right (Right a) -> return $ D.toInternal $ toInternal a
 
-defaultFlat :: ByteString
-defaultFlat = flat (def :: Cfg)
+decodeCfg :: ByteString -> Either ParseException I.Cfg
+decodeCfg fn = D.toInternal . toInternal <$> decodeEither' fn
 
-inputFlat :: Text -> IO ByteString
-inputFlat path = flat <$> inputCfg path
-
-decodeFlat :: ByteString -> Decoded Cfg
-decodeFlat = unflat
+encodeCfg :: I.Cfg -> ByteString
+encodeCfg = Data.Yaml.encode . fromInternal . D.fromInternal

@@ -8,29 +8,27 @@ Maintainer  : fre@freux.fr
 module Nrm.Types.Configuration.Internal
   ( Cfg (..)
   , ContainerRuntime (..)
-  , Verbosity (..)
-  , inputCfg
-  , inputFlat
-  , defaultFlat
-  , decodeFlat
+  , UpstreamCfg (..)
+  , DownstreamCfg (..)
+  , DaemonVerbosity (..)
   )
 where
 
 import Data.Default
 import Data.Flat
+import Data.Yaml.Internal
 import Dhall
 import Protolude
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
   deriving (Generic, Interpret, Flat)
 
-data Verbosity = Normal | Verbose
-  deriving (Generic, Interpret, Flat)
+data DaemonVerbosity = Normal | Verbose
+  deriving (Eq, Generic, Interpret, Flat)
 
-{-deriving via Int instance MessagePack Integer-}
 data Cfg
   = Cfg
-      { verbose :: Verbosity
+      { verbose :: DaemonVerbosity
       , logfile :: Text
       , hwloc :: Text
       , perf :: Text
@@ -50,9 +48,12 @@ newtype DownstreamCfg
       }
   deriving (Generic, Interpret, Flat)
 
--- TODO use Network.Socket.PortNumber
---
-data UpstreamCfg = UpstreamCfg {upstreamBindAddress :: Text, pubPort :: Integer, rpcPort :: Integer}
+data UpstreamCfg
+  = UpstreamCfg
+      { upstreamBindAddress :: Text
+      , pubPort :: Integer
+      , rpcPort :: Integer
+      }
   deriving (Generic, Interpret, Flat)
 
 instance Default UpstreamCfg where
@@ -80,22 +81,5 @@ instance Default Cfg where
     , container_runtime = Dummy
     , downstreamCfg = def
     , upstreamCfg = def
+    , verbose = Verbose
     }
-
-inputCfg :: (MonadIO m) => Text -> m Cfg
-inputCfg fn =
-  liftIO $ try (input dt fn) >>= \case
-    Right d -> return d
-    Left e -> throwError e
-  where
-    dt :: Dhall.Type Cfg
-    dt = Dhall.auto
-
-defaultFlat :: ByteString
-defaultFlat = flat (def :: Cfg)
-
-inputFlat :: Text -> IO ByteString
-inputFlat path = flat <$> inputCfg path
-
-decodeFlat :: ByteString -> Decoded Cfg
-decodeFlat = unflat

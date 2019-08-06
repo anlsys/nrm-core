@@ -1,83 +1,40 @@
 {-|
 Module      : Nrm.Types.Manifest.Dhall
-Description : Nrm application manifest
+Description : Nrm application manifest dhall reader
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Manifest.Dhall
-  ( Manifest (..)
-  , App (..)
-  , Slice (..)
-  , Scheduler (..)
-  , PowerPolicy (..)
-  , Power (..)
-  , Monitoring (..)
-  , ImageType (..)
-  , Image (..)
+  ( inputManifest
+  , toInternal
+  , fromInternal
+  , I.Manifest(..)
   )
 where
 
 import Dhall
+import qualified Nrm.Types.Manifest.Internal as I
 import Protolude
 
-data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Generic, Interpret)
+-- TODO : As soon as Internal.Cfg isn't Interpretable,
+-- we write a dhall interpretable layer here. As it stands, this is essentially
+-- a transitive "identity" placeholder
 
-data App
-  = App
-      { slice :: Slice
-      , scheduler :: Maybe Scheduler
-      , perfwrapper :: Maybe Bool
-      , power :: Maybe Power
-      , monitoring :: Maybe Monitoring
-      }
-  deriving (Generic, Interpret)
+inputDManifest :: (MonadIO m) => Text -> m I.Manifest
+inputDManifest fn =
+  liftIO $ try (input dt fn) >>= \case
+    Right d -> return d
+    Left e -> throwError e
+  where
+    dt :: Dhall.Type I.Manifest
+    dt = Dhall.auto
 
-data Slice
-  = Slice
-      { cpus :: Integer
-      , mems :: Integer
-      }
-  deriving (Generic, Interpret)
+toInternal :: I.Manifest -> I.Manifest
+toInternal I.Manifest {..} = undefined
 
-data Scheduler = FIFO | HPC | Other Integer
-  deriving (Generic, Interpret)
+fromInternal :: I.Manifest -> I.Manifest
+fromInternal I.Manifest {..} = undefined
 
-data PowerPolicy = NoPowerPolicy | DDCM | DVFS | Combined
-  deriving (Generic, Interpret)
-
-data Power
-  = Power
-      { policy :: PowerPolicy
-      , profile :: Bool
-      , slowdown :: Integer -- TODO shoul be <1
-      }
-  deriving (Generic, Interpret)
-
-newtype Monitoring
-  = Monitoring
-      { ratelimit :: Integer -- TODO >0
-      }
-  deriving (Generic, Interpret)
-
-data Manifest
-  = Manifest
-      { name :: Text
-      , version :: Text
-      , app :: App
-      , hwbind :: Maybe Bool
-      , image :: Maybe Image
-      }
-  deriving (Generic, Interpret)
-
-data ImageType = Sif | Docker
-  deriving (Generic, Interpret)
-
-data Image
-  = Image
-      { path :: Text
-      , magetype :: ImageType
-      , binds :: Maybe [Text]
-      }
-  deriving (Generic, Interpret)
+inputManifest :: (MonadIO m) => Text -> m I.Manifest
+inputManifest fn = toInternal <$> inputDManifest fn
