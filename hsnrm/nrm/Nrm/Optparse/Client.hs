@@ -63,19 +63,19 @@ runParser =
     optional
       ( strOption
         ( long "container" <> short 'c' <>
-          metavar "containerName" <>
+          metavar "CONTAINER" <>
           help
             "Container name/UUID"
         )
       ) <*>
     strArgument
-      ( metavar "cmd" <>
+      ( metavar "CMD" <>
         help
           "Command name"
       ) <*>
     some
       ( strArgument
-        ( metavar "arg" <>
+        ( metavar "ARG" <>
           help
             "Command arguments"
         )
@@ -84,7 +84,7 @@ runParser =
 killParser :: Parser Text
 killParser =
   strArgument
-    ( metavar "container" <>
+    ( metavar "CONTAINER" <>
       help
         "Name/UUID of the container to kill"
     )
@@ -92,7 +92,7 @@ killParser =
 setpowerParser :: Parser Text
 setpowerParser =
   strArgument
-    ( metavar "powerlimit" <>
+    ( metavar "POWERLIMIT" <>
       help
         "Power limit to set"
     )

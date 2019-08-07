@@ -240,20 +240,6 @@ in    prelude.defaults.Package
                   ⫽ { build-depends =
                         libdep
                     , hs-source-dirs =
-                        [ "nrm" ]
-                    , exposed-modules =
-                        modules
-                    }
-                  ⫽ copts ([] : List Text)
-            , name =
-                "hsnrm-lib"
-            }
-          , { library =
-                  λ(config : types.Config)
-                →   prelude.defaults.Library
-                  ⫽ { build-depends =
-                        libdep
-                    , hs-source-dirs =
                         [ "nrm", "bin" ]
                     , exposed-modules =
                           modules
@@ -304,13 +290,45 @@ in    prelude.defaults.Package
                   ⫽ { main-is =
                         "Hnrm.hs"
                     , build-depends =
-                        [ deps.base, deps.protolude, deps.hsnrm-lib ]
+                        libdep
                     , hs-source-dirs =
-                        [ "bin" ]
+                        [ "bin", "nrm" ]
+                    , other-modules =
+                          modules
+                        # [ "FFI.TH"
+                          , "FFI.TypeUncurry"
+                          , "FFI.TypeUncurry.Msgpack"
+                          , "FFI.TypeUncurry.DataKinds"
+                          , "Codegen.Schema"
+                          , "Codegen.CHeader"
+                          ]
                     }
-                  ⫽ copts [ "-threaded", "-main-is", "Hnrm" ]
+                  ⫽ copts ["-main-is" , "Hnrm"]
             , name =
                 "nrm"
+            }
+          , { executable =
+                  λ(config : types.Config)
+                →   prelude.defaults.Executable
+                  ⫽ { main-is =
+                        "Hnrmd.hs"
+                    , build-depends =
+                        libdep
+                    , hs-source-dirs =
+                        [ "bin", "nrm" ]
+                    , other-modules =
+                          modules
+                        # [ "FFI.TH"
+                          , "FFI.TypeUncurry"
+                          , "FFI.TypeUncurry.Msgpack"
+                          , "FFI.TypeUncurry.DataKinds"
+                          , "Codegen.Schema"
+                          , "Codegen.CHeader"
+                          ]
+                    }
+                  ⫽ copts ["-main-is" , "Hnrmd"]
+            , name =
+                "nrmd"
             }
           ]
       , extra-source-files =

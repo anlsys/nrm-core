@@ -25,91 +25,6 @@ source-repository head
     type: git
     location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
 
-library hsnrm-lib
-    exposed-modules:
-        Nrm.Types.Topology
-        Nrm.Types.Units
-        Nrm.Types.Container
-        Nrm.Types.Application
-        Nrm.Types.NrmState
-        Nrm.Types.Configuration
-        Nrm.Types.Manifest
-        Nrm.Types.Messaging.DownstreamEvent
-        Nrm.Types.Messaging.UpstreamPub
-        Nrm.Types.Messaging.UpstreamReq
-        Nrm.Types.Messaging.UpstreamRep
-        Nrm.Containers
-        Nrm.Containers.Class
-        Nrm.Containers.Nodeos
-        Nrm.Containers.Singularity
-        Nrm.Containers.Dummy
-        Nrm.Node.Hwloc
-        Nrm.Node.Sysfs
-        Nrm.Control
-        Nrm.Optparse
-        Nrm.Behavior
-        Nrm.Version
-        Nrm.Node.Sysfs.Internal
-        Nrm.Optparse.Client
-        Nrm.Optparse.Daemon
-        Nrm.Types.Configuration.Dhall
-        Nrm.Types.Configuration.Yaml
-        Nrm.Types.Manifest.Dhall
-        Nrm.Types.Manifest.Yaml
-    hs-source-dirs: nrm
-    default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        RecordWildCards TypeSynonymInstances StandaloneDeriving
-                        FlexibleInstances TupleSections MultiParamTypeClasses
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
-                        TypeOperators DataKinds PolyKinds
-    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns
-    build-depends:
-        base -any,
-        protolude -any,
-        vcs-revision -any,
-        transformers -any,
-        bytestring -any,
-        data-msgpack -any,
-        containers -any,
-        unordered-containers -any,
-        mtl -any,
-        aeson -any,
-        dhall -any,
-        neat-interpolation -any,
-        generic-aeson -any,
-        aeson-pretty -any,
-        pretty-simple -any,
-        typed-process -any,
-        hxt -any,
-        hxt-xpath -any,
-        json-schema -any,
-        yaml -any,
-        data-default -any,
-        flat -any,
-        refined -any,
-        vector -any,
-        optparse-applicative -any,
-        directory -any,
-        regex -any,
-        units -any,
-        unix -any,
-        uuid -any,
-        text -any,
-        units-defs -any,
-        storable-endian -any,
-        template-haskell -any,
-        mtl -any,
-        filepath -any,
-        editor-open -any
-
 library monolith
     exposed-modules:
         Nrm.Types.Topology
@@ -301,7 +216,43 @@ executable nrm.so
 
 executable nrm
     main-is: Hnrm.hs
-    hs-source-dirs: bin
+    hs-source-dirs: bin nrm
+    other-modules:
+        Nrm.Types.Topology
+        Nrm.Types.Units
+        Nrm.Types.Container
+        Nrm.Types.Application
+        Nrm.Types.NrmState
+        Nrm.Types.Configuration
+        Nrm.Types.Manifest
+        Nrm.Types.Messaging.DownstreamEvent
+        Nrm.Types.Messaging.UpstreamPub
+        Nrm.Types.Messaging.UpstreamReq
+        Nrm.Types.Messaging.UpstreamRep
+        Nrm.Containers
+        Nrm.Containers.Class
+        Nrm.Containers.Nodeos
+        Nrm.Containers.Singularity
+        Nrm.Containers.Dummy
+        Nrm.Node.Hwloc
+        Nrm.Node.Sysfs
+        Nrm.Control
+        Nrm.Optparse
+        Nrm.Behavior
+        Nrm.Version
+        Nrm.Node.Sysfs.Internal
+        Nrm.Optparse.Client
+        Nrm.Optparse.Daemon
+        Nrm.Types.Configuration.Dhall
+        Nrm.Types.Configuration.Yaml
+        Nrm.Types.Manifest.Dhall
+        Nrm.Types.Manifest.Yaml
+        FFI.TH
+        FFI.TypeUncurry
+        FFI.TypeUncurry.Msgpack
+        FFI.TypeUncurry.DataKinds
+        Codegen.Schema
+        Codegen.CHeader
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
@@ -315,8 +266,134 @@ executable nrm
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -threaded -main-is Hnrm
+                 -fwarn-incomplete-patterns -main-is Hnrm
     build-depends:
         base -any,
         protolude -any,
-        hsnrm-lib -any
+        vcs-revision -any,
+        transformers -any,
+        bytestring -any,
+        data-msgpack -any,
+        containers -any,
+        unordered-containers -any,
+        mtl -any,
+        aeson -any,
+        dhall -any,
+        neat-interpolation -any,
+        generic-aeson -any,
+        aeson-pretty -any,
+        pretty-simple -any,
+        typed-process -any,
+        hxt -any,
+        hxt-xpath -any,
+        json-schema -any,
+        yaml -any,
+        data-default -any,
+        flat -any,
+        refined -any,
+        vector -any,
+        optparse-applicative -any,
+        directory -any,
+        regex -any,
+        units -any,
+        unix -any,
+        uuid -any,
+        text -any,
+        units-defs -any,
+        storable-endian -any,
+        template-haskell -any,
+        mtl -any,
+        filepath -any,
+        editor-open -any
+
+executable nrmd
+    main-is: Hnrmd.hs
+    hs-source-dirs: bin nrm
+    other-modules:
+        Nrm.Types.Topology
+        Nrm.Types.Units
+        Nrm.Types.Container
+        Nrm.Types.Application
+        Nrm.Types.NrmState
+        Nrm.Types.Configuration
+        Nrm.Types.Manifest
+        Nrm.Types.Messaging.DownstreamEvent
+        Nrm.Types.Messaging.UpstreamPub
+        Nrm.Types.Messaging.UpstreamReq
+        Nrm.Types.Messaging.UpstreamRep
+        Nrm.Containers
+        Nrm.Containers.Class
+        Nrm.Containers.Nodeos
+        Nrm.Containers.Singularity
+        Nrm.Containers.Dummy
+        Nrm.Node.Hwloc
+        Nrm.Node.Sysfs
+        Nrm.Control
+        Nrm.Optparse
+        Nrm.Behavior
+        Nrm.Version
+        Nrm.Node.Sysfs.Internal
+        Nrm.Optparse.Client
+        Nrm.Optparse.Daemon
+        Nrm.Types.Configuration.Dhall
+        Nrm.Types.Configuration.Yaml
+        Nrm.Types.Manifest.Dhall
+        Nrm.Types.Manifest.Yaml
+        FFI.TH
+        FFI.TypeUncurry
+        FFI.TypeUncurry.Msgpack
+        FFI.TypeUncurry.DataKinds
+        Codegen.Schema
+        Codegen.CHeader
+    default-language: Haskell2010
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        RecordWildCards TypeSynonymInstances StandaloneDeriving
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns -main-is Hnrmd
+    build-depends:
+        base -any,
+        protolude -any,
+        vcs-revision -any,
+        transformers -any,
+        bytestring -any,
+        data-msgpack -any,
+        containers -any,
+        unordered-containers -any,
+        mtl -any,
+        aeson -any,
+        dhall -any,
+        neat-interpolation -any,
+        generic-aeson -any,
+        aeson-pretty -any,
+        pretty-simple -any,
+        typed-process -any,
+        hxt -any,
+        hxt-xpath -any,
+        json-schema -any,
+        yaml -any,
+        data-default -any,
+        flat -any,
+        refined -any,
+        vector -any,
+        optparse-applicative -any,
+        directory -any,
+        regex -any,
+        units -any,
+        unix -any,
+        uuid -any,
+        text -any,
+        units-defs -any,
+        storable-endian -any,
+        template-haskell -any,
+        mtl -any,
+        filepath -any,
+        editor-open -any
