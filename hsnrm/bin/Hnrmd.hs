@@ -11,4 +11,4 @@ module Hnrmd
   )
 where
 
-import Nrm.Server
+import Nrm.Daemon

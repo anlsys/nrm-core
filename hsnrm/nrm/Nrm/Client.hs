@@ -27,19 +27,16 @@ address = "tcp://localhost:3456"
 main :: IO ()
 main = do
   req <- parseClientCli
-  print req
+  print (encode req)
   uuid <-
     nextClientUUID <&> \case
       Nothing -> panic "couldn't generate next client UUID"
-      Just c -> case toRestricted (show c) of
-        Nothing -> panic "client UUID can not be casted to Restricted"
-        Just r -> r :: Restricted (N1, N254) SB.ByteString
-  let hwm = fromMaybe (panic "Can not form proper HWM parameter") (toRestricted (0 :: Integer))
+      Just c -> (restrict (show c) :: Restricted (N1, N254) SB.ByteString)
   runZMQ $ do
     s <- socket Dealer
     ZMQ.setIdentity uuid s
-    ZMQ.setSendHighWM hwm s
-    ZMQ.setReceiveHighWM hwm s
+    ZMQ.setSendHighWM (restrict (0 :: Int)) s
+    ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
     connect s (toS address)
     client s req
 

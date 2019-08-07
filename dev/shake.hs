@@ -73,6 +73,11 @@ main =
             ( info (pure (runshake ["doc"]))
               (progDesc "run shake for cabal build.")
             ) <>
+          OA.command
+            "binaries"
+            ( info (pure (runshake ["binaries"]))
+              (progDesc "run shake for cabal build.")
+            ) <>
           help "Type of operation to run."
         )
 
@@ -108,6 +113,15 @@ runshake as =
             , "nrm.so"
             , "--ghc-option=-lHSrts-ghc" <> version
             , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
+            ]
+        )
+    phony "binaries" $
+      liftIO
+        ( runProcess_ $ setWorkingDir "hsnrm" $
+          proc "cabal"
+            [ "v2-build"
+            , "nrmddep"
+            , "nrmdep"
             ]
         )
     phony "doc" $

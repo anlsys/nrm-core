@@ -178,7 +178,7 @@ let modules =
       , "Nrm.Node.Sysfs"
       , "Nrm.Control"
       , "Nrm.Client"
-      , "Nrm.Server"
+      , "Nrm.Daemon"
       , "Nrm.Optparse"
       , "Nrm.Behavior"
       , "Nrm.Version"
@@ -191,15 +191,17 @@ let modules =
       , "Nrm.Types.Manifest.Yaml"
       ]
 
-let allmodules =
-        modules
-      # [ "FFI.TH"
-        , "FFI.TypeUncurry"
-        , "FFI.TypeUncurry.Msgpack"
-        , "FFI.TypeUncurry.DataKinds"
-        , "Codegen.Schema"
-        , "Codegen.CHeader"
-        ]
+let extramodules =
+      [ "FFI.TH"
+      , "FFI.TypeUncurry"
+      , "FFI.TypeUncurry.Msgpack"
+      , "FFI.TypeUncurry.DataKinds"
+      , "Codegen.Schema"
+      , "Codegen.Dhall"
+      , "Codegen.CHeader"
+      ]
+
+let allmodules = modules # extramodules
 
 let libdep =
       [ deps.base
@@ -270,14 +272,7 @@ in    prelude.defaults.Package
                     , hs-source-dirs =
                         [ "nrm" ]
                     , exposed-modules =
-                          modules
-                        # [ "FFI.TH"
-                          , "FFI.TypeUncurry"
-                          , "FFI.TypeUncurry.Msgpack"
-                          , "FFI.TypeUncurry.DataKinds"
-                          , "Codegen.Schema"
-                          , "Codegen.CHeader"
-                          ]
+                        allmodules
                     }
                   ⫽ copts ([] : List Text)
             , name =
