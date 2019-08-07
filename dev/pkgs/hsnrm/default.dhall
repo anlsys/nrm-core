@@ -114,6 +114,10 @@ let deps =
           nobound "containers"
       , unordered-containers =
           nobound "unordered-containers"
+      , zeromq4-conduit =
+          nobound "zeromq4-conduit"
+      , zeromq4-haskell =
+          nobound "zeromq4-haskell"
       , uuid =
           nobound "uuid"
       , editor-open =
@@ -132,8 +136,14 @@ let deps =
           nobound "template-haskell"
       , vcs-revision =
           nobound "vcs-revision"
+      , resourcet =
+          nobound "resourcet"
       , mtl =
           nobound "mtl"
+      , conduit =
+          nobound "conduit"
+      , conduit-extra =
+          nobound "conduit-extra"
       , aeson-pretty =
           nobound "aeson-pretty"
       , generic-aeson =
@@ -153,6 +163,7 @@ let modules =
       , "Nrm.Types.Application"
       , "Nrm.Types.NrmState"
       , "Nrm.Types.Configuration"
+      , "Nrm.Types.Client"
       , "Nrm.Types.Manifest"
       , "Nrm.Types.Messaging.DownstreamEvent"
       , "Nrm.Types.Messaging.UpstreamPub"
@@ -166,6 +177,8 @@ let modules =
       , "Nrm.Node.Hwloc"
       , "Nrm.Node.Sysfs"
       , "Nrm.Control"
+      , "Nrm.Client"
+      , "Nrm.Server"
       , "Nrm.Optparse"
       , "Nrm.Behavior"
       , "Nrm.Version"
@@ -184,12 +197,17 @@ let libdep =
       , deps.vcs-revision
       , deps.transformers
       , deps.bytestring
+      , deps.zeromq4-haskell
+      , deps.zeromq4-conduit
       , deps.data-msgpack
       , deps.containers
       , deps.unordered-containers
       , deps.mtl
       , deps.aeson
       , deps.dhall
+      , deps.conduit
+      , deps.conduit-extra
+      , deps.resourcet
       , deps.neat-interpolation
       , deps.generic-aeson
       , deps.aeson-pretty
@@ -240,21 +258,18 @@ in    prelude.defaults.Package
                   ⫽ { build-depends =
                         libdep
                     , hs-source-dirs =
-                        [ "nrm", "bin" ]
+                        [ "nrm" ]
                     , exposed-modules =
                           modules
-                        # [ "Hnrm", "Hnrmd", "Codegen" ]
                         # [ "FFI.TH"
                           , "FFI.TypeUncurry"
                           , "FFI.TypeUncurry.Msgpack"
                           , "FFI.TypeUncurry.DataKinds"
-                          , "Codegen.Schema"
-                          , "Codegen.CHeader"
                           ]
                     }
                   ⫽ copts ([] : List Text)
             , name =
-                "monolith"
+                "nrmlib"
             }
           ]
       , executables =
@@ -303,7 +318,7 @@ in    prelude.defaults.Package
                           , "Codegen.CHeader"
                           ]
                     }
-                  ⫽ copts ["-main-is" , "Hnrm"]
+                  ⫽ copts [ "-main-is", "Hnrm" ]
             , name =
                 "nrm"
             }
@@ -326,7 +341,7 @@ in    prelude.defaults.Package
                           , "Codegen.CHeader"
                           ]
                     }
-                  ⫽ copts ["-main-is" , "Hnrmd"]
+                  ⫽ copts [ "-main-is", "Hnrmd" ]
             , name =
                 "nrmd"
             }

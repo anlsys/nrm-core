@@ -25,7 +25,7 @@ source-repository head
     type: git
     location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
 
-library monolith
+library nrmlib
     exposed-modules:
         Nrm.Types.Topology
         Nrm.Types.Units
@@ -33,6 +33,7 @@ library monolith
         Nrm.Types.Application
         Nrm.Types.NrmState
         Nrm.Types.Configuration
+        Nrm.Types.Client
         Nrm.Types.Manifest
         Nrm.Types.Messaging.DownstreamEvent
         Nrm.Types.Messaging.UpstreamPub
@@ -46,6 +47,8 @@ library monolith
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Control
+        Nrm.Client
+        Nrm.Server
         Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
@@ -56,16 +59,11 @@ library monolith
         Nrm.Types.Configuration.Yaml
         Nrm.Types.Manifest.Dhall
         Nrm.Types.Manifest.Yaml
-        Hnrm
-        Hnrmd
-        Codegen
         FFI.TH
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
-        Codegen.Schema
-        Codegen.CHeader
-    hs-source-dirs: nrm bin
+    hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
@@ -86,12 +84,17 @@ library monolith
         vcs-revision -any,
         transformers -any,
         bytestring -any,
+        zeromq4-haskell -any,
+        zeromq4-conduit -any,
         data-msgpack -any,
         containers -any,
         unordered-containers -any,
         mtl -any,
         aeson -any,
         dhall -any,
+        conduit -any,
+        conduit-extra -any,
+        resourcet -any,
         neat-interpolation -any,
         generic-aeson -any,
         aeson-pretty -any,
@@ -129,6 +132,7 @@ executable nrm.so
         Nrm.Types.Application
         Nrm.Types.NrmState
         Nrm.Types.Configuration
+        Nrm.Types.Client
         Nrm.Types.Manifest
         Nrm.Types.Messaging.DownstreamEvent
         Nrm.Types.Messaging.UpstreamPub
@@ -142,6 +146,8 @@ executable nrm.so
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Control
+        Nrm.Client
+        Nrm.Server
         Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
@@ -181,12 +187,17 @@ executable nrm.so
         vcs-revision -any,
         transformers -any,
         bytestring -any,
+        zeromq4-haskell -any,
+        zeromq4-conduit -any,
         data-msgpack -any,
         containers -any,
         unordered-containers -any,
         mtl -any,
         aeson -any,
         dhall -any,
+        conduit -any,
+        conduit-extra -any,
+        resourcet -any,
         neat-interpolation -any,
         generic-aeson -any,
         aeson-pretty -any,
@@ -224,6 +235,7 @@ executable nrm
         Nrm.Types.Application
         Nrm.Types.NrmState
         Nrm.Types.Configuration
+        Nrm.Types.Client
         Nrm.Types.Manifest
         Nrm.Types.Messaging.DownstreamEvent
         Nrm.Types.Messaging.UpstreamPub
@@ -237,6 +249,8 @@ executable nrm
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Control
+        Nrm.Client
+        Nrm.Server
         Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
@@ -273,12 +287,17 @@ executable nrm
         vcs-revision -any,
         transformers -any,
         bytestring -any,
+        zeromq4-haskell -any,
+        zeromq4-conduit -any,
         data-msgpack -any,
         containers -any,
         unordered-containers -any,
         mtl -any,
         aeson -any,
         dhall -any,
+        conduit -any,
+        conduit-extra -any,
+        resourcet -any,
         neat-interpolation -any,
         generic-aeson -any,
         aeson-pretty -any,
@@ -316,6 +335,7 @@ executable nrmd
         Nrm.Types.Application
         Nrm.Types.NrmState
         Nrm.Types.Configuration
+        Nrm.Types.Client
         Nrm.Types.Manifest
         Nrm.Types.Messaging.DownstreamEvent
         Nrm.Types.Messaging.UpstreamPub
@@ -329,6 +349,8 @@ executable nrmd
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Control
+        Nrm.Client
+        Nrm.Server
         Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
@@ -365,12 +387,17 @@ executable nrmd
         vcs-revision -any,
         transformers -any,
         bytestring -any,
+        zeromq4-haskell -any,
+        zeromq4-conduit -any,
         data-msgpack -any,
         containers -any,
         unordered-containers -any,
         mtl -any,
         aeson -any,
         dhall -any,
+        conduit -any,
+        conduit-extra -any,
+        resourcet -any,
         neat-interpolation -any,
         generic-aeson -any,
         aeson-pretty -any,

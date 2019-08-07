@@ -6,6 +6,7 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Optparse
   ( parseDaemonCli
+  , parseArgDaemonCli
   , parseClientCli
   )
 where
@@ -23,8 +24,11 @@ customExecParserArgs :: [Text] -> ParserPrefs -> ParserInfo a -> IO a
 customExecParserArgs args pprefs pinfo =
   handleParseResult $ execParserPure pprefs pinfo (toS <$> args)
 
-parseDaemonCli :: [Text] -> IO Cfg
-parseDaemonCli = parseCli "nrmd" "NRM Daemon" D.opts
+parseDaemonCli :: IO Cfg
+parseDaemonCli = fmap toS <$> getArgs >>= parseCli "nrm" "NRM Client" D.opts
+
+parseArgDaemonCli :: [Text] -> IO Cfg
+parseArgDaemonCli = parseCli "nrmd" "NRM Daemon" D.opts
 
 parseClientCli :: IO Req
 parseClientCli = fmap toS <$> getArgs >>= parseCli "nrm" "NRM Client" C.opts

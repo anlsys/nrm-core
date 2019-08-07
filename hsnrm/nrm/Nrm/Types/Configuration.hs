@@ -22,10 +22,10 @@ import Dhall
 import Protolude
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Generic, ToJSON, Interpret, Flat)
+  deriving (Show, Generic, ToJSON, Interpret, Flat)
 
 data DaemonVerbosity = Normal | Verbose
-  deriving (Eq, Generic, ToJSON, Interpret, Flat)
+  deriving (Eq, Show, Generic, ToJSON, Interpret, Flat)
 
 data Cfg
   = Cfg
@@ -41,13 +41,13 @@ data Cfg
       , downstreamCfg :: DownstreamCfg
       , upstreamCfg :: UpstreamCfg
       }
-  deriving (Generic, Interpret, Flat)
+  deriving (Show, Generic, Interpret, Flat)
 
 newtype DownstreamCfg
   = DownstreamCfg
       { downstreamBindAddress :: Text
       }
-  deriving (Generic, Interpret, Flat, ToJSON)
+  deriving (Show, Generic, Interpret, Flat, ToJSON)
 
 data UpstreamCfg
   = UpstreamCfg
@@ -55,7 +55,7 @@ data UpstreamCfg
       , pubPort :: Integer
       , rpcPort :: Integer
       }
-  deriving (Generic, Interpret, Flat, ToJSON)
+  deriving (Show, Generic, Interpret, Flat, ToJSON)
 
 instance FromJSON ContainerRuntime where
 
