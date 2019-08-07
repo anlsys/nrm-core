@@ -110,6 +110,8 @@ let deps =
           nobound "flat"
       , unix =
           nobound "unix"
+      , prettyprinter =
+          nobound "prettyprinter"
       , containers =
           nobound "containers"
       , unordered-containers =
@@ -209,6 +211,7 @@ let libdep =
       , deps.vcs-revision
       , deps.transformers
       , deps.bytestring
+      , deps.prettyprinter
       , deps.zeromq4-haskell
       , deps.zeromq4-conduit
       , deps.data-msgpack
