@@ -64,13 +64,13 @@ main =
             (info (pure cabal) (progDesc "generate cabal file.")) <>
           OA.command "shake" (info (pure (runshake [])) (progDesc "run shake.")) <>
           OA.command
-            "readme"
-            ( info (pure (runshake ["README.md"]))
-              (progDesc "run shake for README.md.")
-            ) <>
-          OA.command
             "build"
             ( info (pure (runshake ["build"]))
+              (progDesc "run shake for cabal build.")
+            ) <>
+          OA.command
+            "doc"
+            ( info (pure (runshake ["doc"]))
               (progDesc "run shake for cabal build.")
             ) <>
           help "Type of operation to run."
@@ -96,17 +96,26 @@ runbritt =
 cabal = runProcess_ $ shell "dhall-to-cabal ./dev/pkgs/hsnrm/default.dhall --output-dir-cwd hsnrm"
 
 runshake as =
-  withArgs as $ shakeArgs shakeOptions $
+  withArgs as $ shakeArgs shakeOptions $ do
     phony "build" $ do
-    version <- liftIO $ toS . strip . toS <$> readProcessStdout_ "ghc --numeric-version"
-    ghcPathRaw <- liftIO $ strip . toS <$> readProcessStdout_ "which ghc"
-    let ghcPath = dropEnd 8 ghcPathRaw
-    liftIO
-      ( runProcess_ $ setWorkingDir "hsnrm" $
-        proc "cabal"
-          [ "v2-build"
-          , "nrm.so"
-          , "--ghc-option=-lHSrts-ghc" <> version
-          , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
-          ]
-      )
+      version <- liftIO $ toS . strip . toS <$> readProcessStdout_ "ghc --numeric-version"
+      ghcPathRaw <- liftIO $ strip . toS <$> readProcessStdout_ "which ghc"
+      let ghcPath = dropEnd 8 ghcPathRaw
+      liftIO
+        ( runProcess_ $ setWorkingDir "hsnrm" $
+          proc "cabal"
+            [ "v2-build"
+            , "nrm.so"
+            , "--ghc-option=-lHSrts-ghc" <> version
+            , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
+            ]
+        )
+    phony "doc" $
+      liftIO
+        ( runProcess_ $ setWorkingDir "hsnrm" $
+          proc "cabal"
+            [ "v2-haddock"
+            , "nrm.so"
+            , "--haddock-hyperlink-source"
+            ]
+        )
