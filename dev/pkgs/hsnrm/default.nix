@@ -7,6 +7,7 @@ let
         json-schema = pkgs.haskell.lib.doJailbreak super.json-schema;
         zeromq4-conduit = pkgs.haskell.lib.dontCheck super.zeromq4-conduit;
         hsnrm = (self.callCabal2nix "hsnrm" (hslib.filter src)) { };
+        dhall = super.dhall_1_24_0;
       };
   };
 in haskellPackages.hsnrm

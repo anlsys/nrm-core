@@ -17,14 +17,21 @@ module Nrm.Codegen
 where
 
 import Codegen.CHeader
+import Codegen.Dhall
 import Codegen.Schema (generatePretty)
+import Dhall
+import qualified Dhall.Core as Dhall
+import qualified Dhall.Parser
+import qualified Dhall.TypeCheck as Dhall
 import NeatInterpolation
+import qualified Nrm.Types.Configuration as CI (Cfg)
+import qualified Nrm.Types.Manifest as MI (Manifest)
 import Nrm.Types.Messaging.DownstreamEvent
 import Nrm.Types.Messaging.UpstreamPub
 import Nrm.Types.Messaging.UpstreamRep
 import Nrm.Types.Messaging.UpstreamReq
-import Nrm.Types.Configuration.Dhall
 import Protolude hiding (Rep)
+import System.Directory
 
 -- | The main code generation binary.
 main :: IO ()
@@ -74,3 +81,37 @@ license =
     */
 
   |]
+
+data KnownType
+  = Cfg
+  | Manifest
+  deriving (Bounded, Enum, Eq, Ord, Read, Show)
+
+dhallType :: KnownType -> Dhall.Expr Dhall.Parser.Src a
+dhallType t =
+  fmap Dhall.absurd
+    ( case t of
+      Cfg -> Dhall.expected cfg
+      Manifest -> Dhall.expected manifest
+    )
+  where
+    cfg :: Dhall.Type CI.Cfg
+    cfg = Dhall.auto
+    manifest :: Dhall.Type MI.Manifest
+    manifest = Dhall.auto
+
+typeFile :: KnownType -> FilePath
+typeFile = \case
+  Cfg -> "types/Cfg.dhall"
+  Manifest -> "types/Manifest.dhall"
+
+generateDhall :: IO ()
+generateDhall = do
+  putText "Generating types..."
+  for_ [minBound .. maxBound] $ \t -> do
+    let localDest = typeFile t
+        expr = importFile . relativeTo localDest . typeFile <$> dhallType t
+        dest = "../resources/" <> localDest
+    putText $ "  Writing type for " <> show t <> " to " <> toS dest
+    createDirectoryIfMissing True (takeDirectory dest)
+    writeOutput dest expr

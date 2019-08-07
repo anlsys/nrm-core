@@ -69,6 +69,11 @@ main =
               (progDesc "run shake for cabal build.")
             ) <>
           OA.command
+            "codegen"
+            ( info (pure (runshake ["codegen"]))
+              (progDesc "run shake for cabal build.")
+            ) <>
+          OA.command
             "doc"
             ( info (pure (runshake ["doc"]))
               (progDesc "run shake for cabal build.")
@@ -115,13 +120,19 @@ runshake as =
             , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
             ]
         )
+      liftIO
+        ( runProcess_ $ setWorkingDir "hsnrm" $
+          proc "cabal"
+            [ "v2-run"
+            , "codegen"
+            ]
+        )
     phony "codegen" $
       liftIO
         ( runProcess_ $ setWorkingDir "hsnrm" $
           proc "cabal"
-            [ "v2-build"
-            , "nrmddep"
-            , "nrmdep"
+            [ "v2-run"
+            , "codegen"
             ]
         )
     phony "binaries" $
