@@ -63,6 +63,8 @@ library nrmlib
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
+        Codegen.Schema
+        Codegen.CHeader
     hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
@@ -158,9 +160,6 @@ executable nrm.so
         Nrm.Types.Configuration.Yaml
         Nrm.Types.Manifest.Dhall
         Nrm.Types.Manifest.Yaml
-        Codegen
-        Hnrm
-        Hnrmd
         FFI.TH
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
@@ -424,3 +423,41 @@ executable nrmd
         mtl -any,
         filepath -any,
         editor-open -any
+
+executable nrmdep
+    main-is: bin/Hnrm.hs
+    default-language: Haskell2010
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        RecordWildCards TypeSynonymInstances StandaloneDeriving
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns -main-is Hnrm
+    build-depends:
+        nrmlib -any
+
+executable nrmddep
+    main-is: bin/Hnrmd.hs
+    default-language: Haskell2010
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        RecordWildCards TypeSynonymInstances StandaloneDeriving
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns -main-is Hnrmd
+    build-depends:
+        nrmlib -any

@@ -191,6 +191,16 @@ let modules =
       , "Nrm.Types.Manifest.Yaml"
       ]
 
+let allmodules =
+        modules
+      # [ "FFI.TH"
+        , "FFI.TypeUncurry"
+        , "FFI.TypeUncurry.Msgpack"
+        , "FFI.TypeUncurry.DataKinds"
+        , "Codegen.Schema"
+        , "Codegen.CHeader"
+        ]
+
 let libdep =
       [ deps.base
       , deps.protolude
@@ -265,6 +275,8 @@ in    prelude.defaults.Package
                           , "FFI.TypeUncurry"
                           , "FFI.TypeUncurry.Msgpack"
                           , "FFI.TypeUncurry.DataKinds"
+                          , "Codegen.Schema"
+                          , "Codegen.CHeader"
                           ]
                     }
                   ⫽ copts ([] : List Text)
@@ -283,17 +295,7 @@ in    prelude.defaults.Package
                     , hs-source-dirs =
                         [ "bin", "nrm" ]
                     , other-modules =
-                          modules
-                        # [ "Codegen"
-                          , "Hnrm"
-                          , "Hnrmd"
-                          , "FFI.TH"
-                          , "FFI.TypeUncurry"
-                          , "FFI.TypeUncurry.Msgpack"
-                          , "FFI.TypeUncurry.DataKinds"
-                          , "Codegen.Schema"
-                          , "Codegen.CHeader"
-                          ]
+                        allmodules
                     }
                   ⫽ copts [ "-fPIC", "-shared", "-dynamic", "-no-hs-main" ]
             , name =
@@ -309,14 +311,7 @@ in    prelude.defaults.Package
                     , hs-source-dirs =
                         [ "bin", "nrm" ]
                     , other-modules =
-                          modules
-                        # [ "FFI.TH"
-                          , "FFI.TypeUncurry"
-                          , "FFI.TypeUncurry.Msgpack"
-                          , "FFI.TypeUncurry.DataKinds"
-                          , "Codegen.Schema"
-                          , "Codegen.CHeader"
-                          ]
+                        allmodules
                     }
                   ⫽ copts [ "-main-is", "Hnrm" ]
             , name =
@@ -332,18 +327,35 @@ in    prelude.defaults.Package
                     , hs-source-dirs =
                         [ "bin", "nrm" ]
                     , other-modules =
-                          modules
-                        # [ "FFI.TH"
-                          , "FFI.TypeUncurry"
-                          , "FFI.TypeUncurry.Msgpack"
-                          , "FFI.TypeUncurry.DataKinds"
-                          , "Codegen.Schema"
-                          , "Codegen.CHeader"
-                          ]
+                        allmodules
                     }
                   ⫽ copts [ "-main-is", "Hnrmd" ]
             , name =
                 "nrmd"
+            }
+          , { executable =
+                  λ(config : types.Config)
+                →   prelude.defaults.Executable
+                  ⫽ { main-is =
+                        "bin/Hnrm.hs"
+                    , build-depends =
+                        [ nobound "nrmlib" ]
+                    }
+                  ⫽ copts [ "-main-is", "Hnrm" ]
+            , name =
+                "nrmdep"
+            }
+          , { executable =
+                  λ(config : types.Config)
+                →   prelude.defaults.Executable
+                  ⫽ { main-is =
+                        "bin/Hnrmd.hs"
+                    , build-depends =
+                        [ nobound "nrmlib" ]
+                    }
+                  ⫽ copts [ "-main-is", "Hnrmd" ]
+            , name =
+                "nrmddep"
             }
           ]
       , extra-source-files =
