@@ -47,6 +47,7 @@ library nrmlib
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Control
+        Nrm.Codegen
         Nrm.Client
         Nrm.Daemon
         Nrm.Optparse
@@ -66,7 +67,7 @@ library nrmlib
         Codegen.Schema
         Codegen.Dhall
         Codegen.CHeader
-    hs-source-dirs: nrm
+    hs-source-dirs: nrm bin
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
@@ -150,6 +151,7 @@ executable nrm.so
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Control
+        Nrm.Codegen
         Nrm.Client
         Nrm.Daemon
         Nrm.Optparse
@@ -252,6 +254,7 @@ executable nrm
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Control
+        Nrm.Codegen
         Nrm.Client
         Nrm.Daemon
         Nrm.Optparse
@@ -354,6 +357,7 @@ executable nrmd
         Nrm.Node.Hwloc
         Nrm.Node.Sysfs
         Nrm.Control
+        Nrm.Codegen
         Nrm.Client
         Nrm.Daemon
         Nrm.Optparse
@@ -467,5 +471,24 @@ executable nrmddep
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
                  -fwarn-incomplete-patterns -main-is Hnrmd
+    build-depends:
+        nrmlib -any
+
+executable codegen
+    main-is: bin/Codegen.hs
+    default-language: Haskell2010
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        RecordWildCards TypeSynonymInstances StandaloneDeriving
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
+                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns -main-is Codegen
     build-depends:
         nrmlib -any

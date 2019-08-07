@@ -179,6 +179,7 @@ let modules =
       , "Nrm.Node.Hwloc"
       , "Nrm.Node.Sysfs"
       , "Nrm.Control"
+      , "Nrm.Codegen"
       , "Nrm.Client"
       , "Nrm.Daemon"
       , "Nrm.Optparse"
@@ -273,7 +274,7 @@ in    prelude.defaults.Package
                   ⫽ { build-depends =
                         libdep
                     , hs-source-dirs =
-                        [ "nrm" ]
+                        [ "nrm", "bin" ]
                     , exposed-modules =
                         allmodules
                     }
@@ -354,6 +355,18 @@ in    prelude.defaults.Package
                   ⫽ copts [ "-main-is", "Hnrmd" ]
             , name =
                 "nrmddep"
+            }
+          , { executable =
+                  λ(config : types.Config)
+                →   prelude.defaults.Executable
+                  ⫽ { main-is =
+                        "bin/Codegen.hs"
+                    , build-depends =
+                        [ nobound "nrmlib" ]
+                    }
+                  ⫽ copts [ "-main-is", "Codegen" ]
+            , name =
+                "codegen"
             }
           ]
       , extra-source-files =

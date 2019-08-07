@@ -115,6 +115,15 @@ runshake as =
             , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
             ]
         )
+    phony "codegen" $
+      liftIO
+        ( runProcess_ $ setWorkingDir "hsnrm" $
+          proc "cabal"
+            [ "v2-build"
+            , "nrmddep"
+            , "nrmdep"
+            ]
+        )
     phony "binaries" $
       liftIO
         ( runProcess_ $ setWorkingDir "hsnrm" $

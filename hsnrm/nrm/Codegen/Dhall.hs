@@ -28,27 +28,25 @@ SOFTWARE.
 Various Dhall code generation related utilities adapted from dhall-to-cabal-meta.
 -}
 module Codegen.Dhall
-  (
+  ( writeOutput
   )
 where
-
 
 import qualified Data.Text.Prettyprint.Doc as Pretty
 import qualified Data.Text.Prettyprint.Doc.Render.Text as Pretty
 import qualified Dhall.Core
-import qualified Dhall.Core as Expr (Expr (..))
-import qualified Dhall.Lint as Lint
-import qualified Dhall.Parser
+{-import qualified Dhall.Lint as Lint-}
+{-import qualified Dhall.Parser-}
 import Protolude
-import System.FilePath
-  ( (<.>)
-  , (</>)
-  , dropTrailingPathSeparator
-  , normalise
-  , splitDirectories
-  , splitFileName
-  , takeDirectory
-  )
+{-import System.FilePath-}
+{-( (<.>)-}
+{-, (</>)-}
+{-, dropTrailingPathSeparator-}
+{-, normalise-}
+{-, splitDirectories-}
+{-, splitFileName-}
+{-, takeDirectory-}
+{-)-}
 import qualified System.IO
 
 writeOutput :: FilePath -> Dhall.Core.Expr s Dhall.Core.Import -> IO ()
@@ -65,5 +63,5 @@ writeOutput dest expr =
 prettyOpts :: Pretty.LayoutOptions
 prettyOpts =
   Pretty.defaultLayoutOptions
-    { Pretty.layoutPageWidth = Pretty.AvailablePerLine 80 1.0 }
-
+    { Pretty.layoutPageWidth = Pretty.AvailablePerLine 80 1.0
+    }
