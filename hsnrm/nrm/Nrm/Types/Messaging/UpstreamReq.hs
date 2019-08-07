@@ -27,26 +27,26 @@ data RunRequest
       , runcontainer_uuid :: ContainerUUID
       , environ :: [(Text, Text)]
       }
-  deriving (Generic)
+  deriving (Show,Generic)
 
 newtype KillRequest
   = KillRequest
       { container_uuid :: Text
       }
-  deriving (Generic)
+  deriving (Show,Generic)
 
 newtype SetPowerRequest
   = SetPowerRequest
       { limit :: Text
       }
-  deriving (Generic)
+  deriving (Show,Generic)
 
 data Req
   = List
   | Run RunRequest
   | Kill KillRequest
   | SetPower SetPowerRequest
-  deriving (Generic)
+  deriving (Show,Generic)
 
 instance ToJSON RunRequest where
 

@@ -20,7 +20,7 @@ import Generics.Generic.Aeson
 import Protolude
 
 data ContainerUUID = ContainerUUID UUID | Name Text
-  deriving (Eq, Ord, Generic)
+  deriving (Show, Eq, Ord, Generic)
 
 instance ToJSON ContainerUUID where
 

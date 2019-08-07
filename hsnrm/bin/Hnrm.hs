@@ -10,7 +10,8 @@ module Hnrm
 where
 
 import Prelude
+import Nrm.Optparse
 
 -- | The main client process
 main :: IO ()
-main = undefined
+main = parseClientCli >>= print

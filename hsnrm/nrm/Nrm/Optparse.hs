@@ -26,8 +26,8 @@ customExecParserArgs args pprefs pinfo =
 parseDaemonCli :: [Text] -> IO Cfg
 parseDaemonCli = parseCli "nrmd" "NRM Daemon" D.opts
 
-parseClientCli :: [Text] -> IO Req
-parseClientCli = parseCli "nrm" "NRM Client" C.opts
+parseClientCli :: IO Req
+parseClientCli = fmap toS <$> getArgs >>= parseCli "nrm" "NRM Client" C.opts
 
 parseCli :: Text -> Text -> Parser (IO a) -> [Text] -> IO a
 parseCli h d x args =

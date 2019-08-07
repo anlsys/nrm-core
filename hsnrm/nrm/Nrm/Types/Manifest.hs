@@ -33,10 +33,10 @@ data Manifest
       , hwbind :: Bool
       , image :: Image
       }
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Show, Generic, Interpret, ToJSON)
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Generic, Interpret)
+  deriving (Show, Generic, Interpret)
 
 data App
   = App
@@ -46,20 +46,20 @@ data App
       , power :: Power
       , monitoring :: Monitoring
       }
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Show, Generic, Interpret, ToJSON)
 
 data Slice
   = Slice
       { cpus :: Integer
       , mems :: Integer
       }
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Show, Generic, Interpret, ToJSON)
 
 data Scheduler = FIFO | HPC | Other Integer
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Show, Generic, Interpret, ToJSON)
 
 data PowerPolicy = NoPowerPolicy | DDCM | DVFS | Combined
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Show, Generic, Interpret, ToJSON)
 
 data Power
   = Power
@@ -67,16 +67,16 @@ data Power
       , profile :: Bool
       , slowdown :: Integer -- TODO shoul be <1
       }
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Show, Generic, Interpret, ToJSON)
 
 newtype Monitoring
   = Monitoring
       { ratelimit :: Integer -- TODO >0
       }
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Show, Generic, Interpret, ToJSON)
 
 data ImageType = Sif | Docker
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Show, Generic, Interpret, ToJSON)
 
 data Image
   = Image
@@ -85,7 +85,7 @@ data Image
       , binds :: Maybe [Text]
       }
   | NoImage
-  deriving (Generic, Interpret, ToJSON)
+  deriving (Show, Generic, Interpret, ToJSON)
 
 instance Default Manifest where
 
