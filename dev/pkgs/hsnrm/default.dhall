@@ -18,6 +18,7 @@ let defexts =
       , types.Extension.ViewPatterns True
       , types.Extension.DeriveAnyClass True
       , types.Extension.DeriveGeneric True
+      , types.Extension.MultiWayIf True
       , types.Extension.TemplateHaskell True
       , types.Extension.BlockArguments True
       , types.Extension.GADTs True

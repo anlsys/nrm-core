@@ -73,8 +73,8 @@ library nrmlib
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
                         NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
-                        TypeOperators DataKinds PolyKinds
+                        DeriveGeneric MultiWayIf TemplateHaskell BlockArguments GADTs
+                        FlexibleContexts TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -176,8 +176,8 @@ executable nrm.so
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
                         NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
-                        TypeOperators DataKinds PolyKinds
+                        DeriveGeneric MultiWayIf TemplateHaskell BlockArguments GADTs
+                        FlexibleContexts TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -279,8 +279,8 @@ executable nrm
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
                         NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
-                        TypeOperators DataKinds PolyKinds
+                        DeriveGeneric MultiWayIf TemplateHaskell BlockArguments GADTs
+                        FlexibleContexts TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -382,8 +382,8 @@ executable nrmd
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
                         NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
-                        TypeOperators DataKinds PolyKinds
+                        DeriveGeneric MultiWayIf TemplateHaskell BlockArguments GADTs
+                        FlexibleContexts TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -443,8 +443,8 @@ executable nrmdep
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
                         NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
-                        TypeOperators DataKinds PolyKinds
+                        DeriveGeneric MultiWayIf TemplateHaskell BlockArguments GADTs
+                        FlexibleContexts TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -462,8 +462,8 @@ executable nrmddep
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
                         NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
-                        TypeOperators DataKinds PolyKinds
+                        DeriveGeneric MultiWayIf TemplateHaskell BlockArguments GADTs
+                        FlexibleContexts TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -481,8 +481,8 @@ executable codegen
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
                         NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric TemplateHaskell BlockArguments GADTs FlexibleContexts
-                        TypeOperators DataKinds PolyKinds
+                        DeriveGeneric MultiWayIf TemplateHaskell BlockArguments GADTs
+                        FlexibleContexts TypeOperators DataKinds PolyKinds
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs

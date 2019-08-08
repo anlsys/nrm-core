@@ -21,6 +21,9 @@ import Codegen.Dhall
 import Codegen.Schema (generatePretty)
 import Dhall
 import qualified Dhall.Core as Dhall
+import qualified Dhall.Core
+import qualified Dhall.Core as Expr (Expr (..))
+import qualified Dhall.Lint as Lint
 import qualified Dhall.Parser
 import qualified Dhall.TypeCheck as Dhall
 import NeatInterpolation
@@ -36,7 +39,9 @@ import System.Directory
 -- | The main code generation binary.
 main :: IO ()
 main = do
+  putText "Codegen: nrm_messaging.h"
   writeFile "../gen/nrm_messaging.h" $ license <> libnrmHeader
+  putText "Codegen: JSON schemas"
   writeFile "../gen/upstreamPub.json" upstreamPubSchema
   writeFile "../gen/upstreamReq.json" upstreamReqSchema
   writeFile "../gen/upstreamRep.json" upstreamRepSchema
@@ -105,13 +110,35 @@ typeFile = \case
   Cfg -> "types/Cfg.dhall"
   Manifest -> "types/Manifest.dhall"
 
+defaultFile :: KnownType -> FilePath
+defaultFile typ = "./defaults/" <> show typ <> ".dhall"
+
 generateDhall :: IO ()
 generateDhall = do
-  putText "Generating types..."
+  putText "Codegen: types."
   for_ [minBound .. maxBound] $ \t -> do
     let localDest = typeFile t
-        expr = importFile . relativeTo localDest . typeFile <$> dhallType t
-        dest = "../resources/" <> localDest
+        expr = dhallType t
+        dest = prefix <> localDest
     putText $ "  Writing type for " <> show t <> " to " <> toS dest
     createDirectoryIfMissing True (takeDirectory dest)
     writeOutput dest expr
+  putStrLn "Codegen: defaults."
+  for_ [minBound .. maxBound] $ \defaultType -> do
+    let localDest =
+          defaultFile defaultType
+        dest = prefix <> localDest
+        expr :: Expr.Expr Dhall.Parser.Src Dhall.Core.Import
+        expr =
+          getDefault
+            defaultType
+    putStrLn $
+      "  Writing default for " ++
+      show defaultType ++
+      " to " ++
+      dest ++
+      "."
+    createDirectoryIfMissing True (takeDirectory dest)
+    writeOutput dest (Lint.lint expr)
+  where
+    prefix = "../resources/"

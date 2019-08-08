@@ -30,8 +30,9 @@ Various Dhall code generation related utilities adapted from dhall-to-cabal-meta
 module Codegen.Dhall
   ( writeOutput
   , relativeTo
-  , importFile
-  , takeDirectory
+  , {-, importFile-}
+    takeDirectory
+  , getDefault
   )
 where
 
@@ -99,28 +100,21 @@ relativeTo =
     go [] bs = bs
     go as [] = ".." <$ as
 
-importFile :: FilePath -> Dhall.Core.Import
-importFile (splitFileName -> (directory, filename)) =
-  let rawComponents =
-        toS <$>
-          splitDirectories (dropTrailingPathSeparator directory)
-      (components, relativity) =
-        case rawComponents of
-          ".." : rest -> (rest, Dhall.Core.Parent)
-          -- `splitFileName "foo"` produces (".", "foo"). It'd be OK to
-          -- leave the dot component in, but we might as well remove it
-          -- for neatness.
-          "." : rest -> (rest, Dhall.Core.Here)
-          _ -> (rawComponents, Dhall.Core.Here)
-   in Dhall.Core.Import
-        { Dhall.Core.importHashed = Dhall.Core.ImportHashed
-            { Dhall.Core.hash = Nothing
-            , Dhall.Core.importType = Dhall.Core.Local
-              relativity
-              ( Dhall.Core.File
-                (Dhall.Core.Directory (reverse components))
-                (toS filename)
-              )
-            }
-        , Dhall.Core.importMode = Dhall.Core.Code
-        }
+getDefault
+  :: (Eq s)
+  => KnownType
+  -> Expr.Expr s Dhall.Core.Import
+getDefault typ = withTypesImport expr
+  where
+    withTypesImport =
+      Expr.Let (Expr.Binding "types" Nothing (Expr.Embed typesLoc) :| [])
+    factorBuildInfo fields =
+      let shared = Map.filter id (Map.intersectionWith (==) fields (buildInfoDefault resolve))
+       in if | null shared ->
+               Expr.RecordLit fields
+             | null (Map.difference fields shared) ->
+               resolve (PreludeDefault BuildInfo)
+             | otherwise ->
+               Expr.Prefer
+                 (resolve (PreludeDefault BuildInfo))
+                 (Expr.RecordLit (Map.difference fields shared))
