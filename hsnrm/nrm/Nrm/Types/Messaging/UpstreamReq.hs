@@ -7,7 +7,7 @@ Maintainer  : fre@freux.fr
 module Nrm.Types.Messaging.UpstreamReq
   ( Req (..)
   , RunRequest (..)
-  , ListRequest (..)
+  , ContainerListRequest (..)
   , KillRequest (..)
   , SetPowerRequest (..)
   )
@@ -19,6 +19,13 @@ import Generics.Generic.Aeson
 import Nrm.Types.Container
 import Nrm.Types.Manifest
 import Protolude
+
+data Req
+  = ContainerList ContainerListRequest
+  | Run RunRequest
+  | Kill KillRequest
+  | SetPower SetPowerRequest
+  deriving (Show, Generic)
 
 data RunRequest
   = RunRequest
@@ -42,25 +49,18 @@ newtype SetPowerRequest
       }
   deriving (Show, Generic)
 
-data ListRequest = ListRequest
+data ContainerListRequest = ContainerListRequest
   deriving (Show, Generic)
 
-data Req
-  = List ListRequest
-  | Run RunRequest
-  | Kill KillRequest
-  | SetPower SetPowerRequest
-  deriving (Show, Generic)
-
-instance ToJSON ListRequest where
+instance ToJSON ContainerListRequest where
 
   toJSON = gtoJson
 
-instance FromJSON ListRequest where
+instance FromJSON ContainerListRequest where
 
   parseJSON = gparseJson
 
-instance JSONSchema ListRequest where
+instance JSONSchema ContainerListRequest where
 
   schema = gSchema
 

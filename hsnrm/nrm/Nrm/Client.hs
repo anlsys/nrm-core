@@ -9,15 +9,14 @@ module Nrm.Client
   )
 where
 
-import Control.Monad
-import Data.Aeson (encode)
+import Data.Aeson (decode, encode)
 import qualified Data.ByteString as SB
 import Data.Restricted
 import Nrm.Optparse
 import Nrm.Types.Client
+import qualified Nrm.Types.Messaging.Protocols as Protocols
+import qualified Nrm.Types.Messaging.UpstreamRep as UpstreamRep
 import qualified Nrm.Types.Messaging.UpstreamReq as UpstreamReq
-{-import qualified Nrm.Types.Messaging.UpstreamRep as UpstreamRep-}
-{-import qualified Nrm.Types.Messaging.Protocols as P-}
 import Protolude
 import System.IO (hFlush)
 import System.ZMQ4.Monadic as ZMQ
@@ -42,18 +41,40 @@ main = do
     connect s $ toS address
     client s req
 
-client :: Socket z Dealer -> UpstreamReq.Req -> ZMQ z b
+client :: Socket z Dealer -> UpstreamReq.Req -> ZMQ z ()
 client s req = do
   send s [] (toS $ encode req)
-  forever $ do
-    receive s >>= liftIO . print
-    liftIO $ hFlush stdout
+  dispatchProtocol s req
 
-{-go :: Protocol -}
+dispatchProtocol :: Socket z Dealer -> UpstreamReq.Req -> ZMQ z ()
+dispatchProtocol s = \case
+  (UpstreamReq.ContainerList x) -> reqrep s Protocols.ContainerList x
+  (UpstreamReq.Kill x) -> reqrep s Protocols.Kill x
+  (UpstreamReq.SetPower x) -> reqrep s Protocols.SetPower x
+  (UpstreamReq.Run x) -> reqstream s Protocols.Run x
 
-{-stream :: Socket z Dealer -> Upstream.Req -> ZMQ z b-}
-{-stream s req = do-}
-  {-send s [] (toS $ encode req)-}
-  {-forever $ do-}
-    {-receive s >>= liftIO . print-}
-    {-liftIO $ hFlush stdout-}
+reqrep :: Socket z Dealer -> Protocols.ReqRep req rep -> req -> ZMQ z ()
+reqrep s = \case
+  Protocols.ContainerList ->
+    const $ do
+      msg <- receive s
+      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
+      liftIO $ hFlush stdout
+  Protocols.SetPower ->
+    const $ do
+      msg <- receive s
+      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
+      liftIO $ hFlush stdout
+  Protocols.Kill ->
+    const $ do
+      msg <- receive s
+      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
+      liftIO $ hFlush stdout
+
+reqstream :: Socket z Dealer -> Protocols.ReqStream req rep -> req -> ZMQ z ()
+reqstream s = \case
+  Protocols.Run ->
+    const $ forever $ do
+      msg <- receive s
+      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
+      liftIO $ hFlush stdout

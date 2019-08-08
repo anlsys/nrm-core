@@ -115,7 +115,7 @@ opts =
       ) <>
     command
       "list"
-      (info (return <$> pure (List ListRequest)) $ progDesc "List existing containers") <>
+      (info (return <$> pure (ContainerList ContainerListRequest)) $ progDesc "List existing containers") <>
     help
       "Choice of operation."
 

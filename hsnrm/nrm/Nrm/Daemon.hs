@@ -56,7 +56,7 @@ server s =
 {-dummyReply :: Socket z Router -> ByteString -> Req.Req -> ZMQ z ()-}
 dummyReply :: Req.Req -> Socket z Router -> ByteString -> ZMQ z ()
 dummyReply = \case
-  (Req.List x) -> sendOne (Rep.RepList (dummy Protocols.ContainerList x))
+  (Req.ContainerList x) -> sendOne (Rep.RepList (dummy Protocols.ContainerList x))
   (Req.Kill x) -> sendOne (Rep.RepProcessExit (dummy Protocols.Kill x))
   (Req.SetPower x) -> sendOne (Rep.RepGetPower (dummy Protocols.SetPower x))
   (Req.Run _) -> panic "no run reply implemented in this dummy mode."
