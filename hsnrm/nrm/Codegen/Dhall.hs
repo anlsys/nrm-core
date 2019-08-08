@@ -32,7 +32,6 @@ module Codegen.Dhall
   , relativeTo
   , {-, importFile-}
     takeDirectory
-  , getDefault
   )
 where
 
@@ -56,7 +55,6 @@ import System.FilePath
   , joinPath
   , normalise
   , splitDirectories
-  , splitFileName
   , takeDirectory
   )
 import qualified System.IO
@@ -99,22 +97,3 @@ relativeTo =
       | otherwise = (".." <$ (a : as)) ++ (b : bs)
     go [] bs = bs
     go as [] = ".." <$ as
-
-getDefault
-  :: (Eq s)
-  => KnownType
-  -> Expr.Expr s Dhall.Core.Import
-getDefault typ = withTypesImport expr
-  where
-    withTypesImport =
-      Expr.Let (Expr.Binding "types" Nothing (Expr.Embed typesLoc) :| [])
-    factorBuildInfo fields =
-      let shared = Map.filter id (Map.intersectionWith (==) fields (buildInfoDefault resolve))
-       in if | null shared ->
-               Expr.RecordLit fields
-             | null (Map.difference fields shared) ->
-               resolve (PreludeDefault BuildInfo)
-             | otherwise ->
-               Expr.Prefer
-                 (resolve (PreludeDefault BuildInfo))
-                 (Expr.RecordLit (Map.difference fields shared))

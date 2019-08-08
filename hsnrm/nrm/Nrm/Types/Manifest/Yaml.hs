@@ -81,8 +81,10 @@ fromInternal m = Manifest
   , image = toJust D.image
   }
   where
-    toJust :: (D.Manifest -> a) -> Maybe a
-    toJust x = Just $ x m
+    toJust :: (Eq a) => (D.Manifest -> a) -> Maybe a
+    toJust x = if x (def :: D.Manifest) == xd then Nothing else Just xd
+      where
+        xd = x m
 
 fromInternalApp :: D.App -> App
 fromInternalApp a = App
@@ -93,8 +95,10 @@ fromInternalApp a = App
   , monitoring = toJust D.monitoring
   }
   where
-    toJust :: (D.App -> a) -> Maybe a
-    toJust x = Just $ x a
+    toJust :: (Eq a) => (D.App -> a) -> Maybe a
+    toJust x = if x (def :: D.App) == xd then Nothing else Just xd
+      where
+        xd = x a
 
 decodeManifestFile :: (MonadIO m) => Text -> m I.Manifest
 decodeManifestFile fn =

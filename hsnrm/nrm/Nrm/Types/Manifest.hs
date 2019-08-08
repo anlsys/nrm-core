@@ -33,10 +33,10 @@ data Manifest
       , hwbind :: Bool
       , image :: Image
       }
-  deriving (Show, Generic, Interpret, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject)
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Show, Generic, Interpret)
+  deriving (Eq, Show, Generic, Interpret)
 
 data App
   = App
@@ -46,20 +46,20 @@ data App
       , power :: Power
       , monitoring :: Monitoring
       }
-  deriving (Show, Generic, Interpret, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject)
 
 data Slice
   = Slice
       { cpus :: Integer
       , mems :: Integer
       }
-  deriving (Show, Generic, Interpret, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject)
 
 data Scheduler = FIFO | HPC | Other Integer
-  deriving (Show, Generic, Interpret, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject)
 
 data PowerPolicy = NoPowerPolicy | DDCM | DVFS | Combined
-  deriving (Show, Generic, Interpret, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject)
 
 data Power
   = Power
@@ -67,16 +67,16 @@ data Power
       , profile :: Bool
       , slowdown :: Integer -- TODO shoul be <1
       }
-  deriving (Show, Generic, Interpret, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject)
 
 newtype Monitoring
   = Monitoring
       { ratelimit :: Integer -- TODO >0
       }
-  deriving (Show, Generic, Interpret, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject)
 
 data ImageType = Sif | Docker
-  deriving (Show, Generic, Interpret, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject)
 
 data Image
   = Image
@@ -85,7 +85,7 @@ data Image
       , binds :: Maybe [Text]
       }
   | NoImage
-  deriving (Show, Generic, Interpret, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject)
 
 instance Default Manifest where
 
@@ -126,42 +126,6 @@ instance Default Slice where
 
   def = Slice {cpus = 1, mems = 1}
 
-instance FromJSON App where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-instance FromJSON Slice where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-instance FromJSON Scheduler where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-instance FromJSON PowerPolicy where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-instance FromJSON Power where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-instance FromJSON Monitoring where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-instance FromJSON Manifest where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-instance FromJSON ImageType where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
-instance FromJSON Image where
-
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
-
 instance JSONSchema Manifest where
 
   schema = gSchema
@@ -197,3 +161,79 @@ instance JSONSchema Monitoring where
 instance JSONSchema PowerPolicy where
 
   schema = gSchema
+
+instance ToJSON Manifest where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance FromJSON Manifest where
+
+  parseJSON = genericParseJSON jsonOptions
+
+instance ToJSON App where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance FromJSON App where
+
+  parseJSON = genericParseJSON jsonOptions
+
+instance ToJSON Slice where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance FromJSON Slice where
+
+  parseJSON = genericParseJSON jsonOptions
+
+instance ToJSON Image where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance FromJSON Image where
+
+  parseJSON = genericParseJSON jsonOptions
+
+instance ToJSON ImageType where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance FromJSON ImageType where
+
+  parseJSON = genericParseJSON jsonOptions
+
+instance ToJSON Scheduler where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance FromJSON Scheduler where
+
+  parseJSON = genericParseJSON jsonOptions
+
+instance ToJSON Power where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance FromJSON Power where
+
+  parseJSON = genericParseJSON jsonOptions
+
+instance ToJSON Monitoring where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance FromJSON Monitoring where
+
+  parseJSON = genericParseJSON jsonOptions
+
+instance ToJSON PowerPolicy where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance FromJSON PowerPolicy where
+
+  parseJSON = genericParseJSON jsonOptions
+
+
+jsonOptions :: Options
+jsonOptions = defaultOptions {omitNothingFields = True}

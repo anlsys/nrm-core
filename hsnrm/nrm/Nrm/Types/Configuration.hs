@@ -22,10 +22,10 @@ import Dhall
 import Protolude
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Show, Generic, ToJSON, Interpret, Flat)
+  deriving (Eq, Show, Generic, Interpret, Inject, Flat)
 
 data DaemonVerbosity = Normal | Verbose
-  deriving (Eq, Show, Generic, ToJSON, Interpret, Flat)
+  deriving (Eq, Show, Generic, Interpret, Inject, Flat)
 
 data Cfg
   = Cfg
@@ -41,13 +41,13 @@ data Cfg
       , downstreamCfg :: DownstreamCfg
       , upstreamCfg :: UpstreamCfg
       }
-  deriving (Show, Generic, Interpret, Flat)
+  deriving (Eq, Show, Generic, Interpret, Inject, Flat)
 
 newtype DownstreamCfg
   = DownstreamCfg
       { downstreamBindAddress :: Text
       }
-  deriving (Show, Generic, Interpret, Flat, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject, Flat)
 
 data UpstreamCfg
   = UpstreamCfg
@@ -55,23 +55,43 @@ data UpstreamCfg
       , pubPort :: Integer
       , rpcPort :: Integer
       }
-  deriving (Show, Generic, Interpret, Flat, ToJSON)
+  deriving (Eq, Show, Generic, Interpret, Inject, Flat)
+
+instance ToJSON ContainerRuntime where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance ToJSON DaemonVerbosity where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance ToJSON Cfg where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance ToJSON DownstreamCfg where
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance ToJSON UpstreamCfg where
+
+  toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON ContainerRuntime where
 
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+  parseJSON = genericParseJSON jsonOptions
 
 instance FromJSON DaemonVerbosity where
 
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+  parseJSON = genericParseJSON jsonOptions
 
 instance FromJSON DownstreamCfg where
 
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+  parseJSON = genericParseJSON jsonOptions
 
 instance FromJSON UpstreamCfg where
 
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+  parseJSON = genericParseJSON jsonOptions
 
 instance Default UpstreamCfg where
 
@@ -100,3 +120,6 @@ instance Default Cfg where
     , upstreamCfg = def
     , verbose = Verbose
     }
+
+jsonOptions :: Options
+jsonOptions = defaultOptions {omitNothingFields = True, tagSingleConstructors=True}

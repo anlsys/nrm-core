@@ -15,8 +15,8 @@ where
 import Data.Aeson
 import Data.Default
 import Data.Yaml
-import qualified Nrm.Types.Configuration.Dhall as D
 import qualified Nrm.Types.Configuration as I
+import qualified Nrm.Types.Configuration.Dhall as D
 import Protolude
 import System.IO.Error
 
@@ -73,8 +73,10 @@ fromInternal d = Cfg
   , upstreamCfg = toJust D.upstreamCfg
   }
   where
-    toJust :: (D.Cfg -> a) -> Maybe a
-    toJust x = Just $ x d
+    toJust :: (Eq a) => (D.Cfg -> a) -> Maybe a
+    toJust x = if x (def :: D.Cfg) == xd then Nothing else Just xd
+      where
+        xd = x d
 
 decodeCfgFile :: (MonadIO m) => Text -> m I.Cfg
 decodeCfgFile fn =
