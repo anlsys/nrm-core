@@ -12,8 +12,11 @@ module Nrm.Daemon
 where
 
 import Control.Monad
+import Data.Aeson
 import Data.Restricted
 import Nrm.Optparse (parseDaemonCli)
+import qualified Nrm.Types.Messaging.UpstreamRep as Rep (Rep (..))
+import qualified Nrm.Types.Messaging.UpstreamReq as Req (Req (..))
 import Protolude
 import System.IO (hFlush)
 import System.ZMQ4.Monadic as ZMQ
@@ -36,5 +39,19 @@ main = do
 server :: Socket z Router -> ZMQ z b
 server s =
   forever $ do
-    receive s >>= liftIO . print
+    msg <- receive s
+    print msg
     liftIO $ hFlush stdout
+    req <-
+      case decode $ toS msg of
+        Nothing -> panic "Couldn't decode incoming message."
+        Just r -> liftIO (print r) >> return r
+    liftIO $ print req
+    liftIO $ hFlush stdout
+    send s [] (toS . encode $ dummyReply req)
+
+dummyReply :: Req.Req -> Rep.Rep
+dummyReply Req.List = Rep.List {containers = ["foo", "bar"]}
+dummyReply (Req.Run _) = Rep.List {containers = ["foo", "bar"]}
+dummyReply (Req.Kill _) = Rep.List {containers = ["foo", "bar"]}
+dummyReply (Req.SetPower _) = Rep.List {containers = ["foo", "bar"]}

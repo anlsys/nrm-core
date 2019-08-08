@@ -15,8 +15,8 @@ where
 import Data.Aeson
 import Data.JSON.Schema
 import Generics.Generic.Aeson
-import Nrm.Types.Manifest
 import Nrm.Types.Container
+import Nrm.Types.Manifest
 import Protolude
 
 data RunRequest
@@ -27,26 +27,26 @@ data RunRequest
       , runcontainer_uuid :: ContainerUUID
       , environ :: [(Text, Text)]
       }
-  deriving (Show,Generic)
+  deriving (Show, Generic)
 
 newtype KillRequest
   = KillRequest
       { container_uuid :: Text
       }
-  deriving (Show,Generic)
+  deriving (Show, Generic)
 
 newtype SetPowerRequest
   = SetPowerRequest
       { limit :: Text
       }
-  deriving (Show,Generic)
+  deriving (Show, Generic)
 
 data Req
   = List
   | Run RunRequest
   | Kill KillRequest
   | SetPower SetPowerRequest
-  deriving (Show,Generic)
+  deriving (Show, Generic)
 
 instance ToJSON RunRequest where
 
