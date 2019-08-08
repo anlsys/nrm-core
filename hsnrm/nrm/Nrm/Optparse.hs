@@ -15,8 +15,6 @@ import GHC.IO.Encoding
 import qualified Nrm.Optparse.Client as C
 import qualified Nrm.Optparse.Daemon as D
 import Nrm.Types.Configuration
-import Nrm.Types.Client
-import Nrm.Types.Messaging.UpstreamReq
 import Options.Applicative
 import Protolude
 import qualified System.IO as SIO
