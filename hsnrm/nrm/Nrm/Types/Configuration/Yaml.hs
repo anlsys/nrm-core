@@ -5,8 +5,7 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Configuration.Yaml
-  ( Cfg (..)
-  , decodeCfgFile
+  ( decodeCfgFile
   , decodeCfg
   , encodeCfg
   )
@@ -34,11 +33,17 @@ data Cfg
       , downstreamCfg :: Maybe D.DownstreamCfg
       , upstreamCfg :: Maybe D.UpstreamCfg
       }
-  deriving (Generic, ToJSON)
+  deriving (Generic)
+
+instance ToJSON Cfg where
+
+  toJSON = genericToJSON I.jsonOptions
+
+  toEncoding = genericToEncoding I.jsonOptions
 
 instance FromJSON Cfg where
 
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+  parseJSON = genericParseJSON I.jsonOptions
 
 toInternal :: Cfg -> D.Cfg
 toInternal d = D.Cfg
@@ -60,7 +65,7 @@ toInternal d = D.Cfg
 
 fromInternal :: D.Cfg -> Cfg
 fromInternal d = Cfg
-  { verbose = if D.verbose d == D.Verbose then Just True else Nothing
+  { verbose = if D.verbose d == D.verbose (def :: D.Cfg) then Just True else Nothing
   , logfile = toJust D.logfile
   , hwloc = toJust D.hwloc
   , perf = toJust D.perf
@@ -89,4 +94,4 @@ decodeCfg :: ByteString -> Either ParseException I.Cfg
 decodeCfg fn = D.toInternal . toInternal <$> decodeEither' fn
 
 encodeCfg :: I.Cfg -> ByteString
-encodeCfg = Data.Yaml.encode . fromInternal . D.fromInternal
+encodeCfg = Data.Yaml.encode . Data.Aeson.toJSON . fromInternal . D.fromInternal

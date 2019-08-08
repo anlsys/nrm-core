@@ -10,6 +10,7 @@ module Nrm.Types.Configuration
   , UpstreamCfg (..)
   , DownstreamCfg (..)
   , DaemonVerbosity (..)
+  , jsonOptions
   )
 where
 
@@ -59,22 +60,27 @@ data UpstreamCfg
 
 instance ToJSON ContainerRuntime where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance ToJSON DaemonVerbosity where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance ToJSON Cfg where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance ToJSON DownstreamCfg where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance ToJSON UpstreamCfg where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON ContainerRuntime where
@@ -118,8 +124,8 @@ instance Default Cfg where
     , container_runtime = Dummy
     , downstreamCfg = def
     , upstreamCfg = def
-    , verbose = Verbose
+    , verbose = Normal
     }
 
 jsonOptions :: Options
-jsonOptions = defaultOptions {omitNothingFields = True, tagSingleConstructors=True}
+jsonOptions = defaultOptions {omitNothingFields = True}

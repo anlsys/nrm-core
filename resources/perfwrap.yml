@@ -1,7 +1,0 @@
-name: "perfwrap"
-version: 0.0.1
-app:
-  slice:
-    cpus: 2
-    mems: 1
-  perfwrapper: true

@@ -25,12 +25,9 @@ import Protolude
 -- "identity" placeholder.
 inputDCfg :: (MonadIO m) => Text -> m I.Cfg
 inputDCfg fn =
-  liftIO $ try (input dt fn) >>= \case
+  liftIO $ try (input (Dhall.auto :: Dhall.Type I.Cfg) fn) >>= \case
     Right d -> return d
     Left e -> throwError e
-
-dt :: Dhall.Type I.Cfg
-dt = Dhall.auto
 
 toInternal :: I.Cfg -> I.Cfg
 toInternal = identity

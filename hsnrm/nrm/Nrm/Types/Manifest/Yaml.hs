@@ -5,8 +5,8 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Manifest.Yaml
-  ( Manifest (..)
-  , decodeManifestFile
+  (
+  decodeManifestFile
   , decodeManifest
   , encodeManifest
   )
@@ -14,7 +14,7 @@ where
 
 import Data.Aeson
 import Data.Default
-import Data.Yaml
+import qualified Data.Yaml
 import qualified Nrm.Types.Manifest as I
 import qualified Nrm.Types.Manifest.Dhall as D
 import Protolude
@@ -30,7 +30,7 @@ data Manifest
       , hwbind :: Maybe Bool
       , image :: Maybe I.Image
       }
-  deriving (Generic, ToJSON)
+  deriving (Generic)
 
 data App
   = App
@@ -40,15 +40,25 @@ data App
       , power :: Maybe I.Power
       , monitoring :: Maybe I.Monitoring
       }
-  deriving (Generic, ToJSON)
+  deriving (Generic)
 
 instance FromJSON Manifest where
 
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+  parseJSON = genericParseJSON I.jsonOptions
 
 instance FromJSON App where
 
-  parseJSON = genericParseJSON defaultOptions {omitNothingFields = True}
+  parseJSON = genericParseJSON I.jsonOptions
+
+instance ToJSON Manifest where
+
+  toJSON = genericToJSON I.jsonOptions
+  toEncoding = genericToEncoding I.jsonOptions
+
+instance ToJSON App where
+
+  toJSON = genericToJSON I.jsonOptions
+  toEncoding = genericToEncoding I.jsonOptions
 
 toInternal :: Manifest -> D.Manifest
 toInternal d = D.Manifest
@@ -102,13 +112,13 @@ fromInternalApp a = App
 
 decodeManifestFile :: (MonadIO m) => Text -> m I.Manifest
 decodeManifestFile fn =
-  liftIO $ try (decodeFileEither (toS fn)) >>= \case
+  liftIO $ try (Data.Yaml.decodeFileEither (toS fn)) >>= \case
     Left e -> throwError e
     Right (Left pa) -> throwError $ userError $ "parse fail:" <> show pa
     Right (Right a) -> return $ D.toInternal $ toInternal a
 
-decodeManifest :: ByteString -> Either ParseException I.Manifest
-decodeManifest fn = D.toInternal . toInternal <$> decodeEither' fn
+decodeManifest :: ByteString -> Either Data.Yaml.ParseException I.Manifest
+decodeManifest fn = D.toInternal . toInternal <$> Data.Yaml.decodeEither' fn
 
 encodeManifest :: I.Manifest -> ByteString
 encodeManifest = Data.Yaml.encode . fromInternal . D.fromInternal

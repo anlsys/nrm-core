@@ -14,11 +14,12 @@ module Nrm.Types.Manifest
   , Monitoring (..)
   , ImageType (..)
   , Image (..)
+  , jsonOptions
   )
 where
 
 import Data.Aeson
-{-import Generics.Generic.Aeson-}
+import Generics.Generic.Aeson ()
 import Data.Default
 import Data.JSON.Schema
 import Data.Yaml ()
@@ -164,6 +165,7 @@ instance JSONSchema PowerPolicy where
 
 instance ToJSON Manifest where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Manifest where
@@ -172,6 +174,7 @@ instance FromJSON Manifest where
 
 instance ToJSON App where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON App where
@@ -180,6 +183,7 @@ instance FromJSON App where
 
 instance ToJSON Slice where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Slice where
@@ -188,6 +192,7 @@ instance FromJSON Slice where
 
 instance ToJSON Image where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Image where
@@ -196,6 +201,7 @@ instance FromJSON Image where
 
 instance ToJSON ImageType where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON ImageType where
@@ -204,6 +210,7 @@ instance FromJSON ImageType where
 
 instance ToJSON Scheduler where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Scheduler where
@@ -212,6 +219,7 @@ instance FromJSON Scheduler where
 
 instance ToJSON Power where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Power where
@@ -220,6 +228,7 @@ instance FromJSON Power where
 
 instance ToJSON Monitoring where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Monitoring where
@@ -228,12 +237,12 @@ instance FromJSON Monitoring where
 
 instance ToJSON PowerPolicy where
 
+  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON PowerPolicy where
 
   parseJSON = genericParseJSON jsonOptions
-
 
 jsonOptions :: Options
 jsonOptions = defaultOptions {omitNothingFields = True}
