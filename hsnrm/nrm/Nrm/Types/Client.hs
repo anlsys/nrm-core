@@ -7,6 +7,7 @@ Maintainer  : fre@freux.fr
 module Nrm.Types.Client
   ( ClientUUID (..)
   , nextClientUUID
+  , ClientVerbosity (..)
   )
 where
 
@@ -19,3 +20,6 @@ newtype ClientUUID = ClientUUID UUID
 
 nextClientUUID :: IO (Maybe ClientUUID)
 nextClientUUID = fmap ClientUUID <$> nextUUID
+
+data ClientVerbosity = Normal | Verbose
+  deriving (Eq, Show)

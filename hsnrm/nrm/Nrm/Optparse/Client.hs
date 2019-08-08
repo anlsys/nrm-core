@@ -6,6 +6,8 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Optparse.Client
   ( opts
+  , Opts (..)
+  , CommonOpts (..)
   )
 where
 
@@ -13,6 +15,7 @@ import qualified Data.ByteString as B
   ( getContents
   )
 import Dhall
+import Nrm.Types.Client
 import Nrm.Types.Container
 import Nrm.Types.Manifest
 import qualified Nrm.Types.Manifest.Dhall as D
@@ -28,6 +31,18 @@ import qualified Prelude
   ( print
   )
 
+newtype CommonOpts
+  = CommonOpts
+      { verbose :: ClientVerbosity
+      }
+
+parserCommon :: Parser CommonOpts
+parserCommon =
+  CommonOpts <$>
+    flag Normal
+      Verbose
+      (long "verbose" <> short 'v' <> help "Enable verbose mode.")
+
 data RunCfg
   = RunCfg
       { stdinType :: SourceType
@@ -38,8 +53,8 @@ data RunCfg
       , runargs :: [Text]
       }
 
-runParser :: Parser RunCfg
-runParser =
+parserRun :: Parser RunCfg
+parserRun =
   RunCfg <$>
     flag
       Dhall
@@ -81,41 +96,43 @@ runParser =
         )
       )
 
-killParser :: Parser Text
-killParser =
+parserKill :: Parser Text
+parserKill =
   strArgument
     ( metavar "CONTAINER" <>
       help
         "Name/UUID of the container to kill"
     )
 
-setpowerParser :: Parser Text
-setpowerParser =
+parserSetpower :: Parser Text
+parserSetpower =
   strArgument
     ( metavar "POWERLIMIT" <>
       help
         "Power limit to set"
     )
 
-opts :: Parser (IO Req)
+data Opts = Opts {req :: Req, commonOpts :: CommonOpts}
+
+opts :: Parser (IO Opts)
 opts =
   hsubparser $
     command "run"
-      ( info (run <$> runParser) $
+      ( info (run <$> parserRun <*> parserCommon) $
         progDesc "Run the application via NRM"
       ) <>
     command "kill"
-      ( info (return <$> (Kill . KillRequest <$> killParser)) $
+      ( info (return <$> (Opts <$> (Kill . KillRequest <$> parserKill) <*> parserCommon)) $
         progDesc "Kill container"
       ) <>
     command
       "setpower"
-      ( info (return <$> (SetPower . SetPowerRequest <$> setpowerParser)) $
+      ( info (return <$> (Opts <$> (SetPower . SetPowerRequest <$> parserSetpower) <*> parserCommon)) $
         progDesc "Set power limit"
       ) <>
     command
       "list"
-      (info (return <$> pure (ContainerList ContainerListRequest)) $ progDesc "List existing containers") <>
+      (info (return <$> (Opts (ContainerList ContainerListRequest) <$> parserCommon)) $ progDesc "List existing containers") <>
     help
       "Choice of operation."
 
@@ -162,21 +179,25 @@ editing c =
   where
     yt = mkTemplate "yaml"
 
-run :: RunCfg -> IO Req
-run rc = do
+run :: RunCfg -> CommonOpts -> IO Opts
+run rc common = do
   manifest <- load rc
   cn <-
     case containerName rc of
       Nothing -> fromMaybe (panic "Couldn't generate next container UUID") <$> nextContainerUUID
       Just n -> return $ Name n
   env <- fmap (\(x, y) -> (toS x, toS y)) <$> getEnvironment
-  return $ Run $ RunRequest
-    { manifest = manifest
-    , path = cmd rc
-    , args = runargs rc
-    , runcontainer_uuid = cn
-    , environ = env
-    }
+  return $
+    Opts
+      ( Run $ RunRequest
+        { manifest = manifest
+        , path = cmd rc
+        , args = runargs rc
+        , runcontainer_uuid = cn
+        , environ = env
+        }
+      )
+      common
 
 {-containerName :: Maybe Text-}
 {-cmd :: Text-}

@@ -8,6 +8,9 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Daemon
   ( main
+  , server
+  , dummyReply
+  , dummy
   )
 where
 
@@ -26,7 +29,7 @@ import System.ZMQ4.Monadic as ZMQ
 address :: Text
 address = "tcp://*:3456"
 
--- | The main nrm client process
+-- | The main user facing nrm daemon process
 main :: IO ()
 main = do
   req <- parseDaemonCli
@@ -53,7 +56,6 @@ server s =
           dummyReply req s clientUUID
     _ -> panic "received a message with more than two parts:"
 
-{-dummyReply :: Socket z Router -> ByteString -> Req.Req -> ZMQ z ()-}
 dummyReply :: Req.Req -> Socket z Router -> ByteString -> ZMQ z ()
 dummyReply = \case
   (Req.ContainerList x) -> sendOne (Rep.RepList (dummy Protocols.ContainerList x))
@@ -63,17 +65,9 @@ dummyReply = \case
 
 dummy :: Protocols.ReqRep req rep -> req -> rep
 dummy = \case
-  Protocols.ContainerList -> const $ Rep.ContainerList ["foo$", "bar"]
+  Protocols.ContainerList -> const $ Rep.ContainerList ["foo", "bar"]
   Protocols.SetPower -> const $ Rep.GetPower "266"
   Protocols.Kill -> const $ Rep.ProcessExit "foo" "1"
 
-{-dummyReply (Req.Kill x) = Rep.RepProcessExit (dummyreqrep Protocols.Kill x)-}
-{-dummyReply (Req.SetPower x) = Rep.RepGetPower (dummyreqrep Protocols.SetPower x)-}
-{-dummyReply (Req.Run x) = Rep.RepList (reqstream Protocols.Run x)-}
-
-{-sendOne :: (Sender t) => Socket z t -> ByteString -> Rep.Rep -> ZMQ z ()-}
 sendOne :: (Sender t, ToJSON a) => a -> Socket z t -> ByteString -> ZMQ z ()
 sendOne reply s clientUUID = sendMulti s (fromList [clientUUID, toS . encode $ reply])
-
-{-reqstream :: Protocols.ReqRep req rep -> req -> a-}
-{-reqstream Protocols.Run = undefined-}
