@@ -7,6 +7,7 @@ Maintainer  : fre@freux.fr
 module Nrm.Types.Messaging.UpstreamReq
   ( Req (..)
   , RunRequest (..)
+  , ListRequest (..)
   , KillRequest (..)
   , SetPowerRequest (..)
   )
@@ -41,12 +42,27 @@ newtype SetPowerRequest
       }
   deriving (Show, Generic)
 
+data ListRequest = ListRequest
+  deriving (Show, Generic)
+
 data Req
-  = List
+  = List ListRequest
   | Run RunRequest
   | Kill KillRequest
   | SetPower SetPowerRequest
   deriving (Show, Generic)
+
+instance ToJSON ListRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON ListRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ListRequest where
+
+  schema = gSchema
 
 instance ToJSON RunRequest where
 

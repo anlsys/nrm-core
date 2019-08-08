@@ -172,6 +172,7 @@ let modules =
       , "Nrm.Types.Messaging.UpstreamPub"
       , "Nrm.Types.Messaging.UpstreamReq"
       , "Nrm.Types.Messaging.UpstreamRep"
+      , "Nrm.Types.Messaging.Protocols"
       , "Nrm.Containers"
       , "Nrm.Containers.Class"
       , "Nrm.Containers.Nodeos"

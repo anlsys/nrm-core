@@ -39,6 +39,7 @@ library nrmlib
         Nrm.Types.Messaging.UpstreamPub
         Nrm.Types.Messaging.UpstreamReq
         Nrm.Types.Messaging.UpstreamRep
+        Nrm.Types.Messaging.Protocols
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -143,6 +144,7 @@ executable nrm.so
         Nrm.Types.Messaging.UpstreamPub
         Nrm.Types.Messaging.UpstreamReq
         Nrm.Types.Messaging.UpstreamRep
+        Nrm.Types.Messaging.Protocols
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -246,6 +248,7 @@ executable nrm
         Nrm.Types.Messaging.UpstreamPub
         Nrm.Types.Messaging.UpstreamReq
         Nrm.Types.Messaging.UpstreamRep
+        Nrm.Types.Messaging.Protocols
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -349,6 +352,7 @@ executable nrmd
         Nrm.Types.Messaging.UpstreamPub
         Nrm.Types.Messaging.UpstreamReq
         Nrm.Types.Messaging.UpstreamRep
+        Nrm.Types.Messaging.Protocols
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos

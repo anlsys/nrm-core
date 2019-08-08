@@ -15,7 +15,9 @@ import qualified Data.ByteString as SB
 import Data.Restricted
 import Nrm.Optparse
 import Nrm.Types.Client
-import qualified Nrm.Types.Messaging.UpstreamReq as Upstream
+import qualified Nrm.Types.Messaging.UpstreamReq as UpstreamReq
+{-import qualified Nrm.Types.Messaging.UpstreamRep as UpstreamRep-}
+{-import qualified Nrm.Types.Messaging.Protocols as P-}
 import Protolude
 import System.IO (hFlush)
 import System.ZMQ4.Monadic as ZMQ
@@ -37,12 +39,21 @@ main = do
     ZMQ.setIdentity uuid s
     ZMQ.setSendHighWM (restrict (0 :: Int)) s
     ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
-    connect s (toS address)
+    connect s $ toS address
     client s req
 
-client :: Socket z Dealer -> Upstream.Req -> ZMQ z b
+client :: Socket z Dealer -> UpstreamReq.Req -> ZMQ z b
 client s req = do
   send s [] (toS $ encode req)
   forever $ do
     receive s >>= liftIO . print
     liftIO $ hFlush stdout
+
+{-go :: Protocol -}
+
+{-stream :: Socket z Dealer -> Upstream.Req -> ZMQ z b-}
+{-stream s req = do-}
+  {-send s [] (toS $ encode req)-}
+  {-forever $ do-}
+    {-receive s >>= liftIO . print-}
+    {-liftIO $ hFlush stdout-}
