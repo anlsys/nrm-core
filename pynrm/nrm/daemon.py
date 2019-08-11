@@ -8,21 +8,21 @@
 # SPDX-License-Identifier: BSD-3-Clause
 ###############################################################################
 
-from __future__ import print_function
 
-from applications import ApplicationManager
-from containers import ContainerManager, NodeOSRuntime, SingularityUserRuntime
-from controller import Controller, PowerActuator
-from powerpolicy import PowerPolicyManager
+from __future__ import print_function
+# from nrm.applications import ApplicationManager
+# from nrm.containers import ContainerManager, NodeOSRuntime, SingularityUserRuntime
+# from nrm.controller import Controller, PowerActuator
+# from nrm.powerpolicy import PowerPolicyManager
 from functools import partial
 import logging
 import os
-from resources import ResourceManager
-from sensor import SensorManager
+# from resources import ResourceManager
+# from sensor import SensorManager
 import signal
-from zmq.eventloop import ioloop # type: ignore
-from messaging import UpstreamRPCServer, UpstreamPubServer, \
-    DownstreamEventServer
+from zmq.eventloop import ioloop  # type: ignore
+# from messaging import UpstreamRPCServer, UpstreamPubServer, \
+    # DownstreamEventServer
 
 logger = logging.getLogger('nrm')
 
@@ -98,16 +98,16 @@ class Daemon(object):
             pid, container = self.container_manager.create(params)
             container_uuid = container.uuid
             if len(container.processes) == 1:
-                if container.power['policy']:
-                    container.power['manager'] = PowerPolicyManager(
-                        container.resources.cpus,
-                        container.power['policy'],
-                        float(container.power['damper']),
-                        float(container.power['slowdown']))
-                if container.power['profile']:
-                    p = container.power['profile']
-                    p['start'] = self.machine_info['energy']['energy']
-                    p['start']['time'] = self.machine_info['time']
+                # if container.power['policy']:
+                    # container.power['manager'] = PowerPolicyManager(
+                        # container.resources.cpus,
+                        # container.power['policy'],
+                        # float(container.power['damper']),
+                        # float(container.power['slowdown']))
+                # if container.power['profile']:
+                    # p = container.power['profile']
+                    # p['start'] = self.machine_info['energy']['energy']
+                    # p['start']['time'] = self.machine_info['time']
                 self.upstream_pub_server.send(
                     tag='start',
                     container_uuid=container_uuid,
@@ -319,8 +319,11 @@ class Daemon(object):
         ioloop.IOLoop.current().start()
 
 
-def runner(config):
-    if config.verbose:
+def runner(config, nrmlib):
+    print(config)
+    print(nrmlib.verbose(config))
+    # print(config)
+    if nrmlib.verbose(config):
         logger.setLevel(logging.DEBUG)
 
     if config.nrm_log:

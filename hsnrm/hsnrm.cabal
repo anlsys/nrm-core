@@ -49,6 +49,7 @@ library nrmlib
         Nrm.Node.Sysfs
         Nrm.Control
         Nrm.Codegen
+        Nrm.Export
         Nrm.Client
         Nrm.Daemon
         Nrm.Optparse
@@ -154,6 +155,7 @@ executable nrm.so
         Nrm.Node.Sysfs
         Nrm.Control
         Nrm.Codegen
+        Nrm.Export
         Nrm.Client
         Nrm.Daemon
         Nrm.Optparse
@@ -258,6 +260,7 @@ executable nrm
         Nrm.Node.Sysfs
         Nrm.Control
         Nrm.Codegen
+        Nrm.Export
         Nrm.Client
         Nrm.Daemon
         Nrm.Optparse
@@ -362,6 +365,7 @@ executable nrmd
         Nrm.Node.Sysfs
         Nrm.Control
         Nrm.Codegen
+        Nrm.Export
         Nrm.Client
         Nrm.Daemon
         Nrm.Optparse

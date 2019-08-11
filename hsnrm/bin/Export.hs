@@ -8,23 +8,23 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Export
-  ( getDefaultRAPLDirs
+  (
   )
 where
 
 import FFI.TypeUncurry.Msgpack
 import Foreign.C
-import qualified Nrm.Node.Sysfs as NrmSysfs (getDefaultRAPLDirs)
-{-import qualified Nrm.Types.Configuration as C (inputFlat)-}
-{-import qualified Nrm.Node.Sysfs as NrmSysfs (getDefaultRAPLDirs, readRAPLConfigurations)-}
+import Nrm.Export
 import Protolude
 
-foreign export ccall getDefaultRAPLDirs :: CString -> IO CString
+-- | daemon CLI arguments
+foreign export ccall parseArgDaemonCli_export :: CString -> IO CString
 
-getDefaultRAPLDirs :: CString -> IO CString
-getDefaultRAPLDirs = exportIO NrmSysfs.getDefaultRAPLDirs
+parseArgDaemonCli_export :: CString -> IO CString
+parseArgDaemonCli_export = exportIO parseDaemon
 
-{-foreign export ccall inputCfg :: CString -> IO CString-}
+-- | verbosity config query
+foreign export ccall verbose_export :: CString -> IO CString
 
-{-inputCfg :: CString -> IO CString-}
-{-inputCfg = exportIO C.inputFlat-}
+verbose_export :: CString -> IO CString
+verbose_export = export isVerbose

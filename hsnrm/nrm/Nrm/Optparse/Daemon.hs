@@ -38,7 +38,7 @@ commonParser =
   MainCfg <$>
     optional
       ( strArgument
-        ( metavar "INPUT" <>
+        ( metavar "CONFIG" <>
           help
             "Input configuration with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
         )

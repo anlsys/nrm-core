@@ -10,6 +10,7 @@ dist*
 .ghc.*
 rts
 hsnrm/a.out
+*.pyc
 
 # Based on github/gitignore
 # Byte-compiled / optimized / DLL files

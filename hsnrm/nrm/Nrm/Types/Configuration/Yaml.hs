@@ -8,6 +8,7 @@ module Nrm.Types.Configuration.Yaml
   ( decodeCfgFile
   , decodeCfg
   , encodeCfg
+  , encodeDCfg
   )
 where
 
@@ -95,3 +96,6 @@ decodeCfg fn = D.toInternal . toInternal <$> decodeEither' fn
 
 encodeCfg :: I.Cfg -> ByteString
 encodeCfg = Data.Yaml.encode . Data.Aeson.toJSON . fromInternal . D.fromInternal
+
+encodeDCfg :: D.Cfg -> ByteString
+encodeDCfg = Data.Yaml.encode . Data.Aeson.toJSON . fromInternal

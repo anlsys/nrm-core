@@ -13,6 +13,9 @@ module Nrm.Codegen
   , upstreamRepSchema
   , downstreamEventSchema
   , libnrmHeader
+  , licenseC
+  , licenseDhall
+  , licenseYaml
   )
 where
 
@@ -26,8 +29,8 @@ import qualified Dhall.Lint as Lint
 import qualified Dhall.Parser
 import qualified Dhall.TypeCheck as Dhall
 import NeatInterpolation
-import qualified Nrm.Types.Configuration as CI (Cfg)
-import qualified Nrm.Types.Configuration.Yaml as CI (encodeCfg)
+import qualified Nrm.Types.Configuration.Dhall as CD (Cfg)
+import qualified Nrm.Types.Configuration.Yaml as CI (encodeDCfg)
 import qualified Nrm.Types.Manifest as MI (Manifest)
 import qualified Nrm.Types.Manifest.Yaml as MI (encodeManifest)
 import Nrm.Types.Messaging.DownstreamEvent
@@ -142,11 +145,11 @@ data KnownType
 dhallType :: KnownType -> Dhall.Expr Dhall.Parser.Src a
 dhallType =
   fmap Dhall.absurd <$> \case
-    Cfg -> Dhall.expected (Dhall.auto :: Dhall.Type CI.Cfg)
+    Cfg -> Dhall.expected (Dhall.auto :: Dhall.Type CD.Cfg)
     Manifest -> Dhall.expected (Dhall.auto :: Dhall.Type MI.Manifest)
 
 yamlType :: KnownType -> ByteString
-yamlType Cfg = CI.encodeCfg (def :: CI.Cfg)
+yamlType Cfg = CI.encodeDCfg (def :: CD.Cfg)
 yamlType Manifest = MI.encodeManifest (def :: MI.Manifest)
 
 sandwich :: Semigroup a => a -> a -> a -> a
@@ -167,7 +170,7 @@ typeFile = sandwich "types/" ".dhall" . show
 getDefault :: KnownType -> Dhall.Expr Dhall.Parser.Src b
 getDefault x =
   Dhall.absurd <$> case x of
-    Cfg -> embed (injectWith defaultInterpretOptions) (def :: CI.Cfg)
+    Cfg -> embed (injectWith defaultInterpretOptions) (def :: CD.Cfg)
     Manifest -> embed (injectWith defaultInterpretOptions) (def :: MI.Manifest)
 
 generateDefaultConfigurations :: IO ()

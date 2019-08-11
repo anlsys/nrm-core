@@ -72,8 +72,16 @@ in rec {
 
   hack = hsnrm-hack.overrideAttrs (o: {
     buildInputs = o.buildInputs
-      ++ [ (pkgs.python37.withPackages (ps: [ ps.msgpack ])) ]
-      ++ libnrm-hack.buildInputs;
+      ++ [ (pkgs.python37.withPackages (ps: [ ps.msgpack ps.pyzmq ])) ]
+      ++ libnrm-hack.buildInputs ++ [
+        nrmPythonPackages.flake8
+        nrmPythonPackages.autopep8
+        nrmPythonPackages.black
+        nrmPythonPackages.mypy
+        nrmPythonPackages.pytype
+        nrmPythonPackages.sphinx
+      ];
+    #++ pynrm-hack.buildInputs;
   });
 }
 

@@ -2,11 +2,11 @@
     "oneOf": [
         {
             "required": [
-                "list"
+                "repList"
             ],
             "type": "object",
             "properties": {
-                "list": {
+                "repList": {
                     "required": [
                         "containers"
                     ],
@@ -25,21 +25,21 @@
         },
         {
             "required": [
-                "stdout"
+                "repStdout"
             ],
             "type": "object",
             "properties": {
-                "stdout": {
+                "repStdout": {
                     "required": [
-                        "container_uuid",
-                        "payload"
+                        "stdoutContainerUUUID",
+                        "stdoutPayload"
                     ],
                     "type": "object",
                     "properties": {
-                        "payload": {
+                        "stdoutPayload": {
                             "type": "string"
                         },
-                        "container_uuid": {
+                        "stdoutContainerUUUID": {
                             "type": "string"
                         }
                     }
@@ -48,21 +48,21 @@
         },
         {
             "required": [
-                "stderr"
+                "repStderr"
             ],
             "type": "object",
             "properties": {
-                "stderr": {
+                "repStderr": {
                     "required": [
-                        "container_uuid",
-                        "payload"
+                        "stderrContainerUUID",
+                        "stderrPayload"
                     ],
                     "type": "object",
                     "properties": {
-                        "payload": {
+                        "stderrContainerUUID": {
                             "type": "string"
                         },
-                        "container_uuid": {
+                        "stderrPayload": {
                             "type": "string"
                         }
                     }
@@ -71,22 +71,22 @@
         },
         {
             "required": [
-                "start"
+                "repStart"
             ],
             "type": "object",
             "properties": {
-                "start": {
+                "repStart": {
                     "required": [
-                        "container_uuid",
+                        "startContainerUUID",
                         "pid"
                     ],
                     "type": "object",
                     "properties": {
+                        "startContainerUUID": {
+                            "type": "string"
+                        },
                         "pid": {
                             "type": "number"
-                        },
-                        "container_uuid": {
-                            "type": "string"
                         }
                     }
                 }
@@ -94,11 +94,11 @@
         },
         {
             "required": [
-                "processExit"
+                "repProcessExit"
             ],
             "type": "object",
             "properties": {
-                "processExit": {
+                "repProcessExit": {
                     "required": [
                         "container_uuid",
                         "status"
@@ -117,11 +117,11 @@
         },
         {
             "required": [
-                "getPower"
+                "repGetPower"
             ],
             "type": "object",
             "properties": {
-                "getPower": {
+                "repGetPower": {
                     "required": [
                         "limit"
                     ],

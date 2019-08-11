@@ -2,13 +2,12 @@
     "oneOf": [
         {
             "required": [
-                "list"
+                "containerList"
             ],
             "type": "object",
             "properties": {
-                "list": {
-                    "type": "object",
-                    "properties": {}
+                "containerList": {
+                    "const": "\"containerListRequest\""
                 }
             }
         },

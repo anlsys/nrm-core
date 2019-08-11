@@ -182,6 +182,7 @@ let modules =
       , "Nrm.Node.Sysfs"
       , "Nrm.Control"
       , "Nrm.Codegen"
+      , "Nrm.Export"
       , "Nrm.Client"
       , "Nrm.Daemon"
       , "Nrm.Optparse"

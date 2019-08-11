@@ -1,5 +1,5 @@
 {-|
-Module      : Nrm.Types.Configuration.Internal
+Module      : Nrm.Types.Configuration
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
@@ -17,6 +17,7 @@ where
 import Data.Aeson
 import Data.Default
 import Data.Flat
+import Data.MessagePack
 import Data.Yaml ()
 import Data.Yaml.Internal ()
 import Dhall
@@ -42,7 +43,7 @@ data Cfg
       , downstreamCfg :: DownstreamCfg
       , upstreamCfg :: UpstreamCfg
       }
-  deriving (Eq, Show, Generic, Interpret, Inject, Flat)
+  deriving (Eq, Show, Generic, Flat)
 
 newtype DownstreamCfg
   = DownstreamCfg
@@ -53,34 +54,43 @@ newtype DownstreamCfg
 data UpstreamCfg
   = UpstreamCfg
       { upstreamBindAddress :: Text
-      , pubPort :: Integer
-      , rpcPort :: Integer
+      , pubPort :: Int
+      , rpcPort :: Int
       }
-  deriving (Eq, Show, Generic, Interpret, Inject, Flat)
+  deriving (Eq, Show, Generic, Flat)
 
+deriving instance MessagePack Cfg
+
+deriving instance MessagePack DaemonVerbosity
+
+deriving instance MessagePack UpstreamCfg
+
+deriving instance MessagePack DownstreamCfg
+
+deriving instance MessagePack ContainerRuntime
+
+{-toObject = toObject . flat-}
+
+{-fromObject o = fromObject o >>= go-}
+{-where-}
+{-go :: (Monad m) => ByteString -> m Cfg-}
+{-go bs = return (fromRight (panic "couldn't decode cfg from flat") (unflat bs))-}
 instance ToJSON ContainerRuntime where
 
   toJSON = genericToJSON jsonOptions
+
   toEncoding = genericToEncoding jsonOptions
 
 instance ToJSON DaemonVerbosity where
 
   toJSON = genericToJSON jsonOptions
-  toEncoding = genericToEncoding jsonOptions
 
-instance ToJSON Cfg where
-
-  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance ToJSON DownstreamCfg where
 
   toJSON = genericToJSON jsonOptions
-  toEncoding = genericToEncoding jsonOptions
 
-instance ToJSON UpstreamCfg where
-
-  toJSON = genericToJSON jsonOptions
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON ContainerRuntime where
@@ -95,37 +105,9 @@ instance FromJSON DownstreamCfg where
 
   parseJSON = genericParseJSON jsonOptions
 
-instance FromJSON UpstreamCfg where
-
-  parseJSON = genericParseJSON jsonOptions
-
-instance Default UpstreamCfg where
-
-  def = UpstreamCfg
-    { upstreamBindAddress = "*"
-    , pubPort = 2345
-    , rpcPort = 3456
-    }
-
 instance Default DownstreamCfg where
 
   def = DownstreamCfg {downstreamBindAddress = "ipc:///tmp/nrm-downstream-event"}
-
-instance Default Cfg where
-
-  def = Cfg
-    { logfile = "/tmp/nrm.log"
-    , hwloc = "hwloc"
-    , perf = "perf"
-    , argo_perf_wrapper = "nrm-perfwrapper"
-    , argo_nodeos_config = "argo_nodeos_config"
-    , pmpi_lib = "pmpi_lib"
-    , singularity = "singularity"
-    , container_runtime = Dummy
-    , downstreamCfg = def
-    , upstreamCfg = def
-    , verbose = Normal
-    }
 
 jsonOptions :: Options
 jsonOptions = defaultOptions {omitNothingFields = True}
