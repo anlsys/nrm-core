@@ -1,6 +1,8 @@
 {-# LANGUAGE ForeignFunctionInterface #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
+{-# OPTIONS_GHC -fno-warn-missing-signatures #-}
+
 {-|
 Module      : export
 Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -14,17 +16,29 @@ where
 
 import FFI.TypeUncurry.Msgpack
 import Foreign.C
-import Nrm.Export
+import qualified Nrm.Export as E
 import Protolude
 
--- | daemon CLI arguments
-foreign export ccall parseArgDaemonCli_export :: CString -> IO CString
+foreign export ccall cliExport :: CString -> IO CString
 
-parseArgDaemonCli_export :: CString -> IO CString
-parseArgDaemonCli_export = exportIO parseDaemon
+cliExport = exportIO E.parseDaemon
 
--- | verbosity config query
-foreign export ccall verbose_export :: CString -> IO CString
+foreign export ccall verboseExport :: CString -> IO CString
 
-verbose_export :: CString -> IO CString
-verbose_export = export isVerbose
+foreign export ccall logfileExport :: CString -> IO CString
+
+foreign export ccall upstreamRpcAddressExport :: CString -> IO CString
+
+foreign export ccall upstreamPubAddressExport :: CString -> IO CString
+
+foreign export ccall downstreamEventAddressExport :: CString -> IO CString
+
+verboseExport = export E.isVerbose
+
+logfileExport = export E.logfile
+
+upstreamRpcAddressExport = export E.upstreamRpcAddress
+
+upstreamPubAddressExport = export E.upstreamPubAddress
+
+downstreamEventAddressExport = export E.downstreamEventAddress

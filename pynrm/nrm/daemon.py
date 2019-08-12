@@ -10,28 +10,48 @@
 
 
 from __future__ import print_function
-# from nrm.applications import ApplicationManager
-# from nrm.containers import ContainerManager, NodeOSRuntime, SingularityUserRuntime
-# from nrm.controller import Controller, PowerActuator
-# from nrm.powerpolicy import PowerPolicyManager
 from functools import partial
 import logging
 import os
-# from resources import ResourceManager
-# from sensor import SensorManager
 import signal
-from zmq.eventloop import ioloop  # type: ignore
-# from messaging import UpstreamRPCServer, UpstreamPubServer, \
-    # DownstreamEventServer
+from zmq.eventloop import ioloop
+from nrm.messaging import UpstreamRPCServer, UpstreamPubServer, DownstreamEventServer
+from dataclasses import dataclass
+from typing import Any
 
 logger = logging.getLogger('nrm')
 
 
+@dataclass
 class Daemon(object):
+    cfg: Any
+    lib: Any
 
-    def __init__(self, config):
-        self.target = 100.0
-        self.config = config
+    def __post_init__(self):
+        # create and register messaging servers
+        self.upstream_pub_server = UpstreamPubServer(
+            self.lib.upstreamPubAddress(self.cfg)
+        )
+
+        self.upstream_rpc_server = UpstreamRPCServer(
+            self.lib.upstreamRpcAddress(self.cfg)
+        )
+        self.upstream_rpc_server.setup_recv_callback(self.do_upstream_receive)
+
+        DownstreamEventServer(
+            self.lib.downstreamEventAddress(self.cfg)
+        ).setup_recv_callback(self.do_downstream_receive)
+
+        # setup periodic sensor updates
+        ioloop.PeriodicCallback(self.do_sensor, 1000).start()
+        ioloop.PeriodicCallback(self.do_control, 1000).start()
+
+        # take care of signals
+        signal.signal(signal.SIGINT, self.do_signal)
+        signal.signal(signal.SIGCHLD, self.do_signal)
+
+        # starting the daemon
+        ioloop.IOLoop.current().start()
 
     def do_downstream_receive(self, event, client):
         logger.info("receiving downstream message: %r", event)
@@ -249,86 +269,16 @@ class Daemon(object):
                 pass
 
     def do_shutdown(self):
-        self.sensor_manager.stop()
         ioloop.IOLoop.current().stop()
-
-    def main(self):
-        # Bind address for downstream clients
-        bind_address = '*'
-
-        # port for upstream PUB API
-        upstream_pub_port = 2345
-        # port for upstream RPC API
-        upstream_rpc_port = 3456
-
-        # setup application listening socket
-        downstream_event_param = "ipc:///tmp/nrm-downstream-event"
-        upstream_pub_param = "tcp://%s:%d" % (bind_address, upstream_pub_port)
-        upstream_rpc_param = "tcp://%s:%d" % (bind_address, upstream_rpc_port)
-
-        self.downstream_event = DownstreamEventServer(downstream_event_param)
-        self.upstream_pub_server = UpstreamPubServer(upstream_pub_param)
-        self.upstream_rpc_server = UpstreamRPCServer(upstream_rpc_param)
-
-        logger.info("downstream event socket bound to: %s",
-                    downstream_event_param)
-        logger.info("upstream pub socket bound to: %s", upstream_pub_param)
-        logger.info("upstream rpc socket connected to: %s", upstream_rpc_param)
-
-        # register socket triggers
-        self.downstream_event.setup_recv_callback(self.do_downstream_receive)
-        self.upstream_rpc_server.setup_recv_callback(self.do_upstream_receive)
-
-        # create managers
-        self.resource_manager = ResourceManager(hwloc=self.config.hwloc)
-        container_runtime = None
-        if self.config.container_runtime == 'nodeos':
-            container_runtime = \
-                NodeOSRuntime(path=self.config.argo_nodeos_config)
-        elif self.config.container_runtime == 'singularity':
-            container_runtime = \
-                SingularityUserRuntime(self.config.singularity)
-        assert(container_runtime is not None)
-        self.container_manager = ContainerManager(
-            container_runtime,
-            self.resource_manager,
-            perfwrapper=self.config.argo_perf_wrapper,
-            linuxperf=self.config.perf,
-            pmpi_lib=self.config.pmpi_lib,
-            downstream_event_uri=downstream_event_param,
-        )
-        self.application_manager = ApplicationManager()
-        self.sensor_manager = SensorManager()
-        pa = PowerActuator(self.sensor_manager)
-        self.controller = Controller([pa])
-
-        self.sensor_manager.start()
-        self.machine_info = self.sensor_manager.do_update()
-
-        # setup periodic sensor updates
-        self.sensor_cb = ioloop.PeriodicCallback(self.do_sensor, 1000)
-        self.sensor_cb.start()
-
-        self.control = ioloop.PeriodicCallback(self.do_control, 1000)
-        self.control.start()
-
-        # take care of signals
-        signal.signal(signal.SIGINT, self.do_signal)
-        signal.signal(signal.SIGCHLD, self.do_signal)
-
-        ioloop.IOLoop.current().start()
 
 
 def runner(config, nrmlib):
     print(config)
-    print(nrmlib.verbose(config))
-    # print(config)
     if nrmlib.verbose(config):
         logger.setLevel(logging.DEBUG)
 
-    if config.nrm_log:
-        print("Logging to %s" % config.nrm_log)
-        logger.addHandler(logging.FileHandler(config.nrm_log))
+    logfile = nrmlib.logfile(config)
+    print("Logging to %s" % logfile)
+    logger.addHandler(logging.FileHandler(logfile))
 
-    daemon = Daemon(config)
-    daemon.main()
+    Daemon(config, nrmlib)

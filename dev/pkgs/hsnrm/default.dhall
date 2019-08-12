@@ -198,8 +198,7 @@ let modules =
       ]
 
 let extramodules =
-      [ "FFI.TH"
-      , "FFI.TypeUncurry"
+      [ "FFI.TypeUncurry"
       , "FFI.TypeUncurry.Msgpack"
       , "FFI.TypeUncurry.DataKinds"
       , "Codegen.Schema"

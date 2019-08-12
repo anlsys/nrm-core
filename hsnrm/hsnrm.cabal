@@ -62,7 +62,6 @@ library nrmlib
         Nrm.Types.Configuration.Yaml
         Nrm.Types.Manifest.Dhall
         Nrm.Types.Manifest.Yaml
-        FFI.TH
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -168,7 +167,6 @@ executable nrm.so
         Nrm.Types.Configuration.Yaml
         Nrm.Types.Manifest.Dhall
         Nrm.Types.Manifest.Yaml
-        FFI.TH
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -273,7 +271,6 @@ executable nrm
         Nrm.Types.Configuration.Yaml
         Nrm.Types.Manifest.Dhall
         Nrm.Types.Manifest.Yaml
-        FFI.TH
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -378,7 +375,6 @@ executable nrmd
         Nrm.Types.Configuration.Yaml
         Nrm.Types.Manifest.Dhall
         Nrm.Types.Manifest.Yaml
-        FFI.TH
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds

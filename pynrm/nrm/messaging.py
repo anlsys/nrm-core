@@ -11,25 +11,20 @@
 import json
 import logging
 import uuid
-import zmq # type: ignore
-import zmq.utils # type: ignore
-import zmq.utils.monitor # type: ignore
-from zmq.eventloop import zmqstream # type: ignore
-from schema import loadschema
+import zmq  # type: ignore
+import zmq.utils  # type: ignore
+import zmq.utils.monitor  # type: ignore
+from zmq.eventloop import zmqstream  # type: ignore
 
 
 _logger = logging.getLogger('nrm')
-_UpstreamRep = loadschema('json', 'upstreamRep')
-_UpstreamPub = loadschema('json', 'upstreamPub')
 
 
 def send(apiname):
     def wrap(cls):
-        model = loadschema('json', apiname)
 
-        def send(self, *args, **kwargs):
-            self.socket.send(
-                json.dumps(model(dict(*args, **kwargs))))
+        def send(self, msg):
+            self.socket.send(msg)
         setattr(cls, "send", send)
 
         return(cls)
@@ -38,22 +33,20 @@ def send(apiname):
 
 def recv_callback(apiname):
     def wrap(cls):
-        model = loadschema('json', apiname)
-
         def recv(self):
             """Receives a response to a message."""
             wire = self.socket.recv()
             _logger.debug("received message: %r", wire)
-            return model(json.loads(wire))
+            return (wire)
 
         def do_recv_callback(self, frames):
             """Receives a message from zmqstream.on_recv, passing it to a user
             callback."""
             _logger.info("receiving message: %r", frames)
             assert len(frames) == 2
-            msg = model(json.loads(frames[1]))
+            msg = frames[1]
             assert self.callback
-            self.callback(msg, str(frames[0]))
+            self.callback(msg), str(frames[0])
 
         def setup_recv_callback(self, callback):
             """Setup a ioloop-backed callback for receiving messages."""
@@ -117,7 +110,7 @@ class UpstreamRPCClient(RPCClient):
         """Receives a response to a message."""
         wire = self.socket.recv()
         _logger.debug("received message: %r", wire)
-        return _UpstreamRep(json.loads(wire))
+        return wire
 
 
 @recv_callback("upstreamReq")
@@ -125,9 +118,8 @@ class UpstreamRPCServer(RPCServer):
 
     """Implements the message layer server to the upstream RPC API."""
 
-    def send(self, client_uuid, *args, **kwargs):
+    def send(self, client_uuid, msg):
         """Sends a message to the identified client."""
-        msg = json.dumps(_UpstreamRep(dict(*args, **kwargs)))
         _logger.debug("sending message: %r to client: %r", msg, client_uuid)
         self.socket.send_multipart([client_uuid, msg])
 
@@ -174,7 +166,7 @@ class UpstreamPubClient(object):
         frames = self.socket.recv_multipart()
         _logger.debug("received message: %r", frames)
         assert len(frames) == 1
-        return _UpstreamPub(json.loads(frames[0]))
+        return frames[0]
 
     def do_recv_callback(self, frames):
         """Receives a message from zmqstream.on_recv, passing it to a user
@@ -182,7 +174,7 @@ class UpstreamPubClient(object):
         _logger.info("receiving message: %r", frames)
         assert len(frames) == 1
         assert self.callback
-        self.callback(_UpstreamPub(json.loads(frames[0])))
+        self.callback(frames[0])
 
     def setup_recv_callback(self, callback):
         """Setup a ioloop-backed callback for receiving messages."""
