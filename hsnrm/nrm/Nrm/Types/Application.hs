@@ -14,6 +14,7 @@ module Nrm.Types.Application
   )
 where
 
+import Data.MessagePack
 import Data.UUID
 import Data.UUID.V1
 import Protolude
@@ -22,10 +23,19 @@ newtype ApplicationUUID = ApplicationUUID UUID
   deriving (Eq, Ord)
 
 newtype Arg = Arg Text
+  deriving (Generic)
+
+deriving instance MessagePack Arg
 
 newtype Command = Command Text
+  deriving (Generic)
+
+deriving instance MessagePack Command
 
 newtype Arguments = Arguments [Arg]
+  deriving (Generic)
+
+deriving instance MessagePack Arguments
 
 data AppStartConfig
   = AppStartConfig

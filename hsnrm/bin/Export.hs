@@ -19,19 +19,49 @@ import Foreign.C
 import qualified Nrm.Export as E
 import Protolude
 
-foreign export ccall cliExport :: CString -> IO CString
+type Ex = CString -> IO CString
+
+foreign export ccall cliExport :: Ex
+
+foreign export ccall initialStateExport :: Ex
+
+foreign export ccall downstreamReceiveExport :: Ex
+
+foreign export ccall upstreamReceiveExport :: Ex
+
+foreign export ccall doSensorExport :: Ex
+
+foreign export ccall doShutdownExport :: Ex
+
+foreign export ccall doControlExport :: Ex
+
+foreign export ccall doChildrenExport :: Ex
 
 cliExport = exportIO E.parseDaemon
 
-foreign export ccall verboseExport :: CString -> IO CString
+initialStateExport = exportIO E.initialState
 
-foreign export ccall logfileExport :: CString -> IO CString
+downstreamReceiveExport = exportIO E.downstreamReceive
 
-foreign export ccall upstreamRpcAddressExport :: CString -> IO CString
+upstreamReceiveExport = exportIO E.upstreamReceive
 
-foreign export ccall upstreamPubAddressExport :: CString -> IO CString
+doSensorExport = exportIO E.doSensor
 
-foreign export ccall downstreamEventAddressExport :: CString -> IO CString
+doShutdownExport = exportIO E.doShutdown
+
+doControlExport = exportIO E.doControl
+
+doChildrenExport = exportIO E.doChildren
+
+foreign export ccall verboseExport :: Ex
+
+foreign export ccall logfileExport :: Ex
+
+foreign export ccall upstreamRpcAddressExport :: Ex
+
+foreign export ccall upstreamPubAddressExport :: Ex
+
+foreign export ccall downstreamEventAddressExport :: Ex
 
 verboseExport = export E.isVerbose
 

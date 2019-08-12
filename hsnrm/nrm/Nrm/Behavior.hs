@@ -8,44 +8,42 @@ module Nrm.Behavior
   ( behavior
   , Behavior (..)
   , SendAPI (..)
+  , RecvAPI (..)
+  , NrmEvent (..)
   )
 where
 
-import Nrm.Types.Application
 {-import Nrm.Types.Configuration-}
+import Data.MessagePack
+import Nrm.Types.Application
 import Nrm.Types.NrmState
 import Protolude
 
 data SendAPI = UpstreamPub | UpstreamRep
+  deriving (Generic)
+
+deriving instance MessagePack SendAPI
 
 data RecvAPI = DownstreamEvent | UpstreamReq
+  deriving (Generic)
+
+deriving instance MessagePack RecvAPI
 
 data Behavior = NoBehavior | Send SendAPI ByteString | StartChild Command Arguments
+  deriving (Generic)
+
+deriving instance MessagePack Behavior
 
 data NrmEvent = Recv RecvAPI ByteString | DoSensor | DoControl | DoShutdown | DoChildren
+  deriving (Generic)
+
+deriving instance MessagePack NrmEvent
 
 behavior :: NrmEvent -> NrmState -> IO (NrmState, Behavior)
-behavior (Recv DownstreamEvent s) = return . downstreamReceive s
-behavior (Recv UpstreamReq s) = return . upstreamReceive s
-behavior DoSensor = doSensor
-behavior DoControl = doControl
-behavior DoShutdown = doShutdown
-behavior DoChildren = doChildren
-
-downstreamReceive :: ByteString -> NrmState -> (NrmState, Behavior)
-downstreamReceive _message nrmState = (nrmState, NoBehavior)
-
-upstreamReceive :: ByteString -> NrmState -> (NrmState, Behavior)
-upstreamReceive _message nrmState = (nrmState, NoBehavior)
-
-doSensor :: NrmState -> IO (NrmState, Behavior)
-doSensor nrmState = return (nrmState, NoBehavior)
-
-doControl :: NrmState -> IO (NrmState, Behavior)
-doControl nrmState = return (nrmState, NoBehavior)
-
-doChildren :: NrmState -> IO (NrmState, Behavior)
-doChildren nrmState = return (nrmState, NoBehavior)
-
-doShutdown :: NrmState -> IO (NrmState, Behavior)
-doShutdown nrmState = return (nrmState, NoBehavior)
+behavior (Recv DownstreamEvent _msg) st = do
+  return (st, NoBehavior)
+behavior (Recv UpstreamReq _msg) st = return (st, NoBehavior)
+behavior DoSensor st = return (st, NoBehavior)
+behavior DoControl st = return (st, NoBehavior)
+behavior DoShutdown st = return (st, NoBehavior)
+behavior DoChildren st = return (st, NoBehavior)

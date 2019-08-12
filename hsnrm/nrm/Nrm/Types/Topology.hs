@@ -20,7 +20,9 @@ import Protolude
 import Refined
 import Prelude (String, fail)
 
-data Topology = Topology
+data Topology = Topology deriving (Generic)
+
+deriving instance MessagePack Topology
 
 -- | A CPU Core OS identifier.
 newtype CoreId = CoreId (Refined Positive Int)

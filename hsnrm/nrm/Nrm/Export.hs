@@ -18,11 +18,22 @@ module Nrm.Export
     upstreamPubAddress
   , upstreamRpcAddress
   , downstreamEventAddress
+  , -- * State
+    S.initialState
+  , -- * Behavior
+    downstreamReceive
+  , upstreamReceive
+  , doSensor
+  , doControl
+  , doChildren
+  , doShutdown
   )
 where
 
+import qualified Nrm.Behavior as B
 import qualified Nrm.Optparse as O (parseArgDaemonCli)
 import qualified Nrm.Types.Configuration as C (Cfg (..), DaemonVerbosity (..), DownstreamCfg (..), UpstreamCfg (..), logfile, verbose)
+import qualified Nrm.Types.NrmState as S
 import Protolude
 
 -- | Parses Daemon CLI arguments
@@ -33,18 +44,6 @@ parseDaemon = O.parseArgDaemonCli
 isVerbose :: C.Cfg -> Bool
 isVerbose c =
   C.Verbose == C.verbose c
-
--- | Query upstream bind address from configuration
-{-upstreamBindAddress :: C.Cfg -> Text-}
-{-upstreamBindAddress = C.upstreamBindAddress . C.upstreamCfg-}
-
--- | Query upstream rpc port from configuration
-{-upstreamRPCPort :: C.Cfg -> Int-}
-{-upstreamRPCPort = C.rpcPort . C.upstreamCfg-}
-
--- | Query upstream pub port from configuration
-{-upstreamPubPort :: C.Cfg -> Int-}
-{-upstreamPubPort = C.pubPort . C.upstreamCfg-}
 
 -- | Query full upstream pub zmq address from configuration
 upstreamPubAddress :: C.Cfg -> Text
@@ -62,3 +61,27 @@ buildAddress :: Show a => (C.UpstreamCfg -> a) -> C.Cfg -> Text
 buildAddress accessor c = "tcp://" <> C.upstreamBindAddress u <> ":" <> show (accessor u)
   where
     u = C.upstreamCfg c
+
+-- | Behave on downstream message
+downstreamReceive :: ByteString -> S.NrmState -> IO (S.NrmState, B.Behavior)
+downstreamReceive msg = B.behavior (B.Recv B.DownstreamEvent msg)
+
+-- | Behave on upstream message
+upstreamReceive :: ByteString -> S.NrmState -> IO (S.NrmState, B.Behavior)
+upstreamReceive msg = B.behavior (B.Recv B.UpstreamReq msg)
+
+-- | Behave on sensor trigger
+doSensor :: S.NrmState -> IO (S.NrmState, B.Behavior)
+doSensor = B.behavior B.DoSensor
+
+-- | Behave on control trigger
+doControl :: S.NrmState -> IO (S.NrmState, B.Behavior)
+doControl = B.behavior B.DoControl
+
+-- | Behave on children death
+doChildren :: S.NrmState -> IO (S.NrmState, B.Behavior)
+doChildren = B.behavior B.DoChildren
+
+-- | Behave on shutdown
+doShutdown :: S.NrmState -> IO (S.NrmState, B.Behavior)
+doShutdown = B.behavior B.DoShutdown
