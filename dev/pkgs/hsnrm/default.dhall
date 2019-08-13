@@ -196,7 +196,6 @@ let modules =
       , "Nrm.Types.Messaging.UpstreamPub"
       , "Nrm.Types.Messaging.UpstreamPub.JSON"
       , "Nrm.Types.Messaging.UpstreamReq"
-      , "Nrm.Types.Messaging.UpstreamReq.JSON"
       , "Nrm.Types.Messaging.UpstreamRep"
       , "Nrm.Types.Messaging.UpstreamRep.JSON"
       , "Nrm.Types.Messaging.Protocols"

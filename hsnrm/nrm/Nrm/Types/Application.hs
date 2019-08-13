@@ -11,7 +11,7 @@ module Nrm.Types.Application
   , Arguments (..)
   , AppStartConfig (..)
   , nextApplicationUUID
-  , fromText
+  , parseApplicationUUID
   , toText
   )
 where
@@ -49,8 +49,8 @@ data AppStartConfig
 nextApplicationUUID :: IO (Maybe ApplicationUUID)
 nextApplicationUUID = fmap ApplicationUUID <$> nextUUID
 
-fromText :: Text -> Maybe ApplicationUUID
-fromText = fmap ApplicationUUID <$> U.fromText
+parseApplicationUUID :: Text -> Maybe ApplicationUUID
+parseApplicationUUID = fmap ApplicationUUID <$> U.fromText
 
 toText :: ApplicationUUID -> Text
 toText (ApplicationUUID u) = U.toText u

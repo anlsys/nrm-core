@@ -57,7 +57,6 @@ library nrmlib
         Nrm.Types.Messaging.UpstreamPub
         Nrm.Types.Messaging.UpstreamPub.JSON
         Nrm.Types.Messaging.UpstreamReq
-        Nrm.Types.Messaging.UpstreamReq.JSON
         Nrm.Types.Messaging.UpstreamRep
         Nrm.Types.Messaging.UpstreamRep.JSON
         Nrm.Types.Messaging.Protocols
@@ -170,7 +169,6 @@ executable nrm.so
         Nrm.Types.Messaging.UpstreamPub
         Nrm.Types.Messaging.UpstreamPub.JSON
         Nrm.Types.Messaging.UpstreamReq
-        Nrm.Types.Messaging.UpstreamReq.JSON
         Nrm.Types.Messaging.UpstreamRep
         Nrm.Types.Messaging.UpstreamRep.JSON
         Nrm.Types.Messaging.Protocols
@@ -282,7 +280,6 @@ executable nrm
         Nrm.Types.Messaging.UpstreamPub
         Nrm.Types.Messaging.UpstreamPub.JSON
         Nrm.Types.Messaging.UpstreamReq
-        Nrm.Types.Messaging.UpstreamReq.JSON
         Nrm.Types.Messaging.UpstreamRep
         Nrm.Types.Messaging.UpstreamRep.JSON
         Nrm.Types.Messaging.Protocols
@@ -394,7 +391,6 @@ executable nrmd
         Nrm.Types.Messaging.UpstreamPub
         Nrm.Types.Messaging.UpstreamPub.JSON
         Nrm.Types.Messaging.UpstreamReq
-        Nrm.Types.Messaging.UpstreamReq.JSON
         Nrm.Types.Messaging.UpstreamRep
         Nrm.Types.Messaging.UpstreamRep.JSON
         Nrm.Types.Messaging.Protocols

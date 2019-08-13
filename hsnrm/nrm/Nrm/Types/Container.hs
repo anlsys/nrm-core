@@ -16,9 +16,10 @@ module Nrm.Types.Container
   )
 where
 
-import Data.Aeson
+import qualified Data.Aeson as A
+import Data.Aeson hiding (Object)
 import Data.JSON.Schema
-import qualified Data.UUID as U (UUID (..), toText, fromText)
+import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import Generics.Generic.Aeson
 import Protolude
@@ -37,3 +38,15 @@ parseContainerUUID t = case U.fromText t of
 toText :: ContainerUUID -> Text
 toText (ContainerUUID u) = U.toText u
 toText (Name n) = n
+
+instance ToJSON ContainerUUID where
+
+  toJSON = gtoJson
+
+instance FromJSON ContainerUUID where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ContainerUUID where
+
+  schema Proxy = schema (Proxy :: Proxy Text)

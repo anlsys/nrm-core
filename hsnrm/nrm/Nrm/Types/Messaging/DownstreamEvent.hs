@@ -68,3 +68,51 @@ instance M.NrmMessage Event J.Event where
       { container_uuid = C.toText startContainerUUID
       , application_uuid = A.toText startApplicationUUID
       }
+    EventExit Exit {..} -> J.Exit
+      { application_uuid = A.toText exitApplicationUUID
+      }
+    EventPerformance Performance {..} -> J.Performance
+      { container_uuid = C.toText performanceContainerUUID
+      , application_uuid = A.toText performanceApplicationUUID
+      , perf = o
+      }
+      where
+        (U.Operations o) = perf
+    EventProgress Progress {..} -> J.Progress
+      { application_uuid = A.toText progressApplicationUUID
+      , payload = p
+      }
+      where
+        (U.Progress p) = payload
+    EventPhaseContext PhaseContext {..} -> J.PhaseContext {..}
+
+  fromJ = \case
+    J.Start {..} ->
+      EventStart $ Start
+        { startContainerUUID = C.parseContainerUUID container_uuid
+        , startApplicationUUID = fromMaybe
+          (panic "DownstreamEvent fromJ error on Application UUID")
+          (A.parseApplicationUUID application_uuid)
+        }
+    J.Exit {..} ->
+      EventExit $ Exit
+        { exitApplicationUUID = fromMaybe
+            (panic "DownstreamEvent fromJ error on Application UUID")
+            (A.parseApplicationUUID application_uuid)
+        }
+    J.Performance {..} ->
+      EventPerformance $ Performance
+        { performanceContainerUUID = C.parseContainerUUID container_uuid
+        , performanceApplicationUUID = fromMaybe
+          (panic "DownstreamEvent fromJ error on Application UUID")
+          (A.parseApplicationUUID application_uuid)
+        , perf = U.Operations perf
+        }
+    J.Progress {..} ->
+      EventProgress $ Progress
+        { progressApplicationUUID = fromMaybe
+            (panic "DownstreamEvent fromJ error on Application UUID")
+            (A.parseApplicationUUID application_uuid)
+        , payload = U.Progress payload
+        }
+    J.PhaseContext {..} -> EventPhaseContext PhaseContext {..}

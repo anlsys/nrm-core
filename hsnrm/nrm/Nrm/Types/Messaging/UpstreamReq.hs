@@ -13,10 +13,12 @@ module Nrm.Types.Messaging.UpstreamReq
   )
 where
 
+import Data.Aeson hiding (Object)
+import Data.JSON.Schema
+import Generics.Generic.Aeson
+import Nrm.Classes.Messaging
 import Nrm.Types.Container
 import Nrm.Types.Manifest
-import Nrm.Classes.Messaging
-import qualified Nrm.Types.Messaging.UpstreamReq.JSON as J
 import Protolude
 
 data Req
@@ -36,11 +38,35 @@ data RunRequest
       }
   deriving (Show, Generic)
 
+instance ToJSON RunRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON RunRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema RunRequest where
+
+  schema = gSchema
+
 newtype KillRequest
   = KillRequest
       { container_uuid :: Text
       }
   deriving (Show, Generic)
+
+instance ToJSON KillRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON KillRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema KillRequest where
+
+  schema = gSchema
 
 newtype SetPowerRequest
   = SetPowerRequest
@@ -48,7 +74,33 @@ newtype SetPowerRequest
       }
   deriving (Show, Generic)
 
+instance ToJSON SetPowerRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON SetPowerRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema SetPowerRequest where
+
+  schema = gSchema
+
 data ContainerListRequest = ContainerListRequest
   deriving (Show, Generic)
 
-instance NrmMessage Req J.Req
+instance ToJSON ContainerListRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON ContainerListRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ContainerListRequest where
+
+  schema = gSchema
+
+instance NrmMessage Req Req where
+  toJ = identity
+  fromJ = identity
