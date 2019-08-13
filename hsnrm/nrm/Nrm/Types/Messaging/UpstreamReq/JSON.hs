@@ -1,10 +1,10 @@
 {-|
-Module      : Nrm.Types.Messaging.UpstreamReq
+Module      : Nrm.Types.Messaging.UpstreamReq.JSON
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Types.Messaging.UpstreamReq
+module Nrm.Types.Messaging.UpstreamReq.JSON
   ( Req (..)
   , RunRequest (..)
   , ContainerListRequest (..)
@@ -18,7 +18,6 @@ import Data.JSON.Schema
 import Generics.Generic.Aeson
 import Nrm.Types.Container
 import Nrm.Types.Manifest
-import Nrm.Classes.Messaging
 import Protolude
 
 data Req
@@ -53,8 +52,62 @@ newtype SetPowerRequest
 data ContainerListRequest = ContainerListRequest
   deriving (Show, Generic)
 
-instance NrmMessage Req where
+instance ToJSON ContainerListRequest where
 
-  decode = undefined
+  toJSON = gtoJson
 
-  encode = undefined
+instance FromJSON ContainerListRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ContainerListRequest where
+
+  schema = gSchema
+
+instance ToJSON RunRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON RunRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema RunRequest where
+
+  schema = gSchema
+
+instance ToJSON SetPowerRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON SetPowerRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema SetPowerRequest where
+
+  schema = gSchema
+
+instance ToJSON KillRequest where
+
+  toJSON = gtoJson
+
+instance FromJSON KillRequest where
+
+  parseJSON = gparseJson
+
+instance JSONSchema KillRequest where
+
+  schema = gSchema
+
+instance ToJSON Req where
+
+  toJSON = gtoJson
+
+instance FromJSON Req where
+
+  parseJSON = gparseJson
+
+instance JSONSchema Req where
+
+  schema = gSchema

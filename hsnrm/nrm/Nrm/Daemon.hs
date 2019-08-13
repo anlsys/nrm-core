@@ -48,7 +48,7 @@ server s =
     [clientUUID, msg] -> do
       putText "Received raw message:"
       liftIO $ hFlush stdout
-      case decode $ toS msg of
+      case Req.decodeReq $ toS msg of
         Nothing -> putText $ "couldn't decode message: " <> toS msg
         Just req -> do
           liftIO $ print req
@@ -58,9 +58,9 @@ server s =
 
 dummyReply :: Req.Req -> Socket z Router -> ByteString -> ZMQ z ()
 dummyReply = \case
-  (Req.ContainerList x) -> sendOne (Rep.RepList (dummy Protocols.ContainerList x))
-  (Req.Kill x) -> sendOne (Rep.RepProcessExit (dummy Protocols.Kill x))
-  (Req.SetPower x) -> sendOne (Rep.RepGetPower (dummy Protocols.SetPower x))
+  (Req.ContainerList x) -> sendOne $ Rep.encodeRep (Rep.RepList (dummy Protocols.ContainerList x))
+  (Req.Kill x) -> sendOne $ Rep.encodeRep (Rep.RepProcessExit (dummy Protocols.Kill x))
+  (Req.SetPower x) -> sendOne $ Rep.encodeRep (Rep.RepGetPower (dummy Protocols.SetPower x))
   (Req.Run _) -> panic "no run reply implemented in this dummy mode."
 
 dummy :: Protocols.ReqRep req rep -> req -> rep
@@ -69,5 +69,5 @@ dummy = \case
   Protocols.SetPower -> const $ Rep.GetPower "266"
   Protocols.Kill -> const $ Rep.ProcessExit "foo" "1"
 
-sendOne :: (Sender t, ToJSON a) => a -> Socket z t -> ByteString -> ZMQ z ()
-sendOne reply s clientUUID = sendMulti s (fromList [clientUUID, toS . encode $ reply])
+sendOne :: (Sender t) => ByteString -> Socket z t -> ByteString -> ZMQ z ()
+sendOne reply s clientUUID = sendMulti s (fromList [clientUUID, reply])

@@ -68,7 +68,7 @@ class Daemon(object):
         pass
 
     def do_sensor(self):
-        # print(self.lib.doSensor(self.state))
+        print(self.lib.doSensor(self.state))
         pass
 
     def do_control(self):

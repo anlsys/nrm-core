@@ -13,10 +13,10 @@ module Nrm.Behavior
   )
 where
 
-{-import Nrm.Types.Configuration-}
 import Data.MessagePack
 import Nrm.Types.Application
-import Nrm.Types.NrmState
+import Nrm.Types.Messaging.DownstreamEvent as D
+import qualified Nrm.Types.NrmState as S
 import Protolude
 
 data SendAPI = UpstreamPub | UpstreamRep
@@ -39,9 +39,15 @@ data NrmEvent = Recv RecvAPI ByteString | DoSensor | DoControl | DoShutdown | Do
 
 deriving instance MessagePack NrmEvent
 
-behavior :: NrmEvent -> NrmState -> IO (NrmState, Behavior)
-behavior (Recv DownstreamEvent _msg) st = do
-  return (st, NoBehavior)
+behavior :: NrmEvent -> S.NrmState -> IO (S.NrmState, Behavior)
+behavior (Recv DownstreamEvent msg) st = case D.decodeEvent msg of
+  Just x -> case x of
+    D.Start {..} -> return (st, NoBehavior)
+    D.Exit {..} -> return (st, NoBehavior)
+    D.Performance {..} -> return (st, NoBehavior)
+    D.Progress {..} -> return (st, NoBehavior)
+    D.PhaseContext {..} -> return (st, NoBehavior)
+  Nothing -> return (st, NoBehavior)
 behavior (Recv UpstreamReq _msg) st = return (st, NoBehavior)
 behavior DoSensor st = return (st, NoBehavior)
 behavior DoControl st = return (st, NoBehavior)

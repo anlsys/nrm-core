@@ -33,10 +33,10 @@ import qualified Nrm.Types.Configuration.Dhall as CD (Cfg)
 import qualified Nrm.Types.Configuration.Yaml as CI (encodeDCfg)
 import qualified Nrm.Types.Manifest as MI (Manifest)
 import qualified Nrm.Types.Manifest.Yaml as MI (encodeManifest)
-import Nrm.Types.Messaging.DownstreamEvent
-import Nrm.Types.Messaging.UpstreamPub
-import Nrm.Types.Messaging.UpstreamRep
-import Nrm.Types.Messaging.UpstreamReq
+import Nrm.Types.Messaging.DownstreamEvent.JSON
+import Nrm.Types.Messaging.UpstreamPub.JSON
+import Nrm.Types.Messaging.UpstreamRep.JSON
+import Nrm.Types.Messaging.UpstreamReq.JSON
 import Protolude hiding (Rep)
 import System.Directory
 

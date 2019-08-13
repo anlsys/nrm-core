@@ -6,31 +6,37 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Messaging.DownstreamEvent
   ( Event (..)
+  , decodeEvent
+  , encodeEvent
   )
 where
 
+import Codegen.CHeader
 import Data.Aeson
 import Data.JSON.Schema
 import Generics.Generic.Aeson
-import Codegen.CHeader
+import qualified Nrm.Types.Messaging.DownstreamEvent.JSON as J
+import qualified Nrm.Types.Application as A
+import qualified Nrm.Types.Container as C
+import qualified Nrm.Types.Units as U
 import Protolude
 
 data Event
   = Start
-      { container_uuid :: Text
-      , application_uuid :: Text
+      { container_uuid :: C.ContainerUUID
+      , application_uuid :: A.ApplicationUUID
       }
   | Exit
-      { application_uuid :: Text
+      { application_uuid :: A.ApplicationUUID
       }
   | Performance
-      { container_uuid :: Text
-      , application_uuid :: Text
-      , payload :: Int
+      { container_uuid :: C.ContainerUUID
+      , application_uuid :: A.ApplicationUUID
+      , perf :: U.Operations
       }
   | Progress
-      { application_uuid :: Text
-      , payload :: Int
+      { application_uuid :: A.ApplicationUUID
+      , payload :: U.Progress
       }
   | PhaseContext
       { cpu :: Int
@@ -39,16 +45,15 @@ data Event
       , startbarrier :: Int
       , endbarrier :: Int
       }
-  deriving (Generic, CHeaderGen)
 
-instance ToJSON Event where
+{-toJSONEvent :: Event -> J.Event-}
+{-toJSONEvent e = undefined-}
 
-  toJSON = gtoJson
+{-fromJSONEvent :: J.Event -> Event-}
+{-fromJSONEvent e = undefined-}
 
-instance FromJSON Event where
+instance NrmMessage Event where
 
-  parseJSON = gparseJson
+  decode = undefined
 
-instance JSONSchema Event where
-
-  schema = gSchema
+  encode = undefined

@@ -12,6 +12,8 @@ module Nrm.Types.Messaging.UpstreamRep
   , Start (..)
   , ProcessExit (..)
   , GetPower (..)
+  , encodeRep
+  , decodeRep
   )
 where
 
@@ -69,86 +71,8 @@ newtype GetPower
       }
   deriving (Show, Generic)
 
-instance ToJSON ContainerList where
+instance NrmMessage Rep where
 
-  toJSON = gtoJson
+  decode = undefined
 
-instance FromJSON ContainerList where
-
-  parseJSON = gparseJson
-
-instance JSONSchema ContainerList where
-
-  schema = gSchema
-
-instance ToJSON Stdout where
-
-  toJSON = gtoJson
-
-instance FromJSON Stdout where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Stdout where
-
-  schema = gSchema
-
-instance ToJSON Stderr where
-
-  toJSON = gtoJson
-
-instance FromJSON Stderr where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Stderr where
-
-  schema = gSchema
-
-instance ToJSON Start where
-
-  toJSON = gtoJson
-
-instance FromJSON Start where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Start where
-
-  schema = gSchema
-
-instance ToJSON ProcessExit where
-
-  toJSON = gtoJson
-
-instance FromJSON ProcessExit where
-
-  parseJSON = gparseJson
-
-instance JSONSchema ProcessExit where
-
-  schema = gSchema
-
-instance ToJSON GetPower where
-
-  toJSON = gtoJson
-
-instance FromJSON GetPower where
-
-  parseJSON = gparseJson
-
-instance JSONSchema GetPower where
-
-  schema = gSchema
-
-instance ToJSON Rep where
-
-  toJSON = gtoJson
-
-instance FromJSON Rep where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Rep where
-
-  schema = gSchema
+  encode = undefined

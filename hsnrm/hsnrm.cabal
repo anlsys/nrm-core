@@ -27,19 +27,6 @@ source-repository head
 
 library nrmlib
     exposed-modules:
-        Nrm.Types.Topology
-        Nrm.Types.Units
-        Nrm.Types.Container
-        Nrm.Types.Application
-        Nrm.Types.NrmState
-        Nrm.Types.Configuration
-        Nrm.Types.Client
-        Nrm.Types.Manifest
-        Nrm.Types.Messaging.DownstreamEvent
-        Nrm.Types.Messaging.UpstreamPub
-        Nrm.Types.Messaging.UpstreamReq
-        Nrm.Types.Messaging.UpstreamRep
-        Nrm.Types.Messaging.Protocols
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -58,10 +45,28 @@ library nrmlib
         Nrm.Node.Sysfs.Internal
         Nrm.Optparse.Client
         Nrm.Optparse.Daemon
-        Nrm.Types.Configuration.Dhall
+        Nrm.Types.Topology
+        Nrm.Types.Units
+        Nrm.Types.Container
+        Nrm.Types.Application
+        Nrm.Types.NrmState
+        Nrm.Types.Client
+        Nrm.Classes.Messaging
+        Nrm.Types.Messaging.DownstreamEvent
+        Nrm.Types.Messaging.DownstreamEvent.JSON
+        Nrm.Types.Messaging.UpstreamPub
+        Nrm.Types.Messaging.UpstreamPub.JSON
+        Nrm.Types.Messaging.UpstreamReq
+        Nrm.Types.Messaging.UpstreamReq.JSON
+        Nrm.Types.Messaging.UpstreamRep
+        Nrm.Types.Messaging.UpstreamRep.JSON
+        Nrm.Types.Messaging.Protocols
+        Nrm.Types.Configuration
         Nrm.Types.Configuration.Yaml
-        Nrm.Types.Manifest.Dhall
+        Nrm.Types.Configuration.Dhall
+        Nrm.Types.Manifest
         Nrm.Types.Manifest.Yaml
+        Nrm.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -132,19 +137,6 @@ executable nrm.so
     main-is: Export.hs
     hs-source-dirs: bin nrm
     other-modules:
-        Nrm.Types.Topology
-        Nrm.Types.Units
-        Nrm.Types.Container
-        Nrm.Types.Application
-        Nrm.Types.NrmState
-        Nrm.Types.Configuration
-        Nrm.Types.Client
-        Nrm.Types.Manifest
-        Nrm.Types.Messaging.DownstreamEvent
-        Nrm.Types.Messaging.UpstreamPub
-        Nrm.Types.Messaging.UpstreamReq
-        Nrm.Types.Messaging.UpstreamRep
-        Nrm.Types.Messaging.Protocols
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -163,10 +155,28 @@ executable nrm.so
         Nrm.Node.Sysfs.Internal
         Nrm.Optparse.Client
         Nrm.Optparse.Daemon
-        Nrm.Types.Configuration.Dhall
+        Nrm.Types.Topology
+        Nrm.Types.Units
+        Nrm.Types.Container
+        Nrm.Types.Application
+        Nrm.Types.NrmState
+        Nrm.Types.Client
+        Nrm.Classes.Messaging
+        Nrm.Types.Messaging.DownstreamEvent
+        Nrm.Types.Messaging.DownstreamEvent.JSON
+        Nrm.Types.Messaging.UpstreamPub
+        Nrm.Types.Messaging.UpstreamPub.JSON
+        Nrm.Types.Messaging.UpstreamReq
+        Nrm.Types.Messaging.UpstreamReq.JSON
+        Nrm.Types.Messaging.UpstreamRep
+        Nrm.Types.Messaging.UpstreamRep.JSON
+        Nrm.Types.Messaging.Protocols
+        Nrm.Types.Configuration
         Nrm.Types.Configuration.Yaml
-        Nrm.Types.Manifest.Dhall
+        Nrm.Types.Configuration.Dhall
+        Nrm.Types.Manifest
         Nrm.Types.Manifest.Yaml
+        Nrm.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -236,19 +246,6 @@ executable nrm
     main-is: Hnrm.hs
     hs-source-dirs: bin nrm
     other-modules:
-        Nrm.Types.Topology
-        Nrm.Types.Units
-        Nrm.Types.Container
-        Nrm.Types.Application
-        Nrm.Types.NrmState
-        Nrm.Types.Configuration
-        Nrm.Types.Client
-        Nrm.Types.Manifest
-        Nrm.Types.Messaging.DownstreamEvent
-        Nrm.Types.Messaging.UpstreamPub
-        Nrm.Types.Messaging.UpstreamReq
-        Nrm.Types.Messaging.UpstreamRep
-        Nrm.Types.Messaging.Protocols
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -267,10 +264,28 @@ executable nrm
         Nrm.Node.Sysfs.Internal
         Nrm.Optparse.Client
         Nrm.Optparse.Daemon
-        Nrm.Types.Configuration.Dhall
+        Nrm.Types.Topology
+        Nrm.Types.Units
+        Nrm.Types.Container
+        Nrm.Types.Application
+        Nrm.Types.NrmState
+        Nrm.Types.Client
+        Nrm.Classes.Messaging
+        Nrm.Types.Messaging.DownstreamEvent
+        Nrm.Types.Messaging.DownstreamEvent.JSON
+        Nrm.Types.Messaging.UpstreamPub
+        Nrm.Types.Messaging.UpstreamPub.JSON
+        Nrm.Types.Messaging.UpstreamReq
+        Nrm.Types.Messaging.UpstreamReq.JSON
+        Nrm.Types.Messaging.UpstreamRep
+        Nrm.Types.Messaging.UpstreamRep.JSON
+        Nrm.Types.Messaging.Protocols
+        Nrm.Types.Configuration
         Nrm.Types.Configuration.Yaml
-        Nrm.Types.Manifest.Dhall
+        Nrm.Types.Configuration.Dhall
+        Nrm.Types.Manifest
         Nrm.Types.Manifest.Yaml
+        Nrm.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -340,19 +355,6 @@ executable nrmd
     main-is: Hnrmd.hs
     hs-source-dirs: bin nrm
     other-modules:
-        Nrm.Types.Topology
-        Nrm.Types.Units
-        Nrm.Types.Container
-        Nrm.Types.Application
-        Nrm.Types.NrmState
-        Nrm.Types.Configuration
-        Nrm.Types.Client
-        Nrm.Types.Manifest
-        Nrm.Types.Messaging.DownstreamEvent
-        Nrm.Types.Messaging.UpstreamPub
-        Nrm.Types.Messaging.UpstreamReq
-        Nrm.Types.Messaging.UpstreamRep
-        Nrm.Types.Messaging.Protocols
         Nrm.Containers
         Nrm.Containers.Class
         Nrm.Containers.Nodeos
@@ -371,10 +373,28 @@ executable nrmd
         Nrm.Node.Sysfs.Internal
         Nrm.Optparse.Client
         Nrm.Optparse.Daemon
-        Nrm.Types.Configuration.Dhall
+        Nrm.Types.Topology
+        Nrm.Types.Units
+        Nrm.Types.Container
+        Nrm.Types.Application
+        Nrm.Types.NrmState
+        Nrm.Types.Client
+        Nrm.Classes.Messaging
+        Nrm.Types.Messaging.DownstreamEvent
+        Nrm.Types.Messaging.DownstreamEvent.JSON
+        Nrm.Types.Messaging.UpstreamPub
+        Nrm.Types.Messaging.UpstreamPub.JSON
+        Nrm.Types.Messaging.UpstreamReq
+        Nrm.Types.Messaging.UpstreamReq.JSON
+        Nrm.Types.Messaging.UpstreamRep
+        Nrm.Types.Messaging.UpstreamRep.JSON
+        Nrm.Types.Messaging.Protocols
+        Nrm.Types.Configuration
         Nrm.Types.Configuration.Yaml
-        Nrm.Types.Manifest.Dhall
+        Nrm.Types.Configuration.Dhall
+        Nrm.Types.Manifest
         Nrm.Types.Manifest.Yaml
+        Nrm.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds

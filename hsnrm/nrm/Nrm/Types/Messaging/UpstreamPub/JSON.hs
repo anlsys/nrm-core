@@ -1,13 +1,11 @@
 {-|
-Module      : Nrm.Types.Messaging.UpstreamPub
+Module      : Nrm.Types.Messaging.UpstreamPub.JSON
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module Nrm.Types.Messaging.UpstreamPub
+module Nrm.Types.Messaging.UpstreamPub.JSON
   ( Pub (..)
-  , encodePub
-  , decodePub
   )
 where
 
@@ -47,8 +45,14 @@ data Pub
       }
   deriving (Generic)
 
-instance NrmMessage Pub where
+instance ToJSON Pub where
 
-  decode = undefined
+  toJSON = gtoJson
 
-  encode = undefined
+instance FromJSON Pub where
+
+  parseJSON = gparseJson
+
+instance JSONSchema Pub where
+
+  schema = gSchema
