@@ -18,6 +18,7 @@ let defexts =
       , types.Extension.ViewPatterns True
       , types.Extension.DeriveAnyClass True
       , types.Extension.DeriveGeneric True
+      , types.Extension.DerivingStrategies True
       , types.Extension.MultiWayIf True
       , types.Extension.TemplateHaskell True
       , types.Extension.BlockArguments True
@@ -26,6 +27,9 @@ let defexts =
       , types.Extension.TypeOperators True
       , types.Extension.DataKinds True
       , types.Extension.PolyKinds True
+      , types.Extension.AllowAmbiguousTypes True
+      , types.Extension.FunctionalDependencies True
+      , types.Extension.UndecidableInstances True
       ]
 
 let deflang = Some types.Language.Haskell2010

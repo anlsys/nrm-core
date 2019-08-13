@@ -6,14 +6,14 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Messaging.UpstreamPub
   ( Pub (..)
-  , encodePub
-  , decodePub
   )
 where
 
-import Data.Aeson
-import Data.JSON.Schema
-import Generics.Generic.Aeson
+{-import qualified Data.Aeson as A-}
+{-import qualified Data.JSON.Schema as S-}
+{-import Generics.Generic.Aeson-}
+import Nrm.Classes.Messaging
+import qualified Nrm.Types.Messaging.UpstreamPub.JSON as J
 import Protolude
 
 data Pub
@@ -47,8 +47,16 @@ data Pub
       }
   deriving (Generic)
 
-instance NrmMessage Pub where
+{-instance NrmMessage Pub where-}
 
-  decode = undefined
+  {-decode = fmap fromJ . A.decode . toS-}
 
-  encode = undefined
+  {-encode = toS . A.encode . toJ-}
+
+  {-schema _ = S.schema (Proxy :: Proxy J.Pub)-}
+
+{-fromJ :: J.Pub -> Pub-}
+{-fromJ = undefined-}
+
+{-toJ :: Pub -> J.Pub-}
+{-toJ = undefined-}

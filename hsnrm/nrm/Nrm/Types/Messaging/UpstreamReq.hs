@@ -13,12 +13,10 @@ module Nrm.Types.Messaging.UpstreamReq
   )
 where
 
-import Data.Aeson
-import Data.JSON.Schema
-import Generics.Generic.Aeson
 import Nrm.Types.Container
 import Nrm.Types.Manifest
 import Nrm.Classes.Messaging
+import qualified Nrm.Types.Messaging.UpstreamReq.JSON as J
 import Protolude
 
 data Req
@@ -53,8 +51,4 @@ newtype SetPowerRequest
 data ContainerListRequest = ContainerListRequest
   deriving (Show, Generic)
 
-instance NrmMessage Req where
-
-  decode = undefined
-
-  encode = undefined
+instance JSONLayer Req J.Req where

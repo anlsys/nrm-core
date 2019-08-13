@@ -13,8 +13,8 @@ module Nrm.Types.Units
   , Time
   , Energy
   , Power
-  , Operations
-  , Progress
+  , Operations(..)
+  , Progress(..)
   , uJ
   , uW
   , uS

@@ -14,6 +14,7 @@ module Nrm.Behavior
 where
 
 import Data.MessagePack
+import Nrm.Classes.Messaging
 import Nrm.Types.Application
 import Nrm.Types.Messaging.DownstreamEvent as D
 import qualified Nrm.Types.NrmState as S
@@ -40,7 +41,7 @@ data NrmEvent = Recv RecvAPI ByteString | DoSensor | DoControl | DoShutdown | Do
 deriving instance MessagePack NrmEvent
 
 behavior :: NrmEvent -> S.NrmState -> IO (S.NrmState, Behavior)
-behavior (Recv DownstreamEvent msg) st = case D.decodeEvent msg of
+behavior (Recv DownstreamEvent msg) st = case decode msg of
   Just x -> case x of
     D.Start {..} -> return (st, NoBehavior)
     D.Exit {..} -> return (st, NoBehavior)

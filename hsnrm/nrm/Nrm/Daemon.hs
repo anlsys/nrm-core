@@ -15,9 +15,9 @@ module Nrm.Daemon
 where
 
 import Control.Monad
-import Data.Aeson
 import Data.List.NonEmpty
 import Data.Restricted
+import Nrm.Classes.Messaging
 import Nrm.Optparse (parseDaemonCli)
 import qualified Nrm.Types.Messaging.Protocols as Protocols
 import qualified Nrm.Types.Messaging.UpstreamRep as Rep
@@ -48,7 +48,7 @@ server s =
     [clientUUID, msg] -> do
       putText "Received raw message:"
       liftIO $ hFlush stdout
-      case Req.decodeReq $ toS msg of
+      case decode $ toS msg of
         Nothing -> putText $ "couldn't decode message: " <> toS msg
         Just req -> do
           liftIO $ print req
@@ -58,9 +58,9 @@ server s =
 
 dummyReply :: Req.Req -> Socket z Router -> ByteString -> ZMQ z ()
 dummyReply = \case
-  (Req.ContainerList x) -> sendOne $ Rep.encodeRep (Rep.RepList (dummy Protocols.ContainerList x))
-  (Req.Kill x) -> sendOne $ Rep.encodeRep (Rep.RepProcessExit (dummy Protocols.Kill x))
-  (Req.SetPower x) -> sendOne $ Rep.encodeRep (Rep.RepGetPower (dummy Protocols.SetPower x))
+  (Req.ContainerList x) -> sendOne $ encode (Rep.RepList (dummy Protocols.ContainerList x))
+  (Req.Kill x) -> sendOne $ encode (Rep.RepProcessExit (dummy Protocols.Kill x))
+  (Req.SetPower x) -> sendOne $ encode (Rep.RepGetPower (dummy Protocols.SetPower x))
   (Req.Run _) -> panic "no run reply implemented in this dummy mode."
 
 dummy :: Protocols.ReqRep req rep -> req -> rep

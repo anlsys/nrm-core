@@ -13,9 +13,9 @@ import Codegen.CHeader
 import Data.Aeson
 import Data.JSON.Schema
 import Generics.Generic.Aeson
-import qualified Nrm.Types.Application as A
-import qualified Nrm.Types.Container as C
-import qualified Nrm.Types.Units as U
+{-import qualified Nrm.Types.Application as A-}
+{-import qualified Nrm.Types.Container as C-}
+{-import qualified Nrm.Types.Units as U-}
 import Protolude
 
 data Event

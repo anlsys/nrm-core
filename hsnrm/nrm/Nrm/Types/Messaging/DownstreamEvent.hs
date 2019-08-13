@@ -6,18 +6,13 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Messaging.DownstreamEvent
   ( Event (..)
-  , decodeEvent
-  , encodeEvent
   )
 where
 
-import Codegen.CHeader
-import Data.Aeson
-import Data.JSON.Schema
-import Generics.Generic.Aeson
-import qualified Nrm.Types.Messaging.DownstreamEvent.JSON as J
+import Nrm.Classes.Messaging
 import qualified Nrm.Types.Application as A
 import qualified Nrm.Types.Container as C
+import qualified Nrm.Types.Messaging.DownstreamEvent.JSON as J
 import qualified Nrm.Types.Units as U
 import Protolude
 
@@ -46,14 +41,4 @@ data Event
       , endbarrier :: Int
       }
 
-{-toJSONEvent :: Event -> J.Event-}
-{-toJSONEvent e = undefined-}
-
-{-fromJSONEvent :: J.Event -> Event-}
-{-fromJSONEvent e = undefined-}
-
-instance NrmMessage Event where
-
-  decode = undefined
-
-  encode = undefined
+instance JSONLayer Event J.Event where

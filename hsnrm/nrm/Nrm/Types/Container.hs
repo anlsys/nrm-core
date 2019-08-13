@@ -1,6 +1,4 @@
 {-# OPTIONS_GHC -fno-warn-orphans  #-}
-{-# LANGUAGE DerivingStrategies #-}
-{-# LANGUAGE DerivingVia #-}
 
 {-|
 Module      : Nrm.Types.Container
@@ -21,7 +19,6 @@ import Data.UUID
 import Data.UUID.V1
 import Generics.Generic.Aeson
 import Protolude
-import Codegen.CHeader
 
 data ContainerUUID = ContainerUUID UUID | Name Text
   deriving (Show, Eq, Ord, Generic)
@@ -45,5 +42,7 @@ instance JSONSchema UUID where
 nextContainerUUID :: IO (Maybe ContainerUUID)
 nextContainerUUID = fmap ContainerUUID <$> nextUUID
 
-parseContainerUUID :: Text -> Maybe ContainerUUID
-parseContainerUUID = undefined
+parseContainerUUID :: Text -> ContainerUUID
+parseContainerUUID t = case fromText t of
+  Just x -> ContainerUUID x
+  Nothing -> Name t

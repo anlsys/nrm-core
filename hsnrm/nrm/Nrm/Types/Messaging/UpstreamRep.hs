@@ -12,14 +12,11 @@ module Nrm.Types.Messaging.UpstreamRep
   , Start (..)
   , ProcessExit (..)
   , GetPower (..)
-  , encodeRep
-  , decodeRep
   )
 where
 
-import Data.Aeson
-import Data.JSON.Schema
-import Generics.Generic.Aeson
+import Nrm.Classes.Messaging
+import qualified Nrm.Types.Messaging.UpstreamRep.JSON as J
 import Protolude hiding (Rep)
 
 data Rep
@@ -71,8 +68,4 @@ newtype GetPower
       }
   deriving (Show, Generic)
 
-instance NrmMessage Rep where
-
-  decode = undefined
-
-  encode = undefined
+instance JSONLayer Rep J.Rep where

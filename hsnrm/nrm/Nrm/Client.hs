@@ -14,6 +14,7 @@ where
 
 import qualified Data.ByteString as SB
 import Data.Restricted
+import Nrm.Classes.Messaging
 import Nrm.Optparse
 import Nrm.Optparse.Client
 import Nrm.Types.Client
@@ -31,7 +32,7 @@ address = "tcp://localhost:3456"
 main :: IO ()
 main = do
   (Opts req common) <- parseClientCli
-  when (verbose common == Verbose) (print $ UpstreamReq.encodeReq req)
+  when (verbose common == Verbose) (print $ encode req)
   uuid <-
     nextClientUUID <&> \case
       Nothing -> panic "couldn't generate next client UUID"
@@ -46,7 +47,7 @@ main = do
 
 client :: Socket z Dealer -> UpstreamReq.Req -> ClientVerbosity -> ZMQ z ()
 client s req v = do
-  send s [] (toS $ UpstreamReq.encodeReq req)
+  send s [] (toS $ encode req)
   dispatchProtocol s v req
 
 dispatchProtocol :: Socket z Dealer -> ClientVerbosity -> UpstreamReq.Req -> ZMQ z ()
@@ -61,17 +62,17 @@ reqrep s _ = \case
   Protocols.ContainerList ->
     const $ do
       msg <- receive s
-      liftIO . print $ ((UpstreamRep.decodeRep $ toS msg) :: Maybe UpstreamRep.Rep)
+      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
       liftIO $ hFlush stdout
   Protocols.SetPower ->
     const $ do
       msg <- receive s
-      liftIO . print $ ((UpstreamRep.decodeRep $ toS msg) :: Maybe UpstreamRep.Rep)
+      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
       liftIO $ hFlush stdout
   Protocols.Kill ->
     const $ do
       msg <- receive s
-      liftIO . print $ ((UpstreamRep.decodeRep $ toS msg) :: Maybe UpstreamRep.Rep)
+      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
       liftIO $ hFlush stdout
 
 reqstream :: Socket z Dealer -> ClientVerbosity -> Protocols.ReqStream req rep -> req -> ZMQ z ()
@@ -79,5 +80,5 @@ reqstream s _ = \case
   Protocols.Run ->
     const $ forever $ do
       msg <- receive s
-      liftIO . print $ ((UpstreamRep.decodeRep $ toS msg) :: Maybe UpstreamRep.Rep)
+      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
       liftIO $ hFlush stdout

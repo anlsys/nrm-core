@@ -15,7 +15,7 @@ module Nrm.Types.Messaging.UpstreamRep.JSON
   )
 where
 
-import Data.Aeson
+import Data.Aeson (ToJSON(..),FromJSON(..))
 import Data.JSON.Schema
 import Generics.Generic.Aeson
 import Protolude hiding (Rep)
