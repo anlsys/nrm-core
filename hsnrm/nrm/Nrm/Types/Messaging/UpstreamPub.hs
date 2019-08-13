@@ -60,3 +60,4 @@ data Pub
 
 {-toJ :: Pub -> J.Pub-}
 {-toJ = undefined-}
+{-instance JSONLayer UpstreamPub-}
