@@ -33,10 +33,11 @@ import qualified Nrm.Types.Configuration.Dhall as CD (Cfg)
 import qualified Nrm.Types.Configuration.Yaml as CI (encodeDCfg)
 import qualified Nrm.Types.Manifest as MI (Manifest)
 import qualified Nrm.Types.Manifest.Yaml as MI (encodeManifest)
-import Nrm.Types.Messaging.DownstreamEvent.JSON
-import Nrm.Types.Messaging.UpstreamPub.JSON
-import Nrm.Types.Messaging.UpstreamRep.JSON
-import Nrm.Types.Messaging.UpstreamReq.JSON
+import Nrm.Types.Messaging.DownstreamEvent
+import qualified Nrm.Types.Messaging.DownstreamEvent.JSON as Down (Event (..))
+import Nrm.Types.Messaging.UpstreamPub
+import Nrm.Types.Messaging.UpstreamRep
+import Nrm.Types.Messaging.UpstreamReq
 import Protolude hiding (Rep)
 import System.Directory
 
@@ -78,7 +79,7 @@ downstreamEventSchema = generatePretty (Proxy :: Proxy Event)
 
 -- | The libnrm C header.
 libnrmHeader :: Text
-libnrmHeader = toHeader $ toCHeader (Proxy :: Proxy Event)
+libnrmHeader = toHeader $ toCHeader (Proxy :: Proxy Down.Event)
 
 -- | A license for C headers.
 licenseC :: Text

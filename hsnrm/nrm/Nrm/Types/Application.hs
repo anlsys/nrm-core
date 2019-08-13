@@ -11,15 +11,17 @@ module Nrm.Types.Application
   , Arguments (..)
   , AppStartConfig (..)
   , nextApplicationUUID
+  , fromText
+  , toText
   )
 where
 
 import Data.MessagePack
-import Data.UUID
+import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import Protolude
 
-newtype ApplicationUUID = ApplicationUUID UUID
+newtype ApplicationUUID = ApplicationUUID U.UUID
   deriving (Eq, Ord)
 
 newtype Arg = Arg Text
@@ -46,3 +48,9 @@ data AppStartConfig
 
 nextApplicationUUID :: IO (Maybe ApplicationUUID)
 nextApplicationUUID = fmap ApplicationUUID <$> nextUUID
+
+fromText :: Text -> Maybe ApplicationUUID
+fromText = fmap ApplicationUUID <$> U.fromText
+
+toText :: ApplicationUUID -> Text
+toText (ApplicationUUID u) = U.toText u

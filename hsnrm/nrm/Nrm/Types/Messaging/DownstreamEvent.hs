@@ -6,10 +6,15 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Messaging.DownstreamEvent
   ( Event (..)
+  , Start (..)
+  , Exit (..)
+  , Performance (..)
+  , Progress (..)
+  , PhaseContext (..)
   )
 where
 
-import Nrm.Classes.Messaging
+import qualified Nrm.Classes.Messaging as M
 import qualified Nrm.Types.Application as A
 import qualified Nrm.Types.Container as C
 import qualified Nrm.Types.Messaging.DownstreamEvent.JSON as J
@@ -17,23 +22,38 @@ import qualified Nrm.Types.Units as U
 import Protolude
 
 data Event
+  = EventStart Start
+  | EventExit Exit
+  | EventPerformance Performance
+  | EventProgress Progress
+  | EventPhaseContext PhaseContext
+
+data Start
   = Start
-      { container_uuid :: C.ContainerUUID
-      , application_uuid :: A.ApplicationUUID
+      { startContainerUUID :: C.ContainerUUID
+      , startApplicationUUID :: A.ApplicationUUID
       }
-  | Exit
-      { application_uuid :: A.ApplicationUUID
+
+newtype Exit
+  = Exit
+      { exitApplicationUUID :: A.ApplicationUUID
       }
-  | Performance
-      { container_uuid :: C.ContainerUUID
-      , application_uuid :: A.ApplicationUUID
+
+data Performance
+  = Performance
+      { performanceContainerUUID :: C.ContainerUUID
+      , performanceApplicationUUID :: A.ApplicationUUID
       , perf :: U.Operations
       }
-  | Progress
-      { application_uuid :: A.ApplicationUUID
+
+data Progress
+  = Progress
+      { progressApplicationUUID :: A.ApplicationUUID
       , payload :: U.Progress
       }
-  | PhaseContext
+
+data PhaseContext
+  = PhaseContext
       { cpu :: Int
       , startcompute :: Int
       , endcompute :: Int
@@ -41,4 +61,10 @@ data Event
       , endbarrier :: Int
       }
 
-instance JSONLayer Event J.Event where
+instance M.NrmMessage Event J.Event where
+
+  toJ = \case
+    EventStart Start {..} -> J.Start
+      { container_uuid = C.toText startContainerUUID
+      , application_uuid = A.toText startApplicationUUID
+      }

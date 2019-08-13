@@ -26,46 +26,46 @@ data Rep
   | RepStart Start
   | RepProcessExit ProcessExit
   | RepGetPower GetPower
-  deriving (Show, Generic)
+  deriving (Show)
 
 newtype ContainerList
   = ContainerList
       { containers :: [Text]
       }
-  deriving (Show, Generic)
+  deriving (Show)
 
 data Stdout
   = Stdout
       { stdoutContainerUUUID :: Text
       , stdoutPayload :: Text
       }
-  deriving (Show, Generic)
+  deriving (Show)
 
 data Stderr
   = Stderr
       { stderrContainerUUID :: Text
       , stderrPayload :: Text
       }
-  deriving (Show, Generic)
+  deriving (Show)
 
 data Start
   = Start
       { startContainerUUID :: Text
       , pid :: Int
       }
-  deriving (Show, Generic)
+  deriving (Show)
 
 data ProcessExit
   = ProcessExit
       { container_uuid :: Text
       , status :: Text
       }
-  deriving (Show, Generic)
+  deriving (Show)
 
 newtype GetPower
   = GetPower
       { limit :: Text
       }
-  deriving (Show, Generic)
+  deriving (Show)
 
-instance JSONLayer Rep J.Rep where
+instance NrmMessage Rep J.Rep

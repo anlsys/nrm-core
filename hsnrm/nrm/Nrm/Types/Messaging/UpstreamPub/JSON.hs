@@ -9,9 +9,6 @@ module Nrm.Types.Messaging.UpstreamPub.JSON
   )
 where
 
-import Data.Aeson
-import Data.JSON.Schema
-import Generics.Generic.Aeson
 import Protolude
 
 data Pub
@@ -44,15 +41,3 @@ data Pub
       , feedback_time :: Double
       }
   deriving (Generic)
-
-instance ToJSON Pub where
-
-  toJSON = gtoJson
-
-instance FromJSON Pub where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Pub where
-
-  schema = gSchema

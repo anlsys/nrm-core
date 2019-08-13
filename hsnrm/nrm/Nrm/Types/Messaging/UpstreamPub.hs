@@ -9,16 +9,14 @@ module Nrm.Types.Messaging.UpstreamPub
   )
 where
 
-{-import qualified Data.Aeson as A-}
-{-import qualified Data.JSON.Schema as S-}
-{-import Generics.Generic.Aeson-}
 import Nrm.Classes.Messaging
 import qualified Nrm.Types.Messaging.UpstreamPub.JSON as J
+import qualified Nrm.Types.Units as U
 import Protolude
 
 data Pub
   = Power
-      { total :: Double
+      { total :: U.Power
       , limit :: Double
       }
   | ContainerStart
@@ -47,17 +45,4 @@ data Pub
       }
   deriving (Generic)
 
-{-instance NrmMessage Pub where-}
-
-  {-decode = fmap fromJ . A.decode . toS-}
-
-  {-encode = toS . A.encode . toJ-}
-
-  {-schema _ = S.schema (Proxy :: Proxy J.Pub)-}
-
-{-fromJ :: J.Pub -> Pub-}
-{-fromJ = undefined-}
-
-{-toJ :: Pub -> J.Pub-}
-{-toJ = undefined-}
-{-instance JSONLayer UpstreamPub-}
+instance NrmMessage Pub J.Pub where

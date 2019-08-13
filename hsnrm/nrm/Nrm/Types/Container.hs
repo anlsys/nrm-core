@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-# OPTIONS_GHC -fno-warn-orphans  #-}
 
 {-|
@@ -10,39 +12,28 @@ module Nrm.Types.Container
   ( ContainerUUID (..)
   , nextContainerUUID
   , parseContainerUUID
+  , toText
   )
 where
 
 import Data.Aeson
 import Data.JSON.Schema
-import Data.UUID
+import qualified Data.UUID as U (UUID (..), toText, fromText)
 import Data.UUID.V1
 import Generics.Generic.Aeson
 import Protolude
 
-data ContainerUUID = ContainerUUID UUID | Name Text
+data ContainerUUID = ContainerUUID U.UUID | Name Text
   deriving (Show, Eq, Ord, Generic)
-
-instance ToJSON ContainerUUID where
-
-  toJSON = gtoJson
-
-instance FromJSON ContainerUUID where
-
-  parseJSON = gparseJson
-
-instance JSONSchema ContainerUUID where
-
-  schema = gSchema
-
-instance JSONSchema UUID where
-
-  schema _ = schema (Proxy :: Proxy Text)
 
 nextContainerUUID :: IO (Maybe ContainerUUID)
 nextContainerUUID = fmap ContainerUUID <$> nextUUID
 
 parseContainerUUID :: Text -> ContainerUUID
-parseContainerUUID t = case fromText t of
+parseContainerUUID t = case U.fromText t of
   Just x -> ContainerUUID x
   Nothing -> Name t
+
+toText :: ContainerUUID -> Text
+toText (ContainerUUID u) = U.toText u
+toText (Name n) = n

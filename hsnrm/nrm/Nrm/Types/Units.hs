@@ -13,8 +13,8 @@ module Nrm.Types.Units
   , Time
   , Energy
   , Power
-  , Operations(..)
-  , Progress(..)
+  , Operations (..)
+  , Progress (..)
   , uJ
   , uW
   , uS
@@ -44,6 +44,12 @@ deriving instance (Show DSI.Time) => Show Time
 deriving instance (Show DSI.Power) => Show Power
 
 deriving instance (Show DSI.Energy) => Show Energy
+
+instance MessagePack Power where
+
+  toObject (Power x) = toObject (x # micro Watt)
+
+  fromObject x = fromObject x <&> uW
 
 instance MessagePack Energy where
 

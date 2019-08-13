@@ -10,12 +10,6 @@ module Nrm.Types.Messaging.DownstreamEvent.JSON
 where
 
 import Codegen.CHeader
-import Data.Aeson
-import Data.JSON.Schema
-import Generics.Generic.Aeson
-{-import qualified Nrm.Types.Application as A-}
-{-import qualified Nrm.Types.Container as C-}
-{-import qualified Nrm.Types.Units as U-}
 import Protolude
 
 data Event
@@ -43,15 +37,3 @@ data Event
       , endbarrier :: Int
       }
   deriving (Generic, CHeaderGen)
-
-instance ToJSON Event where
-
-  toJSON = gtoJson
-
-instance FromJSON Event where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Event where
-
-  schema = gSchema

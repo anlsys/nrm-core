@@ -79,6 +79,8 @@ let deps =
           nobound "pretty-simple"
       , protolude =
           nobound "protolude"
+      , generic-deriving =
+          nobound "generic-deriving"
       , typed-process =
           nobound "typed-process"
       , optparse-applicative =
@@ -253,6 +255,7 @@ let libdep =
       , deps.regex
       , deps.units
       , deps.unix
+      , deps.generic-deriving
       , deps.uuid
       , deps.text
       , deps.units-defs

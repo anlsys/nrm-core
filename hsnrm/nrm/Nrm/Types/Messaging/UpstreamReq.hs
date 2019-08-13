@@ -51,4 +51,4 @@ newtype SetPowerRequest
 data ContainerListRequest = ContainerListRequest
   deriving (Show, Generic)
 
-instance JSONLayer Req J.Req where
+instance NrmMessage Req J.Req
