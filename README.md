@@ -3,30 +3,27 @@ monorepo version of NRM with libnrm code generation and separated logic via shar
 ### architecture
 
 - `/pynrm` : daemon runtime
-- `/hsnrm` : nrm.so, code generator
-- `/libnrm` : c, fortran, python app bindings
-- `/gen` : generated code for nrm.so bindings and libnrm header file. symlinked into libnrm and pynrm
-- `/resources` : manifests, configuration code, "cpdl".
+- `/hsnrm` : nrm.so and code generator source
+- `/libnrm` : (c, fortran, python) application code
+- `/resources` : everything in this directory is generated automatically by the build chains. It covers nrm.so bindings, libnrm header file, manifests format and default values (dhall types/values, yaml example), configuration example and default values (same).
 - `/dev` : other development related workflows.
 
 ##### concern separation
 
 ###### `nrmd.py` daemon runtime
 - main thread 
-- rpc
 - zmq
-- ioloop
-- holding children processes
-- message *passing*
+- starting/holding children processes
+- ioloop, callbacks
 ###### `nrm.so` shared library
 - message schemas, serialization, deserialization
-- configuration management (dhall+/yaml)
-- manifest management (dhall+/yaml)
+- configuration management (dhall/yaml)
+- manifest management (dhall/yaml)
 - topology management
 - handware interactions
 - internal daemon state management
 - daemon control flow behavior decisions
-- control loops
+- control strategies
 ###### `hsnrm`
 - code generation for libnrm (c headers, python downstream schema)
 ###### `libnrm`
