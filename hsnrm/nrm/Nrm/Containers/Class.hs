@@ -15,15 +15,18 @@ module Nrm.Containers.Class
   )
 where
 
+import Data.MessagePack
 import Nrm.Types.Application
+import Nrm.Types.Process as P
 import Nrm.Types.Container
 import Protolude
-import System.Posix.Types
 
 data ApplicationProcess
-  = Registered ApplicationUUID ProcessID
+  = Registered ApplicationUUID P.ProcessID
   | Unregistered ApplicationUUID
-  deriving (Eq)
+  deriving (Eq, Generic)
+
+instance MessagePack ApplicationProcess
 
 class
   (MonadIO m)
@@ -57,12 +60,12 @@ class
     :: runtime
     -> ContainerUUID
     -> ApplicationUUID
-    -> ProcessID
+    -> P.ProcessID
     -> runtime
 
   registerStopApp
     :: runtime
-    -> Either ProcessID ApplicationUUID
+    -> Either P.ProcessID ApplicationUUID
     -> runtime
 
   listApplications

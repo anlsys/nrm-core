@@ -38,7 +38,9 @@ data Cfg
       , argo_perf_wrapper :: Text
       , argo_nodeos_config :: Text
       , pmpi_lib :: Text
-      , singularity :: Text
+      , singularity :: Bool
+      , dummy :: Bool
+      , nodeos :: Bool
       , container_runtime :: ContainerRuntime
       , downstreamCfg :: DownstreamCfg
       , upstreamCfg :: UpstreamCfg

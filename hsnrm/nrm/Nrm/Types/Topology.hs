@@ -5,9 +5,9 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Topology
-  ( CoreId
-  , PUId
-  , PackageId
+  ( CoreID
+  , PUID
+  , PackageID
   , Topology (..)
   , IdFromString (..)
   , ToHwlocType (..)
@@ -20,29 +20,54 @@ import Protolude
 import Refined
 import Prelude (String, fail)
 
-data Topology = Topology deriving (Generic)
+-- | Nnm's internal statically typed topology representation
+data Topology
+  = Topology
+      { puIDs :: [PUID]
+      , coreIDs :: [CoreID]
+      , packageIDs :: [PackageID]
+      }
+  deriving (Generic)
 
 deriving instance MessagePack Topology
 
 -- | A CPU Core OS identifier.
-newtype CoreId = CoreId (Refined Positive Int)
+newtype CoreID = CoreID (Refined Positive Int)
   deriving (Show)
 
--- | A Processing Unit OS identifier.
-newtype PUId = PUId (Refined NonNegative Int)
-  deriving (Show)
+instance MessagePack CoreID where
 
--- | A Package OS identifier.
-newtype PackageId = PackageId (Refined NonNegative Int)
-  deriving (Show, Generic)
-
-instance MessagePack PackageId where
-
-  toObject (PackageId x) = toObject (unrefine x)
+  toObject (CoreID x) = toObject (unrefine x)
 
   fromObject x =
     (fromObject x <&> refine) >>= \case
-      Right r -> return $ PackageId r
+      Right r -> return $ CoreID r
+      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
+
+-- | A Processing Unit OS identifier.
+newtype PUID = PUID (Refined NonNegative Int)
+  deriving (Show)
+
+instance MessagePack PUID where
+
+  toObject (PUID x) = toObject (unrefine x)
+
+  fromObject x =
+    (fromObject x <&> refine) >>= \case
+      Right r -> return $ PUID r
+      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
+
+-- | A Package OS identifier.
+newtype PackageID = PackageID (Refined NonNegative Int)
+  deriving (Show, Generic)
+
+instance MessagePack PackageID where
+
+  toObject (PackageID x) = toObject (unrefine x)
+
+  fromObject x =
+    (fromObject x <&> refine) >>= \case
+      Right r -> return $ PackageID r
       Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
 
 {-deriving instance MessagePack (Refined NonNegative Int) where-}
@@ -57,26 +82,26 @@ class ToHwlocType a where
 
   getType :: Proxy a -> Text
 
-instance IdFromString CoreId where
+instance IdFromString CoreID where
 
-  idFromString s = CoreId <$> readMaybe ("Refined " <> s)
+  idFromString s = CoreID <$> readMaybe ("Refined " <> s)
 
-instance IdFromString PUId where
+instance IdFromString PUID where
 
-  idFromString s = PUId <$> readMaybe ("Refined " <> s)
+  idFromString s = PUID <$> readMaybe ("Refined " <> s)
 
-instance IdFromString PackageId where
+instance IdFromString PackageID where
 
-  idFromString s = PackageId <$> readMaybe ("Refined " <> s)
+  idFromString s = PackageID <$> readMaybe ("Refined " <> s)
 
-instance ToHwlocType PUId where
+instance ToHwlocType PUID where
 
   getType _ = "PU"
 
-instance ToHwlocType CoreId where
+instance ToHwlocType CoreID where
 
   getType _ = "Core"
 
-instance ToHwlocType PackageId where
+instance ToHwlocType PackageID where
 
   getType _ = "Package"

@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 {-|
 Module      : export
 Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -31,9 +29,10 @@ module Nrm.Export
 where
 
 import qualified Nrm.Behavior as B
+import qualified Nrm.NrmState as S
 import qualified Nrm.Optparse as O (parseArgDaemonCli)
 import qualified Nrm.Types.Configuration as C (Cfg (..), DaemonVerbosity (..), DownstreamCfg (..), UpstreamCfg (..), logfile, verbose)
-import qualified Nrm.Types.NrmState as S
+import qualified Nrm.Types.NrmState as TS
 import Protolude
 
 -- | Parses Daemon CLI arguments
@@ -63,25 +62,25 @@ buildAddress accessor c = "tcp://" <> C.upstreamBindAddress u <> ":" <> show (ac
     u = C.upstreamCfg c
 
 -- | Behave on downstream message
-downstreamReceive :: ByteString -> S.NrmState -> IO (S.NrmState, B.Behavior)
+downstreamReceive :: ByteString -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
 downstreamReceive msg = B.behavior (B.Recv B.DownstreamEvent msg)
 
 -- | Behave on upstream message
-upstreamReceive :: ByteString -> S.NrmState -> IO (S.NrmState, B.Behavior)
+upstreamReceive :: ByteString -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
 upstreamReceive msg = B.behavior (B.Recv B.UpstreamReq msg)
 
 -- | Behave on sensor trigger
-doSensor :: S.NrmState -> IO (S.NrmState, B.Behavior)
+doSensor :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doSensor = B.behavior B.DoSensor
 
 -- | Behave on control trigger
-doControl :: S.NrmState -> IO (S.NrmState, B.Behavior)
+doControl :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doControl = B.behavior B.DoControl
 
 -- | Behave on children death
-doChildren :: S.NrmState -> IO (S.NrmState, B.Behavior)
+doChildren :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doChildren = B.behavior B.DoChildren
 
 -- | Behave on shutdown
-doShutdown :: S.NrmState -> IO (S.NrmState, B.Behavior)
+doShutdown :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doShutdown = B.behavior B.DoShutdown

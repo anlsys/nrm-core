@@ -9,8 +9,14 @@ Maintainer  : fre@freux.fr
 This module offers an interface to NodeOS containers.
 -}
 module Nrm.Containers.Nodeos
-  ( Nodeos (..)
+  ( NodeosRuntime (..)
   )
 where
 
-data Nodeos = Nodeos
+import Protolude
+import Data.MessagePack
+
+data NodeosRuntime = NodeosRuntime
+  deriving (Generic)
+
+deriving instance MessagePack NodeosRuntime

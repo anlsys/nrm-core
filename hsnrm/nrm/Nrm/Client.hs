@@ -19,11 +19,11 @@ import Nrm.Optparse
 import Nrm.Optparse.Client
 import Nrm.Types.Client
 import qualified Nrm.Types.Messaging.Protocols as Protocols
-import qualified Nrm.Types.Messaging.UpstreamRep as UpstreamRep
-import qualified Nrm.Types.Messaging.UpstreamReq as UpstreamReq
-import Protolude
+import Nrm.Types.Messaging.UpstreamRep
+import Nrm.Types.Messaging.UpstreamReq
+import Protolude hiding (Rep)
 import System.IO (hFlush)
-import System.ZMQ4.Monadic as ZMQ
+import qualified System.ZMQ4.Monadic as ZMQ
 
 address :: Text
 address = "tcp://localhost:3456"
@@ -37,48 +37,66 @@ main = do
     nextClientUUID <&> \case
       Nothing -> panic "couldn't generate next client UUID"
       Just c -> (restrict (show c) :: Restricted (N1, N254) SB.ByteString)
-  runZMQ $ do
-    s <- socket Dealer
+  ZMQ.runZMQ $ do
+    s <- ZMQ.socket ZMQ.Dealer
     ZMQ.setIdentity uuid s
     ZMQ.setSendHighWM (restrict (0 :: Int)) s
     ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
-    connect s $ toS address
+    ZMQ.connect s $ toS address
     client s req (verbose common)
 
-client :: Socket z Dealer -> UpstreamReq.Req -> ClientVerbosity -> ZMQ z ()
+client
+  :: ZMQ.Socket z ZMQ.Dealer
+  -> Req
+  -> ClientVerbosity
+  -> ZMQ.ZMQ z ()
 client s req v = do
-  send s [] (toS $ encode req)
+  ZMQ.send s [] (toS $ encode req)
   dispatchProtocol s v req
 
-dispatchProtocol :: Socket z Dealer -> ClientVerbosity -> UpstreamReq.Req -> ZMQ z ()
+dispatchProtocol
+  :: ZMQ.Socket z ZMQ.Dealer
+  -> ClientVerbosity
+  -> Req
+  -> ZMQ.ZMQ z ()
 dispatchProtocol s v = \case
-  (UpstreamReq.ContainerList x) -> reqrep s v Protocols.ContainerList x
-  (UpstreamReq.Kill x) -> reqrep s v Protocols.Kill x
-  (UpstreamReq.SetPower x) -> reqrep s v Protocols.SetPower x
-  (UpstreamReq.Run x) -> reqstream s v Protocols.Run x
+  (ReqContainerList x) -> reqrep s v Protocols.ContainerList x
+  (ReqKill x) -> reqrep s v Protocols.Kill x
+  (ReqSetPower x) -> reqrep s v Protocols.SetPower x
+  (ReqRun x) -> reqstream s v Protocols.Run x
 
-reqrep :: Socket z Dealer -> ClientVerbosity -> Protocols.ReqRep req rep -> req -> ZMQ z ()
+reqrep
+  :: ZMQ.Socket z ZMQ.Dealer
+  -> ClientVerbosity
+  -> Protocols.ReqRep req rep
+  -> req
+  -> ZMQ.ZMQ z ()
 reqrep s _ = \case
   Protocols.ContainerList ->
     const $ do
-      msg <- receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
+      msg <- ZMQ.receive s
+      liftIO . print $ ((decode $ toS msg) :: Maybe Rep)
       liftIO $ hFlush stdout
   Protocols.SetPower ->
     const $ do
-      msg <- receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
+      msg <- ZMQ.receive s
+      liftIO . print $ ((decode $ toS msg) :: Maybe Rep)
       liftIO $ hFlush stdout
   Protocols.Kill ->
     const $ do
-      msg <- receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
+      msg <- ZMQ.receive s
+      liftIO . print $ ((decode $ toS msg) :: Maybe Rep)
       liftIO $ hFlush stdout
 
-reqstream :: Socket z Dealer -> ClientVerbosity -> Protocols.ReqStream req rep -> req -> ZMQ z ()
+reqstream
+  :: ZMQ.Socket z ZMQ.Dealer
+  -> ClientVerbosity
+  -> Protocols.ReqStream req rep
+  -> req
+  -> ZMQ.ZMQ z ()
 reqstream s _ = \case
   Protocols.Run ->
     const $ forever $ do
-      msg <- receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe UpstreamRep.Rep)
+      msg <- ZMQ.receive s
+      liftIO . print $ ((decode $ toS msg) :: Maybe Rep)
       liftIO $ hFlush stdout

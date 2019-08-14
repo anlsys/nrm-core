@@ -9,8 +9,14 @@ Maintainer  : fre@freux.fr
 This module offers an interface to singularity containers.
 -}
 module Nrm.Containers.Singularity
-  ( Singularity (..)
+  ( SingularityRuntime (..)
   )
 where
 
-data Singularity = Singularity
+import Data.MessagePack
+import Protolude
+
+data SingularityRuntime = SingularityRuntime
+  deriving (Generic)
+
+deriving instance MessagePack SingularityRuntime

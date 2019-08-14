@@ -67,11 +67,11 @@ newtype MaxEnergy = MaxEnergy Energy
 
 {-instance MessagePack MaxEnergy where-}
 
-{-toObject (PackageId x) = toObject (unrefine x)-}
+{-toObject (PackageID x) = toObject (unrefine x)-}
 
 {-fromObject x =-}
 {-(fromObject x <&> refine) >>= \case-}
-{-Right r -> return $ PackageId r-}
+{-Right r -> return $ PackageID r-}
 {-Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"-}
 
 -- | RAPL energy measurement
@@ -84,7 +84,7 @@ newtype HwmonDir = HwmonDir FilePath
 
 data RAPLCommand
   = RAPLCommand
-      { commandPkgid :: PackageId
+      { commandPkgid :: PackageID
       , powercap :: Power
       }
   deriving (Show)
@@ -93,7 +93,7 @@ data RAPLCommand
 data RAPLDir
   = RAPLDir
       { path :: FilePath
-      , pkgid :: PackageId
+      , pkgid :: PackageID
       , maxEnergy :: MaxEnergy
       }
   deriving (Show, Generic, MessagePack)

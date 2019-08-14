@@ -1,5 +1,3 @@
-{-# LANGUAGE QuasiQuotes #-}
-
 {-|
 Module      : Nrm.Codegen
 Copyright   : (c) 2019, UChicago Argonne, LLC.

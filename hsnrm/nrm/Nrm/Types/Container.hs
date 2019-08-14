@@ -1,7 +1,3 @@
-{-# LANGUAGE DerivingVia #-}
-
-{-# OPTIONS_GHC -fno-warn-orphans  #-}
-
 {-|
 Module      : Nrm.Types.Container
 Copyright   : (c) UChicago Argonne, 2019
@@ -17,8 +13,9 @@ module Nrm.Types.Container
 where
 
 import qualified Data.Aeson as A
-import Data.Aeson hiding (Object)
+import Data.Aeson
 import Data.JSON.Schema
+import Data.MessagePack
 import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import Generics.Generic.Aeson
@@ -50,3 +47,10 @@ instance FromJSON ContainerUUID where
 instance JSONSchema ContainerUUID where
 
   schema Proxy = schema (Proxy :: Proxy Text)
+
+instance MessagePack ContainerUUID where
+
+  toObject (ContainerUUID c) = toObject $ U.toText c
+  toObject (Name c) = toObject c
+
+  fromObject x = fromObject x <&> parseContainerUUID

@@ -13,20 +13,23 @@ Information management for an exec-based dummy container runtime.
 module Nrm.Containers.Dummy
   ( Dummy (..)
   , DummyRuntime
+  , emptyRuntime
   )
 where
 
 import Data.Map
+import Data.MessagePack
 import Nrm.Containers.Class
+import Nrm.Processes
 import Nrm.Types.Application
 import Nrm.Types.Container
 import Protolude
-import System.Posix.Signals
+import qualified System.Posix.Signals as Signals
 
 type DummyRuntime = Dummy (Map ContainerUUID [ApplicationProcess])
 
 newtype Dummy a = Dummy a
-  deriving (Functor)
+  deriving (Generic, Functor, MessagePack)
 
 emptyRuntime :: Dummy (Map ContainerUUID a)
 emptyRuntime = Dummy $ fromList []
@@ -39,7 +42,7 @@ instance (MonadIO m) => ContainerRuntime m DummyRuntime () () where
     for_ m $ mapM_ killIfRegistered
     return $ Right emptyRuntime
     where
-      killIfRegistered (Registered _ pid) = liftIO $ signalProcess sigKILL pid
+      killIfRegistered (Registered _ pid) = liftIO $ signalProcess Signals.sigKILL pid
       killIfRegistered (Unregistered _) = return ()
 
   doCreateContainer runtime () =
@@ -60,7 +63,7 @@ instance (MonadIO m) => ContainerRuntime m DummyRuntime () () where
       Nothing -> return $ Left "Unknown container UUID"
       Just dals -> do
         let pids = catMaybes $ go <$> dals
-        for_ pids $ liftIO . signalProcess sigKILL
+        for_ pids $ liftIO . signalProcess Signals.sigKILL
         return $ Right $ Dummy $ delete containerUUID x
     where
       go (Registered _ pid) = Just pid

@@ -1,5 +1,3 @@
-{-# LANGUAGE TemplateHaskell #-}
-
 {-|
 Module      : Nrm.Version
 Copyright   : (c) UChicago Argonne, 2019

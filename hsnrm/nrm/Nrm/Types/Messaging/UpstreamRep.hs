@@ -15,8 +15,13 @@ module Nrm.Types.Messaging.UpstreamRep
   )
 where
 
+import Data.Aeson
+import Data.JSON.Schema
+import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
-import qualified Nrm.Types.Messaging.UpstreamRep.JSON as J
+import Nrm.Types.Container as C
+import Nrm.Types.Process as P
+import Nrm.Types.Units as U
 import Protolude hiding (Rep)
 
 data Rep
@@ -26,46 +31,122 @@ data Rep
   | RepStart Start
   | RepProcessExit ProcessExit
   | RepGetPower GetPower
-  deriving (Show)
+  deriving (Show, Generic)
 
 newtype ContainerList
   = ContainerList
       { containers :: [Text]
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
 data Stdout
   = Stdout
-      { stdoutContainerUUUID :: Text
+      { stdoutContainerUUUID :: C.ContainerUUID
       , stdoutPayload :: Text
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
 data Stderr
   = Stderr
-      { stderrContainerUUID :: Text
+      { stderrContainerUUID :: C.ContainerUUID
       , stderrPayload :: Text
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
 data Start
   = Start
-      { startContainerUUID :: Text
-      , pid :: Int
+      { startContainerUUID :: C.ContainerUUID
+      , pid :: P.ProcessID
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
 data ProcessExit
   = ProcessExit
       { container_uuid :: Text
-      , status :: Text
+      , status :: Int
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
 newtype GetPower
   = GetPower
-      { limit :: Text
+      { limit :: U.Power
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
-instance NrmMessage Rep J.Rep
+instance NrmMessage Rep Rep where
+
+  fromJ = identity
+
+  toJ = identity
+
+instance ToJSON GetPower where
+
+  toJSON = gtoJson
+
+instance FromJSON GetPower where
+
+  parseJSON = gparseJson
+
+instance JSONSchema GetPower where
+
+  schema = gSchema
+
+instance ToJSON ContainerList where
+
+  toJSON = gtoJson
+
+instance FromJSON ContainerList where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ContainerList where
+
+  schema = gSchema
+
+instance ToJSON ProcessExit where
+
+  toJSON = gtoJson
+
+instance FromJSON ProcessExit where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ProcessExit where
+
+  schema = gSchema
+
+instance ToJSON Stderr where
+
+  toJSON = gtoJson
+
+instance FromJSON Stderr where
+
+  parseJSON = gparseJson
+
+instance JSONSchema Stderr where
+
+  schema = gSchema
+
+instance ToJSON Stdout where
+
+  toJSON = gtoJson
+
+instance FromJSON Stdout where
+
+  parseJSON = gparseJson
+
+instance JSONSchema Stdout where
+
+  schema = gSchema
+
+instance ToJSON Start where
+
+  toJSON = gtoJson
+
+instance FromJSON Start where
+
+  parseJSON = gparseJson
+
+instance JSONSchema Start where
+
+  schema = gSchema

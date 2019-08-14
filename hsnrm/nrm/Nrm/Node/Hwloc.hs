@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 {-|
 Module      : Nrm.Node.Hwloc
 Description : Hwloc tree queries
@@ -34,16 +32,16 @@ import Text.XML.HXT.XPath.XPathEval
 newtype HwlocData = HwlocData XmlTrees
 
 -- | Lists all Core IDs from Hwloc topology information.
-selectCoreIDs :: HwlocData -> [CoreId]
-selectCoreIDs = extractOSindexes (Proxy :: Proxy CoreId)
+selectCoreIDs :: HwlocData -> [CoreID]
+selectCoreIDs = extractOSindexes (Proxy :: Proxy CoreID)
 
 -- | Lists all Processing Unit IDs from Hwloc topology information.
-selectPUIDs :: HwlocData -> [PUId]
-selectPUIDs = extractOSindexes (Proxy :: Proxy PUId)
+selectPUIDs :: HwlocData -> [PUID]
+selectPUIDs = extractOSindexes (Proxy :: Proxy PUID)
 
 -- | Lists all Package IDs from Hwloc topology information.
-selectPackageIDs :: HwlocData -> [PackageId]
-selectPackageIDs = extractOSindexes (Proxy :: Proxy PackageId)
+selectPackageIDs :: HwlocData -> [PackageID]
+selectPackageIDs = extractOSindexes (Proxy :: Proxy PackageID)
 
 -- | Runs the @hwloc@ binary in @$PATH@ to retrieve XML topology information.
 getHwlocData :: IO HwlocData

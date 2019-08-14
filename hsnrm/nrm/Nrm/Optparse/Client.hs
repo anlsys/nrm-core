@@ -15,12 +15,14 @@ import qualified Data.ByteString as B
   ( getContents
   )
 import Dhall
+import qualified Nrm.Types.Application as A
 import Nrm.Types.Client
 import Nrm.Types.Container
 import Nrm.Types.Manifest
 import qualified Nrm.Types.Manifest.Dhall as D
 import qualified Nrm.Types.Manifest.Yaml as Y
 import Nrm.Types.Messaging.UpstreamReq
+import qualified Nrm.Types.Units as U
 import Options.Applicative
 import Protolude
 import System.Directory
@@ -96,21 +98,23 @@ parserRun =
         )
       )
 
-parserKill :: Parser Text
+parserKill :: Parser ContainerUUID
 parserKill =
-  strArgument
-    ( metavar "CONTAINER" <>
-      help
-        "Name/UUID of the container to kill"
-    )
+  parseContainerUUID <$>
+    strArgument
+      ( metavar "CONTAINER" <>
+        help
+          "Name/UUID of the container to kill"
+      )
 
-parserSetpower :: Parser Text
+parserSetpower :: Parser U.Power
 parserSetpower =
-  strArgument
-    ( metavar "POWERLIMIT" <>
-      help
-        "Power limit to set"
-    )
+  U.watts <$>
+    argument Options.Applicative.auto
+      ( metavar "POWERLIMIT" <>
+        help
+          "Power limit to set"
+      )
 
 data Opts = Opts {req :: Req, commonOpts :: CommonOpts}
 
@@ -122,17 +126,24 @@ opts =
         progDesc "Run the application via NRM"
       ) <>
     command "kill"
-      ( info (return <$> (Opts <$> (Kill . KillRequest <$> parserKill) <*> parserCommon)) $
+      ( info (return <$> (Opts <$> (ReqKill . Kill <$> parserKill) <*> parserCommon)) $
         progDesc "Kill container"
       ) <>
     command
       "setpower"
-      ( info (return <$> (Opts <$> (SetPower . SetPowerRequest <$> parserSetpower) <*> parserCommon)) $
+      ( info
+        ( return <$>
+          ( Opts <$> (ReqSetPower . SetPower <$> parserSetpower) <*>
+            parserCommon
+          )
+        ) $
         progDesc "Set power limit"
       ) <>
     command
       "list"
-      (info (return <$> (Opts (ContainerList ContainerListRequest) <$> parserCommon)) $ progDesc "List existing containers") <>
+      ( info (return <$> (Opts (ReqContainerList ContainerList) <$> parserCommon)) $
+        progDesc "List existing containers"
+      ) <>
     help
       "Choice of operation."
 
@@ -189,11 +200,11 @@ run rc common = do
   env <- fmap (\(x, y) -> (toS x, toS y)) <$> getEnvironment
   return $
     Opts
-      ( Run $ RunRequest
+      ( ReqRun $ Run
         { manifest = manifest
-        , path = cmd rc
-        , args = runargs rc
-        , runcontainer_uuid = cn
+        , path = A.Command $ cmd rc
+        , args = A.Arguments $ A.Arg <$> runargs rc
+        , runContainerUUID = cn
         , environ = env
         }
       )

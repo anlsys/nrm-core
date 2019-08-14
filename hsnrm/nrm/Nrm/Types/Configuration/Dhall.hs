@@ -34,7 +34,9 @@ data Cfg
       , argo_perf_wrapper :: Text
       , argo_nodeos_config :: Text
       , pmpi_lib :: Text
-      , singularity :: Text
+      , singularity :: Bool
+      , dummy :: Bool
+      , nodeos :: Bool
       , container_runtime :: I.ContainerRuntime
       , downstreamCfg :: I.DownstreamCfg
       , upstreamCfg :: UpstreamCfg
@@ -58,7 +60,9 @@ instance Default Cfg where
     , argo_perf_wrapper = "nrm-perfwrapper"
     , argo_nodeos_config = "argo_nodeos_config"
     , pmpi_lib = "pmpi_lib"
-    , singularity = "singularity"
+    , singularity = False
+    , dummy = True
+    , nodeos = False
     , container_runtime = I.Dummy
     , downstreamCfg = def
     , upstreamCfg = def

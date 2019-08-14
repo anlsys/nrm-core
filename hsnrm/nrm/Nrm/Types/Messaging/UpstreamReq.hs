@@ -6,101 +6,105 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Messaging.UpstreamReq
   ( Req (..)
-  , RunRequest (..)
-  , ContainerListRequest (..)
-  , KillRequest (..)
-  , SetPowerRequest (..)
+  , Run (..)
+  , ContainerList (..)
+  , Kill (..)
+  , SetPower (..)
   )
 where
 
-import Data.Aeson hiding (Object)
+import Data.Aeson
 import Data.JSON.Schema
 import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
-import Nrm.Types.Container
+import qualified Nrm.Types.Application as A
+import qualified Nrm.Types.Container as C
 import Nrm.Types.Manifest
+import qualified Nrm.Types.Units as U
 import Protolude
 
 data Req
-  = ContainerList ContainerListRequest
-  | Run RunRequest
-  | Kill KillRequest
-  | SetPower SetPowerRequest
+  = ReqContainerList ContainerList
+  | ReqRun Run
+  | ReqKill Kill
+  | ReqSetPower SetPower
   deriving (Show, Generic)
 
-data RunRequest
-  = RunRequest
+data Run
+  = Run
       { manifest :: Manifest
-      , path :: Text
-      , args :: [Text]
-      , runcontainer_uuid :: ContainerUUID
+      , path :: A.Command
+      , args :: A.Arguments
+      , runContainerUUID :: C.ContainerUUID
       , environ :: [(Text, Text)]
       }
   deriving (Show, Generic)
 
-instance ToJSON RunRequest where
-
-  toJSON = gtoJson
-
-instance FromJSON RunRequest where
-
-  parseJSON = gparseJson
-
-instance JSONSchema RunRequest where
-
-  schema = gSchema
-
-newtype KillRequest
-  = KillRequest
-      { container_uuid :: Text
+newtype Kill
+  = Kill
+      { killContainerUUID :: C.ContainerUUID
       }
   deriving (Show, Generic)
 
-instance ToJSON KillRequest where
-
-  toJSON = gtoJson
-
-instance FromJSON KillRequest where
-
-  parseJSON = gparseJson
-
-instance JSONSchema KillRequest where
-
-  schema = gSchema
-
-newtype SetPowerRequest
-  = SetPowerRequest
-      { limit :: Text
+newtype SetPower
+  = SetPower
+      { limit :: U.Power
       }
   deriving (Show, Generic)
 
-instance ToJSON SetPowerRequest where
+data ContainerList = ContainerList
+  deriving (Show, Generic)
+
+instance ToJSON Kill where
 
   toJSON = gtoJson
 
-instance FromJSON SetPowerRequest where
+instance FromJSON Kill where
 
   parseJSON = gparseJson
 
-instance JSONSchema SetPowerRequest where
+instance JSONSchema Kill where
 
   schema = gSchema
 
-data ContainerListRequest = ContainerListRequest
-  deriving (Show, Generic)
-
-instance ToJSON ContainerListRequest where
+instance ToJSON SetPower where
 
   toJSON = gtoJson
 
-instance FromJSON ContainerListRequest where
+instance FromJSON SetPower where
 
   parseJSON = gparseJson
 
-instance JSONSchema ContainerListRequest where
+instance JSONSchema SetPower where
+
+  schema = gSchema
+
+instance ToJSON ContainerList where
+
+  toJSON = gtoJson
+
+instance FromJSON ContainerList where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ContainerList where
 
   schema = gSchema
 
 instance NrmMessage Req Req where
+
   toJ = identity
+
   fromJ = identity
+
+instance ToJSON Run where
+
+  toJSON = gtoJson
+
+instance FromJSON Run where
+
+  parseJSON = gparseJson
+
+instance JSONSchema Run where
+
+  schema = gSchema

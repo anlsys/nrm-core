@@ -29,7 +29,9 @@ data Cfg
       , argo_perf_wrapper :: Maybe Text
       , argo_nodeos_config :: Maybe Text
       , pmpi_lib :: Maybe Text
-      , singularity :: Maybe Text
+      , singularity :: Maybe Bool
+      , dummy :: Maybe Bool
+      , nodeos :: Maybe Bool
       , container_runtime :: Maybe D.ContainerRuntime
       , downstreamCfg :: Maybe D.DownstreamCfg
       , upstreamCfg :: Maybe D.UpstreamCfg
@@ -56,6 +58,8 @@ toInternal d = D.Cfg
   , argo_nodeos_config = fromDefault argo_nodeos_config D.argo_nodeos_config
   , pmpi_lib = fromDefault pmpi_lib D.pmpi_lib
   , singularity = fromDefault singularity D.singularity
+  , dummy = fromDefault dummy D.dummy
+  , nodeos = fromDefault nodeos D.nodeos
   , container_runtime = fromDefault container_runtime D.container_runtime
   , downstreamCfg = fromDefault downstreamCfg D.downstreamCfg
   , upstreamCfg = fromDefault upstreamCfg D.upstreamCfg
@@ -74,6 +78,8 @@ fromInternal d = Cfg
   , argo_nodeos_config = toJust D.argo_nodeos_config
   , pmpi_lib = toJust D.pmpi_lib
   , singularity = toJust D.singularity
+  , dummy = toJust D.dummy
+  , nodeos = toJust D.nodeos
   , container_runtime = toJust D.container_runtime
   , downstreamCfg = toJust D.downstreamCfg
   , upstreamCfg = toJust D.upstreamCfg

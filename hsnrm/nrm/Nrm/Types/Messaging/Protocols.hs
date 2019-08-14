@@ -14,9 +14,9 @@ import qualified Nrm.Types.Messaging.UpstreamRep as Rep
 import qualified Nrm.Types.Messaging.UpstreamReq as Req
 
 data ReqRep req rep where
-  ContainerList :: ReqRep Req.ContainerListRequest Rep.ContainerList
-  SetPower :: ReqRep Req.SetPowerRequest Rep.GetPower
-  Kill :: ReqRep Req.KillRequest Rep.ProcessExit
+  ContainerList :: ReqRep Req.ContainerList Rep.ContainerList
+  SetPower :: ReqRep Req.SetPower Rep.GetPower
+  Kill :: ReqRep Req.Kill Rep.ProcessExit
 
 data ReqStream req reps where
-  Run :: ReqStream Req.RunRequest '[Rep.Stdout, Rep.Stderr, Rep.ProcessExit]
+  Run :: ReqStream Req.Run '[Rep.Stdout, Rep.Stderr, Rep.ProcessExit]
