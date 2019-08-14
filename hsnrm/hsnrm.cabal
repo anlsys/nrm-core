@@ -42,6 +42,7 @@ library nrmlib
         Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
+        Nrm.Processes
         Nrm.NrmState
         Nrm.Node.Sysfs.Internal
         Nrm.Optparse.Client
@@ -77,11 +78,11 @@ library nrmlib
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveFunctor
+                        TypeFamilies DeriveAnyClass DeriveGeneric DerivingStrategies
+                        MultiWayIf TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
+                        FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -154,6 +155,7 @@ executable nrm.so
         Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
+        Nrm.Processes
         Nrm.NrmState
         Nrm.Node.Sysfs.Internal
         Nrm.Optparse.Client
@@ -188,11 +190,11 @@ executable nrm.so
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveFunctor
+                        TypeFamilies DeriveAnyClass DeriveGeneric DerivingStrategies
+                        MultiWayIf TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
+                        FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -265,6 +267,7 @@ executable nrm
         Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
+        Nrm.Processes
         Nrm.NrmState
         Nrm.Node.Sysfs.Internal
         Nrm.Optparse.Client
@@ -299,11 +302,11 @@ executable nrm
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveFunctor
+                        TypeFamilies DeriveAnyClass DeriveGeneric DerivingStrategies
+                        MultiWayIf TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
+                        FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -376,6 +379,7 @@ executable nrmd
         Nrm.Optparse
         Nrm.Behavior
         Nrm.Version
+        Nrm.Processes
         Nrm.NrmState
         Nrm.Node.Sysfs.Internal
         Nrm.Optparse.Client
@@ -410,11 +414,11 @@ executable nrmd
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveFunctor
+                        TypeFamilies DeriveAnyClass DeriveGeneric DerivingStrategies
+                        MultiWayIf TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
+                        FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -474,11 +478,11 @@ executable nrmdep
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveFunctor
+                        TypeFamilies DeriveAnyClass DeriveGeneric DerivingStrategies
+                        MultiWayIf TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
+                        FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -495,11 +499,11 @@ executable nrmddep
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveFunctor
+                        TypeFamilies DeriveAnyClass DeriveGeneric DerivingStrategies
+                        MultiWayIf TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
+                        FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs
@@ -516,11 +520,11 @@ executable codegen
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         RecordWildCards TypeSynonymInstances StandaloneDeriving
                         FlexibleInstances TupleSections MultiParamTypeClasses
-                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
+                        NoImplicitPrelude OverloadedStrings ViewPatterns DeriveFunctor
+                        TypeFamilies DeriveAnyClass DeriveGeneric DerivingStrategies
+                        MultiWayIf TemplateHaskell BlockArguments GADTs FlexibleContexts
+                        TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
+                        FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wcpp-undef -fwarn-tabs

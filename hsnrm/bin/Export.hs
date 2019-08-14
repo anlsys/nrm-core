@@ -1,6 +1,3 @@
-{-# LANGUAGE ForeignFunctionInterface #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 {-|
@@ -53,7 +50,9 @@ doControlExport = exportIO E.doControl
 
 doChildrenExport = exportIO E.doChildren
 
-foreign export ccall verboseExport :: Ex
+foreign export ccall isVerboseExport :: Ex
+
+foreign export ccall isDebugExport :: Ex
 
 foreign export ccall logfileExport :: Ex
 
@@ -63,7 +62,13 @@ foreign export ccall upstreamPubAddressExport :: Ex
 
 foreign export ccall downstreamEventAddressExport :: Ex
 
-verboseExport = export E.isVerbose
+foreign export ccall showStateExport :: Ex
+
+foreign export ccall showConfigurationExport :: Ex
+
+isVerboseExport = export E.isVerbose
+
+isDebugExport = export E.isDebug
 
 logfileExport = export E.logfile
 
@@ -72,3 +77,7 @@ upstreamRpcAddressExport = export E.upstreamRpcAddress
 upstreamPubAddressExport = export E.upstreamPubAddress
 
 downstreamEventAddressExport = export E.downstreamEventAddress
+
+showConfigurationExport = export E.showConfiguration
+
+showStateExport = export E.showState

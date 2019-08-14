@@ -1,6 +1,3 @@
-{-# LANGUAGE DeriveFunctor #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-
 {-|
 Module      : Nrm.Containers.Dummy
 Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -29,7 +26,7 @@ import qualified System.Posix.Signals as Signals
 type DummyRuntime = Dummy (Map ContainerUUID [ApplicationProcess])
 
 newtype Dummy a = Dummy a
-  deriving (Generic, Functor, MessagePack)
+  deriving (Show, Generic, Functor, MessagePack)
 
 emptyRuntime :: Dummy (Map ContainerUUID a)
 emptyRuntime = Dummy $ fromList []

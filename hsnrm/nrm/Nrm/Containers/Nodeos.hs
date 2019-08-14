@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 {-|
 Module      : Nrm.Containers.Nodeos
 Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -17,6 +15,6 @@ import Protolude
 import Data.MessagePack
 
 data NodeosRuntime = NodeosRuntime
-  deriving (Generic)
+  deriving (Show,Generic)
 
 deriving instance MessagePack NodeosRuntime

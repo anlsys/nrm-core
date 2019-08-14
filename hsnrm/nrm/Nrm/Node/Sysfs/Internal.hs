@@ -1,6 +1,3 @@
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE QuasiQuotes #-}
-
 {-|
 Module      : Nrm.Node.Sysfs
 Copyright   : (c) 2019, UChicago Argonne, LLC.

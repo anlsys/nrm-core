@@ -27,7 +27,7 @@ data Topology
       , coreIDs :: [CoreID]
       , packageIDs :: [PackageID]
       }
-  deriving (Generic)
+  deriving (Show, Generic)
 
 deriving instance MessagePack Topology
 

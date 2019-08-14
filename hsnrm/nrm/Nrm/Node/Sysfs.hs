@@ -1,5 +1,3 @@
-{-# LANGUAGE DuplicateRecordFields #-}
-
 {-|
 Module      : Nrm.Node.Sysfs
 Description : Sysfs tree queries

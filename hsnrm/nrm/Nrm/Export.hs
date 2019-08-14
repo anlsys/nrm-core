@@ -8,7 +8,9 @@ module Nrm.Export
   ( -- * CLI interfaces
     parseDaemon
   , -- * Configuration queries
-    isVerbose
+    isDebug
+  , isVerbose
+  , showConfiguration
   , C.logfile
   , {-, upstreamBindAddress-}
     {-, upstreamRPCPort-}
@@ -18,6 +20,7 @@ module Nrm.Export
   , downstreamEventAddress
   , -- * State
     S.initialState
+  , showState
   , -- * Behavior
     downstreamReceive
   , upstreamReceive
@@ -34,15 +37,25 @@ import qualified Nrm.Optparse as O (parseArgDaemonCli)
 import qualified Nrm.Types.Configuration as C (Cfg (..), DaemonVerbosity (..), DownstreamCfg (..), UpstreamCfg (..), logfile, verbose)
 import qualified Nrm.Types.NrmState as TS
 import Protolude
+import Text.Pretty.Simple
 
 -- | Parses Daemon CLI arguments
 parseDaemon :: [Text] -> IO C.Cfg
 parseDaemon = O.parseArgDaemonCli
 
--- | Queries configuration for verbosity
+-- | Queries configuration for 'verbose' verbosity
 isVerbose :: C.Cfg -> Bool
 isVerbose c =
   C.Verbose == C.verbose c
+
+-- | Queries configuration for 'debug' verbosity
+isDebug :: C.Cfg -> Bool
+isDebug c =
+  C.Debug == C.verbose c
+
+-- | Show the configuration in text format
+showConfiguration :: C.Cfg -> Text
+showConfiguration = toS . pShow
 
 -- | Query full upstream pub zmq address from configuration
 upstreamPubAddress :: C.Cfg -> Text
@@ -61,13 +74,17 @@ buildAddress accessor c = "tcp://" <> C.upstreamBindAddress u <> ":" <> show (ac
   where
     u = C.upstreamCfg c
 
+-- | Show the state in text format
+showState :: TS.NrmState -> Text
+showState = toS . pShow
+
 -- | Behave on downstream message
-downstreamReceive :: ByteString -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
-downstreamReceive msg = B.behavior (B.Recv B.DownstreamEvent msg)
+downstreamReceive :: TS.NrmState -> ByteString -> IO (TS.NrmState, B.Behavior)
+downstreamReceive s msg = B.behavior (B.Recv B.DownstreamEvent msg) s
 
 -- | Behave on upstream message
-upstreamReceive :: ByteString -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
-upstreamReceive msg = B.behavior (B.Recv B.UpstreamReq msg)
+upstreamReceive :: TS.NrmState -> ByteString -> IO (TS.NrmState, B.Behavior)
+upstreamReceive s msg = B.behavior (B.Recv B.UpstreamReq msg) s
 
 -- | Behave on sensor trigger
 doSensor :: TS.NrmState -> IO (TS.NrmState, B.Behavior)

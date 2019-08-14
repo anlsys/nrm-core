@@ -16,6 +16,8 @@ let defexts =
       , types.Extension.ImplicitPrelude False
       , types.Extension.OverloadedStrings True
       , types.Extension.ViewPatterns True
+      , types.Extension.DeriveFunctor True
+      , types.Extension.TypeFamilies True
       , types.Extension.DeriveAnyClass True
       , types.Extension.DeriveGeneric True
       , types.Extension.DerivingStrategies True
@@ -181,6 +183,7 @@ let modules =
       , "Nrm.Optparse"
       , "Nrm.Behavior"
       , "Nrm.Version"
+      , "Nrm.Processes"
       , "Nrm.NrmState"
       , "Nrm.Node.Sysfs.Internal"
       , "Nrm.Optparse.Client"

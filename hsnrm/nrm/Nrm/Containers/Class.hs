@@ -1,7 +1,3 @@
-{-# LANGUAGE AllowAmbiguousTypes #-}
-{-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-
 {-|
 Module      : Nrm.Containers.Class
 Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -17,14 +13,14 @@ where
 
 import Data.MessagePack
 import Nrm.Types.Application
-import Nrm.Types.Process as P
 import Nrm.Types.Container
+import Nrm.Types.Process as P
 import Protolude
 
 data ApplicationProcess
   = Registered ApplicationUUID P.ProcessID
   | Unregistered ApplicationUUID
-  deriving (Eq, Generic)
+  deriving (Eq, Show, Generic)
 
 instance MessagePack ApplicationProcess
 

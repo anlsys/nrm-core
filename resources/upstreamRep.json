@@ -106,7 +106,7 @@
                     "type": "object",
                     "properties": {
                         "status": {
-                            "type": "string"
+                            "type": "number"
                         },
                         "container_uuid": {
                             "type": "string"
@@ -128,7 +128,7 @@
                     "type": "object",
                     "properties": {
                         "limit": {
-                            "type": "string"
+                            "type": "number"
                         }
                     }
                 }

@@ -2,11 +2,11 @@
     "oneOf": [
         {
             "required": [
-                "power"
+                "pubPower"
             ],
             "type": "object",
             "properties": {
-                "power": {
+                "pubPower": {
                     "required": [
                         "total",
                         "limit"
@@ -25,13 +25,13 @@
         },
         {
             "required": [
-                "containerStart"
+                "pubContainerStart"
             ],
             "type": "object",
             "properties": {
-                "containerStart": {
+                "pubContainerStart": {
                     "required": [
-                        "container_uuid",
+                        "startContainerUUID",
                         "errno",
                         "power"
                     ],
@@ -41,9 +41,9 @@
                             "type": "number"
                         },
                         "power": {
-                            "type": "string"
+                            "type": "number"
                         },
-                        "container_uuid": {
+                        "startContainerUUID": {
                             "type": "string"
                         }
                     }
@@ -52,13 +52,13 @@
         },
         {
             "required": [
-                "containerExit"
+                "pubContainerExit"
             ],
             "type": "object",
             "properties": {
-                "containerExit": {
+                "pubContainerExit": {
                     "required": [
-                        "container_uuid",
+                        "exitContainerUUID",
                         "profile_data"
                     ],
                     "type": "object",
@@ -69,7 +69,7 @@
                             },
                             "type": "object"
                         },
-                        "container_uuid": {
+                        "exitContainerUUID": {
                             "type": "string"
                         }
                     }
@@ -78,22 +78,45 @@
         },
         {
             "required": [
-                "performance"
+                "pubPerformance"
             ],
             "type": "object",
             "properties": {
-                "performance": {
+                "pubPerformance": {
                     "required": [
-                        "container_uuid",
+                        "perfContainerUUID",
+                        "perf"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "perfContainerUUID": {
+                            "type": "string"
+                        },
+                        "perf": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "pubProgress"
+            ],
+            "type": "object",
+            "properties": {
+                "pubProgress": {
+                    "required": [
+                        "applicationUUID",
                         "payload"
                     ],
                     "type": "object",
                     "properties": {
+                        "applicationUUID": {
+                            "type": "string"
+                        },
                         "payload": {
                             "type": "number"
-                        },
-                        "container_uuid": {
-                            "type": "string"
                         }
                     }
                 }
@@ -101,34 +124,11 @@
         },
         {
             "required": [
-                "progress"
+                "pubControl"
             ],
             "type": "object",
             "properties": {
-                "progress": {
-                    "required": [
-                        "application_uuid",
-                        "payload"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "payload": {
-                            "type": "number"
-                        },
-                        "application_uuid": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "required": [
-                "control"
-            ],
-            "type": "object",
-            "properties": {
-                "control": {
+                "pubControl": {
                     "required": [
                         "powercap",
                         "energy",

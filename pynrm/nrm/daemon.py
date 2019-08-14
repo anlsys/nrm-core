@@ -17,6 +17,7 @@ import signal
 from zmq.eventloop import ioloop
 from nrm.messaging import UpstreamRPCServer, UpstreamPubServer, DownstreamEventServer
 from dataclasses import dataclass
+import sys
 from typing import Any
 
 logger = logging.getLogger('nrm')
@@ -39,12 +40,14 @@ class Daemon(object):
         self.downstream_event = DownstreamEventServer(downstream_event_a)
 
         # register messaging server callbacks
-        self.upstream_rpc.setup_recv_callback(self.do_upstream_receive)
-        self.downstream_event.setup_recv_callback(self.do_downstream_receive)
+        self.upstream_rpc.setup_recv_callback(
+            self.behave(self.lib.upstreamReceive))
+        self.downstream_event.setup_recv_callback(
+            self.behave(self.lib.downstreamReceive))
 
         # setup periodic sensor updates
-        ioloop.PeriodicCallback(self.do_sensor, 1000).start()
-        ioloop.PeriodicCallback(self.do_control, 1000).start()
+        ioloop.PeriodicCallback(self.behave(self.lib.doSensor), 1000).start()
+        ioloop.PeriodicCallback(self.behave(self.lib.doControl), 1000).start()
 
         # take care of signals
         signal.signal(signal.SIGINT, self.do_signal)
@@ -65,13 +68,6 @@ class Daemon(object):
             "receiving upstream message: %r from client %s",
             req, str(client)
         )
-        pass
-
-    def do_sensor(self):
-        print(self.lib.doSensor(self.state))
-        pass
-
-    def do_control(self):
         pass
 
     def do_signal(self, signum, frame):
@@ -96,18 +92,34 @@ class Daemon(object):
     def do_shutdown(self):
         ioloop.IOLoop.current().stop()
 
+    def behave(self, f, **kwargsConfig):
+        def r(**kwargsCallback):
+            st, bh = f(self.state, **kwargsConfig, **kwargsCallback)
+            self.state = st
+            logger.debug(self.lib.showState(st))
+            logger.debug(bh)
+        return r
+
 
 def behave(behavior):
-    print(behavior)
+    pass
 
 
-def runner(config, nrmlib):
-    print(config)
-    if nrmlib.verbose(config):
-        logger.setLevel(logging.DEBUG)
-
-    logfile = nrmlib.logfile(config)
+def runner(config, lib):
+    logfile = lib.logfile(config)
     print("Logging to %s" % logfile)
     logger.addHandler(logging.FileHandler(logfile))
 
-    Daemon(config, nrmlib)
+    if lib.isVerbose(config):
+        logger.info("Setting configuration to INFO level.")
+        logger.setLevel(logging.INFO)
+
+    if lib.isDebug(config):
+        logger.info(
+            "Setting configuration to DEBUG level and redirecting to stdout.")
+        logger.setLevel(logging.DEBUG)
+        logger.addHandler(logging.StreamHandler(sys.stdout))
+        logger.debug("NRM Daemon configuration:")
+        logger.debug(lib.showConfiguration(config))
+
+    Daemon(config, lib)

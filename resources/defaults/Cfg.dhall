@@ -12,7 +12,7 @@
 --
 
 { verbose =
-    < Normal | Verbose >.Normal
+    < Normal | Verbose | Debug >.Normal
 , logfile =
     "/tmp/nrm.log"
 , hwloc =
@@ -26,7 +26,11 @@
 , pmpi_lib =
     "pmpi_lib"
 , singularity =
-    "singularity"
+    False
+, dummy =
+    True
+, nodeos =
+    False
 , container_runtime =
     < Singularity | Nodeos | Dummy >.Dummy
 , downstreamCfg =

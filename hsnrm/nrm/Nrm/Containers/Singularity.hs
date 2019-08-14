@@ -1,5 +1,3 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-
 {-|
 Module      : Nrm.Containers.Singularity
 Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -17,6 +15,6 @@ import Data.MessagePack
 import Protolude
 
 data SingularityRuntime = SingularityRuntime
-  deriving (Generic)
+  deriving (Show, Generic)
 
 deriving instance MessagePack SingularityRuntime

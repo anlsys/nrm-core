@@ -2,27 +2,27 @@
     "oneOf": [
         {
             "required": [
-                "containerList"
+                "reqContainerList"
             ],
             "type": "object",
             "properties": {
-                "containerList": {
-                    "const": "\"containerListRequest\""
+                "reqContainerList": {
+                    "const": "\"containerList\""
                 }
             }
         },
         {
             "required": [
-                "run"
+                "reqRun"
             ],
             "type": "object",
             "properties": {
-                "run": {
+                "reqRun": {
                     "required": [
                         "manifest",
                         "path",
                         "args",
-                        "runcontainer_uuid",
+                        "runContainerUUID",
                         "environ"
                     ],
                     "type": "object",
@@ -52,31 +52,8 @@
                         "path": {
                             "type": "string"
                         },
-                        "runcontainer_uuid": {
-                            "oneOf": [
-                                {
-                                    "required": [
-                                        "containerUUID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "containerUUID": {
-                                            "type": "string"
-                                        }
-                                    }
-                                },
-                                {
-                                    "required": [
-                                        "name"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
+                        "runContainerUUID": {
+                            "type": "string"
                         },
                         "manifest": {
                             "required": [
@@ -266,17 +243,17 @@
         },
         {
             "required": [
-                "kill"
+                "reqKill"
             ],
             "type": "object",
             "properties": {
-                "kill": {
+                "reqKill": {
                     "required": [
-                        "container_uuid"
+                        "killContainerUUID"
                     ],
                     "type": "object",
                     "properties": {
-                        "container_uuid": {
+                        "killContainerUUID": {
                             "type": "string"
                         }
                     }
@@ -285,18 +262,18 @@
         },
         {
             "required": [
-                "setPower"
+                "reqSetPower"
             ],
             "type": "object",
             "properties": {
-                "setPower": {
+                "reqSetPower": {
                     "required": [
                         "limit"
                     ],
                     "type": "object",
                     "properties": {
                         "limit": {
-                            "type": "string"
+                            "type": "number"
                         }
                     }
                 }

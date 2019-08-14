@@ -52,11 +52,11 @@
                     "required": [
                         "container_uuid",
                         "application_uuid",
-                        "payload"
+                        "perf"
                     ],
                     "type": "object",
                     "properties": {
-                        "payload": {
+                        "perf": {
                             "type": "number"
                         },
                         "container_uuid": {

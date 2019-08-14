@@ -1,4 +1,4 @@
-{-# language ScopedTypeVariables #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 {-|
 Module      : Codegen.CHeader

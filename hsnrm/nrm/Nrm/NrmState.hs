@@ -33,7 +33,6 @@ initialState c = do
     , dummyRuntime = if dummy c then Just CD.emptyRuntime else Nothing
     , singularityRuntime = if singularity c then Just SingularityRuntime else Nothing
     , nodeosRuntime = if nodeos c then Just NodeosRuntime else Nothing
-
     }
 
 -- | TODO

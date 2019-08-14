@@ -26,7 +26,7 @@ import Protolude
 data ContainerRuntime = Singularity | Nodeos | Dummy
   deriving (Eq, Show, Generic, Interpret, Inject, Flat)
 
-data DaemonVerbosity = Normal | Verbose
+data DaemonVerbosity = Normal | Verbose | Debug
   deriving (Eq, Show, Generic, Interpret, Inject, Flat)
 
 data Cfg

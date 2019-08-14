@@ -1,6 +1,0 @@
-nri/*.py
-nri/*.pyi
-nrm/sysfs/*.py
-nrm/sysfs/*.pyi
-nrm/msr/*py
-nrm/msr/*pyi

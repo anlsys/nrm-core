@@ -12,7 +12,7 @@
 --
 
 { verbose :
-    < Normal | Verbose >
+    < Normal | Verbose | Debug >
 , logfile :
     Text
 , hwloc :
@@ -26,7 +26,11 @@
 , pmpi_lib :
     Text
 , singularity :
-    Text
+    Bool
+, dummy :
+    Bool
+, nodeos :
+    Bool
 , container_runtime :
     < Singularity | Nodeos | Dummy >
 , downstreamCfg :
