@@ -9,3 +9,9 @@ clean 'TODO's
 properly split message types in sub-newtypes
 
 locate and remove {-*-} comments
+
+-change "UUID"s to "ID"s
+
+-remove application UUIDs
+
+-start from message format.
