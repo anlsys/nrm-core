@@ -5,7 +5,8 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Container
-  ( ContainerUUID (..)
+  ( {-Container (..)-}
+    ContainerUUID (..)
   , nextContainerUUID
   , parseContainerUUID
   , toText
@@ -21,6 +22,7 @@ import Data.UUID.V1
 import Generics.Generic.Aeson
 import Protolude
 
+{-data Container = Container {downstreamClients :: [D]}-}
 data ContainerUUID = ContainerUUID U.UUID | Name Text
   deriving (Show, Eq, Ord, Generic)
 
