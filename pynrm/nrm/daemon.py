@@ -98,6 +98,7 @@ class Daemon(object):
             self.state = st
             logger.debug(self.lib.showState(st))
             logger.debug(bh)
+            # Apply behavior here (TODO)
         return r
 
 
