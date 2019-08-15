@@ -22,7 +22,7 @@
                         "manifest",
                         "path",
                         "args",
-                        "runContainerUUID",
+                        "runContainerID",
                         "environ"
                     ],
                     "type": "object",
@@ -50,9 +50,6 @@
                             "type": "array"
                         },
                         "path": {
-                            "type": "string"
-                        },
-                        "runContainerUUID": {
                             "type": "string"
                         },
                         "manifest": {
@@ -236,6 +233,9 @@
                                     "type": "string"
                                 }
                             }
+                        },
+                        "runContainerID": {
+                            "type": "string"
                         }
                     }
                 }
@@ -249,11 +249,11 @@
             "properties": {
                 "reqKill": {
                     "required": [
-                        "killContainerUUID"
+                        "killContainerID"
                     ],
                     "type": "object",
                     "properties": {
-                        "killContainerUUID": {
+                        "killContainerID": {
                             "type": "string"
                         }
                     }

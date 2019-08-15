@@ -54,15 +54,15 @@
             "properties": {
                 "repStderr": {
                     "required": [
-                        "stderrContainerUUID",
+                        "stderrContainerID",
                         "stderrPayload"
                     ],
                     "type": "object",
                     "properties": {
-                        "stderrContainerUUID": {
+                        "stderrPayload": {
                             "type": "string"
                         },
-                        "stderrPayload": {
+                        "stderrContainerID": {
                             "type": "string"
                         }
                     }
@@ -77,12 +77,12 @@
             "properties": {
                 "repStart": {
                     "required": [
-                        "startContainerUUID",
+                        "startContainerID",
                         "pid"
                     ],
                     "type": "object",
                     "properties": {
-                        "startContainerUUID": {
+                        "startContainerID": {
                             "type": "string"
                         },
                         "pid": {

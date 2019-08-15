@@ -10,15 +10,18 @@ module Nrm.Types.NrmState
 where
 
 import Data.MessagePack
+import Nrm.Containers
 import Nrm.Containers.Dummy
 import Nrm.Containers.Nodeos
 import Nrm.Containers.Singularity
+import Nrm.Types.Container
 import Nrm.Types.Topology
 import Protolude
 
 data NrmState
   = NrmState
       { topo :: Topology
+      , containers :: Map ContainerID [Container]
       , dummyRuntime :: Maybe DummyRuntime
       , singularityRuntime :: Maybe SingularityRuntime
       , nodeosRuntime :: Maybe NodeosRuntime
