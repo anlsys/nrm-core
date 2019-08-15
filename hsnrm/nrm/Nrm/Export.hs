@@ -12,10 +12,7 @@ module Nrm.Export
   , isVerbose
   , showConfiguration
   , C.logfile
-  , {-, upstreamBindAddress-}
-    {-, upstreamRPCPort-}
-    {-, upstreamPubPort-}
-    upstreamPubAddress
+  , upstreamPubAddress
   , upstreamRpcAddress
   , downstreamEventAddress
   , -- * State
@@ -34,7 +31,14 @@ where
 import qualified Nrm.Behavior as B
 import qualified Nrm.NrmState as S
 import qualified Nrm.Optparse as O (parseArgDaemonCli)
-import qualified Nrm.Types.Configuration as C (Cfg (..), DaemonVerbosity (..), DownstreamCfg (..), UpstreamCfg (..), logfile, verbose)
+import qualified Nrm.Types.Configuration as C
+  ( Cfg (..)
+  , DaemonVerbosity (..)
+  , DownstreamCfg (..)
+  , UpstreamCfg (..)
+  , logfile
+  , verbose
+  )
 import qualified Nrm.Types.NrmState as TS
 import Protolude
 import Text.Pretty.Simple

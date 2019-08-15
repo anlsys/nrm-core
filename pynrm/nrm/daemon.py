@@ -56,20 +56,6 @@ class Daemon(object):
         # starting the daemon
         ioloop.IOLoop.current().start()
 
-    def do_downstream_receive(self, event, client):
-        logger.info(
-            "receiving downstream message: %r from client %s",
-            event, str(client)
-        )
-        pass
-
-    def do_upstream_receive(self, req, client):
-        logger.info(
-            "receiving upstream message: %r from client %s",
-            req, str(client)
-        )
-        pass
-
     def do_signal(self, signum, frame):
         if signum == signal.SIGINT:
             ioloop.IOLoop.current().add_callback_from_signal(self.do_shutdown)
@@ -103,7 +89,7 @@ class Daemon(object):
 
 
 def behave(behavior):
-    pass
+    pas
 
 
 def runner(config, lib):
