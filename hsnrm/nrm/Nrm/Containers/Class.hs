@@ -39,22 +39,22 @@ class
   doCreateContainer
     :: runtime
     -> containerconfig
-    -> m (Either Text (runtime, ContainerUUID))
+    -> m (Either Text (runtime, ContainerID))
 
   doPrepareStartApp
     :: runtime
-    -> ContainerUUID
+    -> ContainerID
     -> AppStartConfig
     -> m (Either Text (runtime, Command, Arguments))
 
   doStopContainer
     :: runtime
-    -> ContainerUUID
+    -> ContainerID
     -> m (Either Text runtime)
 
   registerStartApp
     :: runtime
-    -> ContainerUUID
+    -> ContainerID
     -> ApplicationUUID
     -> P.ProcessID
     -> runtime
@@ -66,9 +66,9 @@ class
 
   listApplications
     :: runtime
-    -> ContainerUUID
+    -> ContainerID
     -> Maybe [ApplicationProcess]
 
   listContainers
     :: runtime
-    -> [ContainerUUID]
+    -> [ContainerID]

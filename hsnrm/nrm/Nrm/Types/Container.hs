@@ -6,9 +6,9 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Container
   ( {-Container (..)-}
-    ContainerUUID (..)
-  , nextContainerUUID
-  , parseContainerUUID
+    ContainerID (..)
+  , nextContainerID
+  , parseContainerID
   , toText
   )
 where
@@ -23,36 +23,36 @@ import Generics.Generic.Aeson
 import Protolude
 
 {-data Container = Container {downstreamClients :: [D]}-}
-data ContainerUUID = ContainerUUID U.UUID | Name Text
+data ContainerID = ContainerID U.UUID | Name Text
   deriving (Show, Eq, Ord, Generic)
 
-nextContainerUUID :: IO (Maybe ContainerUUID)
-nextContainerUUID = fmap ContainerUUID <$> nextUUID
+nextContainerID :: IO (Maybe ContainerID)
+nextContainerID = fmap ContainerID <$> nextUUID
 
-parseContainerUUID :: Text -> ContainerUUID
-parseContainerUUID t = case U.fromText t of
-  Just x -> ContainerUUID x
+parseContainerID :: Text -> ContainerID
+parseContainerID t = case U.fromText t of
+  Just x -> ContainerID x
   Nothing -> Name t
 
-toText :: ContainerUUID -> Text
-toText (ContainerUUID u) = U.toText u
+toText :: ContainerID -> Text
+toText (ContainerID u) = U.toText u
 toText (Name n) = n
 
-instance ToJSON ContainerUUID where
+instance ToJSON ContainerID where
 
   toJSON = gtoJson
 
-instance FromJSON ContainerUUID where
+instance FromJSON ContainerID where
 
   parseJSON = gparseJson
 
-instance JSONSchema ContainerUUID where
+instance JSONSchema ContainerID where
 
   schema Proxy = schema (Proxy :: Proxy Text)
 
-instance MessagePack ContainerUUID where
+instance MessagePack ContainerID where
 
-  toObject (ContainerUUID c) = toObject $ U.toText c
+  toObject (ContainerID c) = toObject $ U.toText c
   toObject (Name c) = toObject c
 
-  fromObject x = fromObject x <&> parseContainerUUID
+  fromObject x = fromObject x <&> parseContainerID

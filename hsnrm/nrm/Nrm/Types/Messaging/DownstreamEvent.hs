@@ -30,7 +30,7 @@ data Event
 
 data Start
   = Start
-      { startContainerUUID :: C.ContainerUUID
+      { startContainerID :: C.ContainerID
       , startApplicationUUID :: A.ApplicationUUID
       }
 
@@ -41,7 +41,7 @@ newtype Exit
 
 data Performance
   = Performance
-      { performanceContainerUUID :: C.ContainerUUID
+      { performanceContainerID :: C.ContainerID
       , performanceApplicationUUID :: A.ApplicationUUID
       , perf :: U.Operations
       }
@@ -65,14 +65,14 @@ instance M.NrmMessage Event J.Event where
 
   toJ = \case
     EventStart Start {..} -> J.Start
-      { container_uuid = C.toText startContainerUUID
+      { container_uuid = C.toText startContainerID
       , application_uuid = A.toText startApplicationUUID
       }
     EventExit Exit {..} -> J.Exit
       { application_uuid = A.toText exitApplicationUUID
       }
     EventPerformance Performance {..} -> J.Performance
-      { container_uuid = C.toText performanceContainerUUID
+      { container_uuid = C.toText performanceContainerID
       , application_uuid = A.toText performanceApplicationUUID
       , perf = o
       }
@@ -89,7 +89,7 @@ instance M.NrmMessage Event J.Event where
   fromJ = \case
     J.Start {..} ->
       EventStart $ Start
-        { startContainerUUID = C.parseContainerUUID container_uuid
+        { startContainerID = C.parseContainerID container_uuid
         , startApplicationUUID = fromMaybe
           (panic "DownstreamEvent fromJ error on Application UUID")
           (A.parseApplicationUUID application_uuid)
@@ -102,7 +102,7 @@ instance M.NrmMessage Event J.Event where
         }
     J.Performance {..} ->
       EventPerformance $ Performance
-        { performanceContainerUUID = C.parseContainerUUID container_uuid
+        { performanceContainerID = C.parseContainerID container_uuid
         , performanceApplicationUUID = fromMaybe
           (panic "DownstreamEvent fromJ error on Application UUID")
           (A.parseApplicationUUID application_uuid)

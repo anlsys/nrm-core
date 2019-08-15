@@ -23,12 +23,12 @@ import Nrm.Types.Container
 import Protolude
 import qualified System.Posix.Signals as Signals
 
-type DummyRuntime = Dummy (Map ContainerUUID [ApplicationProcess])
+type DummyRuntime = Dummy (Map ContainerID [ApplicationProcess])
 
 newtype Dummy a = Dummy a
   deriving (Show, Generic, Functor, MessagePack)
 
-emptyRuntime :: Dummy (Map ContainerUUID a)
+emptyRuntime :: Dummy (Map ContainerID a)
 emptyRuntime = Dummy $ fromList []
 
 instance (MonadIO m) => ContainerRuntime m DummyRuntime () () where
@@ -43,7 +43,7 @@ instance (MonadIO m) => ContainerRuntime m DummyRuntime () () where
       killIfRegistered (Unregistered _) = return ()
 
   doCreateContainer runtime () =
-    liftIO $ nextContainerUUID <&> \case
+    liftIO $ nextContainerID <&> \case
       Just uuid -> Right (insert uuid [] <$> runtime, uuid)
       Nothing -> Left "Failure to generate next Container UUID"
 

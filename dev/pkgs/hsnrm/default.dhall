@@ -194,7 +194,7 @@ let modules =
       , "Nrm.Types.Process"
       , "Nrm.Types.Application"
       , "Nrm.Types.NrmState"
-      , "Nrm.Types.Client"
+      , "Nrm.Types.UpstreamClient"
       , "Nrm.Classes.Messaging"
       , "Nrm.Types.Messaging.DownstreamEvent"
       , "Nrm.Types.Messaging.DownstreamEvent.JSON"

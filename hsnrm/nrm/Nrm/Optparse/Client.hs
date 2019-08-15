@@ -16,7 +16,7 @@ import qualified Data.ByteString as B
   )
 import Dhall
 import qualified Nrm.Types.Application as A
-import Nrm.Types.Client
+import Nrm.Types.UpstreamClient
 import Nrm.Types.Container
 import Nrm.Types.Manifest
 import qualified Nrm.Types.Manifest.Dhall as D
@@ -98,9 +98,9 @@ parserRun =
         )
       )
 
-parserKill :: Parser ContainerUUID
+parserKill :: Parser ContainerID
 parserKill =
-  parseContainerUUID <$>
+  parseContainerID <$>
     strArgument
       ( metavar "CONTAINER" <>
         help
@@ -195,7 +195,7 @@ run rc common = do
   manifest <- load rc
   cn <-
     case containerName rc of
-      Nothing -> fromMaybe (panic "Couldn't generate next container UUID") <$> nextContainerUUID
+      Nothing -> fromMaybe (panic "Couldn't generate next container UUID") <$> nextContainerID
       Just n -> return $ Name n
   env <- fmap (\(x, y) -> (toS x, toS y)) <$> getEnvironment
   return $
@@ -204,7 +204,7 @@ run rc common = do
         { manifest = manifest
         , path = A.Command $ cmd rc
         , args = A.Arguments $ A.Arg <$> runargs rc
-        , runContainerUUID = cn
+        , runContainerID = cn
         , environ = env
         }
       )

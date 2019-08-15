@@ -17,10 +17,10 @@ import Data.Restricted
 import Nrm.Classes.Messaging
 import Nrm.Optparse
 import Nrm.Optparse.Client
-import Nrm.Types.Client
 import qualified Nrm.Types.Messaging.Protocols as Protocols
 import Nrm.Types.Messaging.UpstreamRep
 import Nrm.Types.Messaging.UpstreamReq
+import Nrm.Types.UpstreamClient
 import Protolude hiding (Rep)
 import System.IO (hFlush)
 import qualified System.ZMQ4.Monadic as ZMQ
@@ -34,8 +34,8 @@ main = do
   (Opts req common) <- parseClientCli
   when (verbose common == Verbose) (print $ encode req)
   uuid <-
-    nextClientUUID <&> \case
-      Nothing -> panic "couldn't generate next client UUID"
+    nextUpstreamClientID <&> \case
+      Nothing -> panic "couldn't generate next client ID"
       Just c -> (restrict (show c) :: Restricted (N1, N254) SB.ByteString)
   ZMQ.runZMQ $ do
     s <- ZMQ.socket ZMQ.Dealer

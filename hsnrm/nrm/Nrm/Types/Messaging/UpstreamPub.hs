@@ -36,7 +36,7 @@ data Power
 
 data ContainerStart
   = ContainerStart
-      { startContainerUUID :: C.ContainerUUID
+      { startContainerID :: C.ContainerID
       , errno :: Int
       , power :: U.Power
       }
@@ -44,14 +44,14 @@ data ContainerStart
 
 data ContainerExit
   = ContainerExit
-      { exitContainerUUID :: C.ContainerUUID
+      { exitContainerID :: C.ContainerID
       , profile_data :: Map Text Text
       }
   deriving (Show, Generic)
 
 data Performance
   = Performance
-      { perfContainerUUID :: C.ContainerUUID
+      { perfContainerID :: C.ContainerID
       , perf :: U.Operations
       }
   deriving (Show, Generic)

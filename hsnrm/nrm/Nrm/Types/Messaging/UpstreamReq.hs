@@ -35,14 +35,14 @@ data Run
       { manifest :: Manifest
       , path :: A.Command
       , args :: A.Arguments
-      , runContainerUUID :: C.ContainerUUID
+      , runContainerID :: C.ContainerID
       , environ :: [(Text, Text)]
       }
   deriving (Show, Generic)
 
 newtype Kill
   = Kill
-      { killContainerUUID :: C.ContainerUUID
+      { killContainerID :: C.ContainerID
       }
   deriving (Show, Generic)
 

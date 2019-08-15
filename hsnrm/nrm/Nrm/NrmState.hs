@@ -36,5 +36,5 @@ initialState c = do
     }
 
 -- | TODO
-registerApplication :: NrmState -> ContainerUUID -> ApplicationUUID -> NrmState
+registerApplication :: NrmState -> ContainerID -> ApplicationUUID -> NrmState
 registerApplication s _ _ = s

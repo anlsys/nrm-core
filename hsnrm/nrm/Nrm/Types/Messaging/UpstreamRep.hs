@@ -41,21 +41,21 @@ newtype ContainerList
 
 data Stdout
   = Stdout
-      { stdoutContainerUUUID :: C.ContainerUUID
+      { stdoutContainerUUUID :: C.ContainerID
       , stdoutPayload :: Text
       }
   deriving (Show, Generic)
 
 data Stderr
   = Stderr
-      { stderrContainerUUID :: C.ContainerUUID
+      { stderrContainerID :: C.ContainerID
       , stderrPayload :: Text
       }
   deriving (Show, Generic)
 
 data Start
   = Start
-      { startContainerUUID :: C.ContainerUUID
+      { startContainerID :: C.ContainerID
       , pid :: P.ProcessID
       }
   deriving (Show, Generic)
