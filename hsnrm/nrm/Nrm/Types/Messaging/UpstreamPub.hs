@@ -13,8 +13,8 @@ import Data.Aeson
 import Data.JSON.Schema
 import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
-import Nrm.Types.Application as A
 import Nrm.Types.Container as C
+import Nrm.Types.DownstreamClient as D
 import qualified Nrm.Types.Units as U
 import Protolude
 
@@ -58,7 +58,7 @@ data Performance
 
 data Progress
   = Progress
-      { applicationUUID :: A.ApplicationUUID
+      { applicationUUID :: D.DownstreamID
       , payload :: U.Progress
       }
   deriving (Show, Generic)

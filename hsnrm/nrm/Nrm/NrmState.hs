@@ -15,9 +15,9 @@ import Nrm.Containers.Dummy as CD
 import Nrm.Containers.Nodeos as CN
 import Nrm.Containers.Singularity as CS
 import Nrm.Node.Hwloc
-import Nrm.Types.Application
 import Nrm.Types.Configuration
 import Nrm.Types.Container
+import Nrm.Types.DownstreamClient
 import Nrm.Types.NrmState
 import Nrm.Types.Topology
 import Protolude
@@ -38,5 +38,5 @@ initialState c = do
     }
 
 -- | TODO
-registerApplication :: NrmState -> ContainerID -> ApplicationUUID -> NrmState
+registerApplication :: NrmState -> ContainerID -> DownstreamID -> NrmState
 registerApplication s _ _ = s

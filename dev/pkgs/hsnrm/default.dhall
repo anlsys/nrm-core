@@ -192,7 +192,7 @@ let modules =
       , "Nrm.Types.Units"
       , "Nrm.Types.Container"
       , "Nrm.Types.Process"
-      , "Nrm.Types.Application"
+      , "Nrm.Types.DownstreamClient"
       , "Nrm.Types.NrmState"
       , "Nrm.Types.UpstreamClient"
       , "Nrm.Classes.Messaging"

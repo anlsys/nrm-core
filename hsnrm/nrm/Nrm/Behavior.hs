@@ -15,7 +15,7 @@ where
 
 import Data.MessagePack
 import Nrm.Classes.Messaging
-import Nrm.Types.Application
+import Nrm.Types.Process
 import Nrm.Types.Messaging.DownstreamEvent as D
 import qualified Nrm.Types.NrmState as S
 import Protolude

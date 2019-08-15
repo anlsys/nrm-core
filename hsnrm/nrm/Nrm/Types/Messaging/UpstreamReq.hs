@@ -17,7 +17,7 @@ import Data.Aeson
 import Data.JSON.Schema
 import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
-import qualified Nrm.Types.Application as A
+import qualified Nrm.Types.Process as P
 import qualified Nrm.Types.Container as C
 import Nrm.Types.Manifest
 import qualified Nrm.Types.Units as U
@@ -33,8 +33,8 @@ data Req
 data Run
   = Run
       { manifest :: Manifest
-      , path :: A.Command
-      , args :: A.Arguments
+      , path :: P.Command
+      , args :: P.Arguments
       , runContainerID :: C.ContainerID
       , environ :: [(Text, Text)]
       }

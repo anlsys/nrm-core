@@ -18,7 +18,6 @@ import Data.Map
 import Data.MessagePack
 import Nrm.Containers.Class
 import Nrm.Processes
-import Nrm.Types.Application
 import Nrm.Types.Container
 import Protolude
 import qualified System.Posix.Signals as Signals

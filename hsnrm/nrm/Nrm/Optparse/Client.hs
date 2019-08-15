@@ -15,14 +15,14 @@ import qualified Data.ByteString as B
   ( getContents
   )
 import Dhall
-import qualified Nrm.Types.Application as A
-import Nrm.Types.UpstreamClient
 import Nrm.Types.Container
+import qualified Nrm.Types.Process as P
 import Nrm.Types.Manifest
 import qualified Nrm.Types.Manifest.Dhall as D
 import qualified Nrm.Types.Manifest.Yaml as Y
 import Nrm.Types.Messaging.UpstreamReq
 import qualified Nrm.Types.Units as U
+import Nrm.Types.UpstreamClient
 import Options.Applicative
 import Protolude
 import System.Directory
@@ -202,8 +202,8 @@ run rc common = do
     Opts
       ( ReqRun $ Run
         { manifest = manifest
-        , path = A.Command $ cmd rc
-        , args = A.Arguments $ A.Arg <$> runargs rc
+        , path = P.Command $ cmd rc
+        , args = P.Arguments $ P.Arg <$> runargs rc
         , runContainerID = cn
         , environ = env
         }

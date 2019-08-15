@@ -15,8 +15,8 @@ module Nrm.Types.Messaging.DownstreamEvent
 where
 
 import qualified Nrm.Classes.Messaging as M
-import qualified Nrm.Types.Application as A
 import qualified Nrm.Types.Container as C
+import qualified Nrm.Types.DownstreamClient as D
 import qualified Nrm.Types.Messaging.DownstreamEvent.JSON as J
 import qualified Nrm.Types.Units as U
 import Protolude
@@ -31,24 +31,24 @@ data Event
 data Start
   = Start
       { startContainerID :: C.ContainerID
-      , startApplicationUUID :: A.ApplicationUUID
+      , startDownstreamID :: D.DownstreamID
       }
 
 newtype Exit
   = Exit
-      { exitApplicationUUID :: A.ApplicationUUID
+      { exitDownstreamID :: D.DownstreamID
       }
 
 data Performance
   = Performance
       { performanceContainerID :: C.ContainerID
-      , performanceApplicationUUID :: A.ApplicationUUID
+      , performanceDownstreamID :: D.DownstreamID
       , perf :: U.Operations
       }
 
 data Progress
   = Progress
-      { progressApplicationUUID :: A.ApplicationUUID
+      { progressDownstreamID :: D.DownstreamID
       , payload :: U.Progress
       }
 
@@ -66,20 +66,20 @@ instance M.NrmMessage Event J.Event where
   toJ = \case
     EventStart Start {..} -> J.Start
       { container_uuid = C.toText startContainerID
-      , application_uuid = A.toText startApplicationUUID
+      , application_uuid = D.toText startDownstreamID
       }
     EventExit Exit {..} -> J.Exit
-      { application_uuid = A.toText exitApplicationUUID
+      { application_uuid = D.toText exitDownstreamID
       }
     EventPerformance Performance {..} -> J.Performance
       { container_uuid = C.toText performanceContainerID
-      , application_uuid = A.toText performanceApplicationUUID
+      , application_uuid = D.toText performanceDownstreamID
       , perf = o
       }
       where
         (U.Operations o) = perf
     EventProgress Progress {..} -> J.Progress
-      { application_uuid = A.toText progressApplicationUUID
+      { application_uuid = D.toText progressDownstreamID
       , payload = p
       }
       where
@@ -90,29 +90,29 @@ instance M.NrmMessage Event J.Event where
     J.Start {..} ->
       EventStart $ Start
         { startContainerID = C.parseContainerID container_uuid
-        , startApplicationUUID = fromMaybe
+        , startDownstreamID = fromMaybe
           (panic "DownstreamEvent fromJ error on Application UUID")
-          (A.parseApplicationUUID application_uuid)
+          (D.parseDownstreamID application_uuid)
         }
     J.Exit {..} ->
       EventExit $ Exit
-        { exitApplicationUUID = fromMaybe
+        { exitDownstreamID = fromMaybe
             (panic "DownstreamEvent fromJ error on Application UUID")
-            (A.parseApplicationUUID application_uuid)
+            (D.parseDownstreamID application_uuid)
         }
     J.Performance {..} ->
       EventPerformance $ Performance
         { performanceContainerID = C.parseContainerID container_uuid
-        , performanceApplicationUUID = fromMaybe
+        , performanceDownstreamID = fromMaybe
           (panic "DownstreamEvent fromJ error on Application UUID")
-          (A.parseApplicationUUID application_uuid)
+          (D.parseDownstreamID application_uuid)
         , perf = U.Operations perf
         }
     J.Progress {..} ->
       EventProgress $ Progress
-        { progressApplicationUUID = fromMaybe
+        { progressDownstreamID = fromMaybe
             (panic "DownstreamEvent fromJ error on Application UUID")
-            (A.parseApplicationUUID application_uuid)
+            (D.parseDownstreamID application_uuid)
         , payload = U.Progress payload
         }
     J.PhaseContext {..} -> EventPhaseContext PhaseContext {..}

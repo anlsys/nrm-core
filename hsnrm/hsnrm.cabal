@@ -51,7 +51,7 @@ library nrmlib
         Nrm.Types.Units
         Nrm.Types.Container
         Nrm.Types.Process
-        Nrm.Types.Application
+        Nrm.Types.DownstreamClient
         Nrm.Types.NrmState
         Nrm.Types.UpstreamClient
         Nrm.Classes.Messaging
@@ -164,7 +164,7 @@ executable nrm.so
         Nrm.Types.Units
         Nrm.Types.Container
         Nrm.Types.Process
-        Nrm.Types.Application
+        Nrm.Types.DownstreamClient
         Nrm.Types.NrmState
         Nrm.Types.UpstreamClient
         Nrm.Classes.Messaging
@@ -276,7 +276,7 @@ executable nrm
         Nrm.Types.Units
         Nrm.Types.Container
         Nrm.Types.Process
-        Nrm.Types.Application
+        Nrm.Types.DownstreamClient
         Nrm.Types.NrmState
         Nrm.Types.UpstreamClient
         Nrm.Classes.Messaging
@@ -388,7 +388,7 @@ executable nrmd
         Nrm.Types.Units
         Nrm.Types.Container
         Nrm.Types.Process
-        Nrm.Types.Application
+        Nrm.Types.DownstreamClient
         Nrm.Types.NrmState
         Nrm.Types.UpstreamClient
         Nrm.Classes.Messaging

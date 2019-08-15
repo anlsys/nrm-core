@@ -8,21 +8,29 @@ Maintainer  : fre@freux.fr
 module Nrm.Containers.Class
   ( ContainerRuntime (..)
   , ApplicationProcess (..)
+  , AppStartConfig (..)
   )
 where
 
 import Data.MessagePack
-import Nrm.Types.Application
 import Nrm.Types.Container
+import Nrm.Types.DownstreamClient
 import Nrm.Types.Process as P
 import Protolude
 
 data ApplicationProcess
-  = Registered ApplicationUUID P.ProcessID
-  | Unregistered ApplicationUUID
+  = Registered DownstreamID P.ProcessID
+  | Unregistered DownstreamID
   deriving (Eq, Show, Generic)
 
 instance MessagePack ApplicationProcess
+
+data AppStartConfig
+  = AppStartConfig
+      { command :: Command
+      , arguments :: Arguments
+      , applicationUUID :: DownstreamID
+      }
 
 class
   (MonadIO m)
@@ -55,13 +63,13 @@ class
   registerStartApp
     :: runtime
     -> ContainerID
-    -> ApplicationUUID
+    -> DownstreamID
     -> P.ProcessID
     -> runtime
 
   registerStopApp
     :: runtime
-    -> Either P.ProcessID ApplicationUUID
+    -> Either P.ProcessID DownstreamID
     -> runtime
 
   listApplications
