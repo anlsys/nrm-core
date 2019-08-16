@@ -6,6 +6,8 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Process
   ( ProcessID (..)
+  , ThreadID(..)
+  , TaskID(..)
   , Command (..)
   , Arguments (..)
   , Arg (..)
@@ -19,6 +21,12 @@ import Data.MessagePack
 import Generics.Generic.Aeson
 import Protolude
 import qualified System.Posix.Types as P
+
+newtype TaskID = TaskID Int
+  deriving (Eq, Ord, Show, Read, Generic)
+
+newtype ThreadID = ThreadID Int
+  deriving (Eq, Ord, Show, Read, Generic)
 
 newtype ProcessID = ProcessID P.CPid
   deriving (Eq, Ord, Show, Read, Generic)
@@ -37,6 +45,34 @@ deriving instance MessagePack Arguments
 deriving instance MessagePack Command
 
 deriving instance MessagePack Arg
+
+deriving instance MessagePack ThreadID
+deriving instance MessagePack TaskID
+
+instance ToJSON ThreadID where
+
+  toJSON = gtoJson
+
+instance FromJSON ThreadID where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ThreadID where
+
+  schema = gSchema
+
+
+instance ToJSON TaskID where
+
+  toJSON = gtoJson
+
+instance FromJSON TaskID where
+
+  parseJSON = gparseJson
+
+instance JSONSchema TaskID where
+
+  schema = gSchema
 
 instance MessagePack ProcessID where
 

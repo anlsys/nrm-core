@@ -31,7 +31,9 @@ data Event
 data Start
   = Start
       { startContainerID :: C.ContainerID
-      , startDownstreamID :: D.DownstreamID
+      , startProcessID :: P.ProcessID
+      , startThreadID :: P.ThreadID
+      , startTaskID :: P.TaskID
       }
 
 newtype Exit
@@ -42,13 +44,17 @@ newtype Exit
 data Performance
   = Performance
       { performanceContainerID :: C.ContainerID
-      , performanceDownstreamID :: D.DownstreamID
+      , startProcessID :: P.ProcessID
+      , startThreadID :: P.ThreadID
+      , startTaskID :: P.TaskID
       , perf :: U.Operations
       }
 
 data Progress
   = Progress
-      { progressDownstreamID :: D.DownstreamID
+      { startProcessID :: P.ProcessID
+      , startThreadID :: P.ThreadID
+      , startTaskID :: P.TaskID
       , payload :: U.Progress
       }
 
