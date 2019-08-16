@@ -6,7 +6,7 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.NrmState
   ( initialState
-  , registerApplication
+  , registerLibnrmDownstreamClient
   )
 where
 
@@ -16,7 +16,6 @@ import Nrm.Containers.Nodeos as CN
 import Nrm.Containers.Singularity as CS
 import Nrm.Node.Hwloc
 import Nrm.Types.Configuration
-import Nrm.Types.Container
 import Nrm.Types.DownstreamClient
 import Nrm.Types.NrmState
 import Nrm.Types.Topology
@@ -38,5 +37,5 @@ initialState c = do
     }
 
 -- | TODO
-registerApplication :: NrmState -> ContainerID -> DownstreamID -> NrmState
-registerApplication s _ _ = s
+registerLibnrmDownstreamClient :: NrmState -> DownstreamLibnrmID -> NrmState
+registerLibnrmDownstreamClient s _ = s

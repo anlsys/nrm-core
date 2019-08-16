@@ -6,11 +6,14 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Process
   ( ProcessID (..)
-  , ThreadID(..)
-  , TaskID(..)
+  , ThreadID (..)
+  , TaskID (..)
+  , CmdID (..)
   , Command (..)
   , Arguments (..)
   , Arg (..)
+  , nextCmdID
+  , toText
   )
 where
 
@@ -18,9 +21,12 @@ import qualified Data.Aeson as A
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
+import qualified Data.UUID as U
+import Data.UUID.V1
 import Generics.Generic.Aeson
 import Protolude
 import qualified System.Posix.Types as P
+import Prelude (fail)
 
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic)
@@ -47,6 +53,7 @@ deriving instance MessagePack Command
 deriving instance MessagePack Arg
 
 deriving instance MessagePack ThreadID
+
 deriving instance MessagePack TaskID
 
 instance ToJSON ThreadID where
@@ -60,7 +67,6 @@ instance FromJSON ThreadID where
 instance JSONSchema ThreadID where
 
   schema = gSchema
-
 
 instance ToJSON TaskID where
 
@@ -127,3 +133,37 @@ instance FromJSON Arg where
 instance JSONSchema Arg where
 
   schema = gSchema
+
+newtype CmdID = CmdID U.UUID
+  deriving (Show, Eq, Ord, Generic)
+
+nextCmdID :: IO (Maybe CmdID)
+nextCmdID = fmap CmdID <$> nextUUID
+
+parseCmdID :: Text -> Maybe CmdID
+parseCmdID = fmap CmdID <$> U.fromText
+
+toText :: CmdID -> Text
+toText (CmdID u) = U.toText u
+
+instance ToJSON CmdID where
+
+  toJSON = gtoJson
+
+instance FromJSON CmdID where
+
+  parseJSON = gparseJson
+
+instance JSONSchema CmdID where
+
+  schema Proxy = schema (Proxy :: Proxy Text)
+
+instance MessagePack CmdID where
+
+  toObject (CmdID c) = toObject $ U.toText c
+
+  fromObject x =
+    fromObject x >>= \y ->
+      case parseCmdID y of
+        Nothing -> fail "Couldn't parse CmdID"
+        Just t -> return t

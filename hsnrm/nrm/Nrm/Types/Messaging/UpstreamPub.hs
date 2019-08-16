@@ -58,7 +58,7 @@ data Performance
 
 data Progress
   = Progress
-      { applicationUUID :: D.DownstreamID
+      { downstreamLibnrmID :: D.DownstreamLibnrmID
       , payload :: U.Progress
       }
   deriving (Show, Generic)

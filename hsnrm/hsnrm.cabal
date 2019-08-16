@@ -49,6 +49,9 @@ library nrmlib
         Nrm.Optparse.Daemon
         Nrm.Types.Topology
         Nrm.Types.Units
+        Nrm.Types.Actuator
+        Nrm.Types.Sensor
+        Nrm.Types.Metadata
         Nrm.Types.Container
         Nrm.Types.Process
         Nrm.Types.DownstreamClient
@@ -162,6 +165,9 @@ executable nrm.so
         Nrm.Optparse.Daemon
         Nrm.Types.Topology
         Nrm.Types.Units
+        Nrm.Types.Actuator
+        Nrm.Types.Sensor
+        Nrm.Types.Metadata
         Nrm.Types.Container
         Nrm.Types.Process
         Nrm.Types.DownstreamClient
@@ -274,6 +280,9 @@ executable nrm
         Nrm.Optparse.Daemon
         Nrm.Types.Topology
         Nrm.Types.Units
+        Nrm.Types.Actuator
+        Nrm.Types.Sensor
+        Nrm.Types.Metadata
         Nrm.Types.Container
         Nrm.Types.Process
         Nrm.Types.DownstreamClient
@@ -386,6 +395,9 @@ executable nrmd
         Nrm.Optparse.Daemon
         Nrm.Types.Topology
         Nrm.Types.Units
+        Nrm.Types.Actuator
+        Nrm.Types.Sensor
+        Nrm.Types.Metadata
         Nrm.Types.Container
         Nrm.Types.Process
         Nrm.Types.DownstreamClient

@@ -43,11 +43,13 @@ deriving instance MessagePack NrmEvent
 behavior :: NrmEvent -> S.NrmState -> IO (S.NrmState, Behavior)
 behavior (Recv DownstreamEvent msg) st = case decode msg of
   Just x -> case x of
-    D.EventStart _ -> return (st, NoBehavior)
-    D.EventExit _ -> return (st, NoBehavior)
-    D.EventPerformance _ -> return (st, NoBehavior)
-    D.EventProgress _ -> return (st, NoBehavior)
-    D.EventPhaseContext _ -> return (st, NoBehavior)
+    D.LibnrmStart _  -> return (st,NoBehavior)
+    D.LibnrmProgress _ _  -> return (st,NoBehavior)
+    D.LibnrmPhaseContext _ _ -> return (st,NoBehavior)
+    D.LibnrmExit _  -> return (st,NoBehavior)
+    D.PerfwrapperStart _  -> return (st,NoBehavior)
+    D.PerfwrapperPerformance _ _ -> return (st,NoBehavior)
+    D.PerfwrapperExit _ -> return (st,NoBehavior)
   Nothing -> return (st, NoBehavior)
 behavior (Recv UpstreamReq _msg) st = return (st, NoBehavior)
 behavior DoSensor st = return (st, NoBehavior)

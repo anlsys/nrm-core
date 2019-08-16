@@ -14,13 +14,12 @@ where
 
 import Data.MessagePack
 import Nrm.Types.Container
-import Nrm.Types.DownstreamClient
 import Nrm.Types.Process as P
 import Protolude
 
 data ApplicationProcess
-  = Registered DownstreamID P.ProcessID
-  | Unregistered DownstreamID
+  = Registered P.CmdID P.ProcessID
+  | Unregistered P.CmdID
   deriving (Eq, Show, Generic)
 
 instance MessagePack ApplicationProcess
@@ -29,7 +28,7 @@ data AppStartConfig
   = AppStartConfig
       { command :: Command
       , arguments :: Arguments
-      , applicationUUID :: DownstreamID
+      , cmdID :: P.CmdID
       }
 
 class
@@ -63,13 +62,13 @@ class
   registerStartApp
     :: runtime
     -> ContainerID
-    -> DownstreamID
+    -> P.CmdID
     -> P.ProcessID
     -> runtime
 
   registerStopApp
     :: runtime
-    -> Either P.ProcessID DownstreamID
+    -> Either P.ProcessID P.CmdID
     -> runtime
 
   listApplications

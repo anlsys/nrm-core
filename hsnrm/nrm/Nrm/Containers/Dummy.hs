@@ -49,7 +49,7 @@ instance (MonadIO m) => ContainerRuntime m DummyRuntime () () where
   doPrepareStartApp runtime containerUUID AppStartConfig {..} =
     return $
       Right
-        ( adjust (Unregistered applicationUUID :) containerUUID <$> runtime
+        ( adjust (Unregistered cmdID :) containerUUID <$> runtime
         , command
         , arguments
         )
@@ -67,20 +67,20 @@ instance (MonadIO m) => ContainerRuntime m DummyRuntime () () where
 
   listContainers (Dummy l) = keys l
 
-  registerStartApp runtime containerUUID applicationUUID pid =
+  registerStartApp runtime containerUUID cmdID pid =
     adjust (go <$>) containerUUID <$> runtime
     where
       go x
-        | x == Unregistered applicationUUID = Registered applicationUUID pid
+        | x == Unregistered cmdID = Registered cmdID pid
         | otherwise = x
 
   registerStopApp runtime (Left processID) = Data.Map.map (Protolude.filter f) <$> runtime
     where
       f (Registered _ pid) = pid == processID
       f (Unregistered _) = False
-  registerStopApp runtime (Right applicationUUID) = Data.Map.map (Protolude.filter f) <$> runtime
+  registerStopApp runtime (Right cmdID) = Data.Map.map (Protolude.filter f) <$> runtime
     where
-      f (Registered appid _) = appid == applicationUUID
-      f (Unregistered appid) = appid == applicationUUID
+      f (Registered appid _) = appid == cmdID
+      f (Unregistered appid) = appid == cmdID
 
   listApplications (Dummy runtime) containerUUID = lookup containerUUID runtime
