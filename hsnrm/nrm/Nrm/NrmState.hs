@@ -7,6 +7,8 @@ Maintainer  : fre@freux.fr
 module Nrm.NrmState
   ( initialState
   , registerLibnrmDownstreamClient
+  , listSensors
+  , listActuators
   )
 where
 
@@ -19,6 +21,8 @@ import Nrm.Types.Configuration
 import Nrm.Types.DownstreamClient
 import Nrm.Types.NrmState
 import Nrm.Types.Topology
+import Nrm.Types.Sensor
+import Nrm.Types.Actuator
 import Protolude
 
 initialState :: Cfg -> IO NrmState
@@ -26,6 +30,9 @@ initialState c = do
   hwl <- getHwlocData
   return $ NrmState
     { containers = fromList []
+    , processes = fromList []
+    , pus = fromList []
+    , cores = fromList []
     , topo = Topology
       { puIDs = selectPUIDs hwl
       , coreIDs = selectCoreIDs hwl
@@ -35,6 +42,12 @@ initialState c = do
     , singularityRuntime = if singularity c then Just SingularityRuntime else Nothing
     , nodeosRuntime = if nodeos c then Just NodeosRuntime else Nothing
     }
+
+listSensors :: NrmState -> [Sensor]
+listSensors = undefined
+
+listActuators :: NrmState -> [Actuator]
+listActuators = undefined
 
 -- | TODO
 registerLibnrmDownstreamClient :: NrmState -> DownstreamLibnrmID -> NrmState

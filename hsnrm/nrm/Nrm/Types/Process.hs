@@ -5,7 +5,8 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Process
-  ( ProcessID (..)
+  ( Process (..)
+  , ProcessID (..)
   , ThreadID (..)
   , TaskID (..)
   , CmdID (..)
@@ -28,6 +29,9 @@ import Protolude
 import qualified System.Posix.Types as P
 import Prelude (fail)
 
+data Process = Process
+  deriving (Eq, Ord, Show, Read, Generic)
+
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic)
 
@@ -49,6 +53,8 @@ newtype Arguments = Arguments [Arg]
 deriving instance MessagePack Arguments
 
 deriving instance MessagePack Command
+
+deriving instance MessagePack Process
 
 deriving instance MessagePack Arg
 

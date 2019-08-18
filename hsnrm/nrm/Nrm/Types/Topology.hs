@@ -5,8 +5,10 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Topology
-  ( CoreID
-  , PUID
+  ( CoreID (..)
+  , Core (..)
+  , PUID (..)
+  , PU (..)
   , PackageID
   , Topology (..)
   , IdFromString (..)
@@ -33,7 +35,7 @@ deriving instance MessagePack Topology
 
 -- | A CPU Core OS identifier.
 newtype CoreID = CoreID (Refined Positive Int)
-  deriving (Show)
+  deriving (Show, Eq, Ord)
 
 instance MessagePack CoreID where
 
@@ -44,9 +46,19 @@ instance MessagePack CoreID where
       Right r -> return $ CoreID r
       Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
 
+data Core = Core
+  deriving (Show, Generic)
+
+deriving instance MessagePack Core
+
+data PU = PU
+  deriving (Show, Generic)
+
+deriving instance MessagePack PU
+
 -- | A Processing Unit OS identifier.
 newtype PUID = PUID (Refined NonNegative Int)
-  deriving (Show)
+  deriving (Eq, Ord, Show)
 
 instance MessagePack PUID where
 

@@ -5,6 +5,8 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Actuator
-  (
+  (Actuator(..)
   )
 where
+
+data Actuator = Actuator

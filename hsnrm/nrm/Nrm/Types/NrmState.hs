@@ -15,13 +15,17 @@ import Nrm.Containers.Dummy
 import Nrm.Containers.Nodeos
 import Nrm.Containers.Singularity
 import Nrm.Types.Container
+import Nrm.Types.Process
 import Nrm.Types.Topology
 import Protolude
 
 data NrmState
   = NrmState
       { topo :: Topology
-      , containers :: Map ContainerID [Container]
+      , pus :: Map PUID PU
+      , cores :: Map CoreID Core
+      , containers :: Map ContainerID Container
+      , processes :: Map ProcessID Process
       , dummyRuntime :: Maybe DummyRuntime
       , singularityRuntime :: Maybe SingularityRuntime
       , nodeosRuntime :: Maybe NodeosRuntime

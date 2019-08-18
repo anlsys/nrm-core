@@ -6,7 +6,18 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Metadata
   ( Range (..)
+  , Value (..)
   )
 where
 
-data Range a = Discrete [a] | Interval a a
+import Data.MessagePack
+import Protolude
+
+data Value = Value Text
+  deriving (Eq, Ord, Show, Read, Generic)
+
+data Range = Discrete [Value] | Interval Double Double
+  deriving (Eq, Ord, Show, Read, Generic)
+
+deriving instance MessagePack Range
+deriving instance MessagePack Value
