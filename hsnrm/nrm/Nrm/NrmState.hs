@@ -30,9 +30,11 @@ initialState c = do
   hwl <- getHwlocData
   return $ NrmState
     { containers = fromList []
-    , processes = fromList []
     , pus = fromList []
     , cores = fromList []
+    , packages = fromList []
+    , downstreamCmds = fromList []
+    , downstreamThreads = fromList []
     , topo = Topology
       { puIDs = selectPUIDs hwl
       , coreIDs = selectCoreIDs hwl
@@ -50,5 +52,5 @@ listActuators :: NrmState -> [Actuator]
 listActuators = undefined
 
 -- | TODO
-registerLibnrmDownstreamClient :: NrmState -> DownstreamLibnrmID -> NrmState
+registerLibnrmDownstreamClient :: NrmState -> DownstreamThreadID -> NrmState
 registerLibnrmDownstreamClient s _ = s

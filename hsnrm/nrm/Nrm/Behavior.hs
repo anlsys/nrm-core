@@ -15,9 +15,9 @@ where
 
 import Data.MessagePack
 import Nrm.Classes.Messaging
-import Nrm.Types.Process
 import Nrm.Types.Messaging.DownstreamEvent as D
 import qualified Nrm.Types.NrmState as S
+import Nrm.Types.Process
 import Protolude
 
 data SendAPI = UpstreamPub | UpstreamRep
@@ -43,13 +43,13 @@ deriving instance MessagePack NrmEvent
 behavior :: NrmEvent -> S.NrmState -> IO (S.NrmState, Behavior)
 behavior (Recv DownstreamEvent msg) st = case decode msg of
   Just x -> case x of
-    D.LibnrmStart _  -> return (st,NoBehavior)
-    D.LibnrmProgress _ _  -> return (st,NoBehavior)
-    D.LibnrmPhaseContext _ _ -> return (st,NoBehavior)
-    D.LibnrmExit _  -> return (st,NoBehavior)
-    D.PerfwrapperStart _  -> return (st,NoBehavior)
-    D.PerfwrapperPerformance _ _ -> return (st,NoBehavior)
-    D.PerfwrapperExit _ -> return (st,NoBehavior)
+    D.ThreadStart _ -> return (st, NoBehavior)
+    D.ThreadProgress _ _ -> return (st, NoBehavior)
+    D.ThreadPhaseContext _ _ -> return (st, NoBehavior)
+    D.ThreadExit _ -> return (st, NoBehavior)
+    D.CmdStart _ -> return (st, NoBehavior)
+    D.CmdPerformance _ _ -> return (st, NoBehavior)
+    D.CmdExit _ -> return (st, NoBehavior)
   Nothing -> return (st, NoBehavior)
 behavior (Recv UpstreamReq _msg) st = return (st, NoBehavior)
 behavior DoSensor st = return (st, NoBehavior)

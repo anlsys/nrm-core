@@ -10,6 +10,7 @@ module Nrm.Types.Topology
   , PUID (..)
   , PU (..)
   , PackageID
+  , Package
   , Topology (..)
   , IdFromString (..)
   , ToHwlocType (..)
@@ -31,58 +32,29 @@ data Topology
       }
   deriving (Show, Generic)
 
-deriving instance MessagePack Topology
+-- | A Package OS identifier.
+newtype PackageID = PackageID (Refined NonNegative Int)
+  deriving (Eq, Ord, Show, Generic)
+
+-- | Record containing all information about a CPU Package.
+data Package = Package
+  deriving (Show, Generic)
 
 -- | A CPU Core OS identifier.
 newtype CoreID = CoreID (Refined Positive Int)
   deriving (Show, Eq, Ord)
 
-instance MessagePack CoreID where
-
-  toObject (CoreID x) = toObject (unrefine x)
-
-  fromObject x =
-    (fromObject x <&> refine) >>= \case
-      Right r -> return $ CoreID r
-      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
-
+-- | Record containing all information about a CPU Core.
 data Core = Core
   deriving (Show, Generic)
 
-deriving instance MessagePack Core
-
-data PU = PU
-  deriving (Show, Generic)
-
-deriving instance MessagePack PU
-
 -- | A Processing Unit OS identifier.
 newtype PUID = PUID (Refined NonNegative Int)
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic)
 
-instance MessagePack PUID where
-
-  toObject (PUID x) = toObject (unrefine x)
-
-  fromObject x =
-    (fromObject x <&> refine) >>= \case
-      Right r -> return $ PUID r
-      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
-
--- | A Package OS identifier.
-newtype PackageID = PackageID (Refined NonNegative Int)
+-- | Record containing all information about a processing unit.
+data PU = PU
   deriving (Show, Generic)
-
-instance MessagePack PackageID where
-
-  toObject (PackageID x) = toObject (unrefine x)
-
-  fromObject x =
-    (fromObject x <&> refine) >>= \case
-      Right r -> return $ PackageID r
-      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
-
-{-deriving instance MessagePack (Refined NonNegative Int) where-}
 
 -- | reading from hwloc XML data
 class IdFromString a where
@@ -117,3 +89,39 @@ instance ToHwlocType CoreID where
 instance ToHwlocType PackageID where
 
   getType _ = "Package"
+
+-- MessagePack instances
+deriving instance MessagePack Topology
+
+deriving instance MessagePack Core
+
+deriving instance MessagePack Package
+
+deriving instance MessagePack PU
+
+instance MessagePack PackageID where
+
+  toObject (PackageID x) = toObject (unrefine x)
+
+  fromObject x =
+    (fromObject x <&> refine) >>= \case
+      Right r -> return $ PackageID r
+      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
+
+instance MessagePack PUID where
+
+  toObject (PUID x) = toObject (unrefine x)
+
+  fromObject x =
+    (fromObject x <&> refine) >>= \case
+      Right r -> return $ PUID r
+      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
+
+instance MessagePack CoreID where
+
+  toObject (CoreID x) = toObject (unrefine x)
+
+  fromObject x =
+    (fromObject x <&> refine) >>= \case
+      Right r -> return $ CoreID r
+      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"

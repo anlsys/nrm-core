@@ -5,8 +5,10 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.DownstreamClient
-  ( DownstreamPerfID (..)
-  , DownstreamLibnrmID (..)
+  ( DownstreamCmdID (..)
+  , DownstreamCmd (..)
+  , DownstreamThreadID (..)
+  , DownstreamThread (..)
   )
 where
 
@@ -18,14 +20,17 @@ import Generics.Generic.Aeson
 import Nrm.Types.Process as P
 import Protolude
 
-data DownstreamPerfID
-  = DownstreamPerfID
+data DownstreamCmdID
+  = DownstreamCmdID
       { perfcmdID :: P.ProcessID
       }
   deriving (Eq, Ord, Show, Generic)
 
-data DownstreamLibnrmID
-  = DownstreamLibnrmID
+data DownstreamCmd = DownstreamCmd
+  deriving (Eq, Ord, Show, Generic)
+
+data DownstreamThreadID
+  = DownstreamThreadID
       { libnrmcmdID :: P.ProcessID
       , libnrmprocessID :: P.ProcessID
       , libnrmtaskID :: P.TaskID
@@ -33,30 +38,41 @@ data DownstreamLibnrmID
       }
   deriving (Eq, Ord, Show, Generic)
 
-instance ToJSON DownstreamPerfID where
+data DownstreamThread = DownstreamThread
+  deriving (Eq, Ord, Show, Generic)
+
+-- JSON Instances
+
+instance ToJSON DownstreamCmdID where
 
   toJSON = gtoJson
 
-instance FromJSON DownstreamPerfID where
+instance FromJSON DownstreamCmdID where
 
   parseJSON = gparseJson
 
-instance JSONSchema DownstreamPerfID where
+instance JSONSchema DownstreamCmdID where
 
   schema Proxy = schema (Proxy :: Proxy Text)
 
-deriving instance MessagePack DownstreamPerfID
 
-instance ToJSON DownstreamLibnrmID where
+instance ToJSON DownstreamThreadID where
 
   toJSON = gtoJson
 
-instance FromJSON DownstreamLibnrmID where
+instance FromJSON DownstreamThreadID where
 
   parseJSON = gparseJson
 
-instance JSONSchema DownstreamLibnrmID where
+instance JSONSchema DownstreamThreadID where
 
   schema Proxy = schema (Proxy :: Proxy Text)
 
-deriving instance MessagePack DownstreamLibnrmID
+ -- MessagePack Instances
+
+deriving instance MessagePack DownstreamThreadID
+
+deriving instance MessagePack DownstreamCmd
+
+deriving instance MessagePack DownstreamThread
+deriving instance MessagePack DownstreamCmdID

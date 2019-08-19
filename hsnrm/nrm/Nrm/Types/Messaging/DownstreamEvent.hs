@@ -19,13 +19,13 @@ import qualified Nrm.Types.Units as U
 import Protolude
 
 data Event
-  = LibnrmStart D.DownstreamLibnrmID
-  | LibnrmProgress D.DownstreamLibnrmID Progress
-  | LibnrmPhaseContext D.DownstreamLibnrmID PhaseContext
-  | LibnrmExit D.DownstreamLibnrmID
-  | PerfwrapperStart D.DownstreamPerfID
-  | PerfwrapperPerformance D.DownstreamPerfID Performance
-  | PerfwrapperExit D.DownstreamPerfID
+  = ThreadStart D.DownstreamThreadID
+  | ThreadProgress D.DownstreamThreadID Progress
+  | ThreadPhaseContext D.DownstreamThreadID PhaseContext
+  | ThreadExit D.DownstreamThreadID
+  | CmdStart D.DownstreamCmdID
+  | CmdPerformance D.DownstreamCmdID Performance
+  | CmdExit D.DownstreamCmdID
 
 newtype Performance
   = Performance
