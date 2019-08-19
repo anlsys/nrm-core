@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-|
 Module      : Nrm.Types.Messaging.UpstreamRep
 Copyright   : (c) UChicago Argonne, 2019
@@ -12,6 +13,8 @@ module Nrm.Types.Messaging.UpstreamRep
   , Start (..)
   , ProcessExit (..)
   , GetPower (..)
+  , GetConfig(..)
+  , GetState(..)
   )
 where
 
@@ -20,7 +23,9 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
+import Nrm.Types.Configuration as C
 import Nrm.Types.Container as C
+import Nrm.Types.NrmState as S
 import Nrm.Types.Process as P
 import Nrm.Types.Units as U
 import Protolude hiding (Rep)
@@ -32,6 +37,8 @@ data Rep
   | RepStart Start
   | RepProcessExit ProcessExit
   | RepGetPower GetPower
+  | RepGetState GetState
+  | RepGetConfig GetConfig
   deriving (Show, Generic, MessagePack)
 
 newtype ContainerList
@@ -71,6 +78,18 @@ data ProcessExit
 newtype GetPower
   = GetPower
       { limit :: U.Power
+      }
+  deriving (Show, Generic, MessagePack)
+
+newtype GetState
+  = GetState
+      { state :: S.NrmState
+      }
+  deriving (Show, Generic, MessagePack)
+
+newtype GetConfig
+  = GetConfig
+      { config :: C.Cfg
       }
   deriving (Show, Generic, MessagePack)
 
@@ -149,5 +168,65 @@ instance FromJSON Start where
   parseJSON = gparseJson
 
 instance JSONSchema Start where
+
+  schema = gSchema
+
+instance ToJSON GetState where
+
+  toJSON = gtoJson
+
+instance FromJSON GetState where
+
+  parseJSON = gparseJson
+
+instance JSONSchema GetState where
+
+  schema = gSchema
+
+instance ToJSON GetConfig where
+
+  toJSON = gtoJson
+
+instance FromJSON GetConfig where
+
+  parseJSON = gparseJson
+
+instance JSONSchema GetConfig where
+
+  schema = gSchema
+
+instance ToJSON Cfg where
+
+  toJSON = gtoJson
+
+instance FromJSON Cfg where
+
+  parseJSON = gparseJson
+
+instance JSONSchema Cfg where
+
+  schema = gSchema
+
+instance ToJSON UpstreamCfg where
+
+  toJSON = gtoJson
+
+instance FromJSON UpstreamCfg where
+
+  parseJSON = gparseJson
+
+instance JSONSchema UpstreamCfg where
+
+  schema = gSchema
+
+instance JSONSchema DaemonVerbosity where
+
+  schema = gSchema
+
+instance JSONSchema ContainerRuntime where
+
+  schema = gSchema
+
+instance JSONSchema DownstreamCfg where
 
   schema = gSchema

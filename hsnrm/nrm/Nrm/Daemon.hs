@@ -19,8 +19,8 @@ import Nrm.Classes.Messaging
 import Nrm.Optparse (parseDaemonCli)
 import qualified Nrm.Types.Messaging.Protocols as Protocols
 import qualified Nrm.Types.Messaging.UpstreamRep as Rep
-import qualified Nrm.Types.Units as U
 import qualified Nrm.Types.Messaging.UpstreamReq as Req
+import qualified Nrm.Types.Units as U
 import Protolude
 import System.IO (hFlush)
 import System.ZMQ4.Monadic as ZMQ
@@ -58,6 +58,8 @@ server s =
 dummyReply :: Req.Req -> Socket z Router -> ByteString -> ZMQ z ()
 dummyReply = \case
   (Req.ReqContainerList x) -> sendOne $ encode (Rep.RepList (dummy Protocols.ContainerList x))
+  (Req.ReqGetState x) -> sendOne $ encode (Rep.RepGetState (dummy Protocols.GetState x))
+  (Req.ReqGetConfig x) -> sendOne $ encode (Rep.RepGetConfig (dummy Protocols.GetConfig x))
   (Req.ReqKill x) -> sendOne $ encode (Rep.RepProcessExit (dummy Protocols.Kill x))
   (Req.ReqSetPower x) -> sendOne $ encode (Rep.RepGetPower (dummy Protocols.SetPower x))
   (Req.ReqRun _) -> panic "no run reply implemented in this dummy mode."
@@ -66,6 +68,8 @@ dummy :: Protocols.ReqRep req rep -> req -> rep
 dummy = \case
   Protocols.ContainerList -> const $ Rep.ContainerList ["foo", "bar"]
   Protocols.SetPower -> const $ Rep.GetPower (U.watts 266)
+  Protocols.GetState -> panic "undef"
+  Protocols.GetConfig -> panic "undef"
   Protocols.Kill -> const $ Rep.ProcessExit "foo" 1
 
 sendOne :: (Sender t) => ByteString -> Socket z t -> ByteString -> ZMQ z ()

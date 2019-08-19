@@ -41,6 +41,7 @@ import qualified Nrm.Types.Configuration as C
   , verbose
   )
 import qualified Nrm.Types.NrmState as TS
+import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
 import Text.Pretty.Simple
 
@@ -84,38 +85,38 @@ showState :: TS.NrmState -> Text
 showState = toS . pShow
 
 -- | Behave on downstream message
-downstreamReceive :: TS.NrmState -> Text -> IO (TS.NrmState, B.Behavior)
-downstreamReceive s msg =
-  B.behavior s $
+downstreamReceive :: C.Cfg -> TS.NrmState -> Text -> IO (TS.NrmState, B.Behavior)
+downstreamReceive cfg s msg =
+  B.behavior cfg s $
     B.Event $
     fromMaybe (panic "couldn't decode downstream rcv")
       (M.decodeT $ toS msg)
 
 -- | Behave on upstream message
-upstreamReceive :: TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
-upstreamReceive s msg clientid =
-  B.behavior s $
+upstreamReceive :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
+upstreamReceive cfg s msg clientid =
+  B.behavior cfg s $
     B.Req
       ( fromMaybe
         (panic "couldn't parse upstream client ID")
-        (readMaybe $ toS clientid)
+        (UC.fromText clientid)
       )
       ( fromMaybe (panic "couldn't decode downstream rcv")
         (M.decodeT msg)
       )
 
 -- | Behave on sensor trigger
-doSensor :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
-doSensor s = B.behavior s B.DoSensor
+doSensor :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
+doSensor c s = B.behavior c s B.DoSensor
 
 -- | Behave on control trigger
-doControl :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
-doControl s = B.behavior s B.DoControl
+doControl :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
+doControl c s = B.behavior c s B.DoControl
 
 -- | Behave on children death
-doChildren :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
-doChildren s = B.behavior s B.DoChildren
+doChildren :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
+doChildren c s = B.behavior c s B.DoChildren
 
 -- | Behave on shutdown
-doShutdown :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
-doShutdown s = B.behavior s B.DoShutdown
+doShutdown :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
+doShutdown c s = B.behavior c s B.DoShutdown

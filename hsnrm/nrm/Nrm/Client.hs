@@ -18,12 +18,13 @@ import Nrm.Classes.Messaging
 import Nrm.Optparse
 import Nrm.Optparse.Client
 import qualified Nrm.Types.Messaging.Protocols as Protocols
-import Nrm.Types.Messaging.UpstreamRep
+import qualified Nrm.Types.Messaging.UpstreamRep as Rep
 import Nrm.Types.Messaging.UpstreamReq
 import Nrm.Types.UpstreamClient
 import Protolude hiding (Rep)
 import System.IO (hFlush)
 import qualified System.ZMQ4.Monadic as ZMQ
+import Text.Pretty.Simple
 
 address :: Text
 address = "tcp://localhost:3456"
@@ -36,7 +37,7 @@ main = do
   uuid <-
     nextUpstreamClientID <&> \case
       Nothing -> panic "couldn't generate next client ID"
-      Just c -> (restrict (show c) :: Restricted (N1, N254) SB.ByteString)
+      Just c -> (restrict (toS $ toText c) :: Restricted (N1, N254) SB.ByteString)
   ZMQ.runZMQ $ do
     s <- ZMQ.socket ZMQ.Dealer
     ZMQ.setIdentity uuid s
@@ -63,6 +64,8 @@ dispatchProtocol s v = \case
   (ReqContainerList x) -> reqrep s v Protocols.ContainerList x
   (ReqKill x) -> reqrep s v Protocols.Kill x
   (ReqSetPower x) -> reqrep s v Protocols.SetPower x
+  (ReqGetConfig x) -> reqrep s v Protocols.GetConfig x
+  (ReqGetState x) -> reqrep s v Protocols.GetState x
   (ReqRun x) -> reqstream s v Protocols.Run x
 
 reqrep
@@ -74,18 +77,42 @@ reqrep
 reqrep s _ = \case
   Protocols.ContainerList ->
     const $ do
-      msg <- ZMQ.receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe Rep)
+      ZMQ.receive s <&> decode . toS >>= \case
+        Nothing -> putText "Couldn't decode reply"
+        Just (Rep.RepList (Rep.ContainerList l)) -> case length l of
+          0 -> putText "No containers currently running."
+          x -> do
+            putText (show x <> "container(s) currently running. list:")
+            for_ l print
+        _ -> putText "reply wasn't in protocol"
+      liftIO $ hFlush stdout
+  Protocols.GetState ->
+    const $ do
+      ZMQ.receive s <&> decode . toS >>= \case
+        Nothing -> putText "Couldn't decode reply"
+        Just (Rep.RepGetState (Rep.GetState st)) -> do
+          putText "Current daemon state:"
+          pPrint st
+        _ -> putText "reply wasn't in protocol"
+      liftIO $ hFlush stdout
+  Protocols.GetConfig ->
+    const $ do
+      ZMQ.receive s <&> decode . toS >>= \case
+        Nothing -> putText "Couldn't decode reply"
+        Just (Rep.RepGetConfig (Rep.GetConfig cfg)) -> do
+          putText "Daemon configuration:"
+          pPrint cfg
+        _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.SetPower ->
     const $ do
       msg <- ZMQ.receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe Rep)
+      liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
       liftIO $ hFlush stdout
   Protocols.Kill ->
     const $ do
       msg <- ZMQ.receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe Rep)
+      liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
       liftIO $ hFlush stdout
 
 reqstream
@@ -98,5 +125,5 @@ reqstream s _ = \case
   Protocols.Run ->
     const $ forever $ do
       msg <- ZMQ.receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe Rep)
+      liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
       liftIO $ hFlush stdout

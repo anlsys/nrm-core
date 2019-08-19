@@ -10,6 +10,8 @@ module Nrm.Types.Messaging.UpstreamReq
   , ContainerList (..)
   , Kill (..)
   , SetPower (..)
+  , GetConfig(..)
+  , GetState(..)
   )
 where
 
@@ -29,6 +31,8 @@ data Req
   | ReqRun Run
   | ReqKill Kill
   | ReqSetPower SetPower
+  | ReqGetState GetState
+  | ReqGetConfig GetConfig
   deriving (Show, Generic, MessagePack)
 
 data Run
@@ -54,6 +58,12 @@ newtype SetPower
   deriving (Show, Generic, MessagePack)
 
 data ContainerList = ContainerList
+  deriving (Show, Generic, MessagePack)
+
+data GetState = GetState
+  deriving (Show, Generic, MessagePack)
+
+data GetConfig = GetConfig
   deriving (Show, Generic, MessagePack)
 
 instance ToJSON Kill where
@@ -109,3 +119,29 @@ instance FromJSON Run where
 instance JSONSchema Run where
 
   schema = gSchema
+
+instance ToJSON GetState where
+
+  toJSON = gtoJson
+
+instance FromJSON GetState where
+
+  parseJSON = gparseJson
+
+instance JSONSchema GetState where
+
+  schema = gSchema
+
+
+instance ToJSON GetConfig where
+
+  toJSON = gtoJson
+
+instance FromJSON GetConfig where
+
+  parseJSON = gparseJson
+
+instance JSONSchema GetConfig where
+
+  schema = gSchema
+

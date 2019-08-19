@@ -89,10 +89,11 @@ class Daemon(object):
         def r(*argsCallback, **kwargsCallback):
             args = argsConfig + argsCallback
             kwargs = dict(kwargsConfig, ** kwargsCallback)
-            st, bh = f(self.state, *args, **kwargs)
+            # logger.debug(self.state)
+            # logger.debug(args)
+            st, bh = f(self.cfg, self.state, *args, **kwargs)
             self.state = st
-            logger.debug(self.lib.showState(st))
-            logger.debug(bh)
+            # logger.debug(bh)
             self.dispatch[bh[0]](bh[1:])
         return r
 

@@ -9,6 +9,8 @@ module Nrm.Types.NrmState
   )
 where
 
+import Data.Aeson
+import Data.JSON.Schema
 import Data.MessagePack
 import Nrm.Containers
 import Nrm.Containers.Dummy
@@ -33,3 +35,17 @@ data NrmState
       , nodeosRuntime :: Maybe NodeosRuntime
       }
   deriving (Show, Generic, MessagePack)
+
+instance ToJSON NrmState where
+
+  toJSON s = toJSON ((toS $ pack s) :: Text)
+
+instance FromJSON NrmState where
+
+  parseJSON x = do
+    text <- parseJSON x
+    unpack (toS (text :: Text))
+
+instance JSONSchema NrmState where
+
+  schema _ = schema (Proxy :: Proxy Text)

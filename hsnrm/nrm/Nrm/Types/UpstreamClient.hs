@@ -8,6 +8,7 @@ module Nrm.Types.UpstreamClient
   ( UpstreamClientID (..)
   , nextUpstreamClientID
   , toText
+  , fromText
   , ClientVerbosity (..)
   )
 where
@@ -17,7 +18,6 @@ import Data.JSON.Schema
 import Data.MessagePack
 import qualified Data.UUID as U
 import Data.UUID.V1
-import Generics.Generic.Aeson
 import Protolude
 import Prelude (fail)
 
@@ -33,13 +33,16 @@ data ClientVerbosity = Normal | Verbose
 toText :: UpstreamClientID -> Text
 toText (UpstreamClientID u) = U.toText u
 
+fromText :: Text -> Maybe UpstreamClientID
+fromText = fmap UpstreamClientID <$> U.fromText
+
 instance ToJSON UpstreamClientID where
 
-  toJSON = gtoJson
+  toJSON (UpstreamClientID x) = toJSON x
 
 instance FromJSON UpstreamClientID where
 
-  parseJSON = gparseJson
+  parseJSON = fmap UpstreamClientID <$> parseJSON
 
 instance JSONSchema UpstreamClientID where
 

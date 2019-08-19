@@ -13,6 +13,7 @@ where
 
 import Data.MessagePack
 import qualified Nrm.Classes.Messaging as M
+import qualified Nrm.Types.Configuration as C
 import Nrm.Types.Messaging.DownstreamEvent as DEvent
 import Nrm.Types.Messaging.UpstreamPub as UPub
 import Nrm.Types.Messaging.UpstreamRep as URep
@@ -37,8 +38,8 @@ instance MessagePack Behavior where
 data NrmEvent = Req UC.UpstreamClientID UReq.Req | Event DEvent.Event | DoSensor | DoControl | DoShutdown | DoChildren
   deriving (Generic, MessagePack)
 
-behavior :: S.NrmState -> NrmEvent -> IO (S.NrmState, Behavior)
-behavior st (Event msg) = case msg of
+behavior :: C.Cfg -> S.NrmState -> NrmEvent -> IO (S.NrmState, Behavior)
+behavior _ st (Event msg) = case msg of
   DEvent.ThreadStart _ -> return (st, NoBehavior)
   DEvent.ThreadProgress _ _ -> return (st, NoBehavior)
   DEvent.ThreadPhaseContext _ _ -> return (st, NoBehavior)
@@ -46,14 +47,16 @@ behavior st (Event msg) = case msg of
   DEvent.CmdStart _ -> return (st, NoBehavior)
   DEvent.CmdPerformance _ _ -> return (st, NoBehavior)
   DEvent.CmdExit _ -> return (st, NoBehavior)
-behavior st (Req clientid msg) = case msg of
+behavior c st (Req clientid msg) = case msg of
   UReq.ReqContainerList _ -> return (st, Rep clientid (URep.RepList lcontainers))
     where
       lcontainers = URep.ContainerList []
+  UReq.ReqGetState _ -> return (st, Rep clientid (URep.RepGetState (URep.GetState st)))
+  UReq.ReqGetConfig _ -> return (st, Rep clientid (URep.RepGetConfig (URep.GetConfig c)))
   UReq.ReqRun _ -> return (st, NoBehavior)
   UReq.ReqKill _ -> return (st, NoBehavior)
   UReq.ReqSetPower _ -> return (st, NoBehavior)
-behavior st DoSensor = return (st, NoBehavior)
-behavior st DoControl = return (st, NoBehavior)
-behavior st DoShutdown = return (st, NoBehavior)
-behavior st DoChildren = return (st, NoBehavior)
+behavior _ st DoSensor = return (st, NoBehavior)
+behavior _ st DoControl = return (st, NoBehavior)
+behavior _ st DoShutdown = return (st, NoBehavior)
+behavior _ st DoChildren = return (st, NoBehavior)

@@ -278,6 +278,28 @@
                     }
                 }
             }
+        },
+        {
+            "required": [
+                "reqGetState"
+            ],
+            "type": "object",
+            "properties": {
+                "reqGetState": {
+                    "const": "\"getState\""
+                }
+            }
+        },
+        {
+            "required": [
+                "reqGetConfig"
+            ],
+            "type": "object",
+            "properties": {
+                "reqGetConfig": {
+                    "const": "\"getConfig\""
+                }
+            }
         }
     ]
 }

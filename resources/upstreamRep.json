@@ -133,6 +133,144 @@
                     }
                 }
             }
+        },
+        {
+            "required": [
+                "repGetState"
+            ],
+            "type": "object",
+            "properties": {
+                "repGetState": {
+                    "required": [
+                        "state"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "state": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "repGetConfig"
+            ],
+            "type": "object",
+            "properties": {
+                "repGetConfig": {
+                    "required": [
+                        "config"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "config": {
+                            "required": [
+                                "verbose",
+                                "logfile",
+                                "hwloc",
+                                "perf",
+                                "argo_perf_wrapper",
+                                "argo_nodeos_config",
+                                "pmpi_lib",
+                                "singularity",
+                                "dummy",
+                                "nodeos",
+                                "container_runtime",
+                                "downstreamCfg",
+                                "upstreamCfg"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "pmpi_lib": {
+                                    "type": "string"
+                                },
+                                "verbose": {
+                                    "oneOf": [
+                                        {
+                                            "const": "\"normal\""
+                                        },
+                                        {
+                                            "const": "\"verbose\""
+                                        },
+                                        {
+                                            "const": "\"debug\""
+                                        }
+                                    ]
+                                },
+                                "logfile": {
+                                    "type": "string"
+                                },
+                                "singularity": {
+                                    "type": "boolean"
+                                },
+                                "argo_nodeos_config": {
+                                    "type": "string"
+                                },
+                                "upstreamCfg": {
+                                    "required": [
+                                        "upstreamBindAddress",
+                                        "pubPort",
+                                        "rpcPort"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "upstreamBindAddress": {
+                                            "type": "string"
+                                        },
+                                        "rpcPort": {
+                                            "type": "number"
+                                        },
+                                        "pubPort": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "perf": {
+                                    "type": "string"
+                                },
+                                "argo_perf_wrapper": {
+                                    "type": "string"
+                                },
+                                "container_runtime": {
+                                    "oneOf": [
+                                        {
+                                            "const": "\"singularity\""
+                                        },
+                                        {
+                                            "const": "\"nodeos\""
+                                        },
+                                        {
+                                            "const": "\"dummy\""
+                                        }
+                                    ]
+                                },
+                                "downstreamCfg": {
+                                    "required": [
+                                        "downstreamBindAddress"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "downstreamBindAddress": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "nodeos": {
+                                    "type": "boolean"
+                                },
+                                "hwloc": {
+                                    "type": "string"
+                                },
+                                "dummy": {
+                                    "type": "boolean"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     ]
 }

@@ -144,6 +144,16 @@ opts =
       ( info (return <$> (Opts (ReqContainerList ContainerList) <$> parserCommon)) $
         progDesc "List existing containers"
       ) <>
+    command
+      "state"
+      ( info (return <$> (Opts (ReqGetState GetState) <$> parserCommon)) $
+        progDesc "Show Nrm state"
+      ) <>
+    command
+      "config"
+      ( info (return <$> (Opts (ReqGetConfig GetConfig) <$> parserCommon)) $
+        progDesc "Show Nrm configuration"
+      ) <>
     help
       "Choice of operation."
 
