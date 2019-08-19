@@ -121,7 +121,7 @@ class UpstreamRPCServer(RPCServer):
     def send(self, client_uuid, msg):
         """Sends a message to the identified client."""
         _logger.debug("sending message: %r to client: %r", msg, client_uuid)
-        self.socket.send_multipart([client_uuid, msg])
+        self.socket.send_multipart([client_uuid.encode(), msg.encode()])
 
 
 @send("upstreamPub")

@@ -12,21 +12,17 @@ module Nrm.Types.Sensor
   )
 where
 
+import Data.MessagePack
 import Nrm.Types.Metadata
 import Nrm.Types.Process as P
 import Nrm.Types.Topology as T
-import Data.MessagePack
 import Protolude
 
 data SensorTag = SensorTag Text
-  deriving (Show, Generic)
-
-deriving instance MessagePack Sensor
-deriving instance MessagePack SensorTag
-deriving instance MessagePack Source
+  deriving (Show, Generic, MessagePack)
 
 data Source = Process P.ProcessID | PU T.PUID
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data Sensor = Sensor SensorTag Source Range
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)

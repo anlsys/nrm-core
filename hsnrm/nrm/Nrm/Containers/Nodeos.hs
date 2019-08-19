@@ -11,10 +11,8 @@ module Nrm.Containers.Nodeos
   )
 where
 
-import Protolude
 import Data.MessagePack
+import Protolude
 
 data NodeosRuntime = NodeosRuntime
-  deriving (Show,Generic)
-
-deriving instance MessagePack NodeosRuntime
+  deriving (Show, Generic, MessagePack)

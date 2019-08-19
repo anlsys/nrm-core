@@ -30,37 +30,25 @@ import qualified System.Posix.Types as P
 import Prelude (fail)
 
 data Process = Process
-  deriving (Eq, Ord, Show, Read, Generic)
+  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
 
 newtype TaskID = TaskID Int
-  deriving (Eq, Ord, Show, Read, Generic)
+  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
 
 newtype ThreadID = ThreadID Int
-  deriving (Eq, Ord, Show, Read, Generic)
+  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
 
 newtype ProcessID = ProcessID P.CPid
   deriving (Eq, Ord, Show, Read, Generic)
 
 newtype Arg = Arg Text
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 newtype Command = Command Text
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 newtype Arguments = Arguments [Arg]
-  deriving (Show, Generic)
-
-deriving instance MessagePack Arguments
-
-deriving instance MessagePack Command
-
-deriving instance MessagePack Process
-
-deriving instance MessagePack Arg
-
-deriving instance MessagePack ThreadID
-
-deriving instance MessagePack TaskID
+  deriving (Show, Generic, MessagePack)
 
 instance ToJSON ThreadID where
 

@@ -15,6 +15,4 @@ import Data.MessagePack
 import Protolude
 
 data SingularityRuntime = SingularityRuntime
-  deriving (Show, Generic)
-
-deriving instance MessagePack SingularityRuntime
+  deriving (Show, Generic, MessagePack)

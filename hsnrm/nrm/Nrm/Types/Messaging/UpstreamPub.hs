@@ -26,14 +26,14 @@ data Pub
   | PubPerformance Performance
   | PubProgress Progress
   | PubControl Control
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data Power
   = Power
       { total :: U.Power
       , limit :: U.Power
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data ContainerStart
   = ContainerStart
@@ -41,28 +41,28 @@ data ContainerStart
       , errno :: Int
       , power :: U.Power
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data ContainerExit
   = ContainerExit
       { exitContainerID :: C.ContainerID
       , profile_data :: Map Text Text
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data Performance
   = Performance
       { perfContainerID :: C.ContainerID
       , perf :: U.Operations
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data Progress
   = Progress
       { downstreamThreadID :: D.DownstreamThreadID
       , payload :: U.Progress
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data Control
   = Control
@@ -72,7 +72,7 @@ data Control
       , control_time :: U.Time
       , feedback_time :: U.Time
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 instance ToJSON Control where
 
@@ -151,17 +151,3 @@ instance FromJSON ContainerExit where
 instance JSONSchema ContainerExit where
 
   schema = gSchema
-
-deriving instance MessagePack Pub
-
-deriving instance MessagePack Power
-
-deriving instance MessagePack ContainerStart
-
-deriving instance MessagePack ContainerExit
-
-deriving instance MessagePack Performance
-
-deriving instance MessagePack Progress
-
-deriving instance MessagePack Control

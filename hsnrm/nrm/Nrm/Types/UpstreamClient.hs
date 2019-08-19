@@ -7,7 +7,6 @@ Maintainer  : fre@freux.fr
 module Nrm.Types.UpstreamClient
   ( UpstreamClientID (..)
   , nextUpstreamClientID
-  , parseUpstreamClientID
   , toText
   , ClientVerbosity (..)
   )
@@ -23,16 +22,13 @@ import Protolude
 import Prelude (fail)
 
 newtype UpstreamClientID = UpstreamClientID U.UUID
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Eq, Ord, Generic, Read)
 
 nextUpstreamClientID :: IO (Maybe UpstreamClientID)
 nextUpstreamClientID = fmap UpstreamClientID <$> nextUUID
 
 data ClientVerbosity = Normal | Verbose
   deriving (Eq, Show)
-
-parseUpstreamClientID :: Text -> Maybe UpstreamClientID
-parseUpstreamClientID = fmap UpstreamClientID <$> U.fromText
 
 toText :: UpstreamClientID -> Text
 toText (UpstreamClientID u) = U.toText u
@@ -55,6 +51,6 @@ instance MessagePack UpstreamClientID where
 
   fromObject x =
     fromObject x >>= \y ->
-      case parseUpstreamClientID y of
+      case UpstreamClientID <$> U.fromText y of
         Nothing -> fail "Couldn't parse UpstreamClientID"
         Just t -> return t

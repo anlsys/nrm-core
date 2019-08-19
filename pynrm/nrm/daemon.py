@@ -30,6 +30,12 @@ class Daemon(object):
 
     def __post_init__(self):
         self.state = self.lib.initialState(self.cfg)
+
+        self.dispatch = {
+            "noop": self.noop,
+            "reply": self.reply
+        }
+
         # logger.debug(self.lib.showState(t))
         # register messaging servers
         upstream_pub_a = self.lib.upstreamPubAddress(self.cfg)
@@ -42,13 +48,13 @@ class Daemon(object):
 
         # register messaging server callbacks
         self.upstream_rpc.setup_recv_callback(
-            self.behave(self.lib.upstreamReceive))
+            self.wrap(self.lib.upstreamReceive))
         self.upstream_rpc.setup_recv_callback(
-            self.behave(self.lib.upstreamReceive))
+            self.wrap(self.lib.upstreamReceive))
 
         # setup periodic sensor updates
-        # ioloop.PeriodicCallback(self.behave(self.lib.doSensor), 10000).start()
-        # ioloop.PeriodicCallback(self.behave(self.lib.doControl), 1000).start()
+        # ioloop.PeriodicCallback(self.wrap(self.lib.doSensor), 10000).start()
+        # ioloop.PeriodicCallback(self.wrap(self.lib.doControl), 10000).start()
 
         # take care of signals
         signal.signal(signal.SIGINT, self.do_signal)
@@ -79,18 +85,22 @@ class Daemon(object):
     def do_shutdown(self):
         ioloop.IOLoop.current().stop()
 
-    def behave(self, f, *argsConfig, **kwargsConfig):
+    def wrap(self, f, *argsConfig, **kwargsConfig):
         def r(*argsCallback, **kwargsCallback):
             args = argsConfig + argsCallback
             kwargs = dict(kwargsConfig, ** kwargsCallback)
-            truc = self.state, *args
-            print("truc:")
-            print(truc)
             st, bh = f(self.state, *args, **kwargs)
             self.state = st
             logger.debug(self.lib.showState(st))
             logger.debug(bh)
+            self.dispatch[bh[0]](bh[1:])
         return r
+
+    def noop(self, args):
+        pass
+
+    def reply(self, args):
+        self.upstream_rpc.send(*args)
 
 
 def runner(config, lib):

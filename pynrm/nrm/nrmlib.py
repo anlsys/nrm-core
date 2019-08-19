@@ -3,6 +3,9 @@ from contextlib import contextmanager
 from ctypes import CDLL, POINTER, LibraryLoader, c_char
 
 import msgpack
+import logging
+
+logger = logging.getLogger('nrm')
 
 
 class HSO(CDLL):
@@ -16,14 +19,11 @@ class HSO(CDLL):
         fun.restype = POINTER(c_char)
 
         def wrapped_fun(*args):
-            print(args)
             packed = msgpack.packb(args)
-            with open('/tmp/outputnrmlib', 'wb') as f:
-                f.write(packed)
             length_64bits = struct.pack(">q", len(packed))
             ptr = fun(length_64bits + packed)
             data_length = struct.unpack(">q", ptr[:8])[0]
-            res = msgpack.unpackb(ptr[8:8 + data_length])
+            res = msgpack.unpackb(ptr[8:8 + data_length], raw=False)
             self.free(ptr)
             return res
 
@@ -38,7 +38,8 @@ class HSO(CDLL):
                 fun = super(HSO, self).__getattr__(expName)
                 return self.wrap_into_msgpack(fun)
             except AttributeError:
-                print("NRM's python code tried to access an undefined symbol in nrm.so:")
+                logger.error(
+                    "NRM's python code tried to access an undefined symbol in nrm.so:")
                 raise e
 
 

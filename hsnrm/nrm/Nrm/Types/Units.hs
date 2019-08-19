@@ -39,7 +39,7 @@ import qualified Prelude as PBase
 
 -- | CPU operations.
 newtype Operations = Operations Int
-  deriving (Generic, Show)
+  deriving (Show, Generic, MessagePack)
 
 instance ToJSON Operations where
 
@@ -53,11 +53,9 @@ instance JSONSchema Operations where
 
   schema = gSchema
 
-deriving instance MessagePack Operations
-
 -- | Application progress.
 newtype Progress = Progress Int
-  deriving (Generic, Show)
+  deriving (Show, Generic, MessagePack)
 
 instance ToJSON Progress where
 
@@ -70,8 +68,6 @@ instance FromJSON Progress where
 instance JSONSchema Progress where
 
   schema = gSchema
-
-deriving instance MessagePack Progress
 
 -- | Power newtype for Data.UNITS.SI Power
 newtype Power = Power DSI.Power

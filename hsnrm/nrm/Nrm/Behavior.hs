@@ -12,6 +12,7 @@ module Nrm.Behavior
 where
 
 import Data.MessagePack
+import qualified Nrm.Classes.Messaging as M
 import Nrm.Types.Messaging.DownstreamEvent as DEvent
 import Nrm.Types.Messaging.UpstreamPub as UPub
 import Nrm.Types.Messaging.UpstreamRep as URep
@@ -24,12 +25,17 @@ import Protolude
 data Behavior = NoBehavior | Rep UC.UpstreamClientID URep.Rep | Pub UPub.Pub | StartChild Command Arguments
   deriving (Generic)
 
-deriving instance MessagePack Behavior
+instance MessagePack Behavior where
+
+  toObject (NoBehavior) = toObject ("noop" :: Text)
+  toObject (Rep clientid msg) = toObject ("reply" :: Text, clientid, M.encodeT msg)
+  toObject (Pub msg) = toObject ("publish" :: Text, msg)
+  toObject (StartChild cmd args) = toObject ("cmd" :: Text, cmd, args)
+
+  fromObject x = to <$> gFromObject x
 
 data NrmEvent = Req UC.UpstreamClientID UReq.Req | Event DEvent.Event | DoSensor | DoControl | DoShutdown | DoChildren
-  deriving (Generic)
-
-deriving instance MessagePack NrmEvent
+  deriving (Generic, MessagePack)
 
 behavior :: S.NrmState -> NrmEvent -> IO (S.NrmState, Behavior)
 behavior st (Event msg) = case msg of

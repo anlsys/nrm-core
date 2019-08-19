@@ -107,16 +107,16 @@
             "properties": {
                 "pubProgress": {
                     "required": [
-                        "applicationUUID",
+                        "downstreamThreadID",
                         "payload"
                     ],
                     "type": "object",
                     "properties": {
-                        "applicationUUID": {
-                            "type": "string"
-                        },
                         "payload": {
                             "type": "number"
+                        },
+                        "downstreamThreadID": {
+                            "type": "string"
                         }
                     }
                 }

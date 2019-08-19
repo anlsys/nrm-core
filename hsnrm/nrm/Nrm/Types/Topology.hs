@@ -30,7 +30,7 @@ data Topology
       , coreIDs :: [CoreID]
       , packageIDs :: [PackageID]
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 -- | A Package OS identifier.
 newtype PackageID = PackageID (Refined NonNegative Int)
@@ -38,7 +38,7 @@ newtype PackageID = PackageID (Refined NonNegative Int)
 
 -- | Record containing all information about a CPU Package.
 data Package = Package
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 -- | A CPU Core OS identifier.
 newtype CoreID = CoreID (Refined Positive Int)
@@ -46,15 +46,15 @@ newtype CoreID = CoreID (Refined Positive Int)
 
 -- | Record containing all information about a CPU Core.
 data Core = Core
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 -- | A Processing Unit OS identifier.
 newtype PUID = PUID (Refined NonNegative Int)
-  deriving (Eq, Ord, Show, Generic)
+  deriving (Eq, Ord, Show)
 
 -- | Record containing all information about a processing unit.
 data PU = PU
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 -- | reading from hwloc XML data
 class IdFromString a where
@@ -91,14 +91,6 @@ instance ToHwlocType PackageID where
   getType _ = "Package"
 
 -- MessagePack instances
-deriving instance MessagePack Topology
-
-deriving instance MessagePack Core
-
-deriving instance MessagePack Package
-
-deriving instance MessagePack PU
-
 instance MessagePack PackageID where
 
   toObject (PackageID x) = toObject (unrefine x)

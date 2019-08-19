@@ -40,10 +40,7 @@ import qualified Nrm.Types.Configuration as C
   , logfile
   , verbose
   )
-import qualified Nrm.Types.Messaging.DownstreamEvent as DEvent
-import qualified Nrm.Types.Messaging.UpstreamReq as UReq
 import qualified Nrm.Types.NrmState as TS
-import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
 import Text.Pretty.Simple
 
@@ -97,12 +94,11 @@ downstreamReceive s msg =
 -- | Behave on upstream message
 upstreamReceive :: TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
 upstreamReceive s msg clientid =
-  trace msg $ trace (M.encode $ UReq.ReqContainerList UReq.ContainerList) $
-    B.behavior s $
+  B.behavior s $
     B.Req
       ( fromMaybe
         (panic "couldn't parse upstream client ID")
-        (UC.parseUpstreamClientID clientid)
+        (readMaybe $ toS clientid)
       )
       ( fromMaybe (panic "couldn't decode downstream rcv")
         (M.decodeT msg)

@@ -14,10 +14,7 @@ import Data.MessagePack
 import Protolude
 
 data Value = Value Text
-  deriving (Eq, Ord, Show, Read, Generic)
+  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
 
 data Range = Discrete [Value] | Interval Double Double
-  deriving (Eq, Ord, Show, Read, Generic)
-
-deriving instance MessagePack Range
-deriving instance MessagePack Value
+  deriving (Eq, Ord, Show, Read, Generic, MessagePack)

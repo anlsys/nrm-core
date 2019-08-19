@@ -36,10 +36,10 @@ data Manifest
       , hwbind :: Bool
       , image :: Image
       }
-  deriving (Eq, Show, Generic, Interpret, Inject)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Eq, Show, Generic, Interpret)
+  deriving (Eq, Show, Generic, MessagePack, Interpret)
 
 data App
   = App
@@ -49,20 +49,20 @@ data App
       , power :: Power
       , monitoring :: Monitoring
       }
-  deriving (Eq, Show, Generic, Interpret, Inject)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
 
 data Slice
   = Slice
       { cpus :: Integer
       , mems :: Integer
       }
-  deriving (Eq, Show, Generic, Interpret, Inject)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
 
 data Scheduler = FIFO | HPC | Other Integer
-  deriving (Eq, Show, Generic, Interpret, Inject)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
 
 data PowerPolicy = NoPowerPolicy | DDCM | DVFS | Combined
-  deriving (Eq, Show, Generic, Interpret, Inject)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
 
 data Power
   = Power
@@ -70,16 +70,16 @@ data Power
       , profile :: Bool
       , slowdown :: Integer -- TODO shoul be <1
       }
-  deriving (Eq, Show, Generic, Interpret, Inject)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
 
 newtype Monitoring
   = Monitoring
       { ratelimit :: Integer -- TODO >0
       }
-  deriving (Eq, Show, Generic, Interpret, Inject)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
 
 data ImageType = Sif | Docker
-  deriving (Eq, Show, Generic, Interpret, Inject)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
 
 data Image
   = Image
@@ -88,7 +88,7 @@ data Image
       , binds :: Maybe [Text]
       }
   | NoImage
-  deriving (Eq, Show, Generic, Interpret, Inject)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
 
 instance Default Manifest where
 
@@ -258,26 +258,8 @@ instance FromJSON PowerPolicy where
 jsonOptions :: Options
 jsonOptions = defaultOptions {omitNothingFields = True}
 
-deriving instance MessagePack Manifest
-
-deriving instance MessagePack App
-
-deriving instance MessagePack Image
-
-deriving instance MessagePack Slice
-
-deriving instance MessagePack Scheduler
-
-deriving instance MessagePack Power
-
-deriving instance MessagePack Monitoring
-
-deriving instance MessagePack ImageType
-
 instance MessagePack Integer where
 
   toObject = toObject . (fromInteger :: Integer -> Int)
 
   fromObject x = (toInteger :: Int -> Integer) <$> fromObject x
-
-deriving instance MessagePack PowerPolicy

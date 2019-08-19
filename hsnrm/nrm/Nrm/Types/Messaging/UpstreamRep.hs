@@ -16,8 +16,8 @@ module Nrm.Types.Messaging.UpstreamRep
 where
 
 import Data.Aeson
-import Data.MessagePack
 import Data.JSON.Schema
+import Data.MessagePack
 import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
 import Nrm.Types.Container as C
@@ -32,47 +32,47 @@ data Rep
   | RepStart Start
   | RepProcessExit ProcessExit
   | RepGetPower GetPower
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 newtype ContainerList
   = ContainerList
       { containers :: [Text]
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data Stdout
   = Stdout
       { stdoutContainerUUUID :: C.ContainerID
       , stdoutPayload :: Text
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data Stderr
   = Stderr
       { stderrContainerID :: C.ContainerID
       , stderrPayload :: Text
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data Start
   = Start
       { startContainerID :: C.ContainerID
       , pid :: P.ProcessID
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data ProcessExit
   = ProcessExit
       { container_uuid :: Text
       , status :: Int
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 newtype GetPower
   = GetPower
       { limit :: U.Power
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 instance NrmMessage Rep Rep where
 
@@ -151,11 +151,3 @@ instance FromJSON Start where
 instance JSONSchema Start where
 
   schema = gSchema
-
-deriving instance MessagePack Rep
-deriving instance MessagePack ContainerList
-deriving instance MessagePack Stdout
-deriving instance MessagePack Stderr
-deriving instance MessagePack Start
-deriving instance MessagePack ProcessExit
-deriving instance MessagePack GetPower

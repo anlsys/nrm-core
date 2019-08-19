@@ -32,6 +32,4 @@ data NrmState
       , singularityRuntime :: Maybe SingularityRuntime
       , nodeosRuntime :: Maybe NodeosRuntime
       }
-  deriving (Show, Generic)
-
-deriving instance MessagePack NrmState
+  deriving (Show, Generic, MessagePack)

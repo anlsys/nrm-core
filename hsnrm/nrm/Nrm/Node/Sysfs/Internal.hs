@@ -60,8 +60,6 @@ newtype MaxPower = MaxPower Power
 newtype MaxEnergy = MaxEnergy Energy
   deriving (Show, Generic, MessagePack)
 
-{-deriving instance MessagePack MaxEnergy via Int-}
-
 {-instance MessagePack MaxEnergy where-}
 
 {-toObject (PackageID x) = toObject (unrefine x)-}

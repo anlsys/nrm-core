@@ -17,13 +17,10 @@ import Protolude
 import Data.MessagePack
 
 data Runtime = DummyRuntime | NodeOSRuntime | SingularityRuntime
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data Container = Container {runtime :: Runtime}
-  deriving (Show, Generic)
-
-deriving instance MessagePack Runtime
-deriving instance MessagePack Container
+  deriving (Show, Generic, MessagePack)
 
 {-import Nrm.Containers.Nodeos-}
 {-import Nrm.Containers.Singularity-}

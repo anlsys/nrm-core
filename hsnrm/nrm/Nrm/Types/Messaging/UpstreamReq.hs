@@ -29,7 +29,7 @@ data Req
   | ReqRun Run
   | ReqKill Kill
   | ReqSetPower SetPower
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data Run
   = Run
@@ -39,22 +39,22 @@ data Run
       , runContainerID :: C.ContainerID
       , environ :: [(Text, Text)]
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 newtype Kill
   = Kill
       { killContainerID :: C.ContainerID
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 newtype SetPower
   = SetPower
       { limit :: U.Power
       }
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 data ContainerList = ContainerList
-  deriving (Show, Generic)
+  deriving (Show, Generic, MessagePack)
 
 instance ToJSON Kill where
 
@@ -109,15 +109,3 @@ instance FromJSON Run where
 instance JSONSchema Run where
 
   schema = gSchema
-
-deriving instance MessagePack Req
-
-deriving instance MessagePack ContainerList
-
-deriving instance MessagePack Run
-
-deriving instance MessagePack Kill
-
-deriving instance MessagePack SetPower
-
-

@@ -27,19 +27,19 @@ data Event
   | CmdStart D.DownstreamCmdID
   | CmdPerformance D.DownstreamCmdID Performance
   | CmdExit D.DownstreamCmdID
-  deriving (Generic)
+  deriving (Generic, MessagePack)
 
 newtype Performance
   = Performance
       { perf :: U.Operations
       }
-  deriving (Generic)
+  deriving (Generic, MessagePack)
 
 newtype Progress
   = Progress
       { payload :: U.Progress
       }
-  deriving (Generic)
+  deriving (Generic, MessagePack)
 
 data PhaseContext
   = PhaseContext
@@ -49,7 +49,7 @@ data PhaseContext
       , startbarrier :: Int
       , endbarrier :: Int
       }
-  deriving (Generic)
+  deriving (Generic, MessagePack)
 
 instance M.NrmMessage Event J.Event where
 
@@ -109,13 +109,3 @@ instance M.NrmMessage Event J.Event where
 {-, payload = U.Progress payload-}
 {-}-}
 {-J.PhaseContext {..} -> EventPhaseContext PhaseContext {..}-}
-deriving instance MessagePack Event
-
-deriving instance MessagePack Progress
-
-deriving instance MessagePack PhaseContext
-
-deriving instance MessagePack Performance
-
-{-deriving instance MessagePack Progress-}
-{-deriving instance MessagePack Progress-}

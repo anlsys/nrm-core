@@ -24,10 +24,10 @@ import Dhall
 import Protolude
 
 data ContainerRuntime = Singularity | Nodeos | Dummy
-  deriving (Eq, Show, Generic, Interpret, Inject, Flat)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
 
 data DaemonVerbosity = Normal | Verbose | Debug
-  deriving (Eq, Show, Generic, Interpret, Inject, Flat)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
 
 data Cfg
   = Cfg
@@ -45,13 +45,13 @@ data Cfg
       , downstreamCfg :: DownstreamCfg
       , upstreamCfg :: UpstreamCfg
       }
-  deriving (Eq, Show, Generic, Flat)
+  deriving (Eq, Show, Generic, MessagePack, Flat)
 
 newtype DownstreamCfg
   = DownstreamCfg
       { downstreamBindAddress :: Text
       }
-  deriving (Eq, Show, Generic, Interpret, Inject, Flat)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
 
 data UpstreamCfg
   = UpstreamCfg
@@ -59,24 +59,8 @@ data UpstreamCfg
       , pubPort :: Int
       , rpcPort :: Int
       }
-  deriving (Eq, Show, Generic, Flat)
+  deriving (Eq, Show, Generic, MessagePack, Flat)
 
-deriving instance MessagePack Cfg
-
-deriving instance MessagePack DaemonVerbosity
-
-deriving instance MessagePack UpstreamCfg
-
-deriving instance MessagePack DownstreamCfg
-
-deriving instance MessagePack ContainerRuntime
-
-{-toObject = toObject . flat-}
-
-{-fromObject o = fromObject o >>= go-}
-{-where-}
-{-go :: (Monad m) => ByteString -> m Cfg-}
-{-go bs = return (fromRight (panic "couldn't decode cfg from flat") (unflat bs))-}
 instance ToJSON ContainerRuntime where
 
   toJSON = genericToJSON jsonOptions
