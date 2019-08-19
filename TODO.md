@@ -12,6 +12,6 @@ locate and remove {-*-} comments
 
 -change "UUID"s to "ID"s
 
--remove application UUIDs
-
 -start from message format.
+
+-eliminate fromJust's

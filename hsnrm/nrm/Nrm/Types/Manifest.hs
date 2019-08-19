@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-|
 Module      : Nrm.Types.Manifest
 Copyright   : (c) UChicago Argonne, 2019
@@ -19,12 +20,13 @@ module Nrm.Types.Manifest
 where
 
 import Data.Aeson
-import Generics.Generic.Aeson ()
 import Data.Default
 import Data.JSON.Schema
+import Data.MessagePack
 import Data.Yaml ()
 import Data.Yaml.Internal ()
 import Dhall
+import Generics.Generic.Aeson ()
 import Protolude
 
 data Manifest
@@ -166,6 +168,7 @@ instance JSONSchema PowerPolicy where
 instance ToJSON Manifest where
 
   toJSON = genericToJSON jsonOptions
+
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Manifest where
@@ -175,6 +178,7 @@ instance FromJSON Manifest where
 instance ToJSON App where
 
   toJSON = genericToJSON jsonOptions
+
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON App where
@@ -184,6 +188,7 @@ instance FromJSON App where
 instance ToJSON Slice where
 
   toJSON = genericToJSON jsonOptions
+
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Slice where
@@ -193,6 +198,7 @@ instance FromJSON Slice where
 instance ToJSON Image where
 
   toJSON = genericToJSON jsonOptions
+
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Image where
@@ -202,6 +208,7 @@ instance FromJSON Image where
 instance ToJSON ImageType where
 
   toJSON = genericToJSON jsonOptions
+
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON ImageType where
@@ -211,6 +218,7 @@ instance FromJSON ImageType where
 instance ToJSON Scheduler where
 
   toJSON = genericToJSON jsonOptions
+
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Scheduler where
@@ -220,6 +228,7 @@ instance FromJSON Scheduler where
 instance ToJSON Power where
 
   toJSON = genericToJSON jsonOptions
+
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Power where
@@ -229,6 +238,7 @@ instance FromJSON Power where
 instance ToJSON Monitoring where
 
   toJSON = genericToJSON jsonOptions
+
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON Monitoring where
@@ -238,6 +248,7 @@ instance FromJSON Monitoring where
 instance ToJSON PowerPolicy where
 
   toJSON = genericToJSON jsonOptions
+
   toEncoding = genericToEncoding jsonOptions
 
 instance FromJSON PowerPolicy where
@@ -246,3 +257,27 @@ instance FromJSON PowerPolicy where
 
 jsonOptions :: Options
 jsonOptions = defaultOptions {omitNothingFields = True}
+
+deriving instance MessagePack Manifest
+
+deriving instance MessagePack App
+
+deriving instance MessagePack Image
+
+deriving instance MessagePack Slice
+
+deriving instance MessagePack Scheduler
+
+deriving instance MessagePack Power
+
+deriving instance MessagePack Monitoring
+
+deriving instance MessagePack ImageType
+
+instance MessagePack Integer where
+
+  toObject = toObject . (fromInteger :: Integer -> Int)
+
+  fromObject x = (toInteger :: Int -> Integer) <$> fromObject x
+
+deriving instance MessagePack PowerPolicy

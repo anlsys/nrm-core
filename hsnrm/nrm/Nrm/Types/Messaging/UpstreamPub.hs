@@ -11,6 +11,7 @@ where
 
 import Data.Aeson
 import Data.JSON.Schema
+import Data.MessagePack
 import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
 import Nrm.Types.Container as C
@@ -150,3 +151,17 @@ instance FromJSON ContainerExit where
 instance JSONSchema ContainerExit where
 
   schema = gSchema
+
+deriving instance MessagePack Pub
+
+deriving instance MessagePack Power
+
+deriving instance MessagePack ContainerStart
+
+deriving instance MessagePack ContainerExit
+
+deriving instance MessagePack Performance
+
+deriving instance MessagePack Progress
+
+deriving instance MessagePack Control

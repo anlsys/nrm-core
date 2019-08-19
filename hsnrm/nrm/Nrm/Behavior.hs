@@ -7,52 +7,47 @@ Maintainer  : fre@freux.fr
 module Nrm.Behavior
   ( behavior
   , Behavior (..)
-  , SendAPI (..)
-  , RecvAPI (..)
   , NrmEvent (..)
   )
 where
 
 import Data.MessagePack
-import Nrm.Classes.Messaging
-import Nrm.Types.Messaging.DownstreamEvent as D
+import Nrm.Types.Messaging.DownstreamEvent as DEvent
+import Nrm.Types.Messaging.UpstreamPub as UPub
+import Nrm.Types.Messaging.UpstreamRep as URep
+import Nrm.Types.Messaging.UpstreamReq as UReq
 import qualified Nrm.Types.NrmState as S
 import Nrm.Types.Process
+import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
 
-data SendAPI = UpstreamPub | UpstreamRep
-  deriving (Generic)
-
-deriving instance MessagePack SendAPI
-
-data RecvAPI = DownstreamEvent | UpstreamReq
-  deriving (Generic)
-
-deriving instance MessagePack RecvAPI
-
-data Behavior = NoBehavior | Send SendAPI ByteString | StartChild Command Arguments
+data Behavior = NoBehavior | Rep UC.UpstreamClientID URep.Rep | Pub UPub.Pub | StartChild Command Arguments
   deriving (Generic)
 
 deriving instance MessagePack Behavior
 
-data NrmEvent = Recv RecvAPI ByteString | DoSensor | DoControl | DoShutdown | DoChildren
+data NrmEvent = Req UC.UpstreamClientID UReq.Req | Event DEvent.Event | DoSensor | DoControl | DoShutdown | DoChildren
   deriving (Generic)
 
 deriving instance MessagePack NrmEvent
 
-behavior :: NrmEvent -> S.NrmState -> IO (S.NrmState, Behavior)
-behavior (Recv DownstreamEvent msg) st = case decode msg of
-  Just x -> case x of
-    D.ThreadStart _ -> return (st, NoBehavior)
-    D.ThreadProgress _ _ -> return (st, NoBehavior)
-    D.ThreadPhaseContext _ _ -> return (st, NoBehavior)
-    D.ThreadExit _ -> return (st, NoBehavior)
-    D.CmdStart _ -> return (st, NoBehavior)
-    D.CmdPerformance _ _ -> return (st, NoBehavior)
-    D.CmdExit _ -> return (st, NoBehavior)
-  Nothing -> return (st, NoBehavior)
-behavior (Recv UpstreamReq _msg) st = return (st, NoBehavior)
-behavior DoSensor st = return (st, NoBehavior)
-behavior DoControl st = return (st, NoBehavior)
-behavior DoShutdown st = return (st, NoBehavior)
-behavior DoChildren st = return (st, NoBehavior)
+behavior :: S.NrmState -> NrmEvent -> IO (S.NrmState, Behavior)
+behavior st (Event msg) = case msg of
+  DEvent.ThreadStart _ -> return (st, NoBehavior)
+  DEvent.ThreadProgress _ _ -> return (st, NoBehavior)
+  DEvent.ThreadPhaseContext _ _ -> return (st, NoBehavior)
+  DEvent.ThreadExit _ -> return (st, NoBehavior)
+  DEvent.CmdStart _ -> return (st, NoBehavior)
+  DEvent.CmdPerformance _ _ -> return (st, NoBehavior)
+  DEvent.CmdExit _ -> return (st, NoBehavior)
+behavior st (Req clientid msg) = case msg of
+  UReq.ReqContainerList _ -> return (st, Rep clientid (URep.RepList lcontainers))
+    where
+      lcontainers = URep.ContainerList []
+  UReq.ReqRun _ -> return (st, NoBehavior)
+  UReq.ReqKill _ -> return (st, NoBehavior)
+  UReq.ReqSetPower _ -> return (st, NoBehavior)
+behavior st DoSensor = return (st, NoBehavior)
+behavior st DoControl = return (st, NoBehavior)
+behavior st DoShutdown = return (st, NoBehavior)
+behavior st DoChildren = return (st, NoBehavior)

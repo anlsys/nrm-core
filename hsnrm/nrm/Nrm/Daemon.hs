@@ -40,7 +40,7 @@ main = do
     bind s (toS address)
     server s
 
-server :: Socket z Router -> ZMQ z b
+server :: Socket z Router -> ZMQ z v
 server s =
   forever $
     receiveMulti s >>= \case

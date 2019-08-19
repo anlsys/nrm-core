@@ -12,9 +12,10 @@ module Nrm.Types.Messaging.DownstreamEvent
   )
 where
 
+import Data.MessagePack
 import qualified Nrm.Classes.Messaging as M
-import qualified Nrm.Types.Messaging.DownstreamEvent.JSON as J
 import qualified Nrm.Types.DownstreamClient as D
+import qualified Nrm.Types.Messaging.DownstreamEvent.JSON as J
 import qualified Nrm.Types.Units as U
 import Protolude
 
@@ -26,16 +27,19 @@ data Event
   | CmdStart D.DownstreamCmdID
   | CmdPerformance D.DownstreamCmdID Performance
   | CmdExit D.DownstreamCmdID
+  deriving (Generic)
 
 newtype Performance
   = Performance
       { perf :: U.Operations
       }
+  deriving (Generic)
 
 newtype Progress
   = Progress
       { payload :: U.Progress
       }
+  deriving (Generic)
 
 data PhaseContext
   = PhaseContext
@@ -45,6 +49,7 @@ data PhaseContext
       , startbarrier :: Int
       , endbarrier :: Int
       }
+  deriving (Generic)
 
 instance M.NrmMessage Event J.Event where
 
@@ -104,3 +109,13 @@ instance M.NrmMessage Event J.Event where
 {-, payload = U.Progress payload-}
 {-}-}
 {-J.PhaseContext {..} -> EventPhaseContext PhaseContext {..}-}
+deriving instance MessagePack Event
+
+deriving instance MessagePack Progress
+
+deriving instance MessagePack PhaseContext
+
+deriving instance MessagePack Performance
+
+{-deriving instance MessagePack Progress-}
+{-deriving instance MessagePack Progress-}

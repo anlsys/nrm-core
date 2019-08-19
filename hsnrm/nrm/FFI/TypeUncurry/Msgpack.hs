@@ -43,7 +43,8 @@ import Foreign.C
 import Foreign.Marshal.Alloc (mallocBytes)
 import Foreign.Marshal.Utils (copyBytes)
 import Foreign.Ptr (castPtr, plusPtr)
-import Prelude
+import Protolude
+import Prelude (String, error, fail)
 
 -- | Helper to allow writing a 'MSG.MessagePack' instance for 'TypeList's.
 --

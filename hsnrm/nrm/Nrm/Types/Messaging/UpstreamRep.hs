@@ -16,6 +16,7 @@ module Nrm.Types.Messaging.UpstreamRep
 where
 
 import Data.Aeson
+import Data.MessagePack
 import Data.JSON.Schema
 import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
@@ -150,3 +151,11 @@ instance FromJSON Start where
 instance JSONSchema Start where
 
   schema = gSchema
+
+deriving instance MessagePack Rep
+deriving instance MessagePack ContainerList
+deriving instance MessagePack Stdout
+deriving instance MessagePack Stderr
+deriving instance MessagePack Start
+deriving instance MessagePack ProcessExit
+deriving instance MessagePack GetPower

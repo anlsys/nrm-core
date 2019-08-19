@@ -15,11 +15,12 @@ where
 
 import Data.Aeson
 import Data.JSON.Schema
+import Data.MessagePack
 import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
-import qualified Nrm.Types.Process as P
 import qualified Nrm.Types.Container as C
 import Nrm.Types.Manifest
+import qualified Nrm.Types.Process as P
 import qualified Nrm.Types.Units as U
 import Protolude
 
@@ -108,3 +109,15 @@ instance FromJSON Run where
 instance JSONSchema Run where
 
   schema = gSchema
+
+deriving instance MessagePack Req
+
+deriving instance MessagePack ContainerList
+
+deriving instance MessagePack Run
+
+deriving instance MessagePack Kill
+
+deriving instance MessagePack SetPower
+
+

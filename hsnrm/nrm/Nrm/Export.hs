@@ -29,6 +29,7 @@ module Nrm.Export
 where
 
 import qualified Nrm.Behavior as B
+import qualified Nrm.Classes.Messaging as M
 import qualified Nrm.NrmState as S
 import qualified Nrm.Optparse as O (parseArgDaemonCli)
 import qualified Nrm.Types.Configuration as C
@@ -39,7 +40,10 @@ import qualified Nrm.Types.Configuration as C
   , logfile
   , verbose
   )
+import qualified Nrm.Types.Messaging.DownstreamEvent as DEvent
+import qualified Nrm.Types.Messaging.UpstreamReq as UReq
 import qualified Nrm.Types.NrmState as TS
+import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
 import Text.Pretty.Simple
 
@@ -83,25 +87,39 @@ showState :: TS.NrmState -> Text
 showState = toS . pShow
 
 -- | Behave on downstream message
-downstreamReceive :: TS.NrmState -> ByteString -> IO (TS.NrmState, B.Behavior)
-downstreamReceive s msg = B.behavior (B.Recv B.DownstreamEvent msg) s
+downstreamReceive :: TS.NrmState -> Text -> IO (TS.NrmState, B.Behavior)
+downstreamReceive s msg =
+  B.behavior s $
+    B.Event $
+    fromMaybe (panic "couldn't decode downstream rcv")
+      (M.decodeT $ toS msg)
 
 -- | Behave on upstream message
-upstreamReceive :: TS.NrmState -> ByteString -> IO (TS.NrmState, B.Behavior)
-upstreamReceive s msg = B.behavior (B.Recv B.UpstreamReq msg) s
+upstreamReceive :: TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
+upstreamReceive s msg clientid =
+  trace msg $ trace (M.encode $ UReq.ReqContainerList UReq.ContainerList) $
+    B.behavior s $
+    B.Req
+      ( fromMaybe
+        (panic "couldn't parse upstream client ID")
+        (UC.parseUpstreamClientID clientid)
+      )
+      ( fromMaybe (panic "couldn't decode downstream rcv")
+        (M.decodeT msg)
+      )
 
 -- | Behave on sensor trigger
 doSensor :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
-doSensor = B.behavior B.DoSensor
+doSensor s = B.behavior s B.DoSensor
 
 -- | Behave on control trigger
 doControl :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
-doControl = B.behavior B.DoControl
+doControl s = B.behavior s B.DoControl
 
 -- | Behave on children death
 doChildren :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
-doChildren = B.behavior B.DoChildren
+doChildren s = B.behavior s B.DoChildren
 
 -- | Behave on shutdown
 doShutdown :: TS.NrmState -> IO (TS.NrmState, B.Behavior)
-doShutdown = B.behavior B.DoShutdown
+doShutdown s = B.behavior s B.DoShutdown

@@ -46,7 +46,7 @@ def recv_callback(apiname):
             assert len(frames) == 2
             msg = frames[1]
             assert self.callback
-            self.callback(msg), str(frames[0])
+            self.callback(msg, frames[0])
 
         def setup_recv_callback(self, callback):
             """Setup a ioloop-backed callback for receiving messages."""

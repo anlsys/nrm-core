@@ -37,5 +37,11 @@ class
   decode :: ByteString -> Maybe a
   decode = fmap fromJ . AT.parseMaybe AG.gparseJson <=< A.decodeStrict
 
+  decodeT :: Text -> Maybe a
+  decodeT = fmap fromJ . AT.parseMaybe AG.gparseJson <=< A.decodeStrict . toS
+
+  encodeT :: a -> Text
+  encodeT = toS . A.encode . AG.gtoJson . toJ
+
   schema :: Proxy a -> Schema
   schema (Proxy :: Proxy a) = SG.gSchema (Proxy :: Proxy b)
