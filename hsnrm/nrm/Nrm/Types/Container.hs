@@ -6,6 +6,7 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Container
   ( Container (..)
+  , emptyContainer
   , ContainerID (..)
   , nextContainerID
   , parseContainerID
@@ -25,10 +26,12 @@ import Protolude
 
 data Container
   = Container
-      { awaiting :: [CmdID]
-      , cmds :: [CmdID]
+      { cmds :: [CmdID]
       }
   deriving (Show, Eq, Ord, Generic, MessagePack, ToJSON, FromJSON)
+
+emptyContainer :: Container
+emptyContainer = Container {cmds = []}
 
 data ContainerID = ContainerID U.UUID | Name Text
   deriving (Show, Eq, Ord, Generic, FromJSONKey, ToJSONKey)

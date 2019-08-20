@@ -82,7 +82,7 @@ reqrep s _ = \case
         Just (Rep.RepList (Rep.ContainerList l)) -> case length l of
           0 -> putText "No containers currently running."
           x -> do
-            putText (show x <> "container(s) currently running. list:")
+            putText (show x <> " container(s) currently running. list:")
             for_ l print
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout

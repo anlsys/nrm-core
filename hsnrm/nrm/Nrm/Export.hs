@@ -25,6 +25,7 @@ module Nrm.Export
   , doControl
   , doChildren
   , doShutdown
+  , registerCmd
   )
 where
 
@@ -32,6 +33,7 @@ import qualified Nrm.Behavior as B
 import qualified Nrm.Classes.Messaging as M
 import qualified Nrm.NrmState as S
 import qualified Nrm.Optparse as O (parseArgDaemonCli)
+{-import qualified Nrm.Types.Container as Ct-}
 import qualified Nrm.Types.Configuration as C
   ( Cfg (..)
   , DaemonVerbosity (..)
@@ -41,6 +43,7 @@ import qualified Nrm.Types.Configuration as C
   , verbose
   )
 import qualified Nrm.Types.NrmState as TS
+import qualified Nrm.Types.Process as P
 import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
 import Text.Pretty.Simple
@@ -120,3 +123,15 @@ doChildren c s = B.behavior c s B.DoChildren
 -- | Behave on shutdown
 doShutdown :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doShutdown c s = B.behavior c s B.DoShutdown
+
+-- | Register a command as failed or successful.
+registerCmd :: C.Cfg -> TS.NrmState -> Text -> Bool -> IO TS.NrmState
+registerCmd cfg s cmdIDT success =
+  fst <$>
+    B.behavior
+      cfg
+      s
+      ( B.RegisterCmd
+        (fromMaybe (panic "couldn't decode cmdID") (P.fromText cmdIDT))
+        (if success then B.Launched else B.NotLaunched)
+      )

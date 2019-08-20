@@ -16,13 +16,15 @@ import Nrm.Containers.Dummy
 import Nrm.Containers.Nodeos
 import Nrm.Containers.Singularity
 import Nrm.Types.Container
+import Nrm.Types.Process
 import Nrm.Types.DownstreamClient
 import Nrm.Types.Topology
 import Protolude
 
 data NrmState
   = NrmState
-      { topo :: Topology
+      { awaitingCmds :: Map CmdID ContainerID
+      , topo :: Topology
       , pus :: Map PUID PU
       , cores :: Map CoreID Core
       , packages :: Map PackageID Package

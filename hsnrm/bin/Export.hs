@@ -34,6 +34,8 @@ foreign export ccall doControlExport :: Ex
 
 foreign export ccall doChildrenExport :: Ex
 
+foreign export ccall registerCmdExport :: Ex
+
 cliExport = exportIO E.parseDaemon
 
 initialStateExport = exportIO E.initialState
@@ -49,6 +51,8 @@ doShutdownExport = exportIO E.doShutdown
 doControlExport = exportIO E.doControl
 
 doChildrenExport = exportIO E.doChildren
+
+registerCmdExport = exportIO E.registerCmd
 
 foreign export ccall isVerboseExport :: Ex
 

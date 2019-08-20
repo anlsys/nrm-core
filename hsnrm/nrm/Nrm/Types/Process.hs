@@ -16,6 +16,7 @@ module Nrm.Types.Process
   , Env (..)
   , nextCmdID
   , toText
+  , fromText
   )
 where
 
@@ -145,7 +146,7 @@ instance JSONSchema Arg where
   schema = gSchema
 
 newtype CmdID = CmdID U.UUID
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Eq, Ord, Generic, ToJSONKey, FromJSONKey)
 
 nextCmdID :: IO (Maybe CmdID)
 nextCmdID = fmap CmdID <$> nextUUID
@@ -155,6 +156,9 @@ parseCmdID = fmap CmdID <$> U.fromText
 
 toText :: CmdID -> Text
 toText (CmdID u) = U.toText u
+
+fromText :: Text -> Maybe CmdID
+fromText = fmap CmdID <$> U.fromText
 
 instance ToJSON CmdID where
 

@@ -17,19 +17,20 @@ import Nrm.Containers.Dummy as CD
 import Nrm.Containers.Nodeos as CN
 import Nrm.Containers.Singularity as CS
 import Nrm.Node.Hwloc
+import Nrm.Types.Actuator
 import Nrm.Types.Configuration
 import Nrm.Types.DownstreamClient
 import Nrm.Types.NrmState
-import Nrm.Types.Topology
 import Nrm.Types.Sensor
-import Nrm.Types.Actuator
+import Nrm.Types.Topology
 import Protolude
 
 initialState :: Cfg -> IO NrmState
 initialState c = do
   hwl <- getHwlocData
   return $ NrmState
-    { containers = fromList []
+    { awaitingCmds = fromList []
+    , containers = fromList []
     , pus = fromList []
     , cores = fromList []
     , packages = fromList []

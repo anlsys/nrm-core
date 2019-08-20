@@ -36,7 +36,8 @@ class Daemon(object):
         self.dispatch = {
             "noop": self.noop,
             "reply": self.reply,
-            "cmd": self.cmd
+            "cmd": self.cmd,
+            "kill": self.kill
         }
 
         self.cmds = {}
@@ -112,19 +113,28 @@ class Daemon(object):
         _logger.debug("starting command " + str(cmd) + " with argument list "
                       + str(arguments) + " and environment " + str(environment) + "..")
         try:
-            p = process.Subprocess(["toto"] + arguments,
+            p = process.Subprocess([cmd] + arguments,
                                    stdout=process.Subprocess.STREAM,
                                    stderr=process.Subprocess.STREAM,
                                    close_fds=True,
                                    env=environment,
                                    cwd=environment['PWD'])
             self.cmds[cmdID] = p
-            self.state = self.lib.registerCmd(self.state, cmdID, True)
-            _logger.debug("success.")
+            self.state = self.lib.registerCmd(self.cfg, self.state, cmdID, True)
+            _logger.debug("Command start success.")
         except FileNotFoundError as e:
-            self.state = self.lib.registerCmd(self.state, cmdID, False)
-            _logger.debug("failure.")
+            self.state = self.lib.killContainer(self.cfg, self.state, cmdID, False)
+            _logger.debug("Command start failure.")
             raise e
+
+    def kill(self, cmdIDs):
+        """
+            kill children
+        """
+        _logger.debug("Killing children: %s", str(cmdIDs))
+        for cmdID in cmdIDs:
+            if cmdID in self.cmds.keys():
+                self.cmds[cmdID].proc.terminate()
 
 
 def runner(config, lib):
