@@ -9,8 +9,8 @@ module Nrm.Types.Topology
   , Core (..)
   , PUID (..)
   , PU (..)
-  , PackageID
-  , Package
+  , PackageID (..)
+  , Package (..)
   , Topology (..)
   , IdFromString (..)
   , ToHwlocType (..)
@@ -19,6 +19,7 @@ where
 
 import Data.Aeson
 import Data.Either
+import qualified Data.Map as DM
 import Data.MessagePack
 import Protolude
 import Refined
@@ -28,9 +29,9 @@ import Prelude (String, fail)
 -- | Nnm's internal statically typed topology representation
 data Topology
   = Topology
-      { puIDs :: [PUID]
-      , coreIDs :: [CoreID]
-      , packageIDs :: [PackageID]
+      { puIDs :: DM.Map PUID PU
+      , coreIDs :: DM.Map CoreID Core
+      , packageIDs :: DM.Map PackageID Package
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
@@ -40,7 +41,7 @@ newtype PackageID = PackageID (Refined NonNegative Int)
 
 -- | Record containing all information about a CPU Package.
 data Package = Package
-  deriving (Show, Generic, MessagePack, ToJSON,FromJSON)
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 -- | A CPU Core OS identifier.
 newtype CoreID = CoreID (Refined Positive Int)

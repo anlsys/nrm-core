@@ -5,7 +5,9 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Process
-  ( Process (..)
+  ( Cmd (..)
+  , CmdSpec (..)
+  , mkCmd
   , ProcessID (..)
   , ThreadID (..)
   , TaskID (..)
@@ -24,6 +26,7 @@ import qualified Data.Aeson as A
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
+import Data.String (IsString (..))
 import qualified Data.UUID as U
 import Data.UUID.V1
 import Generics.Generic.Aeson
@@ -31,8 +34,36 @@ import Protolude
 import qualified System.Posix.Types as P
 import Prelude (fail)
 
-data Process = Process
-  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
+data CmdSpec
+  = CmdSpec
+      { cmd :: Command
+      , args :: Arguments
+      , env :: Env
+      }
+  deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
+
+newtype Cmd
+  = Cmd
+      { spec :: CmdSpec
+      }
+  deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
+
+instance JSONSchema CmdSpec where
+
+  schema = gSchema
+
+instance JSONSchema Cmd where
+
+  schema = gSchema
+
+mkCmd :: Command -> Arguments -> Env -> Cmd
+mkCmd c a e = Cmd
+  { spec = CmdSpec
+      { cmd = c
+      , args = a
+      , env = e
+      }
+  }
 
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)
@@ -147,6 +178,10 @@ instance JSONSchema Arg where
 
 newtype CmdID = CmdID U.UUID
   deriving (Show, Eq, Ord, Generic, ToJSONKey, FromJSONKey)
+
+instance IsString CmdID where
+
+  fromString x = fromMaybe (panic "couldn't decode cmdID in FromString instance") (decode $ toS x)
 
 nextCmdID :: IO (Maybe CmdID)
 nextCmdID = fmap CmdID <$> nextUUID

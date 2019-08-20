@@ -38,10 +38,11 @@ data Req
 data Run
   = Run
       { manifest :: Manifest
-      , path :: P.Command
-      , args :: P.Arguments
+      , spec :: P.CmdSpec
+      {-, path :: P.Command-}
+      {-, args :: P.Arguments-}
       , runContainerID :: C.ContainerID
-      , environ :: P.Env
+      {-, environ :: P.Env-}
       }
   deriving (Show, Generic, MessagePack)
 

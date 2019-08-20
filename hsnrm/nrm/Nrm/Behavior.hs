@@ -22,6 +22,7 @@ import qualified Nrm.Types.Messaging.UpstreamPub as UPub
 import qualified Nrm.Types.Messaging.UpstreamRep as URep
 import qualified Nrm.Types.Messaging.UpstreamReq as UReq
 import Nrm.Types.NrmState
+import Nrm.NrmState
 import Nrm.Types.Process
 import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
@@ -69,7 +70,7 @@ behavior c st (Req clientid msg) = case msg of
     return (st, Rep clientid (URep.RepGetConfig (URep.GetConfig c)))
   UReq.ReqRun UReq.Run {..} -> do
     cmdID <- nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
-    let st' = registerContainer runContainerID . registerAwaiting cmdID runContainerID $ st
+    let st' = registerAwaiting cmdID (mkCmd cmd) runContainerID . registerContainer runContainerID $ st
     return (st', StartChild cmdID path args environ)
   UReq.ReqKill UReq.Kill {..} -> do
     let st' = removeContainer killContainerID st
@@ -81,7 +82,7 @@ behavior _ st DoControl = return (st, NoBehavior)
 behavior _ st DoShutdown = return (st, NoBehavior)
 behavior _ st DoChildren = return (st, NoBehavior)
 
--- | The sensitive code that has to be pattern-matched on the python side.
+-- | The sensitive tag that has to be pattern-matched on the python side.
 instance MessagePack Behavior where
 
   toObject NoBehavior = toObject ("noop" :: Text)
@@ -92,11 +93,11 @@ instance MessagePack Behavior where
 
   fromObject x = to <$> gFromObject x
 
--- | Removes a container from the state
+-- | get all Cmds IDs for a container ID
 getCmds :: NrmState -> C.ContainerID -> [CmdID]
 getCmds st containerID = case DM.lookup containerID (containers st) of
   Nothing -> panic "containerID not found"
-  Just c -> C.cmds c
+  Just c -> DM.keys $ C.cmds c
 
 -- | Removes a container from the state
 removeContainer :: C.ContainerID -> NrmState -> NrmState
@@ -113,20 +114,22 @@ registerContainer containerID st =
     Just _ -> st
 
 -- | Registers an awaiting command.
-registerAwaiting :: CmdID -> C.ContainerID -> NrmState -> NrmState
-registerAwaiting cmdID containerID st =
-  st
-    { awaitingCmds = DM.insert
-        cmdID
-        containerID
-        (awaitingCmds st)
-    }
+registerAwaiting :: CmdID -> Cmd -> C.ContainerID -> NrmState -> NrmState
+registerAwaiting cmdID cmdValue containerID st =
+  DM.update f containerID (containers st)
+  where
+    f container = case DM.lookup cmdID (C.awaiting containers) of
+      Just c -> c {C.awaiting = DM.insert cmdID cmdValue (C.awaiting container)}
+      Nothing -> container
+
+{-{ C.awaiting = DM.delete cmdID (awaiting container)-}
+{-, C.cmds = DM.insert cmdID c (cmds container)-}
 
 -- | Turns an awaiting command to a launched one.
 registerLaunched :: CmdID -> NrmState -> NrmState
 registerLaunched cmdID st =
-  case DM.lookup cmdID (awaitingCmds st) of
-    Nothing -> panic "command was not registered as awaiting"
+  case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
+    Nothing -> panic "command was not registered as awaiting in any container"
     Just containerID -> case DM.lookup containerID (containers st) of
       Nothing -> panic "container was deleted while command was registering"
       Just container ->
@@ -137,12 +140,13 @@ registerLaunched cmdID st =
               (containers st)
           }
   where
-    st' = st {awaitingCmds = DM.delete cmdID (awaitingCmds st)}
+    st' = st
+    {-st' = st {awaitingCmds = DM.delete cmdID (awaitingCmds st)}-}
 
 -- | Fails an awaiting command.
 registerFailed :: CmdID -> NrmState -> NrmState
 registerFailed cmdID st =
-  case DM.lookup cmdID (awaitingCmds st) of
+  case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
     Nothing -> panic "command was not registered as awaiting"
     Just containerID -> case DM.lookup containerID (containers st) of
       Nothing -> panic "container was deleted while command was registering"
@@ -151,4 +155,5 @@ registerFailed cmdID st =
         then st' {containers = DM.delete containerID (containers st')}
         else st'
   where
-    st' = st {awaitingCmds = DM.delete cmdID (awaitingCmds st)}
+    st' = st
+    {-st' = st {awaitingCmds = DM.delete cmdID (awaitingCmds st)}-}

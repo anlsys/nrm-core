@@ -109,8 +109,6 @@ let deps =
           nobound "transformers"
       , regex =
           nobound "regex"
-      , attoparsec =
-          nobound "attoparsec"
       , units-defs =
           nobound "units-defs"
       , units =
