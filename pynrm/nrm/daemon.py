@@ -42,7 +42,6 @@ class Daemon(object):
 
         self.cmds = {}
 
-        # _logger.debug(self.lib.showState(t))
         # register messaging servers
         upstream_pub_a = self.lib.upstreamPubAddress(self.cfg)
         upstream_rpc_a = self.lib.upstreamRpcAddress(self.cfg)
@@ -120,10 +119,12 @@ class Daemon(object):
                                    env=environment,
                                    cwd=environment['PWD'])
             self.cmds[cmdID] = p
-            self.state = self.lib.registerCmd(self.cfg, self.state, cmdID, True)
+            self.state = self.lib.registerCmd(
+                self.cfg, self.state, cmdID, True)
             _logger.debug("Command start success.")
         except FileNotFoundError as e:
-            self.state = self.lib.killContainer(self.cfg, self.state, cmdID, False)
+            self.state = self.lib.killContainer(
+                self.cfg, self.state, cmdID, False)
             _logger.debug("Command start failure.")
             raise e
 
@@ -135,7 +136,7 @@ class Daemon(object):
         for cmdID in cmdIDs:
             if cmdID in self.cmds.keys():
                 self.cmds[cmdID].proc.terminate()
-                cmds.pop(cmdID)
+                self.cmds.pop(cmdID)
 
 
 def runner(config, lib):

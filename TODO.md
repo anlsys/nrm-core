@@ -17,3 +17,26 @@ locate and remove {-*-} comments
 -eliminate fromJust's
 
 -eliminate "panic"
+
+
+- add: 
+    -Wincomplete-uni-patterns
+    -Wincomplete-record-updates
+    -Wmonomorphism-restriction
+    -Wimplicit-prelude
+    -Wmissing-local-signatures
+
+	
+
+    -Wmissing-exported-signatures
+    -Wmissing-export-lists
+    -Wmissing-import-lists
+    -Wmissing-home-modules
+    -Widentities
+
+	
+
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wmissed-specialisations
+    -Wall-missed-specialisations

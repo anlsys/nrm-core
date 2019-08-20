@@ -153,6 +153,8 @@ let deps =
           nobound "mtl"
       , conduit =
           nobound "conduit"
+      , brick =
+          nobound "brick"
       , conduit-extra =
           nobound "conduit-extra"
       , aeson-pretty =

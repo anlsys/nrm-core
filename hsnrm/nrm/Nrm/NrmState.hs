@@ -60,7 +60,7 @@ runningCmdIDContainerIDMap = containerMap cmds
 
 -- | Generate a map of all commands currently registered as awaiting, and the associated containerID
 awaitingCmdIDContainerIDMap :: NrmState -> DM.Map CmdID ContainerID
-awaitingCmdIDContainerIDMap = containerMap cmds
+awaitingCmdIDContainerIDMap = containerMap awaiting
 
 -- | List commands currently registered as running
 runningCmdIDCmdMap :: NrmState -> DM.Map CmdID Cmd

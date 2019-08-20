@@ -212,10 +212,12 @@ run rc common = do
     Opts
       ( ReqRun $ Run
         { manifest = manifest
-        , path = P.Command $ cmd rc
-        , args = P.Arguments $ P.Arg <$> runargs rc
+        , spec = P.CmdSpec
+          { cmd = P.Command $ cmd rc
+          , args = P.Arguments $ P.Arg <$> runargs rc
+          , env = P.Env env
+          }
         , runContainerID = cn
-        , environ = P.Env env
         }
       )
       common

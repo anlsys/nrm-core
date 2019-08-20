@@ -20,38 +20,11 @@
                 "reqRun": {
                     "required": [
                         "manifest",
-                        "path",
-                        "args",
-                        "runContainerID",
-                        "environ"
+                        "spec",
+                        "runContainerID"
                     ],
                     "type": "object",
                     "properties": {
-                        "environ": {
-                            "uniqueItems": false,
-                            "items": {
-                                "items": [
-                                    {
-                                        "type": "string"
-                                    },
-                                    {
-                                        "type": "string"
-                                    }
-                                ],
-                                "type": "array"
-                            },
-                            "type": "array"
-                        },
-                        "args": {
-                            "uniqueItems": false,
-                            "items": {
-                                "type": "string"
-                            },
-                            "type": "array"
-                        },
-                        "path": {
-                            "type": "string"
-                        },
                         "manifest": {
                             "required": [
                                 "name",
@@ -230,6 +203,41 @@
                                     }
                                 },
                                 "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "spec": {
+                            "required": [
+                                "cmd",
+                                "args",
+                                "env"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "args": {
+                                    "uniqueItems": false,
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                },
+                                "env": {
+                                    "uniqueItems": false,
+                                    "items": {
+                                        "items": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
+                                "cmd": {
                                     "type": "string"
                                 }
                             }

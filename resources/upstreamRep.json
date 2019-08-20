@@ -21,16 +21,116 @@
                                     },
                                     {
                                         "required": [
-                                            "cmds"
+                                            "cmds",
+                                            "awaiting",
+                                            "downstreamCmds",
+                                            "downstreamThreads"
                                         ],
                                         "type": "object",
                                         "properties": {
-                                            "cmds": {
-                                                "uniqueItems": false,
-                                                "items": {
-                                                    "type": "string"
+                                            "downstreamCmds": {
+                                                "additionalProperties": {
+                                                    "const": "\"downstreamCmd\""
                                                 },
-                                                "type": "array"
+                                                "type": "object"
+                                            },
+                                            "awaiting": {
+                                                "additionalProperties": {
+                                                    "required": [
+                                                        "spec"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "spec": {
+                                                            "required": [
+                                                                "cmd",
+                                                                "args",
+                                                                "env"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "args": {
+                                                                    "uniqueItems": false,
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "type": "array"
+                                                                },
+                                                                "env": {
+                                                                    "uniqueItems": false,
+                                                                    "items": {
+                                                                        "items": [
+                                                                            {
+                                                                                "type": "string"
+                                                                            },
+                                                                            {
+                                                                                "type": "string"
+                                                                            }
+                                                                        ],
+                                                                        "type": "array"
+                                                                    },
+                                                                    "type": "array"
+                                                                },
+                                                                "cmd": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "cmds": {
+                                                "additionalProperties": {
+                                                    "required": [
+                                                        "spec"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "spec": {
+                                                            "required": [
+                                                                "cmd",
+                                                                "args",
+                                                                "env"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "args": {
+                                                                    "uniqueItems": false,
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "type": "array"
+                                                                },
+                                                                "env": {
+                                                                    "uniqueItems": false,
+                                                                    "items": {
+                                                                        "items": [
+                                                                            {
+                                                                                "type": "string"
+                                                                            },
+                                                                            {
+                                                                                "type": "string"
+                                                                            }
+                                                                        ],
+                                                                        "type": "array"
+                                                                    },
+                                                                    "type": "array"
+                                                                },
+                                                                "cmd": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "downstreamThreads": {
+                                                "additionalProperties": {
+                                                    "const": "\"downstreamThread\""
+                                                },
+                                                "type": "object"
                                             }
                                         }
                                     }

@@ -56,14 +56,8 @@ instance JSONSchema Cmd where
 
   schema = gSchema
 
-mkCmd :: Command -> Arguments -> Env -> Cmd
-mkCmd c a e = Cmd
-  { spec = CmdSpec
-      { cmd = c
-      , args = a
-      , env = e
-      }
-  }
+mkCmd :: CmdSpec -> Cmd
+mkCmd s = Cmd {spec = s}
 
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)

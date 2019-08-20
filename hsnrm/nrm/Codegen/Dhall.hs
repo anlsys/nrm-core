@@ -89,6 +89,7 @@ relativeTo =
       joinPath (go base path)
   where
     -- @normalise "."@ is @"."@, so we have to take care here with dots.
+    go :: [FilePath] -> [FilePath] -> [FilePath] 
     go (a : as) (b : bs)
       | a == b = go as bs
       | a == "." = go as (b : bs)

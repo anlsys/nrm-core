@@ -15,6 +15,7 @@ where
 import qualified Data.Map as DM
 import Data.MessagePack
 import qualified Nrm.Classes.Messaging as M
+import Nrm.NrmState
 import qualified Nrm.Types.Configuration as Cfg
 import qualified Nrm.Types.Container as C
 import Nrm.Types.Messaging.DownstreamEvent as DEvent
@@ -22,7 +23,6 @@ import qualified Nrm.Types.Messaging.UpstreamPub as UPub
 import qualified Nrm.Types.Messaging.UpstreamRep as URep
 import qualified Nrm.Types.Messaging.UpstreamReq as UReq
 import Nrm.Types.NrmState
-import Nrm.NrmState
 import Nrm.Types.Process
 import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
@@ -70,8 +70,8 @@ behavior c st (Req clientid msg) = case msg of
     return (st, Rep clientid (URep.RepGetConfig (URep.GetConfig c)))
   UReq.ReqRun UReq.Run {..} -> do
     cmdID <- nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
-    let st' = registerAwaiting cmdID (mkCmd cmd) runContainerID . registerContainer runContainerID $ st
-    return (st', StartChild cmdID path args environ)
+    let st' = registerAwaiting cmdID (mkCmd spec) runContainerID . registerContainer runContainerID $ st
+    return (st', StartChild cmdID (cmd spec) (args spec) (env spec))
   UReq.ReqKill UReq.Kill {..} -> do
     let st' = removeContainer killContainerID st
     let cmds = getCmds st killContainerID
@@ -113,14 +113,12 @@ registerContainer containerID st =
         containers' = DM.insert containerID C.emptyContainer (containers st)
     Just _ -> st
 
--- | Registers an awaiting command.
+-- | Registers an awaiting command in an existing container
 registerAwaiting :: CmdID -> Cmd -> C.ContainerID -> NrmState -> NrmState
 registerAwaiting cmdID cmdValue containerID st =
-  DM.update f containerID (containers st)
+  st {containers = DM.update f containerID (containers st)}
   where
-    f container = case DM.lookup cmdID (C.awaiting containers) of
-      Just c -> c {C.awaiting = DM.insert cmdID cmdValue (C.awaiting container)}
-      Nothing -> container
+    f c = Just $ c {C.awaiting = DM.insert cmdID cmdValue (C.awaiting c)}
 
 {-{ C.awaiting = DM.delete cmdID (awaiting container)-}
 {-, C.cmds = DM.insert cmdID c (cmds container)-}
@@ -129,31 +127,32 @@ registerAwaiting cmdID cmdValue containerID st =
 registerLaunched :: CmdID -> NrmState -> NrmState
 registerLaunched cmdID st =
   case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
-    Nothing -> panic "command was not registered as awaiting in any container"
+    Nothing -> panic "internal nrm.so lookup error."
     Just containerID -> case DM.lookup containerID (containers st) of
       Nothing -> panic "container was deleted while command was registering"
-      Just container ->
-        st'
-          { containers = DM.insert
-              containerID
-              (container {C.cmds = cmdID : C.cmds container})
-              (containers st)
-          }
-  where
-    st' = st
-    {-st' = st {awaitingCmds = DM.delete cmdID (awaitingCmds st)}-}
+      Just container -> case DM.lookup cmdID (C.awaiting container) of
+        Nothing -> panic "internal nrm.so lookup error"
+        Just cmdValue ->
+          st
+            { containers = DM.insert containerID
+                ( container
+                  { C.cmds = DM.insert cmdID cmdValue (C.cmds container)
+                  , C.awaiting = DM.delete cmdID (C.awaiting container)
+                  }
+                )
+                (containers st)
+            }
 
 -- | Fails an awaiting command.
 registerFailed :: CmdID -> NrmState -> NrmState
 registerFailed cmdID st =
   case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
-    Nothing -> panic "command was not registered as awaiting"
-    Just containerID -> case DM.lookup containerID (containers st) of
-      Nothing -> panic "container was deleted while command was registering"
-      Just container ->
-        if null (C.cmds container)
-        then st' {containers = DM.delete containerID (containers st')}
-        else st'
+    Nothing ->
+      panic $ "pynrm/nrm.so interaction error: " <>
+        "command was not registered as awaiting in any container"
+    Just containerID -> st {containers = DM.update f containerID (containers st)}
   where
-    st' = st
-    {-st' = st {awaitingCmds = DM.delete cmdID (awaitingCmds st)}-}
+    f c =
+      if null (C.cmds c)
+      then Nothing
+      else Just $ c {C.awaiting = DM.delete cmdID (C.awaiting c)}
