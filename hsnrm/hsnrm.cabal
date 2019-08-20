@@ -136,6 +136,7 @@ library nrmlib
         storable-endian -any,
         template-haskell -any,
         mtl -any,
+        brick -any,
         filepath -any,
         editor-open -any
 
@@ -251,6 +252,7 @@ executable nrm.so
         storable-endian -any,
         template-haskell -any,
         mtl -any,
+        brick -any,
         filepath -any,
         editor-open -any
 
@@ -366,6 +368,7 @@ executable nrm
         storable-endian -any,
         template-haskell -any,
         mtl -any,
+        brick -any,
         filepath -any,
         editor-open -any
 
@@ -481,6 +484,7 @@ executable nrmd
         storable-endian -any,
         template-haskell -any,
         mtl -any,
+        brick -any,
         filepath -any,
         editor-open -any
 

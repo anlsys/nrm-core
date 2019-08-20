@@ -269,6 +269,7 @@ let libdep =
       , deps.storable-endian
       , deps.template-haskell
       , deps.mtl
+      , deps.brick
       , deps.filepath
       , deps.editor-open
       ]

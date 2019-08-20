@@ -32,6 +32,7 @@ import Nrm.Types.Process
 import qualified Nrm.Types.Sensor as Sensor
 import Nrm.Types.Topology
 import Protolude
+import Brick.Util
 
 initialState :: Cfg -> IO NrmState
 initialState c = do
