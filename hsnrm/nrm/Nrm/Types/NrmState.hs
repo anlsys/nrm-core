@@ -29,8 +29,6 @@ data NrmState
       , cores :: Map CoreID Core
       , packages :: Map PackageID Package
       , containers :: Map ContainerID Container
-      , downstreamCmds :: Map DownstreamCmdID DownstreamCmd
-      , downstreamThreads :: Map DownstreamThreadID DownstreamThread
       , dummyRuntime :: Maybe DummyRuntime
       , singularityRuntime :: Maybe SingularityRuntime
       , nodeosRuntime :: Maybe NodeosRuntime

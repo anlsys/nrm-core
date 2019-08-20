@@ -16,11 +16,12 @@ import qualified Data.Aeson as A
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
+import Data.String (IsString (..))
 import Generics.Generic.Aeson
 import Nrm.Types.Process as P
 import Protolude
 
-data DownstreamCmdID
+newtype DownstreamCmdID
   = DownstreamCmdID
       { perfcmdID :: P.ProcessID
       }
@@ -28,6 +29,10 @@ data DownstreamCmdID
 
 data DownstreamCmd = DownstreamCmd
   deriving (Eq, Ord, Show, Generic, MessagePack, ToJSON, FromJSON)
+
+instance JSONSchema DownstreamCmd where
+
+  schema = gSchema
 
 data DownstreamThreadID
   = DownstreamThreadID
@@ -38,10 +43,21 @@ data DownstreamThreadID
       }
   deriving (Eq, Ord, Show, Generic, MessagePack, ToJSONKey, FromJSONKey)
 
+instance IsString DownstreamCmdID where
+
+  fromString x = fromMaybe (panic "couldn't decode DownstreamCmdID") (decode $ toS x)
+
+instance IsString DownstreamThreadID where
+
+  fromString x = fromMaybe (panic "couldn't decode DownstreamCmdID") (decode $ toS x)
+
 data DownstreamThread = DownstreamThread
   deriving (Eq, Ord, Show, Generic, MessagePack, ToJSON, FromJSON)
 
--- JSON Instances
+instance JSONSchema DownstreamThread where
+
+  schema = gSchema
+
 instance ToJSON DownstreamCmdID where
 
   toJSON = gtoJson

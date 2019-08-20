@@ -34,16 +34,20 @@ initialState c = do
     , pus = fromList []
     , cores = fromList []
     , packages = fromList []
-    , downstreamCmds = fromList []
-    , downstreamThreads = fromList []
     , topo = Topology
       { puIDs = selectPUIDs hwl
       , coreIDs = selectCoreIDs hwl
       , packageIDs = selectPackageIDs hwl
       }
-    , dummyRuntime = if dummy c then Just CD.emptyRuntime else Nothing
-    , singularityRuntime = if singularity c then Just SingularityRuntime else Nothing
-    , nodeosRuntime = if nodeos c then Just NodeosRuntime else Nothing
+    , dummyRuntime = if dummy c
+    then Just CD.emptyRuntime
+    else Nothing
+    , singularityRuntime = if singularity c
+    then Just SingularityRuntime
+    else Nothing
+    , nodeosRuntime = if nodeos c
+    then Just NodeosRuntime
+    else Nothing
     }
 
 listSensors :: NrmState -> [Sensor]

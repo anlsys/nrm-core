@@ -135,6 +135,7 @@ class Daemon(object):
         for cmdID in cmdIDs:
             if cmdID in self.cmds.keys():
                 self.cmds[cmdID].proc.terminate()
+                cmds.pop(cmdID)
 
 
 def runner(config, lib):

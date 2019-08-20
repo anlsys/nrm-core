@@ -22,11 +22,14 @@ import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import Generics.Generic.Aeson
 import Nrm.Types.Process (CmdID (..))
+import Nrm.Types.DownstreamClient
 import Protolude
 
 data Container
   = Container
       { cmds :: [CmdID]
+      , downstreamCmds :: Map DownstreamCmdID DownstreamCmd
+      , downstreamThreads :: Map DownstreamThreadID DownstreamThread
       }
   deriving (Show, Eq, Ord, Generic, MessagePack, ToJSON, FromJSON)
 
