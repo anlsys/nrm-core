@@ -16,11 +16,11 @@ import qualified Data.ByteString as B
   )
 import Dhall
 import Nrm.Types.Container
-import qualified Nrm.Types.Process as P
 import Nrm.Types.Manifest
 import qualified Nrm.Types.Manifest.Dhall as D
 import qualified Nrm.Types.Manifest.Yaml as Y
 import Nrm.Types.Messaging.UpstreamReq
+import qualified Nrm.Types.Process as P
 import qualified Nrm.Types.Units as U
 import Nrm.Types.UpstreamClient
 import Options.Applicative
@@ -215,7 +215,7 @@ run rc common = do
         , path = P.Command $ cmd rc
         , args = P.Arguments $ P.Arg <$> runargs rc
         , runContainerID = cn
-        , environ = env
+        , environ = P.Env env
         }
       )
       common

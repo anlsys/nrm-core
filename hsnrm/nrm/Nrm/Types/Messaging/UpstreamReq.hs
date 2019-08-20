@@ -41,7 +41,7 @@ data Run
       , path :: P.Command
       , args :: P.Arguments
       , runContainerID :: C.ContainerID
-      , environ :: [(Text, Text)]
+      , environ :: P.Env
       }
   deriving (Show, Generic, MessagePack)
 

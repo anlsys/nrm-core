@@ -17,10 +17,12 @@ module Nrm.Types.Topology
   )
 where
 
+import Data.Aeson
 import Data.Either
 import Data.MessagePack
 import Protolude
 import Refined
+import Refined.Orphan.Aeson ()
 import Prelude (String, fail)
 
 -- | Nnm's internal statically typed topology representation
@@ -30,31 +32,31 @@ data Topology
       , coreIDs :: [CoreID]
       , packageIDs :: [PackageID]
       }
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 -- | A Package OS identifier.
 newtype PackageID = PackageID (Refined NonNegative Int)
-  deriving (Eq, Ord, Show, Generic)
+  deriving (Eq, Ord, Show, Generic, FromJSONKey, ToJSONKey, ToJSON, FromJSON)
 
 -- | Record containing all information about a CPU Package.
 data Package = Package
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Generic, MessagePack, ToJSON,FromJSON)
 
 -- | A CPU Core OS identifier.
 newtype CoreID = CoreID (Refined Positive Int)
-  deriving (Show, Eq, Ord)
+  deriving (Show, Eq, Ord, Generic, ToJSONKey, ToJSON, FromJSON, FromJSONKey)
 
 -- | Record containing all information about a CPU Core.
 data Core = Core
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 -- | A Processing Unit OS identifier.
 newtype PUID = PUID (Refined NonNegative Int)
-  deriving (Eq, Ord, Show)
+  deriving (Eq, Ord, Show, Generic, ToJSON, FromJSON, ToJSONKey, FromJSONKey)
 
 -- | Record containing all information about a processing unit.
 data PU = PU
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 -- | reading from hwloc XML data
 class IdFromString a where

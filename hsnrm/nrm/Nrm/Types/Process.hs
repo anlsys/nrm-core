@@ -13,6 +13,7 @@ module Nrm.Types.Process
   , Command (..)
   , Arguments (..)
   , Arg (..)
+  , Env (..)
   , nextCmdID
   , toText
   )
@@ -49,6 +50,21 @@ newtype Command = Command Text
 
 newtype Arguments = Arguments [Arg]
   deriving (Show, Generic, MessagePack)
+
+newtype Env = Env [(Text, Text)]
+  deriving (Show, Generic, MessagePack)
+
+instance ToJSON Env where
+
+  toJSON = gtoJson
+
+instance FromJSON Env where
+
+  parseJSON = gparseJson
+
+instance JSONSchema Env where
+
+  schema = gSchema
 
 instance ToJSON ThreadID where
 

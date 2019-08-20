@@ -66,7 +66,7 @@ dummyReply = \case
 
 dummy :: Protocols.ReqRep req rep -> req -> rep
 dummy = \case
-  Protocols.ContainerList -> const $ Rep.ContainerList ["foo", "bar"]
+  Protocols.ContainerList -> panic "undef"
   Protocols.SetPower -> const $ Rep.GetPower (U.watts 266)
   Protocols.GetState -> panic "undef"
   Protocols.GetConfig -> panic "undef"

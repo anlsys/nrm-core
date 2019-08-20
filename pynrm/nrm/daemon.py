@@ -14,13 +14,15 @@ from functools import partial
 import logging
 import os
 import signal
+import tornado.process as process
+# import tornado.ioloop
 from zmq.eventloop import ioloop
 from nrm.messaging import UpstreamRPCServer, UpstreamPubServer, DownstreamEventServer
 from dataclasses import dataclass
 import sys
 from typing import Any
 
-logger = logging.getLogger('nrm')
+_logger = logging.getLogger('nrm')
 
 
 @dataclass
@@ -33,13 +35,18 @@ class Daemon(object):
 
         self.dispatch = {
             "noop": self.noop,
-            "reply": self.reply
+            "reply": self.reply,
+            "cmd": self.cmd
         }
 
-        # logger.debug(self.lib.showState(t))
+        self.cmds = {}
+
+        # _logger.debug(self.lib.showState(t))
         # register messaging servers
         upstream_pub_a = self.lib.upstreamPubAddress(self.cfg)
         upstream_rpc_a = self.lib.upstreamRpcAddress(self.cfg)
+        # print(upstream_pub_a)
+        # print(upstream_rpc_a)
         downstream_event_a = self.lib.downstreamEventAddress(self.cfg)
 
         self.upstream_pub = UpstreamPubServer(upstream_pub_a)
@@ -49,8 +56,8 @@ class Daemon(object):
         # register messaging server callbacks
         self.upstream_rpc.setup_recv_callback(
             self.wrap(self.lib.upstreamReceive))
-        self.upstream_rpc.setup_recv_callback(
-            self.wrap(self.lib.upstreamReceive))
+        self.downstream_event.setup_recv_callback(
+            self.wrap(self.lib.downstreamReceive))
 
         # setup periodic sensor updates
         # ioloop.PeriodicCallback(self.wrap(self.lib.doSensor), 10000).start()
@@ -69,7 +76,7 @@ class Daemon(object):
         elif signum == signal.SIGCHLD:
             ioloop.IOLoop.current().add_callback_from_signal(self.do_children)
         else:
-            logger.error("wrong signal: %d", signum)
+            _logger.error("wrong signal: %d", signum)
 
     def do_children(self):
         # find out if children have terminated
@@ -89,36 +96,52 @@ class Daemon(object):
         def r(*argsCallback, **kwargsCallback):
             args = argsConfig + argsCallback
             kwargs = dict(kwargsConfig, ** kwargsCallback)
-            # logger.debug(self.state)
-            # logger.debug(args)
             st, bh = f(self.cfg, self.state, *args, **kwargs)
             self.state = st
-            # logger.debug(bh)
-            self.dispatch[bh[0]](bh[1:])
+            self.dispatch[bh[0]](*bh[1:])
         return r
 
     def noop(self, args):
         pass
 
-    def reply(self, args):
+    def reply(self, *args):
         self.upstream_rpc.send(*args)
+
+    def cmd(self, cmdID, cmd, arguments, environment):
+        environment = dict(environment)
+        _logger.debug("starting command " + str(cmd) + " with argument list "
+                      + str(arguments) + " and environment " + str(environment) + "..")
+        try:
+            p = process.Subprocess(["toto"] + arguments,
+                                   stdout=process.Subprocess.STREAM,
+                                   stderr=process.Subprocess.STREAM,
+                                   close_fds=True,
+                                   env=environment,
+                                   cwd=environment['PWD'])
+            self.cmds[cmdID] = p
+            self.state = self.lib.registerCmd(self.state, cmdID, True)
+            _logger.debug("success.")
+        except FileNotFoundError as e:
+            self.state = self.lib.registerCmd(self.state, cmdID, False)
+            _logger.debug("failure.")
+            raise e
 
 
 def runner(config, lib):
     logfile = lib.logfile(config)
     print("Logging to %s" % logfile)
-    logger.addHandler(logging.FileHandler(logfile))
+    _logger.addHandler(logging.FileHandler(logfile))
 
     if lib.isVerbose(config):
-        logger.info("Setting configuration to INFO level.")
-        logger.setLevel(logging.INFO)
+        _logger.info("Setting configuration to INFO level.")
+        _logger.setLevel(logging.INFO)
 
     if lib.isDebug(config):
-        logger.info(
+        _logger.info(
             "Setting configuration to DEBUG level and redirecting to stdout.")
-        logger.setLevel(logging.DEBUG)
-        logger.addHandler(logging.StreamHandler(sys.stdout))
-        logger.debug("NRM Daemon configuration:")
-        logger.debug(lib.showConfiguration(config))
+        _logger.setLevel(logging.DEBUG)
+        # _logger.addHandler(logging.StreamHandler(sys.stdout))
+        _logger.debug("NRM Daemon configuration:")
+        _logger.debug(lib.showConfiguration(config))
 
     Daemon(config, lib)

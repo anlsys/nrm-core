@@ -15,7 +15,35 @@
                         "containers": {
                             "uniqueItems": false,
                             "items": {
-                                "type": "string"
+                                "items": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "required": [
+                                            "awaiting",
+                                            "cmds"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "awaiting": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "type": "array"
+                                            },
+                                            "cmds": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "type": "array"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "type": "array"
                             },
                             "type": "array"
                         }

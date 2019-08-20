@@ -101,16 +101,16 @@ class RPCServer(object):
         self.socket.bind(address)
 
 
-@send("upstreamReq")
-class UpstreamRPCClient(RPCClient):
+# @send("upstreamReq")
+# class UpstreamRPCClient(RPCClient):
 
-    """Implements the message layer client to the upstream RPC API."""
+    # """Implements the message layer client to the upstream RPC API."""
 
-    def recv(self):
-        """Receives a response to a message."""
-        wire = self.socket.recv()
-        _logger.debug("received message: %r", wire)
-        return wire
+    # def recv(self):
+        # """Receives a response to a message."""
+        # wire = self.socket.recv()
+        # _logger.debug("received message: %r", wire)
+        # return wire
 
 
 @recv_callback("upstreamReq")

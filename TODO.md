@@ -15,3 +15,5 @@ locate and remove {-*-} comments
 -start from message format.
 
 -eliminate fromJust's
+
+-eliminate "panic"

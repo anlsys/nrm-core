@@ -12,7 +12,6 @@ where
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
-import Nrm.Containers
 import Nrm.Containers.Dummy
 import Nrm.Containers.Nodeos
 import Nrm.Containers.Singularity
@@ -34,17 +33,7 @@ data NrmState
       , singularityRuntime :: Maybe SingularityRuntime
       , nodeosRuntime :: Maybe NodeosRuntime
       }
-  deriving (Show, Generic, MessagePack)
-
-instance ToJSON NrmState where
-
-  toJSON s = toJSON ((toS $ pack s) :: Text)
-
-instance FromJSON NrmState where
-
-  parseJSON x = do
-    text <- parseJSON x
-    unpack (toS (text :: Text))
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 instance JSONSchema NrmState where
 

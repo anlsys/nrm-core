@@ -24,10 +24,10 @@ data DownstreamCmdID
   = DownstreamCmdID
       { perfcmdID :: P.ProcessID
       }
-  deriving (Eq, Ord, Show, Generic,MessagePack)
+  deriving (Eq, Ord, Show, Generic, MessagePack, ToJSONKey, FromJSONKey)
 
 data DownstreamCmd = DownstreamCmd
-  deriving (Eq, Ord, Show, Generic,MessagePack)
+  deriving (Eq, Ord, Show, Generic, MessagePack, ToJSON, FromJSON)
 
 data DownstreamThreadID
   = DownstreamThreadID
@@ -36,13 +36,12 @@ data DownstreamThreadID
       , libnrmtaskID :: P.TaskID
       , libnrmthreadID :: P.ThreadID
       }
-  deriving (Eq, Ord, Show, Generic,MessagePack)
+  deriving (Eq, Ord, Show, Generic, MessagePack, ToJSONKey, FromJSONKey)
 
 data DownstreamThread = DownstreamThread
-  deriving (Eq, Ord, Show, Generic,MessagePack)
+  deriving (Eq, Ord, Show, Generic, MessagePack, ToJSON, FromJSON)
 
 -- JSON Instances
-
 instance ToJSON DownstreamCmdID where
 
   toJSON = gtoJson
@@ -54,7 +53,6 @@ instance FromJSON DownstreamCmdID where
 instance JSONSchema DownstreamCmdID where
 
   schema Proxy = schema (Proxy :: Proxy Text)
-
 
 instance ToJSON DownstreamThreadID where
 
@@ -68,4 +66,4 @@ instance JSONSchema DownstreamThreadID where
 
   schema Proxy = schema (Proxy :: Proxy Text)
 
- -- MessagePack Instances
+-- MessagePack Instances

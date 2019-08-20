@@ -12,7 +12,8 @@ module Nrm.Containers.Nodeos
 where
 
 import Data.MessagePack
+import Data.Aeson
 import Protolude
 
 data NodeosRuntime = NodeosRuntime
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)

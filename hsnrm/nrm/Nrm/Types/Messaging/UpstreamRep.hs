@@ -13,8 +13,8 @@ module Nrm.Types.Messaging.UpstreamRep
   , Start (..)
   , ProcessExit (..)
   , GetPower (..)
-  , GetConfig(..)
-  , GetState(..)
+  , GetConfig (..)
+  , GetState (..)
   )
 where
 
@@ -43,7 +43,7 @@ data Rep
 
 newtype ContainerList
   = ContainerList
-      { containers :: [Text]
+      { containers :: [(C.ContainerID, C.Container)]
       }
   deriving (Show, Generic, MessagePack)
 

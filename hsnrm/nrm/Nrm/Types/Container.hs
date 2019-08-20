@@ -5,8 +5,8 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Container
-  ( {-Container (..)-}
-    ContainerID (..)
+  ( Container (..)
+  , ContainerID (..)
   , nextContainerID
   , parseContainerID
   , toText
@@ -20,11 +20,18 @@ import Data.MessagePack
 import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import Generics.Generic.Aeson
+import Nrm.Types.Process (CmdID (..))
 import Protolude
 
-{-data Container = Container {downstreamClients :: [D]}-}
+data Container
+  = Container
+      { awaiting :: [CmdID]
+      , cmds :: [CmdID]
+      }
+  deriving (Show, Eq, Ord, Generic, MessagePack, ToJSON, FromJSON)
+
 data ContainerID = ContainerID U.UUID | Name Text
-  deriving (Show, Eq, Ord, Generic)
+  deriving (Show, Eq, Ord, Generic, FromJSONKey, ToJSONKey)
 
 nextContainerID :: IO (Maybe ContainerID)
 nextContainerID = fmap ContainerID <$> nextUUID
@@ -56,3 +63,7 @@ instance MessagePack ContainerID where
   toObject (Name c) = toObject c
 
   fromObject x = fromObject x <&> parseContainerID
+
+instance JSONSchema Container where
+
+  schema = gSchema

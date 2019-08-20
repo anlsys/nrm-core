@@ -12,6 +12,7 @@ module Nrm.Containers.Class
   )
 where
 
+import Data.Aeson
 import Data.MessagePack
 import Nrm.Types.Container
 import Nrm.Types.Process as P
@@ -20,9 +21,7 @@ import Protolude
 data ApplicationProcess
   = Registered P.CmdID P.ProcessID
   | Unregistered P.CmdID
-  deriving (Eq, Show, Generic)
-
-instance MessagePack ApplicationProcess
+  deriving (Ord, Eq, Show, Generic, MessagePack, ToJSON, FromJSON)
 
 data AppStartConfig
   = AppStartConfig
@@ -30,6 +29,7 @@ data AppStartConfig
       , arguments :: Arguments
       , cmdID :: P.CmdID
       }
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 class
   (MonadIO m)

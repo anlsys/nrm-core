@@ -12,7 +12,8 @@ module Nrm.Containers.Singularity
 where
 
 import Data.MessagePack
+import Data.Aeson
 import Protolude
 
 data SingularityRuntime = SingularityRuntime
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)

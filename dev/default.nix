@@ -72,7 +72,7 @@ in rec {
 
   hack = hsnrm-hack.overrideAttrs (o: {
     buildInputs = o.buildInputs
-      ++ [ (pkgs.python37.withPackages (ps: [ ps.msgpack ps.pyzmq ])) ]
+      ++ [ (pkgs.python37.withPackages (ps: [ ps.msgpack ps.pyzmq ps.tornado ])) ]
       ++ libnrm-hack.buildInputs ++ [
         nrmPythonPackages.flake8
         nrmPythonPackages.autopep8

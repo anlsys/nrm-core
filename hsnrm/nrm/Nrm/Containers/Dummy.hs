@@ -14,6 +14,7 @@ module Nrm.Containers.Dummy
   )
 where
 
+import Data.Aeson
 import Data.Map
 import Data.MessagePack
 import Nrm.Containers.Class
@@ -25,7 +26,7 @@ import qualified System.Posix.Signals as Signals
 type DummyRuntime = Dummy (Map ContainerID [ApplicationProcess])
 
 newtype Dummy a = Dummy a
-  deriving (Show, Generic, Functor, MessagePack)
+  deriving (Show, Generic, Functor, MessagePack, ToJSON, FromJSON)
 
 emptyRuntime :: Dummy (Map ContainerID a)
 emptyRuntime = Dummy $ fromList []
