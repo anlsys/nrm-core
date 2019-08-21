@@ -21,8 +21,8 @@ import Nrm.Node.Sysfs.Internal
 import Protolude
 
 -- | Retreives package RAPL directories at the default location.
-getDefaultRAPLDirs :: IO RAPLDirs
-getDefaultRAPLDirs = getRAPLDirs defaultRAPLDir
+getDefaultRAPLDirs :: FilePath -> IO (Maybe RAPLDirs)
+getDefaultRAPLDirs = getRAPLDirs
 
 -- | Reads RAPL configurations.
 readRAPLConfigurations :: RAPLDirs -> IO [RAPLConfig]
@@ -37,5 +37,5 @@ measureRAPLDirs (RAPLDirs rapldirpaths) = catMaybes <$> for rapldirpaths (measur
 {-setRAPLPowercaps rds = mapM_ (applyRAPLPcap rds)-}
 
 -- | Retreives coretemp Hwmon directories at the default location.
-getDefaultHwmonDirs :: IO HwmonDirs
-getDefaultHwmonDirs = getHwmonDirs defaultHwmonDir
+getDefaultHwmonDirs :: FilePath -> IO HwmonDirs
+getDefaultHwmonDirs = getHwmonDirs

@@ -26,6 +26,7 @@ import System.Process.Typed
 import Text.XML.HXT.Arrow.XmlArrow
 import Text.XML.HXT.DOM.TypeDefs (XmlTrees)
 import Text.XML.HXT.Parser.XmlParsec
+import Nrm.Classes.Topology
 import Text.XML.HXT.XPath.XPathEval
 
 -- | Full Hwloc data

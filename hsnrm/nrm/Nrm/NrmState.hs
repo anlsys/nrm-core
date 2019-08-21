@@ -23,6 +23,7 @@ import Nrm.Containers.Dummy as CD
 import Nrm.Containers.Nodeos as CN
 import Nrm.Containers.Singularity as CS
 import Nrm.Node.Hwloc
+import Nrm.Node.Sysfs
 import Nrm.Types.Actuator
 import Nrm.Types.Configuration
 import Nrm.Types.Container
@@ -33,16 +34,26 @@ import qualified Nrm.Types.Sensor as Sensor
 import Nrm.Types.Topology
 import Protolude
 
+{-= RAPLDir-}
+{-{ path :: FilePath-}
+{-, pkgid :: PackageID-}
+{-, maxEnergy :: MaxEnergy-}
+{-}-}
+
+      {- RaplSensor { raplPath :: FilePath-}
+      {-, max :: MaxEnergy-}
+
+-- | Populate the initial NrmState.
 initialState :: Cfg -> IO NrmState
 initialState c = do
+  rapldirs <- getDefaultRAPLDirs (toS $ raplPath $ rapl c)
   hwl <- getHwlocData
+  let packages' = DM.fromList $ (,Package {raplSensor = Nothing}) <$> selectPackageIDs hwl
   return $ NrmState
     { containers = fromList []
-    , topo = Topology
-      { puIDs = DM.fromList $ (,PU) <$> selectPUIDs hwl
-      , coreIDs = DM.fromList $ (,Core) <$> selectCoreIDs hwl
-      , packageIDs = DM.fromList $ (,Package) <$> selectPackageIDs hwl
-      }
+    , pus = DM.fromList $ (,PU) <$> selectPUIDs hwl
+    , cores = DM.fromList $ (,Core) <$> selectCoreIDs hwl
+    , packages = packages'
     , dummyRuntime = if dummy c
     then Just CD.emptyRuntime
     else Nothing

@@ -48,6 +48,12 @@ library nrmlib
         Nrm.Optparse.Client
         Nrm.Optparse.Daemon
         Nrm.Types.Topology
+        Nrm.Types.Topology.Package
+        Nrm.Types.Topology.Core
+        Nrm.Types.Topology.PU
+        Nrm.Types.Topology.PackageID
+        Nrm.Types.Topology.CoreID
+        Nrm.Types.Topology.PUID
         Nrm.Types.Units
         Nrm.Types.Actuator
         Nrm.Types.Sensor
@@ -58,6 +64,7 @@ library nrmlib
         Nrm.Types.NrmState
         Nrm.Types.UpstreamClient
         Nrm.Classes.Messaging
+        Nrm.Classes.Topology
         Nrm.Types.Messaging.DownstreamEvent
         Nrm.Types.Messaging.DownstreamEvent.JSON
         Nrm.Types.Messaging.UpstreamPub
@@ -165,6 +172,12 @@ executable nrm.so
         Nrm.Optparse.Client
         Nrm.Optparse.Daemon
         Nrm.Types.Topology
+        Nrm.Types.Topology.Package
+        Nrm.Types.Topology.Core
+        Nrm.Types.Topology.PU
+        Nrm.Types.Topology.PackageID
+        Nrm.Types.Topology.CoreID
+        Nrm.Types.Topology.PUID
         Nrm.Types.Units
         Nrm.Types.Actuator
         Nrm.Types.Sensor
@@ -175,6 +188,7 @@ executable nrm.so
         Nrm.Types.NrmState
         Nrm.Types.UpstreamClient
         Nrm.Classes.Messaging
+        Nrm.Classes.Topology
         Nrm.Types.Messaging.DownstreamEvent
         Nrm.Types.Messaging.DownstreamEvent.JSON
         Nrm.Types.Messaging.UpstreamPub
@@ -281,6 +295,12 @@ executable nrm
         Nrm.Optparse.Client
         Nrm.Optparse.Daemon
         Nrm.Types.Topology
+        Nrm.Types.Topology.Package
+        Nrm.Types.Topology.Core
+        Nrm.Types.Topology.PU
+        Nrm.Types.Topology.PackageID
+        Nrm.Types.Topology.CoreID
+        Nrm.Types.Topology.PUID
         Nrm.Types.Units
         Nrm.Types.Actuator
         Nrm.Types.Sensor
@@ -291,6 +311,7 @@ executable nrm
         Nrm.Types.NrmState
         Nrm.Types.UpstreamClient
         Nrm.Classes.Messaging
+        Nrm.Classes.Topology
         Nrm.Types.Messaging.DownstreamEvent
         Nrm.Types.Messaging.DownstreamEvent.JSON
         Nrm.Types.Messaging.UpstreamPub
@@ -397,6 +418,12 @@ executable nrmd
         Nrm.Optparse.Client
         Nrm.Optparse.Daemon
         Nrm.Types.Topology
+        Nrm.Types.Topology.Package
+        Nrm.Types.Topology.Core
+        Nrm.Types.Topology.PU
+        Nrm.Types.Topology.PackageID
+        Nrm.Types.Topology.CoreID
+        Nrm.Types.Topology.PUID
         Nrm.Types.Units
         Nrm.Types.Actuator
         Nrm.Types.Sensor
@@ -407,6 +434,7 @@ executable nrmd
         Nrm.Types.NrmState
         Nrm.Types.UpstreamClient
         Nrm.Classes.Messaging
+        Nrm.Classes.Topology
         Nrm.Types.Messaging.DownstreamEvent
         Nrm.Types.Messaging.DownstreamEvent.JSON
         Nrm.Types.Messaging.UpstreamPub

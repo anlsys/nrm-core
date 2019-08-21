@@ -21,7 +21,9 @@ import Protolude
 
 data NrmState
   = NrmState
-      { topo :: Topology
+      { pus :: Map PUID PU
+      , cores :: Map CoreID Core
+      , packages :: Map PackageID Package
       , containers :: Map ContainerID Container
       , dummyRuntime :: Maybe DummyRuntime
       , singularityRuntime :: Maybe SingularityRuntime

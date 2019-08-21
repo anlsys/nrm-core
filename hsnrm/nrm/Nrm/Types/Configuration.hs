@@ -10,6 +10,8 @@ module Nrm.Types.Configuration
   , UpstreamCfg (..)
   , DownstreamCfg (..)
   , DaemonVerbosity (..)
+  , RaplCfg (..)
+  , HwmonCfg (..)
   , jsonOptions
   )
 where
@@ -44,8 +46,24 @@ data Cfg
       , container_runtime :: ContainerRuntime
       , downstreamCfg :: DownstreamCfg
       , upstreamCfg :: UpstreamCfg
+      , rapl :: RaplCfg
+      , hwmon :: HwmonCfg
       }
   deriving (Eq, Show, Generic, MessagePack, Flat)
+
+data HwmonCfg
+  = HwmonCfg
+      { hwmonEnabled :: Bool
+      , hwmonPath :: Text
+      }
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
+
+data RaplCfg
+  = RaplCfg
+      { raplEnabled :: Bool
+      , raplPath :: Text
+      }
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
 
 newtype DownstreamCfg
   = DownstreamCfg
@@ -61,6 +79,20 @@ data UpstreamCfg
       }
   deriving (Eq, Show, Generic, MessagePack, Flat)
 
+instance Default HwmonCfg where
+
+  def = HwmonCfg
+    { hwmonEnabled = True
+    , hwmonPath = "/sys/devices/virtual/powercap/intel-rapl"
+    }
+
+instance Default RaplCfg where
+
+  def = RaplCfg
+    { raplEnabled = True
+    , raplPath = "/sys/devices/virtual/powercap/intel-rapl"
+    }
+
 instance ToJSON ContainerRuntime where
 
   toJSON = genericToJSON jsonOptions
@@ -68,6 +100,18 @@ instance ToJSON ContainerRuntime where
   toEncoding = genericToEncoding jsonOptions
 
 instance ToJSON DaemonVerbosity where
+
+  toJSON = genericToJSON jsonOptions
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance ToJSON HwmonCfg where
+
+  toJSON = genericToJSON jsonOptions
+
+  toEncoding = genericToEncoding jsonOptions
+
+instance ToJSON RaplCfg where
 
   toJSON = genericToJSON jsonOptions
 
@@ -84,6 +128,14 @@ instance FromJSON ContainerRuntime where
   parseJSON = genericParseJSON jsonOptions
 
 instance FromJSON DaemonVerbosity where
+
+  parseJSON = genericParseJSON jsonOptions
+
+instance FromJSON HwmonCfg where
+
+  parseJSON = genericParseJSON jsonOptions
+
+instance FromJSON RaplCfg where
 
   parseJSON = genericParseJSON jsonOptions
 

@@ -40,6 +40,8 @@ data Cfg
       , container_runtime :: I.ContainerRuntime
       , downstreamCfg :: I.DownstreamCfg
       , upstreamCfg :: UpstreamCfg
+      , raplCfg :: I.RaplCfg
+      , hwmonCfg :: I.HwmonCfg
       }
   deriving (Eq, Show, Generic, Interpret, Inject)
 
@@ -66,6 +68,8 @@ instance Default Cfg where
     , container_runtime = I.Dummy
     , downstreamCfg = def
     , upstreamCfg = def
+    , raplCfg = def
+    , hwmonCfg = def
     , verbose = I.Normal
     }
 

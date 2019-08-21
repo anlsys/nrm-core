@@ -1,3 +1,5 @@
+{-# LANGUAGE QuasiQuotes #-}
+
 {-|
 Module      : Nrm.Node.Sysfs
 Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -15,7 +17,6 @@ module Nrm.Node.Sysfs.Internal
   , RAPLCommands (..)
   , MaxPower (..)
   , MaxEnergy (..)
-  , defaultRAPLDir
   , getRAPLDirs
   , measureRAPLDir
   , readRAPLConfiguration
@@ -23,7 +24,6 @@ module Nrm.Node.Sysfs.Internal
     -- * Hwmon
     HwmonDirs
   , HwmonDir (..)
-  , defaultHwmonDir
   , getHwmonDirs
   , hasCoretempInNameFile
   , -- * Utilities
@@ -32,14 +32,19 @@ module Nrm.Node.Sysfs.Internal
 where
 
 import Control.Monad.Trans.Maybe
+import Data.Aeson
 import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
-import Nrm.Types.Topology
+import Nrm.Types.Topology.CoreID
+import Nrm.Types.Topology.PUID
+import Nrm.Types.Topology.PackageID
 import Nrm.Types.Units
 import Protolude
 import System.Directory
 import Text.RE.TDFA.Text
+import Prelude (String)
+import Nrm.Classes.Topology
 
 -- | RAPL directory locations
 newtype RAPLDirs = RAPLDirs [RAPLDir]
@@ -58,16 +63,7 @@ newtype MaxPower = MaxPower Power
 
 -- | Maximum RAPL energy measurement.
 newtype MaxEnergy = MaxEnergy Energy
-  deriving (Show, Generic, MessagePack)
-
-{-instance MessagePack MaxEnergy where-}
-
-{-toObject (PackageID x) = toObject (unrefine x)-}
-
-{-fromObject x =-}
-{-(fromObject x <&> refine) >>= \case-}
-{-Right r -> return $ PackageID r-}
-{-Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"-}
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 -- | RAPL energy measurement
 newtype MeasuredEnergy = MeasuredEnergy Energy
@@ -119,14 +115,6 @@ data RAPLMeasurement
       }
   deriving (Show)
 
--- | The default RAPL directory.
-defaultRAPLDir :: FilePath
-defaultRAPLDir = "/sys/devices/virtual/powercap/intel-rapl"
-
--- | The default hwmon directory location
-defaultHwmonDir :: FilePath
-defaultHwmonDir = "/sys/class/hwmon"
-
 -- | Read configuration from a RAPL directory.
 readRAPLConfiguration :: FilePath -> IO (Maybe RAPLConfig)
 readRAPLConfiguration fp =
@@ -171,8 +159,11 @@ processRAPLFolder fp =
 {-applyRAPLPcap _ RAPLCommand {..} = return ()-}
 
 -- | Lists available rapl directories.
-getRAPLDirs :: FilePath -> IO RAPLDirs
-getRAPLDirs d = RAPLDirs <$> listDirFilter processRAPLFolder d
+getRAPLDirs :: FilePath -> IO (Maybe RAPLDirs)
+getRAPLDirs d =
+  try (RAPLDirs <$> listDirFilter processRAPLFolder d) >>= \case
+    Left (SomeException _) -> return Nothing
+    Right dirs -> return $ Just dirs
 
 -- | "Utility": filter directories with monadic predicate.
 listDirFilter :: (FilePath -> IO (Maybe a)) -> FilePath -> IO [a]

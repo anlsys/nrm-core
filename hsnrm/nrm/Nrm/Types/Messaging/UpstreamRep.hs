@@ -230,3 +230,11 @@ instance JSONSchema ContainerRuntime where
 instance JSONSchema DownstreamCfg where
 
   schema = gSchema
+
+instance JSONSchema RaplCfg where
+
+  schema = gSchema
+
+instance JSONSchema HwmonCfg where
+
+  schema = gSchema
