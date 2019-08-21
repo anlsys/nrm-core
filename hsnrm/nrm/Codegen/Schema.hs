@@ -12,7 +12,7 @@ where
 
 {-import Codegen.CHeader-}
 import qualified Data.Aeson as A
-import Data.Aeson.Encode.Pretty
+import Data.Aeson.Encode.Pretty as AP
 import qualified Data.Aeson.Types as AT
 import Data.HashMap.Strict as H
   ( fromList
@@ -109,4 +109,4 @@ toOP (S.Constant aesonValue) =
 toOP S.Any = []
 
 generatePretty :: (M.NrmMessage a b) => Proxy a -> Text
-generatePretty = toS . encodePretty . toAeson . M.schema
+generatePretty = toS . AP.encodePretty . toAeson . M.schema

@@ -16,6 +16,7 @@ import qualified Data.Aeson.Types as AT (parseMaybe)
 import qualified Data.JSON.Schema.Generic as SG
 import Data.JSON.Schema.Types (Schema)
 import Generics.Deriving.ConNames (ConNames)
+import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import qualified Generics.Generic.Aeson as AG
 import Generics.Generic.IsEnum (GIsEnum)
 import Protolude
@@ -30,6 +31,9 @@ class
   fromJ :: b -> a
 
   toJ :: a -> b
+
+  encodePretty :: a -> ByteString
+  encodePretty = toS . AP.encodePretty . AG.gtoJson . toJ
 
   encode :: a -> ByteString
   encode = toS . A.encode . AG.gtoJson . toJ

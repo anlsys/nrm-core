@@ -12,11 +12,12 @@ module Nrm.Client
   )
 where
 
+import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import qualified Data.ByteString as SB
 import Data.Restricted
 import Nrm.Classes.Messaging
 import Nrm.Optparse
-import Nrm.Optparse.Client
+import qualified Nrm.Optparse.Client as C
 import qualified Nrm.Types.Messaging.Protocols as Protocols
 import qualified Nrm.Types.Messaging.UpstreamRep as Rep
 import Nrm.Types.Messaging.UpstreamReq
@@ -32,8 +33,8 @@ address = "tcp://localhost:3456"
 -- | The main user facing nrm client process
 main :: IO ()
 main = do
-  (Opts req common) <- parseClientCli
-  when (verbose common == Verbose) (print $ encode req)
+  (C.Opts req common) <- parseClientCli
+  when (C.verbose common == Verbose) (print $ encode req)
   uuid <-
     nextUpstreamClientID <&> \case
       Nothing -> panic "couldn't generate next client ID"
@@ -44,12 +45,12 @@ main = do
     ZMQ.setSendHighWM (restrict (0 :: Int)) s
     ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
     ZMQ.connect s $ toS address
-    client s req (verbose common)
+    client s req common
 
 client
   :: ZMQ.Socket z ZMQ.Dealer
   -> Req
-  -> ClientVerbosity
+  -> C.CommonOpts
   -> ZMQ.ZMQ z ()
 client s req v = do
   ZMQ.send s [] (toS $ encode req)
@@ -57,7 +58,7 @@ client s req v = do
 
 dispatchProtocol
   :: ZMQ.Socket z ZMQ.Dealer
-  -> ClientVerbosity
+  -> C.CommonOpts
   -> Req
   -> ZMQ.ZMQ z ()
 dispatchProtocol s v = \case
@@ -70,11 +71,11 @@ dispatchProtocol s v = \case
 
 reqrep
   :: ZMQ.Socket z ZMQ.Dealer
-  -> ClientVerbosity
+  -> C.CommonOpts
   -> Protocols.ReqRep req rep
   -> req
   -> ZMQ.ZMQ z ()
-reqrep s _ = \case
+reqrep s opts = \case
   Protocols.ContainerList ->
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
@@ -88,20 +89,29 @@ reqrep s _ = \case
       liftIO $ hFlush stdout
   Protocols.GetState ->
     const $ do
-      ZMQ.receive s <&> decode . toS >>= \case
+      msg <- ZMQ.receive s <&> toS
+      case decode msg of
         Nothing -> putText "Couldn't decode reply"
-        Just (Rep.RepGetState (Rep.GetState st)) -> do
-          putText "Current daemon state:"
-          pPrint st
+        Just (Rep.RepGetState (Rep.GetState st)) ->
+          if C.jsonPrint opts
+          then putText $ toS (AP.encodePretty st)
+          else
+            do
+              putText "Current daemon state:"
+              pPrint st
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.GetConfig ->
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
-        Just (Rep.RepGetConfig (Rep.GetConfig cfg)) -> do
-          putText "Daemon configuration:"
-          pPrint cfg
+        Just (Rep.RepGetConfig (Rep.GetConfig cfg)) ->
+          if C.jsonPrint opts
+          then putText $ toS (AP.encodePretty cfg)
+          else
+            do
+              putText "Daemon configuration:"
+              pPrint cfg
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.SetPower ->
@@ -117,7 +127,7 @@ reqrep s _ = \case
 
 reqstream
   :: ZMQ.Socket z ZMQ.Dealer
-  -> ClientVerbosity
+  -> C.CommonOpts
   -> Protocols.ReqStream req rep
   -> req
   -> ZMQ.ZMQ z ()

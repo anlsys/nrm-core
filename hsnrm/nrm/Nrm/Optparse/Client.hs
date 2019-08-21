@@ -33,9 +33,10 @@ import qualified Prelude
   ( print
   )
 
-newtype CommonOpts
+data CommonOpts
   = CommonOpts
       { verbose :: ClientVerbosity
+      , jsonPrint :: Bool
       }
 
 parserCommon :: Parser CommonOpts
@@ -43,7 +44,10 @@ parserCommon =
   CommonOpts <$>
     flag Normal
       Verbose
-      (long "verbose" <> short 'v' <> help "Enable verbose mode.")
+      (long "verbose" <> short 'v' <> help "Enable verbose mode.") <*>
+    flag False
+      True
+      (long "json" <> short 'v' <> help "Enable json printing.")
 
 data RunCfg
   = RunCfg
