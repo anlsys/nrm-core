@@ -17,7 +17,6 @@ module Nrm.Types.Sensor
 where
 
 import Data.MessagePack
-import Nrm.Node.Sysfs.Internal
 import Nrm.Types.Metadata
 import Nrm.Types.Process as P
 import Nrm.Types.Topology

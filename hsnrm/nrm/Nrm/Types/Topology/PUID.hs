@@ -11,12 +11,11 @@ where
 
 import Data.Aeson
 import Data.Either
-import qualified Data.Map as DM
 import Data.MessagePack
 import Protolude
 import Refined
 import Refined.Orphan.Aeson ()
-import Prelude (String, fail)
+import Prelude (fail)
 import Nrm.Classes.Topology
 
 -- | A Processing Unit OS identifier.

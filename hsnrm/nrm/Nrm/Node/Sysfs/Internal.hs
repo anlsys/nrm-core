@@ -36,14 +36,11 @@ import Data.Aeson
 import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
-import Nrm.Types.Topology.CoreID
-import Nrm.Types.Topology.PUID
 import Nrm.Types.Topology.PackageID
 import Nrm.Types.Units
 import Protolude
 import System.Directory
 import Text.RE.TDFA.Text
-import Prelude (String)
 import Nrm.Classes.Topology
 
 -- | RAPL directory locations

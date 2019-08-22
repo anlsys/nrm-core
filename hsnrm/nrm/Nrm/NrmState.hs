@@ -24,6 +24,7 @@ import Nrm.Containers.Nodeos as CN
 import Nrm.Containers.Singularity as CS
 import Nrm.Node.Hwloc
 import Nrm.Node.Sysfs
+import Nrm.Node.Sysfs.Internal
 import Nrm.Types.Actuator
 import Nrm.Types.Configuration
 import Nrm.Types.Container
@@ -40,20 +41,40 @@ import Protolude
 {-, maxEnergy :: MaxEnergy-}
 {-}-}
 
-      {- RaplSensor { raplPath :: FilePath-}
-      {-, max :: MaxEnergy-}
+{- RaplSensor { raplPath :: FilePath-}
+{-, max :: MaxEnergy-}
 
 -- | Populate the initial NrmState.
 initialState :: Cfg -> IO NrmState
 initialState c = do
-  rapldirs <- getDefaultRAPLDirs (toS $ raplPath $ rapl c)
   hwl <- getHwlocData
   let packages' = DM.fromList $ (,Package {raplSensor = Nothing}) <$> selectPackageIDs hwl
+  packages <-
+    getDefaultRAPLDirs (toS $ raplPath $ raplCfg c) <&> \case
+      Just (RAPLDirs rapldirs) ->
+        Protolude.foldl
+          ( \m RAPLDir {..} ->
+            DM.adjust
+              ( \Package {..} -> Package
+                { raplSensor = Just
+                    ( Sensor.RaplSensor
+                      { raplPath = path
+                      , max = maxEnergy
+                      }
+                    )
+                , ..
+                }
+              )
+              pkgid
+              m
+          )
+          packages'
+          rapldirs
+      Nothing -> packages'
   return $ NrmState
     { containers = fromList []
     , pus = DM.fromList $ (,PU) <$> selectPUIDs hwl
     , cores = DM.fromList $ (,Core) <$> selectCoreIDs hwl
-    , packages = packages'
     , dummyRuntime = if dummy c
     then Just CD.emptyRuntime
     else Nothing
@@ -63,6 +84,7 @@ initialState c = do
     , nodeosRuntime = if nodeos c
     then Just NodeosRuntime
     else Nothing
+    , ..
     }
 
 -- | Generate a map of all commands currently registered as running, and the associated containerID

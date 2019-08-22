@@ -46,8 +46,8 @@ data Cfg
       , container_runtime :: ContainerRuntime
       , downstreamCfg :: DownstreamCfg
       , upstreamCfg :: UpstreamCfg
-      , rapl :: RaplCfg
-      , hwmon :: HwmonCfg
+      , raplCfg :: RaplCfg
+      , hwmonCfg :: HwmonCfg
       }
   deriving (Eq, Show, Generic, MessagePack, Flat)
 

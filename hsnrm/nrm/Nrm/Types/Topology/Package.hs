@@ -11,13 +11,9 @@ module Nrm.Types.Topology.Package
 where
 
 import Data.Aeson
-import Data.Either
-import qualified Data.Map as DM
 import Data.MessagePack
 import Nrm.Node.Sysfs.Internal
 import Protolude
-import Refined
-import Refined.Orphan.Aeson ()
 
 -- | Record containing all information about a CPU Package.
 data RaplSensor

@@ -11,13 +11,12 @@ where
 
 import Data.Aeson
 import Data.Either
-import qualified Data.Map as DM
 import Data.MessagePack
+import Nrm.Classes.Topology
 import Protolude
 import Refined
 import Refined.Orphan.Aeson ()
-import Prelude (String, fail)
-import Nrm.Classes.Topology
+import Prelude (fail)
 
 -- | A Package OS identifier.
 newtype PackageID = PackageID (Refined NonNegative Int)

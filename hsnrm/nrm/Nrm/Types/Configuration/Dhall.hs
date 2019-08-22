@@ -13,6 +13,8 @@ module Nrm.Types.Configuration.Dhall
   , I.ContainerRuntime (..)
   , UpstreamCfg (..)
   , I.DownstreamCfg (..)
+  , I.RaplCfg (..)
+  , I.HwmonCfg (..)
   )
 where
 

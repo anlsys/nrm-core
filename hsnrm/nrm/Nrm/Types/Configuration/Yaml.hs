@@ -35,6 +35,8 @@ data Cfg
       , container_runtime :: Maybe D.ContainerRuntime
       , downstreamCfg :: Maybe D.DownstreamCfg
       , upstreamCfg :: Maybe D.UpstreamCfg
+      , raplCfg :: Maybe D.RaplCfg
+      , hwmonCfg :: Maybe D.HwmonCfg
       }
   deriving (Generic)
 
@@ -63,6 +65,8 @@ toInternal d = D.Cfg
   , container_runtime = fromDefault container_runtime D.container_runtime
   , downstreamCfg = fromDefault downstreamCfg D.downstreamCfg
   , upstreamCfg = fromDefault upstreamCfg D.upstreamCfg
+  , raplCfg = fromDefault raplCfg D.raplCfg
+  , hwmonCfg = fromDefault hwmonCfg D.hwmonCfg
   }
   where
     fromDefault :: Default a => (Cfg -> Maybe c) -> (a -> c) -> c
@@ -83,6 +87,8 @@ fromInternal d = Cfg
   , container_runtime = toJust D.container_runtime
   , downstreamCfg = toJust D.downstreamCfg
   , upstreamCfg = toJust D.upstreamCfg
+  , raplCfg = toJust D.raplCfg
+  , hwmonCfg = toJust D.hwmonCfg
   }
   where
     toJust :: (Eq a) => (D.Cfg -> a) -> Maybe a
