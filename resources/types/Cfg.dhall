@@ -37,4 +37,8 @@
     { downstreamBindAddress : Text }
 , upstreamCfg :
     { upstreamBindAddress : Text, pubPort : Integer, rpcPort : Integer }
+, raplCfg :
+    { raplEnabled : Bool, raplPath : Text }
+, hwmonCfg :
+    { hwmonEnabled : Bool, hwmonPath : Text }
 }

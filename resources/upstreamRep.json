@@ -299,7 +299,9 @@
                                 "nodeos",
                                 "container_runtime",
                                 "downstreamCfg",
-                                "upstreamCfg"
+                                "upstreamCfg",
+                                "raplCfg",
+                                "hwmonCfg"
                             ],
                             "type": "object",
                             "properties": {
@@ -383,8 +385,38 @@
                                 "hwloc": {
                                     "type": "string"
                                 },
+                                "raplCfg": {
+                                    "required": [
+                                        "raplEnabled",
+                                        "raplPath"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "raplEnabled": {
+                                            "type": "boolean"
+                                        },
+                                        "raplPath": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
                                 "dummy": {
                                     "type": "boolean"
+                                },
+                                "hwmonCfg": {
+                                    "required": [
+                                        "hwmonEnabled",
+                                        "hwmonPath"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "hwmonPath": {
+                                            "type": "string"
+                                        },
+                                        "hwmonEnabled": {
+                                            "type": "boolean"
+                                        }
+                                    }
                                 }
                             }
                         }

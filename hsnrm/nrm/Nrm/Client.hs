@@ -21,6 +21,7 @@ import qualified Nrm.Optparse.Client as C
 import qualified Nrm.Types.Messaging.Protocols as Protocols
 import qualified Nrm.Types.Messaging.UpstreamRep as Rep
 import Nrm.Types.Messaging.UpstreamReq
+import Nrm.Types.NrmState
 import Nrm.Types.UpstreamClient
 import Protolude hiding (Rep)
 import System.IO (hFlush)
@@ -83,8 +84,8 @@ reqrep s opts = \case
         Just (Rep.RepList (Rep.ContainerList l)) -> case length l of
           0 -> putText "No containers currently running."
           x -> do
-            putText (show x <> " container(s) currently running. list:")
-            for_ l print
+            putText (show x <> " container(s) currently running.")
+            putText $ showContainerList l
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.GetState ->

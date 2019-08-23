@@ -118,6 +118,10 @@ class Daemon(object):
                                    close_fds=True,
                                    env=environment,
                                    cwd=environment['PWD'])
+            outcb = partial(self.wrap(self.lib.stdout), cmdID)
+            errcb = partial(self.wrap(self.lib.stderr), cmdID)
+            p.stdout.read_until_close(outcb, outcb)
+            p.stderr.read_until_close(errcb, errcb)
             self.cmds[cmdID] = p
             self.state = self.lib.registerCmd(
                 self.cfg, self.state, cmdID, True)

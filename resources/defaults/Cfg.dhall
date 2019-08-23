@@ -37,4 +37,16 @@
     { downstreamBindAddress = "ipc:///tmp/nrm-downstream-event" }
 , upstreamCfg =
     { upstreamBindAddress = "*", pubPort = +2345, rpcPort = +3456 }
+, raplCfg =
+    { raplEnabled =
+        True
+    , raplPath =
+        "/sys/devices/virtual/powercap/intel-rapl"
+    }
+, hwmonCfg =
+    { hwmonEnabled =
+        True
+    , hwmonPath =
+        "/sys/devices/virtual/powercap/intel-rapl"
+    }
 }

@@ -30,6 +30,7 @@ import Data.String (IsString (..))
 import qualified Data.UUID as U
 import Data.UUID.V1
 import Generics.Generic.Aeson
+import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
 import qualified System.Posix.Types as P
 import Prelude (fail)
@@ -42,9 +43,10 @@ data CmdSpec
       }
   deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
 
-newtype Cmd
+data Cmd
   = Cmd
       { spec :: CmdSpec
+      , upstreamClientID :: Maybe UC.UpstreamClientID
       }
   deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
 
@@ -56,8 +58,8 @@ instance JSONSchema Cmd where
 
   schema = gSchema
 
-mkCmd :: CmdSpec -> Cmd
-mkCmd s = Cmd {spec = s}
+mkCmd :: CmdSpec -> Maybe UC.UpstreamClientID -> Cmd
+mkCmd s clientID = Cmd {spec = s, upstreamClientID = clientID}
 
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)
@@ -71,8 +73,16 @@ newtype ProcessID = ProcessID P.CPid
 newtype Arg = Arg Text
   deriving (Show, Generic, MessagePack)
 
+instance StringConv Arg Text where
+
+  strConv _ (Arg x) = toS x
+
 newtype Command = Command Text
   deriving (Show, Generic, MessagePack)
+
+instance StringConv Command Text where
+
+  strConv _ (Command x) = toS x
 
 newtype Arguments = Arguments [Arg]
   deriving (Show, Generic, MessagePack)

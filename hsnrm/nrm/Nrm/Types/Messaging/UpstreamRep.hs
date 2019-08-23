@@ -49,7 +49,7 @@ newtype ContainerList
 
 data Stdout
   = Stdout
-      { stdoutContainerUUUID :: C.ContainerID
+      { stdoutContainerID :: C.ContainerID
       , stdoutPayload :: Text
       }
   deriving (Show, Generic, MessagePack)

@@ -83,7 +83,7 @@ instance Default HwmonCfg where
 
   def = HwmonCfg
     { hwmonEnabled = True
-    , hwmonPath = "/sys/devices/virtual/powercap/intel-rapl"
+    , hwmonPath = "/sys/class/hwmon"
     }
 
 instance Default RaplCfg where

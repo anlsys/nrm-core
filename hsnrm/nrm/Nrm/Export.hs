@@ -21,6 +21,8 @@ module Nrm.Export
   , -- * Behavior
     downstreamReceive
   , upstreamReceive
+  , stdout
+  , stderr
   , doSensor
   , doControl
   , doChildren
@@ -45,7 +47,7 @@ import qualified Nrm.Types.Configuration as C
 import qualified Nrm.Types.NrmState as TS
 import qualified Nrm.Types.Process as P
 import qualified Nrm.Types.UpstreamClient as UC
-import Protolude
+import Protolude hiding (stderr, stdout)
 import Text.Pretty.Simple
 
 -- | Parses Daemon CLI arguments
@@ -91,7 +93,7 @@ showState = toS . pShow
 downstreamReceive :: C.Cfg -> TS.NrmState -> Text -> IO (TS.NrmState, B.Behavior)
 downstreamReceive cfg s msg =
   B.behavior cfg s $
-    B.Event $
+    B.DownstreamEvent $
     fromMaybe (panic "couldn't decode downstream rcv")
       (M.decodeT $ toS msg)
 
@@ -124,6 +126,14 @@ doChildren c s = B.behavior c s B.DoChildren
 doShutdown :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doShutdown c s = B.behavior c s B.DoShutdown
 
+-- | Handle stdout
+stdout :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
+stdout = handleTag B.Stdout
+
+-- | Handle stderr
+stderr :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
+stderr = handleTag B.Stderr
+
 -- | Register a command as failed or successful.
 registerCmd :: C.Cfg -> TS.NrmState -> Text -> Bool -> IO TS.NrmState
 registerCmd cfg s cmdIDT success =
@@ -135,3 +145,14 @@ registerCmd cfg s cmdIDT success =
         (fromMaybe (panic "couldn't decode cmdID") (P.fromText cmdIDT))
         (if success then B.Launched else B.NotLaunched)
       )
+
+-- Utilities
+--
+handleTag :: B.OutputType -> C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
+handleTag tag c s cmdIDT msg =
+  B.behavior c s
+    ( B.DoOutput
+      (fromMaybe (panic "couldn't decode cmdID") (P.fromText cmdIDT))
+      tag
+      msg
+    )

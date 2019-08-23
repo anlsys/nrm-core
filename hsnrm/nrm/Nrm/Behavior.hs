@@ -8,6 +8,7 @@ module Nrm.Behavior
   ( behavior
   , Behavior (..)
   , CmdStatus (..)
+  , OutputType (..)
   , NrmEvent (..)
   )
 where
@@ -30,10 +31,13 @@ import Protolude
 data CmdStatus = Launched | NotLaunched
   deriving (Generic, MessagePack)
 
+data OutputType = Stdout | Stderr
+
 data NrmEvent
   = Req UC.UpstreamClientID UReq.Req
   | RegisterCmd CmdID CmdStatus
-  | Event DEvent.Event
+  | DownstreamEvent DEvent.Event
+  | DoOutput CmdID OutputType Text
   | DoSensor
   | DoControl
   | DoShutdown
@@ -48,10 +52,24 @@ data Behavior
   deriving (Generic)
 
 behavior :: Cfg.Cfg -> NrmState -> NrmEvent -> IO (NrmState, Behavior)
+behavior _ st (DoOutput cmdID outputType content) =
+  case lookupCmd cmdID st of
+    Just c -> case upstreamClientID c of
+      Just ucID ->
+        return
+          ( st
+          , Rep ucID
+            ( case outputType of
+              Stdout -> URep.RepStdout $ URep.Stdout {URep.stdoutContainerID = undefined}
+              Stderr -> URep.RepStderr $ URep.Stderr {URep.stderrContainerID = undefined}
+            )
+          )
+      Nothing -> return (st, NoBehavior)
+    Nothing -> return (st, NoBehavior)
 behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
   NotLaunched -> return (registerFailed cmdID st, NoBehavior)
   Launched -> return (registerLaunched cmdID st, NoBehavior)
-behavior _ st (Event msg) = case msg of
+behavior _ st (DownstreamEvent msg) = case msg of
   DEvent.ThreadStart _ -> return (st, NoBehavior)
   DEvent.ThreadProgress _ _ -> return (st, NoBehavior)
   DEvent.ThreadPhaseContext _ _ -> return (st, NoBehavior)
@@ -70,7 +88,7 @@ behavior c st (Req clientid msg) = case msg of
     return (st, Rep clientid (URep.RepGetConfig (URep.GetConfig c)))
   UReq.ReqRun UReq.Run {..} -> do
     cmdID <- nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
-    let st' = registerAwaiting cmdID (mkCmd spec) runContainerID . registerContainer runContainerID $ st
+    let st' = registerAwaiting cmdID (mkCmd spec (Just clientid)) runContainerID . registerContainer runContainerID $ st
     return (st', StartChild cmdID (cmd spec) (args spec) (env spec))
   UReq.ReqKill UReq.Kill {..} -> do
     let st' = removeContainer killContainerID st
@@ -87,7 +105,7 @@ instance MessagePack Behavior where
 
   toObject NoBehavior = toObject ("noop" :: Text)
   toObject (Rep clientid msg) = toObject ("reply" :: Text, clientid, M.encodeT msg)
-  toObject (Pub msg) = toObject ("publish" :: Text, msg)
+  toObject (Pub msg) = toObject ("publish" :: Text, M.encodeT msg)
   toObject (StartChild cmdID cmd args env) = toObject ("cmd" :: Text, cmdID, cmd, args, env)
   toObject (KillChildren cmdIDs) = toObject ("kill" :: Text, cmdIDs)
 

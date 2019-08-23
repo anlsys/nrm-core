@@ -39,10 +39,7 @@ data Run
   = Run
       { manifest :: Manifest
       , spec :: P.CmdSpec
-      {-, path :: P.Command-}
-      {-, args :: P.Arguments-}
       , runContainerID :: C.ContainerID
-      {-, environ :: P.Env-}
       }
   deriving (Show, Generic, MessagePack)
 
