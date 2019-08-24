@@ -255,17 +255,36 @@
         },
         {
             "required": [
-                "reqKill"
+                "reqKillContainer"
             ],
             "type": "object",
             "properties": {
-                "reqKill": {
+                "reqKillContainer": {
                     "required": [
                         "killContainerID"
                     ],
                     "type": "object",
                     "properties": {
                         "killContainerID": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "reqKillCmd"
+            ],
+            "type": "object",
+            "properties": {
+                "reqKillCmd": {
+                    "required": [
+                        "killCmdID"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "killCmdID": {
                             "type": "string"
                         }
                     }

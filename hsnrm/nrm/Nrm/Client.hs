@@ -18,7 +18,6 @@ import Data.Restricted
 import Nrm.Classes.Messaging
 import Nrm.Optparse
 import qualified Nrm.Optparse.Client as C
-import qualified Nrm.Types.Container as Ct
 import qualified Nrm.Types.Messaging.Protocols as Protocols
 import qualified Nrm.Types.Messaging.UpstreamRep as Rep
 import qualified Nrm.Types.Messaging.UpstreamReq as Req
@@ -156,8 +155,8 @@ reqstream s uuid _ = \case
     msg <- ZMQ.receive s
     case ((decode $ toS msg) :: Maybe Rep.Rep) of
       Nothing -> putText "error: received malformed message(1)."
-      Just (Rep.RepStart (Rep.Start containerID cmdID)) -> do
-        kbInstallHandler (liftIO $ kill uuid cmdID)
+      Just (Rep.RepStart (Rep.Start _ cmdID)) -> do
+        zmqCCHandler (liftIO $ kill uuid cmdID)
         go
       _ -> putText "error: received wrong type of message(1)."
     where
@@ -173,10 +172,8 @@ reqstream s uuid _ = \case
             go
           Just (Rep.RepEndStream Rep.EndStream) -> return ()
           _ -> putText "error: received wrong type of message."
-      {-kbInstallHandler :: (MonadIO m) => IO () -> m SPS.Handler-}
-      kbInstallHandler :: IO () -> ZMQ.ZMQ z SPS.Handler
-      kbInstallHandler h =
-        liftIO $ SPS.installHandler SPS.keyboardSignal (SPS.Catch h) Nothing
+      zmqCCHandler :: IO () -> ZMQ.ZMQ z ()
+      zmqCCHandler h = void $ liftIO $ SPS.installHandler SPS.keyboardSignal (SPS.Catch h) Nothing
 
 kill :: RestrictedID -> P.CmdID -> IO ()
 kill uuid cmdID =
@@ -186,4 +183,4 @@ kill uuid cmdID =
     ZMQ.setSendHighWM (restrict (0 :: Int)) s
     ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
     ZMQ.connect s $ toS address
-    ZMQ.send s [] (toS $ encode $ Req.ReqKillContainer (Req.KillCmd cmdID))
+    ZMQ.send s [] (toS $ encode $ Req.ReqKillCmd (Req.KillCmd cmdID))

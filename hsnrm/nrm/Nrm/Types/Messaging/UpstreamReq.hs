@@ -54,7 +54,7 @@ newtype KillContainer
 
 newtype KillCmd
   = KillCmd
-      { killCmdID :: C.ContainerID
+      { killCmdID :: P.CmdID
       }
   deriving (Show, Generic, MessagePack)
 

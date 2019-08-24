@@ -25,11 +25,11 @@ import Nrm.Node.Hwloc
 import Nrm.Node.Sysfs
 import Nrm.Node.Sysfs.Internal
 import Nrm.Types.Actuator
-import Nrm.Types.Process
 import Nrm.Types.Configuration
 import qualified Nrm.Types.Container as C
 import Nrm.Types.DownstreamClient
 import Nrm.Types.NrmState
+import Nrm.Types.Process
 import qualified Nrm.Types.Sensor as Sensor
 import Nrm.Types.Topology
 import Protolude
@@ -107,7 +107,7 @@ registerAwaiting cmdID cmdValue containerID st =
 {-, C.cmds = DM.insert cmdID c (cmds container)-}
 
 -- | Turns an awaiting command to a launched one.
-registerLaunched :: CmdID -> NrmState -> NrmState
+registerLaunched :: CmdID -> NrmState -> (NrmState, C.ContainerID)
 registerLaunched cmdID st =
   case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
     Nothing -> panic "internal nrm.so lookup error."
@@ -116,15 +116,17 @@ registerLaunched cmdID st =
       Just container -> case DM.lookup cmdID (C.awaiting container) of
         Nothing -> panic "internal nrm.so lookup error"
         Just cmdValue ->
-          st
-            { containers = DM.insert containerID
-                ( container
-                  { C.cmds = DM.insert cmdID cmdValue (C.cmds container)
-                  , C.awaiting = DM.delete cmdID (C.awaiting container)
-                  }
-                )
-                (containers st)
-            }
+          ( st
+              { containers = DM.insert containerID
+                  ( container
+                    { C.cmds = DM.insert cmdID cmdValue (C.cmds container)
+                    , C.awaiting = DM.delete cmdID (C.awaiting container)
+                    }
+                  )
+                  (containers st)
+              }
+          , containerID
+          )
 
 -- | Fails an awaiting command.
 registerFailed :: CmdID -> NrmState -> NrmState

@@ -99,7 +99,7 @@ parserRun =
         help
           "Command name"
       ) <*>
-    some
+    many
       ( strArgument
         ( metavar "ARG" <>
           help

@@ -204,15 +204,15 @@
                 "repStart": {
                     "required": [
                         "startContainerID",
-                        "pid"
+                        "startCmdID"
                     ],
                     "type": "object",
                     "properties": {
-                        "startContainerID": {
+                        "startCmdID": {
                             "type": "string"
                         },
-                        "pid": {
-                            "type": "number"
+                        "startContainerID": {
+                            "type": "string"
                         }
                     }
                 }
@@ -225,20 +225,38 @@
             "type": "object",
             "properties": {
                 "repEndStream": {
-                    "type": "object",
-                    "properties": {}
+                    "const": "\"endStream\""
                 }
             }
         },
         {
             "required": [
-                "repProcessExit"
+                "repContainerDeath"
             ],
             "type": "object",
             "properties": {
-                "repProcessExit": {
+                "repContainerDeath": {
                     "required": [
-                        "container_uuid",
+                        "deathContainerID"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "deathContainerID": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "repCmdDeath"
+            ],
+            "type": "object",
+            "properties": {
+                "repCmdDeath": {
+                    "required": [
+                        "deathCmdID",
                         "status"
                     ],
                     "type": "object",
@@ -246,7 +264,7 @@
                         "status": {
                             "type": "number"
                         },
-                        "container_uuid": {
+                        "deathCmdID": {
                             "type": "string"
                         }
                     }

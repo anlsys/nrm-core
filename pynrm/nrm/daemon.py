@@ -44,8 +44,6 @@ class Daemon(object):
         # register messaging servers
         upstream_pub_a = self.lib.upstreamPubAddress(self.cfg)
         upstream_rpc_a = self.lib.upstreamRpcAddress(self.cfg)
-        # print(upstream_pub_a)
-        # print(upstream_rpc_a)
         downstream_event_a = self.lib.downstreamEventAddress(self.cfg)
 
         self.upstream_pub = UpstreamPubServer(upstream_pub_a)
@@ -92,6 +90,14 @@ class Daemon(object):
         ioloop.IOLoop.current().stop()
 
     def wrap(self, f, *argsConfig, **kwargsConfig):
+        """
+            'wrap' is a decorator that turns a shared library symbol into a
+            behavior-reacting function. It can process any symbol whose
+            underlying unpacked type is:
+                Cfg -> NrmState -> <...> -> IO (Cfg, NrmState)
+            where <...> can be any number of arguments.
+        """
+
         def r(*argsCallback, **kwargsCallback):
             args = argsConfig + argsCallback
             kwargs = dict(kwargsConfig, ** kwargsCallback)
@@ -104,7 +110,8 @@ class Daemon(object):
     def reply(self, *args):
         self.upstream_rpc.send(*args)
 
-    def cmd(self, cmdID, cmd, arguments, environment):
+    def cmd(self, clientID, cmdID, cmd, arguments, environment):
+        register = self.wrap(self.lib.registerCmd, clientID, cmdID)
         environment = dict(environment)
         _logger.debug("starting command " + str(cmd) + " with argument list "
                       + str(arguments))
@@ -120,12 +127,10 @@ class Daemon(object):
             p.stdout.read_until_close(outcb, outcb)
             p.stderr.read_until_close(errcb, errcb)
             self.cmds[cmdID] = p
-            self.state = self.lib.registerCmd(
-                self.cfg, self.state, cmdID, True)
+            register(True)
             _logger.debug("Command start success.")
         except FileNotFoundError as e:
-            self.state = self.lib.registerCmd(
-                self.cfg, self.state, cmdID, False)
+            register(False)
             _logger.debug("Command start failure.")
             raise e
 

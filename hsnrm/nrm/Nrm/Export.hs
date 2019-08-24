@@ -135,16 +135,19 @@ doStderr :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
 doStderr = handleTag B.Stderr
 
 -- | Register a command as failed or successful.
-registerCmd :: C.Cfg -> TS.NrmState -> Text -> Bool -> IO TS.NrmState
-registerCmd cfg s cmdIDT success =
-  fst <$>
-    B.behavior
-      cfg
-      s
-      ( B.RegisterCmd
-        (fromMaybe (panic "couldn't decode cmdID") (P.fromText cmdIDT))
-        (if success then B.Launched else B.NotLaunched)
+registerCmd :: C.Cfg -> TS.NrmState -> Text -> Text -> Bool -> IO (TS.NrmState, B.Behavior)
+registerCmd cfg s clientid cmdIDT success =
+  B.behavior
+    cfg
+    s
+    ( B.RegisterCmd
+      ( fromMaybe
+        (panic "couldn't parse upstream client ID")
+        (UC.fromText clientid)
       )
+      (fromMaybe (panic "couldn't decode cmdID") (P.fromText cmdIDT))
+      (if success then B.Launched else B.NotLaunched)
+    )
 
 -- Utilities
 handleTag :: B.OutputType -> C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
