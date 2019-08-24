@@ -21,8 +21,8 @@ module Nrm.Export
   , -- * Behavior
     downstreamReceive
   , upstreamReceive
-  , stdout
-  , stderr
+  , doStdout
+  , doStderr
   , doSensor
   , doControl
   , doChildren
@@ -127,12 +127,12 @@ doShutdown :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doShutdown c s = B.behavior c s B.DoShutdown
 
 -- | Handle stdout
-stdout :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
-stdout = handleTag B.Stdout
+doStdout :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
+doStdout = handleTag B.Stdout
 
 -- | Handle stderr
-stderr :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
-stderr = handleTag B.Stderr
+doStderr :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
+doStderr = handleTag B.Stderr
 
 -- | Register a command as failed or successful.
 registerCmd :: C.Cfg -> TS.NrmState -> Text -> Bool -> IO TS.NrmState
@@ -147,7 +147,6 @@ registerCmd cfg s cmdIDT success =
       )
 
 -- Utilities
---
 handleTag :: B.OutputType -> C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
 handleTag tag c s cmdIDT msg =
   B.behavior c s

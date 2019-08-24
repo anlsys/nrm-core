@@ -6,9 +6,16 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.NrmState
   ( NrmState (..)
+  , getCmds
+  , lookupCmd
+  , lookupContainer
+  , runningCmdIDContainerIDMap
+  , awaitingCmdIDContainerIDMap
+  , runningCmdIDCmdMap
+  , awaitingCmdIDCmdMap
+  -- * Rendering views
   , showContainerList
   , showContainers
-  , lookupCmd
   )
 where
 
@@ -50,9 +57,48 @@ showContainerList l =
     descSpec (P.CmdSpec cmd (Arguments args) _) =
       " : " <> toS cmd <> " " <> (mconcat . intersperse " " $ toS <$> args)
 
+-- | Renders a textual view of running containers
 showContainers :: NrmState -> Text
 showContainers NrmState {..} =
   showContainerList $ DM.toList containers
 
+-- | Looks up a command via ID
 lookupCmd :: CmdID -> NrmState -> Maybe Cmd
-lookupCmd cmdID s = DM.lookup cmdID (mconcat $ cmds <$> (DM.elems $ containers s))
+lookupCmd cmdID s = DM.lookup cmdID (mconcat $ cmds <$> DM.elems (containers s))
+
+-- | Looks up a command via ID
+lookupContainer :: ContainerID -> NrmState -> Maybe Container
+lookupContainer containerID s = DM.lookup containerID (containers s)
+
+-- | Generate a map of all commands currently registered as running, and the associated containerID
+runningCmdIDContainerIDMap :: NrmState -> DM.Map CmdID ContainerID
+runningCmdIDContainerIDMap = containerMap cmds
+
+-- | Generate a map of all commands currently registered as awaiting, and the associated containerID
+awaitingCmdIDContainerIDMap :: NrmState -> DM.Map CmdID ContainerID
+awaitingCmdIDContainerIDMap = containerMap awaiting
+
+-- | List commands currently registered as running
+runningCmdIDCmdMap :: NrmState -> DM.Map CmdID Cmd
+runningCmdIDCmdMap = cmdsMap cmds
+
+-- | List commands awaiting to be launched
+awaitingCmdIDCmdMap :: NrmState -> DM.Map CmdID Cmd
+awaitingCmdIDCmdMap = cmdsMap awaiting
+
+-- | Helper
+containerMap :: (Container -> Map CmdID a) -> NrmState -> Map CmdID ContainerID
+containerMap accessor s = mconcat $ f <$> DM.toList (containers s)
+  where
+    f :: (ContainerID, Container) -> Map CmdID ContainerID
+    f (containerID, container) = fromList $ (,containerID) <$> DM.keys (accessor container)
+
+-- | List commands awaiting to be launched
+cmdsMap :: (Container -> Map CmdID Cmd) -> NrmState -> DM.Map CmdID Cmd
+cmdsMap accessor s = mconcat $ accessor <$> elems (containers s)
+
+-- | get all Cmds IDs for a container ID
+getCmds :: NrmState -> C.ContainerID -> [CmdID]
+getCmds st containerID = case DM.lookup containerID (containers st) of
+  Nothing -> panic "containerID not found"
+  Just c -> DM.keys $ C.cmds c

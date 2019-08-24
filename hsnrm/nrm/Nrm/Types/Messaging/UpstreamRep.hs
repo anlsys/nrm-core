@@ -11,7 +11,9 @@ module Nrm.Types.Messaging.UpstreamRep
   , Stdout (..)
   , Stderr (..)
   , Start (..)
-  , ProcessExit (..)
+  , ContainerDeath (..)
+  , EndStream (..)
+  , CmdDeath (..)
   , GetPower (..)
   , GetConfig (..)
   , GetState (..)
@@ -35,10 +37,16 @@ data Rep
   | RepStdout Stdout
   | RepStderr Stderr
   | RepStart Start
-  | RepProcessExit ProcessExit
+  | RepEndStream EndStream
+  | RepContainerDeath ContainerDeath
+  | RepCmdDeath CmdDeath
   | RepGetPower GetPower
   | RepGetState GetState
   | RepGetConfig GetConfig
+  deriving (Show, Generic, MessagePack)
+
+data EndStream
+  = EndStream
   deriving (Show, Generic, MessagePack)
 
 newtype ContainerList
@@ -64,14 +72,20 @@ data Stderr
 data Start
   = Start
       { startContainerID :: C.ContainerID
-      , pid :: P.ProcessID
+      , startCmdID :: P.CmdID
       }
   deriving (Show, Generic, MessagePack)
 
-data ProcessExit
-  = ProcessExit
-      { container_uuid :: Text
+data CmdDeath
+  = CmdDeath
+      { deathCmdID :: Text
       , status :: Int
+      }
+  deriving (Show, Generic, MessagePack)
+
+newtype ContainerDeath
+  = ContainerDeath
+      { deathContainerID :: Text
       }
   deriving (Show, Generic, MessagePack)
 
@@ -99,6 +113,18 @@ instance NrmMessage Rep Rep where
 
   toJ = identity
 
+instance ToJSON EndStream where
+
+  toJSON = gtoJson
+
+instance FromJSON EndStream where
+
+  parseJSON = gparseJson
+
+instance JSONSchema EndStream where
+
+  schema = gSchema
+
 instance ToJSON GetPower where
 
   toJSON = gtoJson
@@ -123,15 +149,27 @@ instance JSONSchema ContainerList where
 
   schema = gSchema
 
-instance ToJSON ProcessExit where
+instance ToJSON CmdDeath where
 
   toJSON = gtoJson
 
-instance FromJSON ProcessExit where
+instance FromJSON CmdDeath where
 
   parseJSON = gparseJson
 
-instance JSONSchema ProcessExit where
+instance JSONSchema CmdDeath where
+
+  schema = gSchema
+
+instance ToJSON ContainerDeath where
+
+  toJSON = gtoJson
+
+instance FromJSON ContainerDeath where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ContainerDeath where
 
   schema = gSchema
 

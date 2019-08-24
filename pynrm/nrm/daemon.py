@@ -34,7 +34,6 @@ class Daemon(object):
         self.state = self.lib.initialState(self.cfg)
 
         self.dispatch = {
-            "noop": self.noop,
             "reply": self.reply,
             "cmd": self.cmd,
             "kill": self.kill
@@ -98,11 +97,9 @@ class Daemon(object):
             kwargs = dict(kwargsConfig, ** kwargsCallback)
             st, bh = f(self.cfg, self.state, *args, **kwargs)
             self.state = st
-            self.dispatch[bh[0]](*bh[1:])
+            if bh != "noop":
+                self.dispatch[bh[0]](*bh[1:])
         return r
-
-    def noop(self, args):
-        pass
 
     def reply(self, *args):
         self.upstream_rpc.send(*args)
@@ -110,7 +107,7 @@ class Daemon(object):
     def cmd(self, cmdID, cmd, arguments, environment):
         environment = dict(environment)
         _logger.debug("starting command " + str(cmd) + " with argument list "
-                      + str(arguments) + " and environment " + str(environment) + "..")
+                      + str(arguments))
         try:
             p = process.Subprocess([cmd] + arguments,
                                    stdout=process.Subprocess.STREAM,
@@ -118,8 +115,8 @@ class Daemon(object):
                                    close_fds=True,
                                    env=environment,
                                    cwd=environment['PWD'])
-            outcb = partial(self.wrap(self.lib.stdout), cmdID)
-            errcb = partial(self.wrap(self.lib.stderr), cmdID)
+            outcb = self.wrap(self.lib.doStdout, cmdID.encode())
+            errcb = self.wrap(self.lib.doStderr, cmdID.encode())
             p.stdout.read_until_close(outcb, outcb)
             p.stderr.read_until_close(errcb, errcb)
             self.cmds[cmdID] = p
@@ -127,7 +124,7 @@ class Daemon(object):
                 self.cfg, self.state, cmdID, True)
             _logger.debug("Command start success.")
         except FileNotFoundError as e:
-            self.state = self.lib.killContainer(
+            self.state = self.lib.registerCmd(
                 self.cfg, self.state, cmdID, False)
             _logger.debug("Command start failure.")
             raise e

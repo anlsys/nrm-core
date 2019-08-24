@@ -41,6 +41,9 @@
                                                     ],
                                                     "type": "object",
                                                     "properties": {
+                                                        "upstreamClientID": {
+                                                            "type": "string"
+                                                        },
                                                         "spec": {
                                                             "required": [
                                                                 "cmd",
@@ -87,6 +90,9 @@
                                                     ],
                                                     "type": "object",
                                                     "properties": {
+                                                        "upstreamClientID": {
+                                                            "type": "string"
+                                                        },
                                                         "spec": {
                                                             "required": [
                                                                 "cmd",
@@ -151,7 +157,7 @@
             "properties": {
                 "repStdout": {
                     "required": [
-                        "stdoutContainerUUUID",
+                        "stdoutContainerID",
                         "stdoutPayload"
                     ],
                     "type": "object",
@@ -159,7 +165,7 @@
                         "stdoutPayload": {
                             "type": "string"
                         },
-                        "stdoutContainerUUUID": {
+                        "stdoutContainerID": {
                             "type": "string"
                         }
                     }
@@ -209,6 +215,18 @@
                             "type": "number"
                         }
                     }
+                }
+            }
+        },
+        {
+            "required": [
+                "repEndStream"
+            ],
+            "type": "object",
+            "properties": {
+                "repEndStream": {
+                    "type": "object",
+                    "properties": {}
                 }
             }
         },

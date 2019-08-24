@@ -7,7 +7,7 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Export
-  (
+  ( Ex
   )
 where
 
@@ -16,6 +16,9 @@ import Foreign.C
 import qualified Nrm.Export as E
 import Protolude
 
+-- | All FFI exported names in this module must have this opaque type
+-- , must be followed by "Export", and must not use reserved symbols
+-- like "stdout" or "stdin".
 type Ex = CString -> IO CString
 
 foreign export ccall cliExport :: Ex
@@ -36,6 +39,10 @@ foreign export ccall doChildrenExport :: Ex
 
 foreign export ccall registerCmdExport :: Ex
 
+foreign export ccall doStdoutExport :: Ex
+
+foreign export ccall doStderrExport :: Ex
+
 cliExport = exportIO E.parseDaemon
 
 initialStateExport = exportIO E.initialState
@@ -53,6 +60,10 @@ doControlExport = exportIO E.doControl
 doChildrenExport = exportIO E.doChildren
 
 registerCmdExport = exportIO E.registerCmd
+
+doStdoutExport = exportIO E.doStdout
+
+doStderrExport = exportIO E.doStderr
 
 foreign export ccall isVerboseExport :: Ex
 

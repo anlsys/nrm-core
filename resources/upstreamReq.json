@@ -21,10 +21,14 @@
                     "required": [
                         "manifest",
                         "spec",
-                        "runContainerID"
+                        "runContainerID",
+                        "detachCmd"
                     ],
                     "type": "object",
                     "properties": {
+                        "detachCmd": {
+                            "type": "boolean"
+                        },
                         "manifest": {
                             "required": [
                                 "name",

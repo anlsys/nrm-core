@@ -8,10 +8,11 @@ module Nrm.Types.Messaging.UpstreamReq
   ( Req (..)
   , Run (..)
   , ContainerList (..)
-  , Kill (..)
+  , KillContainer (..)
+  , KillCmd (..)
   , SetPower (..)
-  , GetConfig(..)
-  , GetState(..)
+  , GetConfig (..)
+  , GetState (..)
   )
 where
 
@@ -29,7 +30,8 @@ import Protolude
 data Req
   = ReqContainerList ContainerList
   | ReqRun Run
-  | ReqKill Kill
+  | ReqKillContainer KillContainer
+  | ReqKillCmd KillCmd
   | ReqSetPower SetPower
   | ReqGetState GetState
   | ReqGetConfig GetConfig
@@ -40,12 +42,19 @@ data Run
       { manifest :: Manifest
       , spec :: P.CmdSpec
       , runContainerID :: C.ContainerID
+      , detachCmd :: Bool
       }
   deriving (Show, Generic, MessagePack)
 
-newtype Kill
-  = Kill
+newtype KillContainer
+  = KillContainer
       { killContainerID :: C.ContainerID
+      }
+  deriving (Show, Generic, MessagePack)
+
+newtype KillCmd
+  = KillCmd
+      { killCmdID :: C.ContainerID
       }
   deriving (Show, Generic, MessagePack)
 
@@ -64,15 +73,27 @@ data GetState = GetState
 data GetConfig = GetConfig
   deriving (Show, Generic, MessagePack)
 
-instance ToJSON Kill where
+instance ToJSON KillContainer where
 
   toJSON = gtoJson
 
-instance FromJSON Kill where
+instance FromJSON KillContainer where
 
   parseJSON = gparseJson
 
-instance JSONSchema Kill where
+instance JSONSchema KillContainer where
+
+  schema = gSchema
+
+instance ToJSON KillCmd where
+
+  toJSON = gtoJson
+
+instance FromJSON KillCmd where
+
+  parseJSON = gparseJson
+
+instance JSONSchema KillCmd where
 
   schema = gSchema
 
@@ -130,7 +151,6 @@ instance JSONSchema GetState where
 
   schema = gSchema
 
-
 instance ToJSON GetConfig where
 
   toJSON = gtoJson
@@ -142,4 +162,3 @@ instance FromJSON GetConfig where
 instance JSONSchema GetConfig where
 
   schema = gSchema
-

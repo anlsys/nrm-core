@@ -44,9 +44,5 @@
         "/sys/devices/virtual/powercap/intel-rapl"
     }
 , hwmonCfg =
-    { hwmonEnabled =
-        True
-    , hwmonPath =
-        "/sys/devices/virtual/powercap/intel-rapl"
-    }
+    { hwmonEnabled = True, hwmonPath = "/sys/class/hwmon" }
 }

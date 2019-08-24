@@ -7,18 +7,17 @@ Maintainer  : fre@freux.fr
 module Nrm.NrmState
   ( initialState
   , registerLibnrmDownstreamClient
-  , -- * Views for containers and commands
-    runningCmdIDContainerIDMap
-  , awaitingCmdIDContainerIDMap
-  , runningCmdIDCmdMap
-  , awaitingCmdIDCmdMap
-  , -- * Views for controllers
-    listSensors
+  , registerFailed
+  , registerLaunched
+  , registerAwaiting
+  , createContainer
+  , removeContainer
+  , listSensors
   , listActuators
   )
 where
 
-import Data.Map as DM
+import qualified Data.Map as DM
 import Nrm.Containers.Dummy as CD
 import Nrm.Containers.Nodeos as CN
 import Nrm.Containers.Singularity as CS
@@ -26,23 +25,14 @@ import Nrm.Node.Hwloc
 import Nrm.Node.Sysfs
 import Nrm.Node.Sysfs.Internal
 import Nrm.Types.Actuator
+import Nrm.Types.Process
 import Nrm.Types.Configuration
-import Nrm.Types.Container
+import qualified Nrm.Types.Container as C
 import Nrm.Types.DownstreamClient
 import Nrm.Types.NrmState
-import Nrm.Types.Process
 import qualified Nrm.Types.Sensor as Sensor
 import Nrm.Types.Topology
 import Protolude
-
-{-= RAPLDir-}
-{-{ path :: FilePath-}
-{-, pkgid :: PackageID-}
-{-, maxEnergy :: MaxEnergy-}
-{-}-}
-
-{- RaplSensor { raplPath :: FilePath-}
-{-, max :: MaxEnergy-}
 
 -- | Populate the initial NrmState.
 initialState :: Cfg -> IO NrmState
@@ -51,28 +41,10 @@ initialState c = do
   let packages' = DM.fromList $ (,Package {raplSensor = Nothing}) <$> selectPackageIDs hwl
   packages <-
     getDefaultRAPLDirs (toS $ raplPath $ raplCfg c) <&> \case
-      Just (RAPLDirs rapldirs) ->
-        Protolude.foldl
-          ( \m RAPLDir {..} ->
-            DM.adjust
-              ( \Package {..} -> Package
-                { raplSensor = Just
-                    ( Sensor.RaplSensor
-                      { raplPath = path
-                      , max = maxEnergy
-                      }
-                    )
-                , ..
-                }
-              )
-              pkgid
-              m
-          )
-          packages'
-          rapldirs
+      Just (RAPLDirs rapldirs) -> Protolude.foldl goRAPL packages' rapldirs
       Nothing -> packages'
   return $ NrmState
-    { containers = fromList []
+    { containers = DM.fromList []
     , pus = DM.fromList $ (,PU) <$> selectPUIDs hwl
     , cores = DM.fromList $ (,Core) <$> selectCoreIDs hwl
     , dummyRuntime = if dummy c
@@ -86,22 +58,17 @@ initialState c = do
     else Nothing
     , ..
     }
-
--- | Generate a map of all commands currently registered as running, and the associated containerID
-runningCmdIDContainerIDMap :: NrmState -> DM.Map CmdID ContainerID
-runningCmdIDContainerIDMap = containerMap cmds
-
--- | Generate a map of all commands currently registered as awaiting, and the associated containerID
-awaitingCmdIDContainerIDMap :: NrmState -> DM.Map CmdID ContainerID
-awaitingCmdIDContainerIDMap = containerMap awaiting
-
--- | List commands currently registered as running
-runningCmdIDCmdMap :: NrmState -> DM.Map CmdID Cmd
-runningCmdIDCmdMap = cmdsMap cmds
-
--- | List commands awaiting to be launched
-awaitingCmdIDCmdMap :: NrmState -> DM.Map CmdID Cmd
-awaitingCmdIDCmdMap = cmdsMap awaiting
+  where
+    goRAPL m RAPLDir {..} = DM.adjust (addRAPLSensor path maxEnergy) pkgid m
+    addRAPLSensor path maxEnergy Package {..} = Package
+      { raplSensor = Just
+          ( Sensor.RaplSensor
+            { raplPath = path
+            , max = maxEnergy
+            }
+          )
+      , ..
+      }
 
 -- | List sensors
 listSensors :: NrmState -> [Sensor.Sensor]
@@ -115,13 +82,60 @@ listActuators = undefined
 registerLibnrmDownstreamClient :: NrmState -> DownstreamThreadID -> NrmState
 registerLibnrmDownstreamClient s _ = s
 
--- | Helper
-containerMap :: (Container -> Map CmdID a) -> NrmState -> Map CmdID ContainerID
-containerMap accessor s = mconcat $ f <$> DM.toList (containers s)
-  where
-    f :: (ContainerID, Container) -> Map CmdID ContainerID
-    f (containerID, container) = fromList $ (,containerID) <$> DM.keys (accessor container)
+-- | Removes a container from the state
+removeContainer :: C.ContainerID -> NrmState -> NrmState
+removeContainer containerID st =
+  st {containers = DM.delete containerID (containers st)}
 
--- | List commands awaiting to be launched
-cmdsMap :: (Container -> Map CmdID Cmd) -> NrmState -> DM.Map CmdID Cmd
-cmdsMap accessor s = mconcat $ accessor <$> elems (containers s)
+-- | Registers a container if not already tracked in the state, and returns the new state.
+createContainer :: C.ContainerID -> NrmState -> NrmState
+createContainer containerID st =
+  case DM.lookup containerID (containers st) of
+    Nothing -> st {containers = containers'}
+      where
+        containers' = DM.insert containerID C.emptyContainer (containers st)
+    Just _ -> st
+
+-- | Registers an awaiting command in an existing container
+registerAwaiting :: CmdID -> Cmd -> C.ContainerID -> NrmState -> NrmState
+registerAwaiting cmdID cmdValue containerID st =
+  st {containers = DM.update f containerID (containers st)}
+  where
+    f c = Just $ c {C.awaiting = DM.insert cmdID cmdValue (C.awaiting c)}
+
+{-{ C.awaiting = DM.delete cmdID (awaiting container)-}
+{-, C.cmds = DM.insert cmdID c (cmds container)-}
+
+-- | Turns an awaiting command to a launched one.
+registerLaunched :: CmdID -> NrmState -> NrmState
+registerLaunched cmdID st =
+  case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
+    Nothing -> panic "internal nrm.so lookup error."
+    Just containerID -> case DM.lookup containerID (containers st) of
+      Nothing -> panic "container was deleted while command was registering"
+      Just container -> case DM.lookup cmdID (C.awaiting container) of
+        Nothing -> panic "internal nrm.so lookup error"
+        Just cmdValue ->
+          st
+            { containers = DM.insert containerID
+                ( container
+                  { C.cmds = DM.insert cmdID cmdValue (C.cmds container)
+                  , C.awaiting = DM.delete cmdID (C.awaiting container)
+                  }
+                )
+                (containers st)
+            }
+
+-- | Fails an awaiting command.
+registerFailed :: CmdID -> NrmState -> NrmState
+registerFailed cmdID st =
+  case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
+    Nothing ->
+      panic $ "pynrm/nrm.so interaction error: " <>
+        "command was not registered as awaiting in any container"
+    Just containerID -> st {containers = DM.update f containerID (containers st)}
+  where
+    f c =
+      if null (C.cmds c)
+      then Nothing
+      else Just $ c {C.awaiting = DM.delete cmdID (C.awaiting c)}

@@ -18,18 +18,28 @@ import Data.Restricted
 import Nrm.Classes.Messaging
 import Nrm.Optparse
 import qualified Nrm.Optparse.Client as C
+import qualified Nrm.Types.Container as Ct
 import qualified Nrm.Types.Messaging.Protocols as Protocols
 import qualified Nrm.Types.Messaging.UpstreamRep as Rep
+import qualified Nrm.Types.Messaging.UpstreamReq as Req
 import Nrm.Types.Messaging.UpstreamReq
 import Nrm.Types.NrmState
+import qualified Nrm.Types.Process as P
 import Nrm.Types.UpstreamClient
 import Protolude hiding (Rep)
 import System.IO (hFlush)
+import qualified System.Posix.Signals as SPS
+  ( Handler (..)
+  , installHandler
+  , keyboardSignal
+  )
 import qualified System.ZMQ4.Monadic as ZMQ
 import Text.Pretty.Simple
 
 address :: Text
 address = "tcp://localhost:3456"
+
+type RestrictedID = Restricted (N1, N254) SB.ByteString
 
 -- | The main user facing nrm client process
 main :: IO ()
@@ -46,29 +56,32 @@ main = do
     ZMQ.setSendHighWM (restrict (0 :: Int)) s
     ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
     ZMQ.connect s $ toS address
-    client s req common
+    client s uuid req common
 
 client
   :: ZMQ.Socket z ZMQ.Dealer
+  -> RestrictedID
   -> Req
   -> C.CommonOpts
   -> ZMQ.ZMQ z ()
-client s req v = do
+client s uuid req v = do
   ZMQ.send s [] (toS $ encode req)
-  dispatchProtocol s v req
+  dispatchProtocol s uuid v req
 
 dispatchProtocol
   :: ZMQ.Socket z ZMQ.Dealer
+  -> RestrictedID
   -> C.CommonOpts
   -> Req
   -> ZMQ.ZMQ z ()
-dispatchProtocol s v = \case
+dispatchProtocol s uuid v = \case
   (ReqContainerList x) -> reqrep s v Protocols.ContainerList x
-  (ReqKill x) -> reqrep s v Protocols.Kill x
+  (ReqKillContainer x) -> reqrep s v Protocols.KillContainer x
+  (ReqKillCmd x) -> reqrep s v Protocols.KillCmd x
   (ReqSetPower x) -> reqrep s v Protocols.SetPower x
   (ReqGetConfig x) -> reqrep s v Protocols.GetConfig x
   (ReqGetState x) -> reqrep s v Protocols.GetState x
-  (ReqRun x) -> reqstream s v Protocols.Run x
+  (ReqRun x) -> if detachCmd x then putText "Client detached." else reqstream s uuid v Protocols.Run x
 
 reqrep
   :: ZMQ.Socket z ZMQ.Dealer
@@ -120,7 +133,12 @@ reqrep s opts = \case
       msg <- ZMQ.receive s
       liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
       liftIO $ hFlush stdout
-  Protocols.Kill ->
+  Protocols.KillCmd ->
+    const $ do
+      msg <- ZMQ.receive s
+      liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
+      liftIO $ hFlush stdout
+  Protocols.KillContainer ->
     const $ do
       msg <- ZMQ.receive s
       liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
@@ -128,13 +146,44 @@ reqrep s opts = \case
 
 reqstream
   :: ZMQ.Socket z ZMQ.Dealer
+  -> RestrictedID
   -> C.CommonOpts
   -> Protocols.ReqStream req rep
   -> req
   -> ZMQ.ZMQ z ()
-reqstream s _ = \case
-  Protocols.Run ->
-    const $ forever $ do
-      msg <- ZMQ.receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
-      liftIO $ hFlush stdout
+reqstream s uuid _ = \case
+  Protocols.Run -> \(Req.Run {..}) -> do
+    msg <- ZMQ.receive s
+    case ((decode $ toS msg) :: Maybe Rep.Rep) of
+      Nothing -> putText "error: received malformed message(1)."
+      Just (Rep.RepStart (Rep.Start containerID cmdID)) -> do
+        kbInstallHandler (liftIO $ kill uuid cmdID)
+        go
+      _ -> putText "error: received wrong type of message(1)."
+    where
+      go = do
+        msg <- ZMQ.receive s
+        case ((decode $ toS msg) :: Maybe Rep.Rep) of
+          Nothing -> putText "error: received malformed message."
+          Just (Rep.RepStdout x) -> do
+            liftIO . putText . Rep.stdoutPayload $ x
+            go
+          Just (Rep.RepStderr x) -> do
+            liftIO . putErrText . Rep.stderrPayload $ x
+            go
+          Just (Rep.RepEndStream Rep.EndStream) -> return ()
+          _ -> putText "error: received wrong type of message."
+      {-kbInstallHandler :: (MonadIO m) => IO () -> m SPS.Handler-}
+      kbInstallHandler :: IO () -> ZMQ.ZMQ z SPS.Handler
+      kbInstallHandler h =
+        liftIO $ SPS.installHandler SPS.keyboardSignal (SPS.Catch h) Nothing
+
+kill :: RestrictedID -> P.CmdID -> IO ()
+kill uuid cmdID =
+  ZMQ.runZMQ $ do
+    s <- ZMQ.socket ZMQ.Dealer
+    ZMQ.setIdentity uuid s
+    ZMQ.setSendHighWM (restrict (0 :: Int)) s
+    ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
+    ZMQ.connect s $ toS address
+    ZMQ.send s [] (toS $ encode $ Req.ReqKillContainer (Req.KillCmd cmdID))

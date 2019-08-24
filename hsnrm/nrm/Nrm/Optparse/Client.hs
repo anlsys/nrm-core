@@ -52,6 +52,7 @@ parserCommon =
 data RunCfg
   = RunCfg
       { stdinType :: SourceType
+      , detach :: Bool
       , edit :: Bool
       , inputfile :: Maybe Text
       , containerName :: Maybe Text
@@ -69,6 +70,10 @@ parserRun =
         help
           "Assume stdin to be yaml instead of dhall."
       ) <*>
+    flag
+      False
+      True
+      (long "detach" <> short 'd' <> help "Detach the command.") <*>
     flag
       False
       True
@@ -130,7 +135,7 @@ opts =
         progDesc "Run the application via NRM"
       ) <>
     command "kill"
-      ( info (return <$> (Opts <$> (ReqKill . Kill <$> parserKill) <*> parserCommon)) $
+      ( info (return <$> (Opts <$> (ReqKillContainer . KillContainer <$> parserKill) <*> parserCommon)) $
         progDesc "Kill container"
       ) <>
     command
@@ -221,6 +226,7 @@ run rc common = do
           , args = P.Arguments $ P.Arg <$> runargs rc
           , env = P.Env env
           }
+        , detachCmd = (detach rc)
         , runContainerID = cn
         }
       )
