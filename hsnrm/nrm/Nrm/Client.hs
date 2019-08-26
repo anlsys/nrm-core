@@ -176,9 +176,13 @@ reqstream s uuid _ = \case
       zmqCCHandler h = void $ liftIO $ SPS.installHandler SPS.keyboardSignal (SPS.Catch h) Nothing
 
 kill :: RestrictedID -> P.CmdID -> IO ()
-kill uuid cmdID =
+kill _ cmdID =
   ZMQ.runZMQ $ do
     s <- ZMQ.socket ZMQ.Dealer
+    uuid <-
+      liftIO $ nextUpstreamClientID <&> \case
+        Nothing -> panic "couldn't generate next client ID"
+        Just c -> (restrict (toS $ toText c) :: Restricted (N1, N254) SB.ByteString)
     ZMQ.setIdentity uuid s
     ZMQ.setSendHighWM (restrict (0 :: Int)) s
     ZMQ.setReceiveHighWM (restrict (0 :: Int)) s

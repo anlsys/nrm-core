@@ -18,8 +18,8 @@ data ReqRep req rep where
   GetState :: ReqRep Req.GetState Rep.GetState
   GetConfig :: ReqRep Req.GetConfig Rep.GetConfig
   SetPower :: ReqRep Req.SetPower Rep.GetPower
-  KillContainer :: ReqRep Req.KillContainer Rep.ContainerDeath
-  KillCmd :: ReqRep Req.KillCmd Rep.CmdDeath
+  KillContainer :: ReqRep Req.KillContainer Rep.ContainerKilled
+  KillCmd :: ReqRep Req.KillCmd Rep.CmdKilled
 
 data ReqStream req reps where
   Run :: ReqStream Req.Run '[Rep.Stdout, Rep.Stderr, Rep.EndStream]

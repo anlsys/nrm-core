@@ -18,6 +18,7 @@ import Data.MessagePack
 import qualified Nrm.Classes.Messaging as M
 import Nrm.NrmState
 import qualified Nrm.Types.Configuration as Cfg
+import qualified Nrm.Types.Container as Ct
 import Nrm.Types.Messaging.DownstreamEvent as DEvent
 import qualified Nrm.Types.Messaging.UpstreamPub as UPub
 import qualified Nrm.Types.Messaging.UpstreamRep as URep
@@ -47,7 +48,7 @@ data Behavior
   | Rep UC.UpstreamClientID URep.Rep
   | Pub UPub.Pub
   | StartChild UC.UpstreamClientID CmdID Command Arguments Env
-  | KillChildren [CmdID]
+  | KillChildren [CmdID] [(UC.UpstreamClientID, URep.Rep)]
   deriving (Generic)
 
 behavior :: Cfg.Cfg -> NrmState -> NrmEvent -> IO (NrmState, Behavior)
@@ -121,9 +122,16 @@ behavior c st (Req clientid msg) = case msg of
   UReq.ReqKillContainer UReq.KillContainer {..} -> do
     let st' = removeContainer killContainerID st
     let cmds = getCmds st killContainerID
-    return (st', KillChildren cmds)
+    return (st', KillChildren cmds [])
   UReq.ReqSetPower _ -> return (st, NoBehavior)
-  UReq.ReqKillCmd UReq.KillCmd {..} -> return (st, NoBehavior)
+  UReq.ReqKillCmd UReq.KillCmd {..} ->
+    case DM.lookup killCmdID (runningCmdIDContainerIDMap st) of
+      Nothing -> return (st, Rep clientid (URep.RepNoSuchCmd URep.NoSuchCmd))
+      Just containerID ->
+        return $
+          if null (Ct.cmds $ fromMaybe (panic "internal error (2)") (lookupContainer containerID st))
+          then (removeContainer containerID st, KillChildren [killCmdID] [(clientid, URep.RepContainerKilled (URep.ContainerKilled containerID))])
+          else (adjustContainer (\xc -> xc {Ct.cmds = DM.delete killCmdID (Ct.cmds xc)}) containerID st, KillChildren [killCmdID] [(clientid, URep.RepCmdKilled (URep.CmdKilled killCmdID))])
 behavior _ st DoSensor = return (st, NoBehavior)
 behavior _ st DoControl = return (st, NoBehavior)
 behavior _ st DoShutdown = return (st, NoBehavior)
@@ -136,6 +144,6 @@ instance MessagePack Behavior where
   toObject (Rep clientid msg) = toObject ("reply" :: Text, clientid, M.encodeT msg)
   toObject (Pub msg) = toObject ("publish" :: Text, M.encodeT msg)
   toObject (StartChild clientID cmdID cmd args env) = toObject ("cmd" :: Text, clientID, cmdID, cmd, args, env)
-  toObject (KillChildren cmdIDs) = toObject ("kill" :: Text, cmdIDs)
+  toObject (KillChildren cmdIDs reps) = toObject ("kill" :: Text, cmdIDs, reps)
 
   fromObject x = to <$> gFromObject x

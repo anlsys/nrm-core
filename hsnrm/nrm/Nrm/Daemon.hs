@@ -59,8 +59,8 @@ dummyReply = \case
   (Req.ReqContainerList x) -> sendOne $ encode (Rep.RepList (dummy Protocols.ContainerList x))
   (Req.ReqGetState x) -> sendOne $ encode (Rep.RepGetState (dummy Protocols.GetState x))
   (Req.ReqGetConfig x) -> sendOne $ encode (Rep.RepGetConfig (dummy Protocols.GetConfig x))
-  (Req.ReqKillContainer x) -> sendOne $ encode (Rep.RepContainerDeath (dummy Protocols.KillContainer x))
-  (Req.ReqKillCmd x) -> sendOne $ encode (Rep.RepCmdDeath (dummy Protocols.KillCmd x))
+  (Req.ReqKillContainer x) -> sendOne $ encode (Rep.RepContainerKilled (dummy Protocols.KillContainer x))
+  (Req.ReqKillCmd x) -> sendOne $ encode (Rep.RepCmdKilled (dummy Protocols.KillCmd x))
   (Req.ReqSetPower x) -> sendOne $ encode (Rep.RepGetPower (dummy Protocols.SetPower x))
   (Req.ReqRun _) -> panic "no run reply implemented in this dummy mode."
 

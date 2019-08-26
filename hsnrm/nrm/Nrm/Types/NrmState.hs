@@ -9,12 +9,14 @@ module Nrm.Types.NrmState
   , getCmds
   , lookupCmd
   , lookupContainer
+  , updateContainer
+  , adjustContainer
   , runningCmdIDContainerIDMap
   , awaitingCmdIDContainerIDMap
   , runningCmdIDCmdMap
   , awaitingCmdIDCmdMap
-  -- * Rendering views
-  , showContainerList
+  , -- * Rendering views
+    showContainerList
   , showContainers
   )
 where
@@ -65,6 +67,11 @@ showContainers NrmState {..} =
 -- | Looks up a command via ID
 lookupCmd :: CmdID -> NrmState -> Maybe Cmd
 lookupCmd cmdID s = DM.lookup cmdID (mconcat $ cmds <$> DM.elems (containers s))
+
+-- | Looks up a command via ID
+{-updateContainer :: ContainerID -> NrmState -> Maybe Container-}
+updateContainer f containerID s = s {containers = DM.update f containerID (containers s)}
+adjustContainer f containerID s = s {containers = DM.adjust f containerID (containers s)}
 
 -- | Looks up a command via ID
 lookupContainer :: ContainerID -> NrmState -> Maybe Container

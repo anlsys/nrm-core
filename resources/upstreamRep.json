@@ -231,17 +231,39 @@
         },
         {
             "required": [
-                "repContainerDeath"
+                "repNoSuchContainer"
             ],
             "type": "object",
             "properties": {
-                "repContainerDeath": {
+                "repNoSuchContainer": {
+                    "const": "\"noSuchContainer\""
+                }
+            }
+        },
+        {
+            "required": [
+                "repNoSuchCmd"
+            ],
+            "type": "object",
+            "properties": {
+                "repNoSuchCmd": {
+                    "const": "\"noSuchCmd\""
+                }
+            }
+        },
+        {
+            "required": [
+                "repContainerKilled"
+            ],
+            "type": "object",
+            "properties": {
+                "repContainerKilled": {
                     "required": [
-                        "deathContainerID"
+                        "killedContainerID"
                     ],
                     "type": "object",
                     "properties": {
-                        "deathContainerID": {
+                        "killedContainerID": {
                             "type": "string"
                         }
                     }
@@ -250,21 +272,17 @@
         },
         {
             "required": [
-                "repCmdDeath"
+                "repCmdKilled"
             ],
             "type": "object",
             "properties": {
-                "repCmdDeath": {
+                "repCmdKilled": {
                     "required": [
-                        "deathCmdID",
-                        "status"
+                        "killedCmdID"
                     ],
                     "type": "object",
                     "properties": {
-                        "status": {
-                            "type": "number"
-                        },
-                        "deathCmdID": {
+                        "killedCmdID": {
                             "type": "string"
                         }
                     }

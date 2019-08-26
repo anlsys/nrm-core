@@ -11,9 +11,11 @@ module Nrm.Types.Messaging.UpstreamRep
   , Stdout (..)
   , Stderr (..)
   , Start (..)
-  , ContainerDeath (..)
+  , ContainerKilled (..)
   , EndStream (..)
-  , CmdDeath (..)
+  , NoSuchCmd (..)
+  , NoSuchContainer (..)
+  , CmdKilled (..)
   , GetPower (..)
   , GetConfig (..)
   , GetState (..)
@@ -38,8 +40,10 @@ data Rep
   | RepStderr Stderr
   | RepStart Start
   | RepEndStream EndStream
-  | RepContainerDeath ContainerDeath
-  | RepCmdDeath CmdDeath
+  | RepNoSuchContainer NoSuchContainer
+  | RepNoSuchCmd NoSuchCmd
+  | RepContainerKilled ContainerKilled
+  | RepCmdKilled CmdKilled
   | RepGetPower GetPower
   | RepGetState GetState
   | RepGetConfig GetConfig
@@ -47,6 +51,14 @@ data Rep
 
 data EndStream
   = EndStream
+  deriving (Show, Generic, MessagePack)
+
+data NoSuchCmd
+  = NoSuchCmd
+  deriving (Show, Generic, MessagePack)
+
+data NoSuchContainer
+  = NoSuchContainer
   deriving (Show, Generic, MessagePack)
 
 newtype ContainerList
@@ -76,16 +88,15 @@ data Start
       }
   deriving (Show, Generic, MessagePack)
 
-data CmdDeath
-  = CmdDeath
-      { deathCmdID :: Text
-      , status :: Int
+data CmdKilled
+  = CmdKilled
+      { killedCmdID :: P.CmdID
       }
   deriving (Show, Generic, MessagePack)
 
-newtype ContainerDeath
-  = ContainerDeath
-      { deathContainerID :: Text
+newtype ContainerKilled
+  = ContainerKilled
+      { killedContainerID :: C.ContainerID
       }
   deriving (Show, Generic, MessagePack)
 
@@ -112,6 +123,31 @@ instance NrmMessage Rep Rep where
   fromJ = identity
 
   toJ = identity
+
+instance ToJSON NoSuchCmd where
+
+  toJSON = gtoJson
+
+instance FromJSON NoSuchCmd where
+
+  parseJSON = gparseJson
+
+instance JSONSchema NoSuchCmd where
+
+  schema = gSchema
+
+
+instance ToJSON NoSuchContainer where
+
+  toJSON = gtoJson
+
+instance FromJSON NoSuchContainer where
+
+  parseJSON = gparseJson
+
+instance JSONSchema NoSuchContainer where
+
+  schema = gSchema
 
 instance ToJSON EndStream where
 
@@ -149,27 +185,27 @@ instance JSONSchema ContainerList where
 
   schema = gSchema
 
-instance ToJSON CmdDeath where
+instance ToJSON CmdKilled where
 
   toJSON = gtoJson
 
-instance FromJSON CmdDeath where
+instance FromJSON CmdKilled where
 
   parseJSON = gparseJson
 
-instance JSONSchema CmdDeath where
+instance JSONSchema CmdKilled where
 
   schema = gSchema
 
-instance ToJSON ContainerDeath where
+instance ToJSON ContainerKilled where
 
   toJSON = gtoJson
 
-instance FromJSON ContainerDeath where
+instance FromJSON ContainerKilled where
 
   parseJSON = gparseJson
 
-instance JSONSchema ContainerDeath where
+instance JSONSchema ContainerKilled where
 
   schema = gSchema
 
