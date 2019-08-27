@@ -11,6 +11,7 @@ module Nrm.Types.NrmState
   , lookupContainer
   , updateContainer
   , adjustContainer
+  , cmdIDMap
   , runningCmdIDContainerIDMap
   , awaitingCmdIDContainerIDMap
   , runningCmdIDCmdMap
@@ -55,8 +56,8 @@ showContainerList l =
     "container: ID " <> C.toText containerID <> "\n" <> mconcat (descCmd <$> DM.toList cmds)
   where
     descCmd (cmdID, P.Cmd {..}) =
-      " command: ID " <> P.toText cmdID <> descSpec spec <> "\n"
-    descSpec (P.CmdSpec cmd (Arguments args) _) =
+      " command: ID " <> P.toText cmdID <> descSpec cmdPath arguments <> "\n"
+    descSpec (P.Command cmd) (Arguments args) =
       " : " <> toS cmd <> " " <> (mconcat . intersperse " " $ toS <$> args)
 
 -- | Renders a textual view of running containers
@@ -68,15 +69,26 @@ showContainers NrmState {..} =
 lookupCmd :: CmdID -> NrmState -> Maybe Cmd
 lookupCmd cmdID s = DM.lookup cmdID (mconcat $ cmds <$> DM.elems (containers s))
 
--- | Looks up a command via ID
-{-updateContainer :: ContainerID -> NrmState -> Maybe Container-}
+-- | Update a container, with optional deletion
+updateContainer :: (Container -> Maybe Container) -> ContainerID -> NrmState -> NrmState
 updateContainer f containerID s = s {containers = DM.update f containerID (containers s)}
+
+-- | Adjust a container
+adjustContainer :: (Container -> Container) -> ContainerID -> NrmState -> NrmState
 adjustContainer f containerID s = s {containers = DM.adjust f containerID (containers s)}
 
 -- | Looks up a command via ID
 lookupContainer :: ContainerID -> NrmState -> Maybe Container
 lookupContainer containerID s = DM.lookup containerID (containers s)
 
+-- | Nrm state map view by cmdID.
+cmdIDMap :: NrmState -> DM.Map CmdID (Cmd, ContainerID, Container)
+cmdIDMap s = mconcat $ DM.toList (containers s) <&> mkMap
+  where
+    mkMap x@(_, c) = DM.fromList $ zip (DM.keys $ cmds c) (DM.elems (cmds c) <&> mkTriple x)
+    mkTriple (cid, c) cm = (cm, cid, c)
+
+{-# WARNING runningCmdIDContainerIDMap "To remove" #-}
 -- | Generate a map of all commands currently registered as running, and the associated containerID
 runningCmdIDContainerIDMap :: NrmState -> DM.Map CmdID ContainerID
 runningCmdIDContainerIDMap = containerMap cmds
@@ -85,6 +97,7 @@ runningCmdIDContainerIDMap = containerMap cmds
 awaitingCmdIDContainerIDMap :: NrmState -> DM.Map CmdID ContainerID
 awaitingCmdIDContainerIDMap = containerMap awaiting
 
+{-# WARNING runningCmdIDCmdMap "To remove" #-}
 -- | List commands currently registered as running
 runningCmdIDCmdMap :: NrmState -> DM.Map CmdID Cmd
 runningCmdIDCmdMap = cmdsMap cmds

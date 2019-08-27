@@ -149,6 +149,8 @@ let deps =
           nobound "vcs-revision"
       , resourcet =
           nobound "resourcet"
+      , async =
+          nobound "async"
       , mtl =
           nobound "mtl"
       , conduit =
@@ -271,6 +273,7 @@ let libdep =
       , deps.unix
       , deps.generic-deriving
       , deps.uuid
+      , deps.async
       , deps.text
       , deps.units-defs
       , deps.storable-endian

@@ -37,47 +37,23 @@
                                             "awaiting": {
                                                 "additionalProperties": {
                                                     "required": [
-                                                        "spec"
+                                                        "cmdPath",
+                                                        "arguments"
                                                     ],
                                                     "type": "object",
                                                     "properties": {
                                                         "upstreamClientID": {
                                                             "type": "string"
                                                         },
-                                                        "spec": {
-                                                            "required": [
-                                                                "cmd",
-                                                                "args",
-                                                                "env"
-                                                            ],
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "args": {
-                                                                    "uniqueItems": false,
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "type": "array"
-                                                                },
-                                                                "env": {
-                                                                    "uniqueItems": false,
-                                                                    "items": {
-                                                                        "items": [
-                                                                            {
-                                                                                "type": "string"
-                                                                            },
-                                                                            {
-                                                                                "type": "string"
-                                                                            }
-                                                                        ],
-                                                                        "type": "array"
-                                                                    },
-                                                                    "type": "array"
-                                                                },
-                                                                "cmd": {
-                                                                    "type": "string"
-                                                                }
-                                                            }
+                                                        "arguments": {
+                                                            "uniqueItems": false,
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "cmdPath": {
+                                                            "type": "string"
                                                         }
                                                     }
                                                 },
@@ -86,47 +62,23 @@
                                             "cmds": {
                                                 "additionalProperties": {
                                                     "required": [
-                                                        "spec"
+                                                        "cmdPath",
+                                                        "arguments"
                                                     ],
                                                     "type": "object",
                                                     "properties": {
                                                         "upstreamClientID": {
                                                             "type": "string"
                                                         },
-                                                        "spec": {
-                                                            "required": [
-                                                                "cmd",
-                                                                "args",
-                                                                "env"
-                                                            ],
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "args": {
-                                                                    "uniqueItems": false,
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "type": "array"
-                                                                },
-                                                                "env": {
-                                                                    "uniqueItems": false,
-                                                                    "items": {
-                                                                        "items": [
-                                                                            {
-                                                                                "type": "string"
-                                                                            },
-                                                                            {
-                                                                                "type": "string"
-                                                                            }
-                                                                        ],
-                                                                        "type": "array"
-                                                                    },
-                                                                    "type": "array"
-                                                                },
-                                                                "cmd": {
-                                                                    "type": "string"
-                                                                }
-                                                            }
+                                                        "arguments": {
+                                                            "uniqueItems": false,
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "cmdPath": {
+                                                            "type": "string"
                                                         }
                                                     }
                                                 },
@@ -220,12 +172,20 @@
         },
         {
             "required": [
-                "repEndStream"
+                "repCmdEnded"
             ],
             "type": "object",
             "properties": {
-                "repEndStream": {
-                    "const": "\"endStream\""
+                "repCmdEnded": {
+                    "required": [
+                        "exitCode"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "exitCode": {
+                            "type": "number"
+                        }
+                    }
                 }
             }
         },
@@ -286,6 +246,17 @@
                             "type": "string"
                         }
                     }
+                }
+            }
+        },
+        {
+            "required": [
+                "repThisCmdKilled"
+            ],
+            "type": "object",
+            "properties": {
+                "repThisCmdKilled": {
+                    "const": "\"thisCmdKilled\""
                 }
             }
         },

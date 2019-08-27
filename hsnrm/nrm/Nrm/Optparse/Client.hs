@@ -7,6 +7,7 @@ Maintainer  : fre@freux.fr
 module Nrm.Optparse.Client
   ( opts
   , Opts (..)
+  , ClientVerbosity (..)
   , CommonOpts (..)
   )
 where
@@ -14,6 +15,7 @@ where
 import qualified Data.ByteString as B
   ( getContents
   )
+import Data.Default
 import Dhall
 import Nrm.Types.Container
 import Nrm.Types.Manifest
@@ -22,7 +24,6 @@ import qualified Nrm.Types.Manifest.Yaml as Y
 import Nrm.Types.Messaging.UpstreamReq
 import qualified Nrm.Types.Process as P
 import qualified Nrm.Types.Units as U
-import Nrm.Types.UpstreamClient
 import Options.Applicative
 import Protolude
 import System.Directory
@@ -39,6 +40,9 @@ data CommonOpts
       , jsonPrint :: Bool
       }
 
+data ClientVerbosity = Normal | Verbose
+  deriving (Eq, Show)
+
 parserCommon :: Parser CommonOpts
 parserCommon =
   CommonOpts <$>
@@ -51,7 +55,8 @@ parserCommon =
 
 data RunCfg
   = RunCfg
-      { stdinType :: SourceType
+      { useStdin :: Bool
+      , stdinType :: SourceType
       , detach :: Bool
       , edit :: Bool
       , inputfile :: Maybe Text
@@ -63,6 +68,10 @@ data RunCfg
 parserRun :: Parser RunCfg
 parserRun =
   RunCfg <$>
+    flag
+      False
+      True
+      (long "stdin" <> short 'i' <> help "Read configuration on stdin.") <*>
     flag
       Dhall
       Yaml
@@ -91,7 +100,7 @@ parserRun =
         ( long "container" <> short 'c' <>
           metavar "CONTAINER" <>
           help
-            "Container name/UUID"
+            "Container name/ID"
         )
       ) <*>
     strArgument
@@ -113,7 +122,7 @@ parserKill =
     strArgument
       ( metavar "CONTAINER" <>
         help
-          "Name/UUID of the container to kill"
+          "Name/ID of the container to kill"
       )
 
 parserSetpower :: Parser U.Power
@@ -169,20 +178,20 @@ opts =
 data SourceType = Dhall | Yaml
   deriving (Eq)
 
-data FinallySource = NoExt | FinallyFile SourceType Text | FinallyStdin SourceType
+data FinallySource = UseDefault | NoExt | FinallyFile SourceType Text | FinallyStdin SourceType
 
-ext :: SourceType -> Maybe Text -> FinallySource
-ext _ (Just fn)
+ext :: Bool -> SourceType -> Maybe Text -> FinallySource
+ext _ _ (Just fn)
   | xt `elem` [".dh", ".dhall"] = FinallyFile Dhall fn
   | xt `elem` [".yml", ".yaml"] = FinallyFile Yaml fn
   | otherwise = NoExt
   where
     xt = takeExtension $ toS fn
-ext st Nothing = FinallyStdin st
+ext useStdin st Nothing = if useStdin then FinallyStdin st else UseDefault
 
 load :: RunCfg -> IO Manifest
 load RunCfg {..} =
-  (if edit then editing else return) =<< case ext stdinType inputfile of
+  (if edit then editing else return) =<< case ext useStdin stdinType inputfile of
     (FinallyFile Dhall filename) ->
       detailed $
         D.inputManifest =<<
@@ -195,6 +204,7 @@ load RunCfg {..} =
         Left e -> Prelude.print e >> die "yaml parsing exception."
         Right manifest -> return manifest
     (FinallyStdin Dhall) -> B.getContents >>= D.inputManifest . toS
+    UseDefault -> return def
     NoExt ->
       die
         ( "couldn't figure out extension for input file. " <>
@@ -214,7 +224,7 @@ run rc common = do
   manifest <- load rc
   cn <-
     case containerName rc of
-      Nothing -> fromMaybe (panic "Couldn't generate next container UUID") <$> nextContainerID
+      Nothing -> fromMaybe (panic "Couldn't generate next container ID") <$> nextContainerID
       Just n -> return $ Name n
   env <- fmap (\(x, y) -> (toS x, toS y)) <$> getEnvironment
   return $
@@ -226,7 +236,7 @@ run rc common = do
           , args = P.Arguments $ P.Arg <$> runargs rc
           , env = P.Env env
           }
-        , detachCmd = (detach rc)
+        , detachCmd = detach rc
         , runContainerID = cn
         }
       )

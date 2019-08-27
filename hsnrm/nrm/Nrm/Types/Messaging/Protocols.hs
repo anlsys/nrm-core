@@ -22,4 +22,4 @@ data ReqRep req rep where
   KillCmd :: ReqRep Req.KillCmd Rep.CmdKilled
 
 data ReqStream req reps where
-  Run :: ReqStream Req.Run '[Rep.Stdout, Rep.Stderr, Rep.EndStream]
+  Run :: ReqStream Req.Run '[Rep.Stdout, Rep.Stderr, Rep.CmdEnded]

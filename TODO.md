@@ -1,7 +1,5 @@
 --version
 
-fix C-C handler
-
 only pass container list view in list reply
 
 dhall `expected`:  https://hackage.haskell.org/package/dhall-1.25.0/docs/Dhall.html#t:Type
@@ -14,14 +12,11 @@ properly split message types in sub-newtypes
 
 locate and remove {-*-} comments
 
--change "UUID"s to "ID"s
-
 -start from message format.
 
 -eliminate fromJust's
 
 -eliminate "panic"
-
 
 - add: 
     -Wincomplete-uni-patterns

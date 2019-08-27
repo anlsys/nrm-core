@@ -45,7 +45,8 @@ data CmdSpec
 
 data Cmd
   = Cmd
-      { spec :: CmdSpec
+      { cmdPath :: Command
+      , arguments :: Arguments
       , upstreamClientID :: Maybe UC.UpstreamClientID
       }
   deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
@@ -59,7 +60,7 @@ instance JSONSchema Cmd where
   schema = gSchema
 
 mkCmd :: CmdSpec -> Maybe UC.UpstreamClientID -> Cmd
-mkCmd s clientID = Cmd {spec = s, upstreamClientID = clientID}
+mkCmd s clientID = Cmd {cmdPath = cmd s, arguments = args s, upstreamClientID = clientID}
 
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)

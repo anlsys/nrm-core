@@ -9,7 +9,6 @@ module Nrm.Types.UpstreamClient
   , nextUpstreamClientID
   , toText
   , fromText
-  , ClientVerbosity (..)
   )
 where
 
@@ -26,9 +25,6 @@ newtype UpstreamClientID = UpstreamClientID U.UUID
 
 nextUpstreamClientID :: IO (Maybe UpstreamClientID)
 nextUpstreamClientID = fmap UpstreamClientID <$> nextUUID
-
-data ClientVerbosity = Normal | Verbose
-  deriving (Eq, Show)
 
 toText :: UpstreamClientID -> Text
 toText (UpstreamClientID u) = U.toText u

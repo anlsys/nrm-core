@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# LANGUAGE DerivingVia #-}
 {-|
 Module      : Nrm.Types.Messaging.UpstreamRep
 Copyright   : (c) UChicago Argonne, 2019
@@ -12,10 +13,11 @@ module Nrm.Types.Messaging.UpstreamRep
   , Stderr (..)
   , Start (..)
   , ContainerKilled (..)
-  , EndStream (..)
+  , CmdEnded (..)
   , NoSuchCmd (..)
   , NoSuchContainer (..)
   , CmdKilled (..)
+  , ThisCmdKilled (..)
   , GetPower (..)
   , GetConfig (..)
   , GetState (..)
@@ -39,18 +41,21 @@ data Rep
   | RepStdout Stdout
   | RepStderr Stderr
   | RepStart Start
-  | RepEndStream EndStream
+  | RepCmdEnded CmdEnded
   | RepNoSuchContainer NoSuchContainer
   | RepNoSuchCmd NoSuchCmd
   | RepContainerKilled ContainerKilled
   | RepCmdKilled CmdKilled
+  | RepThisCmdKilled ThisCmdKilled
   | RepGetPower GetPower
   | RepGetState GetState
   | RepGetConfig GetConfig
   deriving (Show, Generic, MessagePack)
 
-data EndStream
-  = EndStream
+data CmdEnded
+  = CmdEnded
+      { exitCode :: Int
+      }
   deriving (Show, Generic, MessagePack)
 
 data NoSuchCmd
@@ -86,6 +91,10 @@ data Start
       { startContainerID :: C.ContainerID
       , startCmdID :: P.CmdID
       }
+  deriving (Show, Generic, MessagePack)
+
+data ThisCmdKilled
+  = ThisCmdKilled
   deriving (Show, Generic, MessagePack)
 
 data CmdKilled
@@ -124,6 +133,18 @@ instance NrmMessage Rep Rep where
 
   toJ = identity
 
+instance ToJSON ThisCmdKilled where
+
+  toJSON = gtoJson
+
+instance FromJSON ThisCmdKilled where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ThisCmdKilled where
+
+  schema = gSchema
+
 instance ToJSON NoSuchCmd where
 
   toJSON = gtoJson
@@ -135,7 +156,6 @@ instance FromJSON NoSuchCmd where
 instance JSONSchema NoSuchCmd where
 
   schema = gSchema
-
 
 instance ToJSON NoSuchContainer where
 
@@ -149,15 +169,15 @@ instance JSONSchema NoSuchContainer where
 
   schema = gSchema
 
-instance ToJSON EndStream where
+instance ToJSON CmdEnded where
 
   toJSON = gtoJson
 
-instance FromJSON EndStream where
+instance FromJSON CmdEnded where
 
   parseJSON = gparseJson
 
-instance JSONSchema EndStream where
+instance JSONSchema CmdEnded where
 
   schema = gSchema
 

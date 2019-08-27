@@ -45,31 +45,31 @@ instance (MonadIO m) => ContainerRuntime m DummyRuntime () () where
   doCreateContainer runtime () =
     liftIO $ nextContainerID <&> \case
       Just uuid -> Right (insert uuid [] <$> runtime, uuid)
-      Nothing -> Left "Failure to generate next Container UUID"
+      Nothing -> Left "Failure to generate next Container ID"
 
-  doPrepareStartApp runtime containerUUID AppStartConfig {..} =
+  doPrepareStartApp runtime containerID AppStartConfig {..} =
     return $
       Right
-        ( adjust (Unregistered cmdID :) containerUUID <$> runtime
+        ( adjust (Unregistered cmdID :) containerID <$> runtime
         , command
         , arguments
         )
 
-  doStopContainer (Dummy x) containerUUID =
-    case lookup containerUUID x of
-      Nothing -> return $ Left "Unknown container UUID"
+  doStopContainer (Dummy x) containerID =
+    case lookup containerID x of
+      Nothing -> return $ Left "Unknown container ID"
       Just dals -> do
         let pids = catMaybes $ go <$> dals
         for_ pids $ liftIO . signalProcess Signals.sigKILL
-        return $ Right $ Dummy $ delete containerUUID x
+        return $ Right $ Dummy $ delete containerID x
     where
       go (Registered _ pid) = Just pid
       go (Unregistered _) = Nothing
 
   listContainers (Dummy l) = keys l
 
-  registerStartApp runtime containerUUID cmdID pid =
-    adjust (go <$>) containerUUID <$> runtime
+  registerStartApp runtime containerID cmdID pid =
+    adjust (go <$>) containerID <$> runtime
     where
       go x
         | x == Unregistered cmdID = Registered cmdID pid
@@ -84,4 +84,4 @@ instance (MonadIO m) => ContainerRuntime m DummyRuntime () () where
       f (Registered appid _) = appid == cmdID
       f (Unregistered appid) = appid == cmdID
 
-  listApplications (Dummy runtime) containerUUID = lookup containerUUID runtime
+  listApplications (Dummy runtime) containerID = lookup containerID runtime

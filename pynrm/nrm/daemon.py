@@ -134,7 +134,7 @@ class Daemon(object):
             _logger.debug("Command start failure.")
             raise e
 
-    def kill(self, cmdIDs):
+    def kill(self, cmdIDs, messages):
         """
             kill children
         """
@@ -143,6 +143,8 @@ class Daemon(object):
             if cmdID in self.cmds.keys():
                 self.cmds[cmdID].proc.terminate()
                 self.cmds.pop(cmdID)
+        for m in messages:
+            self.upstream_rpc.send(*m)
 
 
 def runner(config, lib):

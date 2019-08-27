@@ -43,7 +43,7 @@ server :: Socket z Router -> ZMQ z v
 server s =
   forever $
     receiveMulti s >>= \case
-    [clientUUID, msg] -> do
+    [clientID, msg] -> do
       putText "Received raw message:"
       liftIO $ hFlush stdout
       case decode $ toS msg of
@@ -51,7 +51,7 @@ server s =
         Just req -> do
           liftIO $ print req
           liftIO $ hFlush stdout
-          dummyReply req s clientUUID
+          dummyReply req s clientID
     _ -> panic "received a message with more than two parts:"
 
 dummyReply :: Req.Req -> Socket z Router -> ByteString -> ZMQ z ()
@@ -68,4 +68,4 @@ dummy :: Protocols.ReqRep req rep -> req -> rep
 dummy = panic "not implemented"
 
 sendOne :: (Sender t) => ByteString -> Socket z t -> ByteString -> ZMQ z ()
-sendOne reply s clientUUID = sendMulti s (fromList [clientUUID, reply])
+sendOne reply s clientID = sendMulti s (fromList [clientID, reply])

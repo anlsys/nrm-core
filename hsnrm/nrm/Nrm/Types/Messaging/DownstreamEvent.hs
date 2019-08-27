@@ -84,27 +84,27 @@ instance M.NrmMessage Event J.Event where
 {-EventStart $ Start-}
 {-{ startContainerID = C.parseContainerID container_uuid-}
 {-, startDownstreamID = fromMaybe-}
-{-(panic "DownstreamEvent fromJ error on Application UUID")-}
+{-(panic "DownstreamEvent fromJ error on Application ID")-}
 {-(D.parseDownstreamID application_uuid)-}
 {-}-}
 {-J.Exit {..} ->-}
 {-EventExit $ Exit-}
 {-{ exitDownstreamID = fromMaybe-}
-{-(panic "DownstreamEvent fromJ error on Application UUID")-}
+{-(panic "DownstreamEvent fromJ error on Application ID")-}
 {-(D.parseDownstreamID application_uuid)-}
 {-}-}
 {-J.Performance {..} ->-}
 {-EventPerformance $ Performance-}
 {-{ performanceContainerID = C.parseContainerID container_uuid-}
 {-, performanceDownstreamID = fromMaybe-}
-{-(panic "DownstreamEvent fromJ error on Application UUID")-}
+{-(panic "DownstreamEvent fromJ error on Application ID")-}
 {-(D.parseDownstreamID application_uuid)-}
 {-, perf = U.Operations perf-}
 {-}-}
 {-J.Progress {..} ->-}
 {-EventProgress $ Progress-}
 {-{ progressDownstreamID = fromMaybe-}
-{-(panic "DownstreamEvent fromJ error on Application UUID")-}
+{-(panic "DownstreamEvent fromJ error on Application ID")-}
 {-(D.parseDownstreamID application_uuid)-}
 {-, payload = U.Progress payload-}
 {-}-}
