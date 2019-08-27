@@ -6,8 +6,10 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Process
   ( Cmd (..)
+  , CmdCore (..)
   , CmdSpec (..)
   , mkCmd
+  , registerPID
   , ProcessID (..)
   , ThreadID (..)
   , TaskID (..)
@@ -43,11 +45,18 @@ data CmdSpec
       }
   deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
 
-data Cmd
-  = Cmd
+data CmdCore
+  = CmdCore
       { cmdPath :: Command
       , arguments :: Arguments
       , upstreamClientID :: Maybe UC.UpstreamClientID
+      }
+  deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
+
+data Cmd
+  = Cmd
+      { cmdCore :: CmdCore
+      , pid :: ProcessID
       }
   deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
 
@@ -59,8 +68,15 @@ instance JSONSchema Cmd where
 
   schema = gSchema
 
-mkCmd :: CmdSpec -> Maybe UC.UpstreamClientID -> Cmd
-mkCmd s clientID = Cmd {cmdPath = cmd s, arguments = args s, upstreamClientID = clientID}
+instance JSONSchema CmdCore where
+
+  schema = gSchema
+
+mkCmd :: CmdSpec -> Maybe UC.UpstreamClientID -> CmdCore
+mkCmd s clientID = CmdCore {cmdPath = cmd s, arguments = args s, upstreamClientID = clientID}
+
+registerPID :: CmdCore -> ProcessID -> Cmd
+registerPID c pid = Cmd {cmdCore = c, ..}
 
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)

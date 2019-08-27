@@ -55,7 +55,7 @@ showContainerList l =
   mconcat $ l <&> \(containerID, Container {..}) ->
     "container: ID " <> C.toText containerID <> "\n" <> mconcat (descCmd <$> DM.toList cmds)
   where
-    descCmd (cmdID, P.Cmd {..}) =
+    descCmd (cmdID, cmdCore -> P.CmdCore {..}) =
       " command: ID " <> P.toText cmdID <> descSpec cmdPath arguments <> "\n"
     descSpec (P.Command cmd) (Arguments args) =
       " : " <> toS cmd <> " " <> (mconcat . intersperse " " $ toS <$> args)
@@ -103,7 +103,7 @@ runningCmdIDCmdMap :: NrmState -> DM.Map CmdID Cmd
 runningCmdIDCmdMap = cmdsMap cmds
 
 -- | List commands awaiting to be launched
-awaitingCmdIDCmdMap :: NrmState -> DM.Map CmdID Cmd
+awaitingCmdIDCmdMap :: NrmState -> DM.Map CmdID CmdCore
 awaitingCmdIDCmdMap = cmdsMap awaiting
 
 -- | Helper
@@ -114,7 +114,7 @@ containerMap accessor s = mconcat $ f <$> DM.toList (containers s)
     f (containerID, container) = fromList $ (,containerID) <$> DM.keys (accessor container)
 
 -- | List commands awaiting to be launched
-cmdsMap :: (Container -> Map CmdID Cmd) -> NrmState -> DM.Map CmdID Cmd
+cmdsMap :: (Container -> Map CmdID a) -> NrmState -> DM.Map CmdID a
 cmdsMap accessor s = mconcat $ accessor <$> elems (containers s)
 
 -- | get all Cmds IDs for a container ID

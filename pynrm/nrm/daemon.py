@@ -33,12 +33,6 @@ class Daemon(object):
     def __post_init__(self):
         self.state = self.lib.initialState(self.cfg)
 
-        self.dispatch = {
-            "reply": self.reply,
-            "cmd": self.cmd,
-            "kill": self.kill
-        }
-
         self.cmds = {}
 
         # register messaging servers
@@ -49,6 +43,12 @@ class Daemon(object):
         self.upstream_pub = UpstreamPubServer(upstream_pub_a)
         self.upstream_rpc = UpstreamRPCServer(upstream_rpc_a)
         self.downstream_event = DownstreamEventServer(downstream_event_a)
+
+        self.dispatch = {
+            "reply": self.upstream_rpc.send,
+            "cmd": self.cmd,
+            "kill": self.kill
+        }
 
         # register messaging server callbacks
         self.upstream_rpc.setup_recv_callback(
@@ -65,15 +65,19 @@ class Daemon(object):
         signal.signal(signal.SIGCHLD, self.do_signal)
 
         # starting the daemon
+
         ioloop.IOLoop.current().start()
 
     def do_signal(self, signum, frame):
+        """
+            'do_signal' handles interruptions and children death.
+        """
         if signum == signal.SIGINT:
             ioloop.IOLoop.current().add_callback_from_signal(self.do_shutdown)
         elif signum == signal.SIGCHLD:
             ioloop.IOLoop.current().add_callback_from_signal(self.do_children)
         else:
-            _logger.error("wrong signal: %d", signum)
+            _logger.error("Unhandled signal: %d", signum)
 
     def do_children(self):
         # find out if children have terminated
@@ -87,6 +91,7 @@ class Daemon(object):
         pass
 
     def do_shutdown(self):
+        self.wrap(self.lib.doShutdown)()
         ioloop.IOLoop.current().stop()
 
     def wrap(self, f, *argsConfig, **kwargsConfig):
@@ -107,11 +112,13 @@ class Daemon(object):
                 self.dispatch[bh[0]](*bh[1:])
         return r
 
-    def reply(self, *args):
-        self.upstream_rpc.send(*args)
-
-    def cmd(self, clientID, cmdID, cmd, arguments, environment):
-        register = self.wrap(self.lib.registerCmd, clientID, cmdID)
+    def cmd(self, cmdID, cmd, arguments, environment):
+        """
+            'cmd' starts a runtime subprocess and handles start/failure by registering
+            its cmdID with the state in the appropriate manner.
+        """
+        registerSuccess = self.wrap(self.lib.registerCmdSuccess, cmdID)
+        registerFailed = self.wrap(self.lib.registerCmdFailure)
         environment = dict(environment)
         _logger.debug("starting command " + str(cmd) + " with argument list "
                       + str(arguments))
@@ -127,10 +134,10 @@ class Daemon(object):
             p.stdout.read_until_close(outcb, outcb)
             p.stderr.read_until_close(errcb, errcb)
             self.cmds[cmdID] = p
-            register(True)
+            registerSuccess(p.proc.pid)
             _logger.debug("Command start success.")
         except FileNotFoundError as e:
-            register(False)
+            registerFailed()
             _logger.debug("Command start failure.")
             raise e
 

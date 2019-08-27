@@ -27,7 +27,8 @@ module Nrm.Export
   , doControl
   , doChildren
   , doShutdown
-  , registerCmd
+  , registerCmdSuccess
+  , registerCmdFailure
   )
 where
 
@@ -48,6 +49,7 @@ import qualified Nrm.Types.NrmState as TS
 import qualified Nrm.Types.Process as P
 import qualified Nrm.Types.UpstreamClient as UC
 import Protolude hiding (stderr, stdout)
+import qualified System.Posix.Types as SPT
 import Text.Pretty.Simple
 
 -- | Parses Daemon CLI arguments
@@ -119,8 +121,8 @@ doControl :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doControl c s = B.behavior c s B.DoControl
 
 -- | Behave on children death
-doChildren :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
-doChildren c s = B.behavior c s B.DoChildren
+doChildren :: C.Cfg -> TS.NrmState -> Int -> IO (TS.NrmState, B.Behavior)
+doChildren c s pid = B.behavior c s (B.DoChildren (P.ProcessID . SPT.CPid $ fromIntegral pid))
 
 -- | Behave on shutdown
 doShutdown :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
@@ -135,18 +137,25 @@ doStderr :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
 doStderr = handleTag B.Stderr
 
 -- | Register a command as failed or successful.
-registerCmd :: C.Cfg -> TS.NrmState -> Text -> Text -> Bool -> IO (TS.NrmState, B.Behavior)
-registerCmd cfg s clientid cmdIDT success =
+registerCmdSuccess :: C.Cfg -> TS.NrmState -> Text -> Int -> IO (TS.NrmState, B.Behavior)
+registerCmdSuccess cfg s cmdIDT pid =
   B.behavior
     cfg
     s
     ( B.RegisterCmd
-      ( fromMaybe
-        (panic "couldn't parse upstream client ID")
-        (UC.fromText clientid)
-      )
       (fromMaybe (panic "couldn't decode cmdID") (P.fromText cmdIDT))
-      (if success then B.Launched else B.NotLaunched)
+      (B.Launched (P.ProcessID $ SPT.CPid $ fromIntegral pid))
+    )
+
+-- | Register a command as failed or successful.
+registerCmdFailure :: C.Cfg -> TS.NrmState -> Text -> IO (TS.NrmState, B.Behavior)
+registerCmdFailure cfg s cmdIDT =
+  B.behavior
+    cfg
+    s
+    ( B.RegisterCmd
+      (fromMaybe (panic "couldn't decode cmdID") (P.fromText cmdIDT))
+      B.NotLaunched
     )
 
 -- Utilities

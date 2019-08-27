@@ -32,6 +32,7 @@ import Nrm.Types.NrmState
 import Nrm.Types.Process
 import qualified Nrm.Types.Sensor as Sensor
 import Nrm.Types.Topology
+import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
 
 -- | Populate the initial NrmState.
@@ -97,7 +98,7 @@ createContainer containerID st =
     Just _ -> st
 
 -- | Registers an awaiting command in an existing container
-registerAwaiting :: CmdID -> Cmd -> C.ContainerID -> NrmState -> NrmState
+registerAwaiting :: CmdID -> CmdCore -> C.ContainerID -> NrmState -> NrmState
 registerAwaiting cmdID cmdValue containerID st =
   st {containers = DM.update f containerID (containers st)}
   where
@@ -107,26 +108,30 @@ registerAwaiting cmdID cmdValue containerID st =
 {-, C.cmds = DM.insert cmdID c (cmds container)-}
 
 -- | Turns an awaiting command to a launched one.
-registerLaunched :: CmdID -> NrmState -> (NrmState, C.ContainerID)
-registerLaunched cmdID st =
+registerLaunched :: CmdID -> ProcessID -> NrmState -> Maybe (NrmState, C.ContainerID, UC.UpstreamClientID)
+registerLaunched cmdID pid st =
   case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
-    Nothing -> panic "internal nrm.so lookup error."
+    Nothing -> Nothing -- "internal nrm.so lookup error."
     Just containerID -> case DM.lookup containerID (containers st) of
-      Nothing -> panic "container was deleted while command was registering"
+      Nothing -> Nothing -- "container was deleted while command was registering"
       Just container -> case DM.lookup cmdID (C.awaiting container) of
-        Nothing -> panic "internal nrm.so lookup error"
-        Just cmdValue ->
-          ( st
-              { containers = DM.insert containerID
-                  ( container
-                    { C.cmds = DM.insert cmdID cmdValue (C.cmds container)
-                    , C.awaiting = DM.delete cmdID (C.awaiting container)
-                    }
-                  )
-                  (containers st)
-              }
-          , containerID
-          )
+        Nothing -> Nothing -- "internal nrm.so lookup error"
+        Just cmdValue -> case upstreamClientID cmdValue of
+          Nothing -> Nothing
+          Just clientID ->
+            Just
+              ( st
+                  { containers = DM.insert containerID
+                      ( container
+                        { C.cmds = DM.insert cmdID (Cmd {cmdCore = cmdValue, ..}) (C.cmds container)
+                        , C.awaiting = DM.delete cmdID (C.awaiting container)
+                        }
+                      )
+                      (containers st)
+                  }
+              , containerID
+              , clientID
+              )
 
 -- | Fails an awaiting command.
 registerFailed :: CmdID -> NrmState -> NrmState

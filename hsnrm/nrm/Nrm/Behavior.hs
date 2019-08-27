@@ -5,11 +5,14 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.Behavior
-  ( behavior
-  , Behavior (..)
+  ( -- * Nrm's core logic.
+    behavior
+  , -- * The Event specification
+    NrmEvent (..)
+  , -- * The Behavior specification
+    Behavior (..)
   , CmdStatus (..)
   , OutputType (..)
-  , NrmEvent (..)
   )
 where
 
@@ -28,35 +31,57 @@ import Nrm.Types.Process
 import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
 
-data CmdStatus = Launched | NotLaunched
+-- | The Behavior datatype describes an event from the runtime on which to react.
+data NrmEvent
+  = -- | A Request was received on the Upstream API.
+    Req UC.UpstreamClientID UReq.Req
+  | -- | Registering a child process.
+    RegisterCmd CmdID CmdStatus
+  | -- | Event from the application side.
+    DownstreamEvent DEvent.Event
+  | -- | Stdin/stdout data from the app side.
+    DoOutput CmdID OutputType Text
+  | -- | Children death event
+    DoChildren ProcessID
+  | -- | Sensor callback
+    DoSensor
+  | -- | Control loop calback
+    DoControl
+  | -- | Shutting down the daemon
+    DoShutdown
+
+-- | The Launch status of a command, for registration.
+data CmdStatus
+  = -- | In case the command to start a child succeeded, mark it as registered and provide its PID.
+    Launched ProcessID
+  | -- | In case the command to start a child failed.
+    NotLaunched
   deriving (Generic, MessagePack)
 
 data OutputType = Stdout | Stderr
 
-data NrmEvent
-  = Req UC.UpstreamClientID UReq.Req
-  | RegisterCmd UC.UpstreamClientID CmdID CmdStatus
-  | DownstreamEvent DEvent.Event
-  | DoOutput CmdID OutputType Text
-  | DoSensor
-  | DoControl
-  | DoShutdown
-  | DoChildren
-
+-- | The Behavior datatype encodes a behavior to be executed by the NRM runtime.
 data Behavior
-  = NoBehavior
-  | Rep UC.UpstreamClientID URep.Rep
-  | Pub UPub.Pub
-  | StartChild UC.UpstreamClientID CmdID Command Arguments Env
-  | KillChildren [CmdID] [(UC.UpstreamClientID, URep.Rep)]
+  = -- | The No-Op
+    NoBehavior
+  | -- | Reply to an upstream client.
+    Rep UC.UpstreamClientID URep.Rep
+  | -- | Publish a message on upstream
+    Pub UPub.Pub
+  | -- | Start a child process
+    StartChild CmdID Command Arguments Env
+  | -- | Kill children processes and send some messages back upstream.
+    KillChildren [CmdID] [(UC.UpstreamClientID, URep.Rep)]
   deriving (Generic)
 
+-- | The behavior function contains the main logic of the NRM daemon. It changes the state and
+-- produces an associated behavior to be executed by the runtime.
 behavior :: Cfg.Cfg -> NrmState -> NrmEvent -> IO (NrmState, Behavior)
 behavior _ st (DoOutput cmdID outputType content) = do
   let containerID =
         fromMaybe
           ( panic
-            "received signal for an absent CmdID: Internal nrm state management error."
+            "received output for an absent CmdID: Internal nrm state management error."
           ) $
           DM.lookup cmdID (runningCmdIDContainerIDMap st)
   return
@@ -65,7 +90,7 @@ behavior _ st (DoOutput cmdID outputType content) = do
     then NoBehavior
     else
       case lookupCmd cmdID st of
-        Just c -> case upstreamClientID c of
+        Just c -> case (upstreamClientID . cmdCore) c of
           Just ucID ->
             Rep ucID $ case outputType of
               Stdout ->
@@ -81,14 +106,15 @@ behavior _ st (DoOutput cmdID outputType content) = do
           Nothing -> NoBehavior
         Nothing -> NoBehavior
     )
-behavior _ st (RegisterCmd clientID cmdID cmdstatus) = case cmdstatus of
+behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
   NotLaunched -> return (registerFailed cmdID st, NoBehavior)
-  Launched -> do
-    let (st', containerID) = registerLaunched cmdID st
-    return
-      ( st'
-      , Rep clientID (URep.RepStart (URep.Start containerID cmdID))
-      )
+  Launched pid ->
+    return $ case registerLaunched cmdID pid st of
+      Just (st', containerID, clientID) ->
+        ( st'
+        , Rep clientID (URep.RepStart (URep.Start containerID cmdID))
+        )
+      Nothing -> (st, NoBehavior)
 behavior _ st (DownstreamEvent msg) = case msg of
   DEvent.ThreadStart _ -> return (st, NoBehavior)
   DEvent.ThreadProgress _ _ -> return (st, NoBehavior)
@@ -114,7 +140,7 @@ behavior c st (Req clientid msg) = case msg of
           runContainerID .
           createContainer runContainerID $
           st
-      , StartChild clientid cmdID (cmd spec) (args spec) (env spec)
+      , StartChild cmdID (cmd spec) (args spec) (env spec)
       )
   UReq.ReqKillContainer UReq.KillContainer {..} -> do
     let st' = removeContainer killContainerID st
@@ -125,7 +151,7 @@ behavior c st (Req clientid msg) = case msg of
     case DM.lookup killCmdID (cmdIDMap st) of
       Nothing -> return (st, Rep clientid (URep.RepNoSuchCmd URep.NoSuchCmd))
       Just (cmd, containerID, container) -> do
-        let endUpstreamRun = maybe [] (\x -> [(x, URep.RepThisCmdKilled URep.ThisCmdKilled)]) (upstreamClientID cmd)
+        let endUpstreamRun = maybe [] (\x -> [(x, URep.RepThisCmdKilled URep.ThisCmdKilled)]) (upstreamClientID . cmdCore $ cmd)
         let (st', killRep) =
               if length (Ct.cmds container) == 1
               then
@@ -140,15 +166,17 @@ behavior c st (Req clientid msg) = case msg of
 behavior _ st DoSensor = return (st, NoBehavior)
 behavior _ st DoControl = return (st, NoBehavior)
 behavior _ st DoShutdown = return (st, NoBehavior)
-behavior _ st DoChildren = return (st, NoBehavior)
+behavior _ st (DoChildren pid) = return (st, NoBehavior)
 
--- | The sensitive tag that has to be pattern-matched on the python side.
+-- | The sensitive unpacking that has to be pattern-matched on the python side.
+-- These toObject/fromObject functions do not correspond to each other and the instance
+-- just exists for passing the behavior to the python runtime.
 instance MessagePack Behavior where
 
   toObject NoBehavior = toObject ("noop" :: Text)
   toObject (Rep clientid msg) = toObject ("reply" :: Text, clientid, M.encodeT msg)
   toObject (Pub msg) = toObject ("publish" :: Text, M.encodeT msg)
-  toObject (StartChild clientID cmdID cmd args env) = toObject ("cmd" :: Text, clientID, cmdID, cmd, args, env)
+  toObject (StartChild cmdID cmd args env) = toObject ("cmd" :: Text, cmdID, cmd, args, env)
   toObject (KillChildren cmdIDs reps) = toObject ("kill" :: Text, cmdIDs, (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> reps)
 
   fromObject x = to <$> gFromObject x

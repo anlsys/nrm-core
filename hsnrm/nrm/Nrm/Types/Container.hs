@@ -24,13 +24,13 @@ import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import Generics.Generic.Aeson
 import Nrm.Types.DownstreamClient
-import Nrm.Types.Process (Cmd (..), CmdID (..))
+import Nrm.Types.Process (Cmd (..), CmdID (..),CmdCore(..))
 import Protolude
 
 data Container
   = Container
       { cmds :: DM.Map CmdID Cmd
-      , awaiting :: DM.Map CmdID Cmd
+      , awaiting :: DM.Map CmdID CmdCore
       , downstreamCmds :: Map DownstreamCmdID DownstreamCmd
       , downstreamThreads :: Map DownstreamThreadID DownstreamThread
       }
