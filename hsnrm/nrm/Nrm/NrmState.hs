@@ -109,16 +109,14 @@ data CmdKey = KCmdID CmdID | KProcessID ProcessID
 
 -- | Removes a command from the state, and also removes the container if it's
 -- empty as a result.
-removeCmd :: CmdKey -> NrmState -> (DeletionInfo, CmdID, Cmd, ContainerID, NrmState)
+removeCmd :: CmdKey -> NrmState -> Maybe (DeletionInfo, CmdID, Cmd, ContainerID, NrmState)
 removeCmd key st = case key of
-  KCmdID cmdID -> case DM.lookup cmdID (cmdIDMap st) of
-    Just (cmd, containerID, container) -> go cmdID cmd containerID container
-    Nothing ->
-      panic "asked to remove a non-existent command (cmdID map search fail)"
-  KProcessID pid -> case DM.lookup pid (pidMap st) of
-    Just (cmdID, cmd, containerID, container) -> go cmdID cmd containerID container
-    Nothing ->
-      panic "asked to remove a non-existent command (pid map search fail)"
+  KCmdID cmdID ->
+    DM.lookup cmdID (cmdIDMap st) <&> \(cmd, containerID, container) ->
+      go cmdID cmd containerID container
+  KProcessID pid ->
+    DM.lookup pid (pidMap st) <&> \(cmdID, cmd, containerID, container) ->
+      go cmdID cmd containerID container
   where
     go cmdID cmd containerID container =
       if length (cmds container) == 1

@@ -138,10 +138,16 @@ behavior c st (Req clientid msg) = case msg of
   UReq.ReqKillContainer UReq.KillContainer {..} -> do
     let st' = removeContainer killContainerID st
     let cmds = getCmds st killContainerID
-    return (st', KillChildren cmds [])
+    return
+      ( st'
+      , KillChildren cmds $
+        catMaybes $
+        ((\x -> (upstreamClientID . cmdCore $ x, URep.RepThisCmdKilled URep.ThisCmdKilled)) <$> cmds)
+      )
   UReq.ReqSetPower _ -> return (st, NoBehavior)
   UReq.ReqKillCmd UReq.KillCmd {..} ->
-    return $ removeCmd (KCmdID killCmdID) st & \(info, _, cmd, containerID, st') ->
+    return $ fromMaybe (st, NoBehavior) $
+      removeCmd (KCmdID killCmdID) st <&> \(info, _, cmd, containerID, st') ->
       ( st'
       , KillChildren [killCmdID] $
         ( clientid
@@ -153,13 +159,14 @@ behavior c st (Req clientid msg) = case msg of
       )
 behavior _ st (ChildDied pid exitcode) =
   return $ case removeCmd (KProcessID pid) st of
-    (_, cmdID, cmd, _, st') ->
+    Just (_, cmdID, cmd, _, st') ->
       ( st'
       , ClearChild cmdID
         ( (,URep.RepCmdEnded (URep.CmdEnded exitcode)) <$>
           (upstreamClientID . cmdCore $ cmd)
         )
       )
+    Nothing -> (st, NoBehavior)
 behavior _ st DoSensor = return (st, NoBehavior)
 behavior _ st DoControl = return (st, NoBehavior)
 behavior _ st DoShutdown = return (st, NoBehavior)

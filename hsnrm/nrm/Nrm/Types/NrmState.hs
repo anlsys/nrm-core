@@ -126,7 +126,7 @@ cmdsMap :: (Container -> Map CmdID a) -> NrmState -> DM.Map CmdID a
 cmdsMap accessor s = mconcat $ accessor <$> elems (containers s)
 
 -- | get all Cmds IDs for a container ID
-getCmds :: NrmState -> C.ContainerID -> [CmdID]
+getCmds :: NrmState -> C.ContainerID -> [(CmdID,Cmd)]
 getCmds st containerID = case DM.lookup containerID (containers st) of
   Nothing -> panic "containerID not found"
-  Just c -> DM.keys $ C.cmds c
+  Just c -> DM.toList $ C.cmds c

@@ -53,13 +53,13 @@ class Daemon(object):
 
         # register messaging server callbacks
         self.upstream_rpc.setup_recv_callback(
-            self.wrap(self.lib.upstreamReceive))
+            self.wrap("upstreamReceive"))
         self.downstream_event.setup_recv_callback(
-            self.wrap(self.lib.downstreamReceive))
+            self.wrap("downstreamReceive"))
 
         # setup periodic sensor updates
-        # ioloop.PeriodicCallback(self.wrap(self.lib.doSensor), 10000).start()
-        # ioloop.PeriodicCallback(self.wrap(self.lib.doControl), 10000).start()
+        # ioloop.PeriodicCallback(self.wrap("doSensor"), 10000).start()
+        # ioloop.PeriodicCallback(self.wrap("doControl"), 10000).start()
 
         # take care of signals
         signal.signal(signal.SIGINT, self.do_signal)
@@ -88,16 +88,16 @@ class Daemon(object):
                 pid, status, rusage = os.wait3(os.WNOHANG)
                 if pid == 0 and status == 0:
                     break
-                self.wrap(self.lib.childDied)(pid, status)
+                self.wrap("childDied")(pid, status)
             except OSError:
                 break
         pass
 
     def do_shutdown(self):
-        self.wrap(self.lib.doShutdown)()
+        self.wrap("doShutdown")()
         ioloop.IOLoop.current().stop()
 
-    def wrap(self, f, *argsConfig, **kwargsConfig):
+    def wrap(self, name, *argsConfig, **kwargsConfig):
         """
             'wrap' is a decorator that turns a shared library symbol into a
             behavior-reacting function. It can process any symbol whose
@@ -108,20 +108,24 @@ class Daemon(object):
 
         def r(*argsCallback, **kwargsCallback):
             args = argsConfig + argsCallback
+            _logger.debug(
+                "calling into nrm.so with symbol %s and arguments %s", name, str(args))
             kwargs = dict(kwargsConfig, ** kwargsCallback)
-            st, bh = f(self.cfg, self.state, *args, **kwargs)
+            st, bh = self.lib.__getattr__(name)(
+                self.cfg, self.state, *args, **kwargs)
             self.state = st
+            _logger.debug("received behavior from nrm.so: %s", str(bh))
             if bh != "noop":
                 self.dispatch[bh[0]](*bh[1:])
         return r
 
     def cmd(self, cmdID, cmd, arguments, environment):
         """
-            'cmd' starts a runtime subprocess and handles start/failure by registering
+            start a runtime subprocess and handles start/failure by registering
             its cmdID with the state in the appropriate manner.
         """
-        registerSuccess = self.wrap(self.lib.registerCmdSuccess, cmdID)
-        registerFailed = self.wrap(self.lib.registerCmdFailure)
+        registerSuccess = self.wrap("registerCmdSuccess", cmdID)
+        registerFailed = self.wrap("registerCmdFailure")
         environment = dict(environment)
         _logger.debug("starting command " + str(cmd) + " with argument list "
                       + str(arguments))
@@ -132,8 +136,8 @@ class Daemon(object):
                                    close_fds=True,
                                    env=environment,
                                    cwd=environment['PWD'])
-            outcb = self.wrap(self.lib.doStdout, cmdID.encode())
-            errcb = self.wrap(self.lib.doStderr, cmdID.encode())
+            outcb = self.wrap("doStdout", cmdID.encode())
+            errcb = self.wrap("doStderr", cmdID.encode())
             p.stdout.read_until_close(outcb, outcb)
             p.stderr.read_until_close(errcb, errcb)
             self.cmds[cmdID] = p
@@ -151,8 +155,7 @@ class Daemon(object):
         _logger.debug("Killing children: %s", str(cmdIDs))
         for cmdID in cmdIDs:
             if cmdID in self.cmds.keys():
-                self.cmds[cmdID].proc.terminate()
-                self.cmds.pop(cmdID)
+                self.cmds.pop(cmdID).proc.terminate()
         for m in messages:
             self.upstream_rpc.send(*m)
 
@@ -163,9 +166,8 @@ class Daemon(object):
         _logger.debug("Killing children: %s", str(cmdIDs))
         for cmdID in cmdIDs:
             if cmdID in self.cmds.keys():
-                self.cmds[cmdID].proc.terminate()
-                self.cmds.pop(cmdID)
-        assert(len(m) == 1)
+                self.cmds.pop(cmdID).proc.terminate()
+        assert(len(messages) == 1)
         for m in messages:
             self.upstream_rpc.send(*m)
 
@@ -183,7 +185,6 @@ def runner(config, lib):
         _logger.info(
             "Setting configuration to DEBUG level and redirecting to stdout.")
         _logger.setLevel(logging.DEBUG)
-        # _logger.addHandler(logging.StreamHandler(sys.stdout))
         _logger.debug("NRM Daemon configuration:")
         _logger.debug(lib.showConfiguration(config))
 
