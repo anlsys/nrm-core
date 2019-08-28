@@ -1,5 +1,7 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE DerivingVia #-}
+
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 {-|
 Module      : Nrm.Types.Messaging.UpstreamRep
 Copyright   : (c) UChicago Argonne, 2019
@@ -54,7 +56,7 @@ data Rep
 
 data CmdEnded
   = CmdEnded
-      { exitCode :: Int
+      { exitCode :: ExitCode
       }
   deriving (Show, Generic, MessagePack)
 
@@ -178,6 +180,18 @@ instance FromJSON CmdEnded where
   parseJSON = gparseJson
 
 instance JSONSchema CmdEnded where
+
+  schema = gSchema
+
+instance ToJSON ExitCode where
+
+  toJSON = gtoJson
+
+instance FromJSON ExitCode where
+
+  parseJSON = gparseJson
+
+instance JSONSchema ExitCode where
 
   schema = gSchema
 
@@ -332,3 +346,10 @@ instance JSONSchema RaplCfg where
 instance JSONSchema HwmonCfg where
 
   schema = gSchema
+
+instance MessagePack ExitCode where
+
+  toObject (ExitSuccess) = toObject (0 :: Int)
+  toObject (ExitFailure i) = toObject i
+
+  fromObject x = fromObject x <&> \y -> if y == 0 then ExitSuccess else ExitFailure y

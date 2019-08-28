@@ -47,7 +47,8 @@ class Daemon(object):
         self.dispatch = {
             "reply": self.upstream_rpc.send,
             "cmd": self.cmd,
-            "kill": self.kill
+            "kill": self.kill,
+            "pop": self.popchild
         }
 
         # register messaging server callbacks
@@ -87,6 +88,7 @@ class Daemon(object):
                 pid, status, rusage = os.wait3(os.WNOHANG)
                 if pid == 0 and status == 0:
                     break
+                self.wrap(self.lib.childDied)(pid, status)
             except OSError:
                 break
         pass
@@ -144,13 +146,26 @@ class Daemon(object):
 
     def kill(self, cmdIDs, messages):
         """
-            kill children
+            kill children and send messages up
         """
         _logger.debug("Killing children: %s", str(cmdIDs))
         for cmdID in cmdIDs:
             if cmdID in self.cmds.keys():
                 self.cmds[cmdID].proc.terminate()
                 self.cmds.pop(cmdID)
+        for m in messages:
+            self.upstream_rpc.send(*m)
+
+    def popchild(self, cmdIDs, messages):
+        """
+            pop child child and send a message up
+        """
+        _logger.debug("Killing children: %s", str(cmdIDs))
+        for cmdID in cmdIDs:
+            if cmdID in self.cmds.keys():
+                self.cmds[cmdID].proc.terminate()
+                self.cmds.pop(cmdID)
+        assert(len(m) == 1)
         for m in messages:
             self.upstream_rpc.send(*m)
 

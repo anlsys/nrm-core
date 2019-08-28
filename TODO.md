@@ -41,3 +41,9 @@ locate and remove {-*-} comments
     -Wpartial-fields
     -Wmissed-specialisations
     -Wall-missed-specialisations
+
+- introduce lib-runtime error messages
+
+- change model to a list of behaviors
+
+-write the python code with _getattrs_ ?

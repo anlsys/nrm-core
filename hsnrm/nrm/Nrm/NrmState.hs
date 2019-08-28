@@ -1,18 +1,27 @@
 {-|
 Module      : Nrm.NrmState
-Copyright   : (c) 2019, UChicago Argonne, LLC.
+Copyright   : (c) 2019, UChicago Argonne, LL
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module Nrm.NrmState
-  ( initialState
+  ( -- * Initial state
+    initialState
+  , -- * Creation/Registration
+    createContainer
   , registerLibnrmDownstreamClient
+  , registerAwaiting
   , registerFailed
   , registerLaunched
-  , registerAwaiting
-  , createContainer
-  , removeContainer
-  , listSensors
+  , -- ** Removal
+    -- ** Container removal
+    removeContainer
+  , -- ** Command removal
+    CmdKey (..)
+  , DeletionInfo (..)
+  , removeCmd
+  , -- ** Queries
+    listSensors
   , listActuators
   )
 where
@@ -26,13 +35,13 @@ import Nrm.Node.Sysfs
 import Nrm.Node.Sysfs.Internal
 import Nrm.Types.Actuator
 import Nrm.Types.Configuration
-import qualified Nrm.Types.Container as C
+import Nrm.Types.Container
 import Nrm.Types.DownstreamClient
 import Nrm.Types.NrmState
 import Nrm.Types.Process
 import qualified Nrm.Types.Sensor as Sensor
 import Nrm.Types.Topology
-import qualified Nrm.Types.UpstreamClient as UC
+import Nrm.Types.UpstreamClient
 import Protolude
 
 -- | Populate the initial NrmState.
@@ -84,37 +93,78 @@ registerLibnrmDownstreamClient :: NrmState -> DownstreamThreadID -> NrmState
 registerLibnrmDownstreamClient s _ = s
 
 -- | Removes a container from the state
-removeContainer :: C.ContainerID -> NrmState -> NrmState
+removeContainer :: ContainerID -> NrmState -> NrmState
 removeContainer containerID st =
   st {containers = DM.delete containerID (containers st)}
 
+-- | Result annotation for command removal from the state.
+data DeletionInfo
+  = -- | If the container was removed as a result of the command deletion
+    ContainerRemoved
+  | -- | If the command was removed but the container stayed.
+    CmdRemoved
+
+-- | Wrapper for the type of key to lookup commands on
+data CmdKey = KCmdID CmdID | KProcessID ProcessID
+
+-- | Removes a command from the state, and also removes the container if it's
+-- empty as a result.
+removeCmd :: CmdKey -> NrmState -> (DeletionInfo, CmdID, Cmd, ContainerID, NrmState)
+removeCmd key st = case key of
+  KCmdID cmdID -> case DM.lookup cmdID (cmdIDMap st) of
+    Just (cmd, containerID, container) -> go cmdID cmd containerID container
+    Nothing ->
+      panic "asked to remove a non-existent command (cmdID map search fail)"
+  KProcessID pid -> case DM.lookup pid (pidMap st) of
+    Just (cmdID, cmd, containerID, container) -> go cmdID cmd containerID container
+    Nothing ->
+      panic "asked to remove a non-existent command (pid map search fail)"
+  where
+    go cmdID cmd containerID container =
+      if length (cmds container) == 1
+      then (ContainerRemoved, cmdID, cmd, containerID, removeContainer containerID st)
+      else
+        ( CmdRemoved
+        , cmdID
+        , cmd
+        , containerID
+        , adjustContainer
+          ( \xc ->
+            xc
+              { cmds = DM.delete cmdID (cmds xc)
+              }
+          )
+          containerID
+          st
+        )
+
 -- | Registers a container if not already tracked in the state, and returns the new state.
-createContainer :: C.ContainerID -> NrmState -> NrmState
+createContainer :: ContainerID -> NrmState -> NrmState
 createContainer containerID st =
   case DM.lookup containerID (containers st) of
     Nothing -> st {containers = containers'}
       where
-        containers' = DM.insert containerID C.emptyContainer (containers st)
+        containers' = DM.insert containerID emptyContainer (containers st)
     Just _ -> st
 
 -- | Registers an awaiting command in an existing container
-registerAwaiting :: CmdID -> CmdCore -> C.ContainerID -> NrmState -> NrmState
+registerAwaiting :: CmdID -> CmdCore -> ContainerID -> NrmState -> NrmState
 registerAwaiting cmdID cmdValue containerID st =
   st {containers = DM.update f containerID (containers st)}
   where
-    f c = Just $ c {C.awaiting = DM.insert cmdID cmdValue (C.awaiting c)}
+    f c = Just $ c {awaiting = DM.insert cmdID cmdValue (awaiting c)}
 
-{-{ C.awaiting = DM.delete cmdID (awaiting container)-}
-{-, C.cmds = DM.insert cmdID c (cmds container)-}
+{-{ awaiting = DM.delete cmdID (awaiting container)-}
+{-, cmds = DM.insert cmdID c (cmds container)-}
 
 -- | Turns an awaiting command to a launched one.
-registerLaunched :: CmdID -> ProcessID -> NrmState -> Maybe (NrmState, C.ContainerID, UC.UpstreamClientID)
+registerLaunched :: CmdID -> ProcessID -> NrmState -> Maybe (NrmState, ContainerID, UpstreamClientID)
 registerLaunched cmdID pid st =
   case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
     Nothing -> Nothing -- "internal nrm.so lookup error."
     Just containerID -> case DM.lookup containerID (containers st) of
       Nothing -> Nothing -- "container was deleted while command was registering"
-      Just container -> case DM.lookup cmdID (C.awaiting container) of
+      Just container -> case DM.lookup cmdID (awaiting container) of
         Nothing -> Nothing -- "internal nrm.so lookup error"
         Just cmdValue -> case upstreamClientID cmdValue of
           Nothing -> Nothing
@@ -123,8 +173,8 @@ registerLaunched cmdID pid st =
               ( st
                   { containers = DM.insert containerID
                       ( container
-                        { C.cmds = DM.insert cmdID (Cmd {cmdCore = cmdValue, ..}) (C.cmds container)
-                        , C.awaiting = DM.delete cmdID (C.awaiting container)
+                        { cmds = DM.insert cmdID (Cmd {cmdCore = cmdValue, ..}) (cmds container)
+                        , awaiting = DM.delete cmdID (awaiting container)
                         }
                       )
                       (containers st)
@@ -143,6 +193,6 @@ registerFailed cmdID st =
     Just containerID -> st {containers = DM.update f containerID (containers st)}
   where
     f c =
-      if null (C.cmds c)
+      if null (cmds c)
       then Nothing
-      else Just $ c {C.awaiting = DM.delete cmdID (C.awaiting c)}
+      else Just $ c {awaiting = DM.delete cmdID (awaiting c)}

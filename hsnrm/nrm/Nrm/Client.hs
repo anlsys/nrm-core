@@ -76,7 +76,10 @@ dispatchProtocol s v = \case
   (ReqSetPower x) -> reqrep s v Protocols.SetPower x
   (ReqGetConfig x) -> reqrep s v Protocols.GetConfig x
   (ReqGetState x) -> reqrep s v Protocols.GetState x
-  (ReqRun x) -> if detachCmd x then putText "Client detached." else reqstream s v Protocols.Run x
+  (ReqRun x) ->
+    if detachCmd x
+    then putText "Client detached."
+    else reqstream s v Protocols.Run x
 
 reqrep
   :: ZMQ.Socket z ZMQ.Dealer
@@ -161,8 +164,8 @@ reqstream s c Protocols.Run Req.Run {..} = do
         Just (Rep.RepStderr (Rep.stderrPayload -> x)) -> hPutStr stderr x >> go
         Just (Rep.RepThisCmdKilled _) -> putText "\nCommand killed."
         Just (Rep.RepCmdEnded (Rep.exitCode -> x)) -> case x of
-          0 -> putText "\nCommand ended successfully."
-          e -> liftIO $ die ("Command ended with exit code" <> show e)
+          ExitSuccess -> putText "\nCommand ended successfully."
+          ExitFailure exitcode -> liftIO $ die ("Command ended with exit code" <> show exitcode)
         Nothing -> putText "error: nrm client received malformed message."
         _ -> putText "error: nrm client received wrong type of message."
     zmqCCHandler :: IO () -> ZMQ.ZMQ z ()

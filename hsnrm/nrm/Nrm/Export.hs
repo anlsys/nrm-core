@@ -18,14 +18,14 @@ module Nrm.Export
   , -- * State
     S.initialState
   , showState
-  , -- * Behavior
+  , -- * Event to behavior entry points
     downstreamReceive
   , upstreamReceive
   , doStdout
   , doStderr
   , doSensor
   , doControl
-  , doChildren
+  , childDied
   , doShutdown
   , registerCmdSuccess
   , registerCmdFailure
@@ -74,11 +74,11 @@ showConfiguration = toS . pShow
 upstreamPubAddress :: C.Cfg -> Text
 upstreamPubAddress = buildAddress C.pubPort
 
--- | Query full upstream pub zmq address from configuration
+-- | Query full upstream rpc zmq address from configuration
 upstreamRpcAddress :: C.Cfg -> Text
 upstreamRpcAddress = buildAddress C.rpcPort
 
--- | Query full upstream pub zmq address from configuration
+-- | Query full downstream event address from configuration
 downstreamEventAddress :: C.Cfg -> Text
 downstreamEventAddress = C.downstreamBindAddress . C.downstreamCfg
 
@@ -112,31 +112,35 @@ upstreamReceive cfg s msg clientid =
         (M.decodeT msg)
       )
 
--- | Behave on sensor trigger
+-- | when it's time to activate a sensor
 doSensor :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doSensor c s = B.behavior c s B.DoSensor
 
--- | Behave on control trigger
+-- | when it's time to run the control loop
 doControl :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doControl c s = B.behavior c s B.DoControl
 
--- | Behave on children death
-doChildren :: C.Cfg -> TS.NrmState -> Int -> IO (TS.NrmState, B.Behavior)
-doChildren c s pid = B.behavior c s (B.DoChildren (P.ProcessID . SPT.CPid $ fromIntegral pid))
+-- | when a child dies
+childDied :: C.Cfg -> TS.NrmState -> Int -> Int -> IO (TS.NrmState, B.Behavior)
+childDied c s pid status =
+  B.behavior c s
+    ( B.ChildDied (P.ProcessID . SPT.CPid $ fromIntegral pid)
+      (if status == 0 then ExitSuccess else ExitFailure status)
+    )
 
--- | Behave on shutdown
+-- | when the runtime is shutdown
 doShutdown :: C.Cfg -> TS.NrmState -> IO (TS.NrmState, B.Behavior)
 doShutdown c s = B.behavior c s B.DoShutdown
 
--- | Handle stdout
+-- | when a child produces something on its stdout
 doStdout :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
 doStdout = handleTag B.Stdout
 
--- | Handle stderr
+-- | when a child produces something on its stderr
 doStderr :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
 doStderr = handleTag B.Stderr
 
--- | Register a command as failed or successful.
+-- | when a command was properly started.
 registerCmdSuccess :: C.Cfg -> TS.NrmState -> Text -> Int -> IO (TS.NrmState, B.Behavior)
 registerCmdSuccess cfg s cmdIDT pid =
   B.behavior
@@ -147,7 +151,7 @@ registerCmdSuccess cfg s cmdIDT pid =
       (B.Launched (P.ProcessID $ SPT.CPid $ fromIntegral pid))
     )
 
--- | Register a command as failed or successful.
+-- | when a command failed even starting.
 registerCmdFailure :: C.Cfg -> TS.NrmState -> Text -> IO (TS.NrmState, B.Behavior)
 registerCmdFailure cfg s cmdIDT =
   B.behavior

@@ -35,7 +35,7 @@ foreign export ccall doShutdownExport :: Ex
 
 foreign export ccall doControlExport :: Ex
 
-foreign export ccall doChildrenExport :: Ex
+foreign export ccall childDiedExport :: Ex
 
 foreign export ccall registerCmdSuccessExport :: Ex
 
@@ -59,7 +59,7 @@ doShutdownExport = exportIO E.doShutdown
 
 doControlExport = exportIO E.doControl
 
-doChildrenExport = exportIO E.doChildren
+childDiedExport = exportIO E.childDied
 
 registerCmdSuccessExport = exportIO E.registerCmdSuccess
 

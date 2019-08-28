@@ -12,6 +12,7 @@ module Nrm.Types.NrmState
   , updateContainer
   , adjustContainer
   , cmdIDMap
+  , pidMap
   , runningCmdIDContainerIDMap
   , awaitingCmdIDContainerIDMap
   , runningCmdIDCmdMap
@@ -81,13 +82,12 @@ adjustContainer f containerID s = s {containers = DM.adjust f containerID (conta
 lookupContainer :: ContainerID -> NrmState -> Maybe Container
 lookupContainer containerID s = DM.lookup containerID (containers s)
 
--- | Nrm state map view by cmdID.
-pIDMap :: NrmState -> DM.Map ProcessID (Cmd, ContainerID, Container)
-pIDMap = undefined
-{-PIDMap s = mconcat $ DM.toList (containers s) <&> mkMap-}
-  {-where-}
-    {-mkMap x@(_, c) = DM.fromList $ zip (DM.keys $ cmds c) (DM.elems (cmds c) <&> mkTriple x)-}
-    {-mkTriple (cid, c) cm = (cm, cid, c)-}
+-- | Nrm state map view by ProcessID.
+pidMap :: NrmState -> DM.Map ProcessID (CmdID, Cmd, ContainerID, Container)
+pidMap s = mconcat $ DM.toList (containers s) <&> mkMap
+  where
+    mkMap x@(_, c) = DM.fromList $ zip (pid <$> DM.elems (cmds c)) (DM.toList (cmds c) <&> mkTriple x)
+    mkTriple (cid, c) (cmid, cm) = (cmid, cm, cid, c)
 
 -- | Nrm state map view by cmdID.
 cmdIDMap :: NrmState -> DM.Map CmdID (Cmd, ContainerID, Container)

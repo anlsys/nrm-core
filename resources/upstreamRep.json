@@ -62,23 +62,35 @@
                                             "cmds": {
                                                 "additionalProperties": {
                                                     "required": [
-                                                        "cmdPath",
-                                                        "arguments"
+                                                        "cmdCore",
+                                                        "pid"
                                                     ],
                                                     "type": "object",
                                                     "properties": {
-                                                        "upstreamClientID": {
-                                                            "type": "string"
+                                                        "cmdCore": {
+                                                            "required": [
+                                                                "cmdPath",
+                                                                "arguments"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "upstreamClientID": {
+                                                                    "type": "string"
+                                                                },
+                                                                "arguments": {
+                                                                    "uniqueItems": false,
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "type": "array"
+                                                                },
+                                                                "cmdPath": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
                                                         },
-                                                        "arguments": {
-                                                            "uniqueItems": false,
-                                                            "items": {
-                                                                "type": "string"
-                                                            },
-                                                            "type": "array"
-                                                        },
-                                                        "cmdPath": {
-                                                            "type": "string"
+                                                        "pid": {
+                                                            "type": "number"
                                                         }
                                                     }
                                                 },
@@ -183,7 +195,31 @@
                     "type": "object",
                     "properties": {
                         "exitCode": {
-                            "type": "number"
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "exitSuccess"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "exitSuccess": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "exitFailure"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "exitFailure": {
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }

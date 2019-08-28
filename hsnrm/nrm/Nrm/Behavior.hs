@@ -21,7 +21,6 @@ import Data.MessagePack
 import qualified Nrm.Classes.Messaging as M
 import Nrm.NrmState
 import qualified Nrm.Types.Configuration as Cfg
-import qualified Nrm.Types.Container as Ct
 import Nrm.Types.Messaging.DownstreamEvent as DEvent
 import qualified Nrm.Types.Messaging.UpstreamPub as UPub
 import qualified Nrm.Types.Messaging.UpstreamRep as URep
@@ -41,8 +40,8 @@ data NrmEvent
     DownstreamEvent DEvent.Event
   | -- | Stdin/stdout data from the app side.
     DoOutput CmdID OutputType Text
-  | -- | Children death event
-    DoChildren ProcessID
+  | -- | Child death event
+    ChildDied ProcessID ExitCode
   | -- | Sensor callback
     DoSensor
   | -- | Control loop calback
@@ -72,6 +71,8 @@ data Behavior
     StartChild CmdID Command Arguments Env
   | -- | Kill children processes and send some messages back upstream.
     KillChildren [CmdID] [(UC.UpstreamClientID, URep.Rep)]
+  | -- | Pop one child process and may send a message back upstream.
+    ClearChild CmdID (Maybe (UC.UpstreamClientID, URep.Rep))
   deriving (Generic)
 
 -- | The behavior function contains the main logic of the NRM daemon. It changes the state and
@@ -115,14 +116,6 @@ behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
         , Rep clientID (URep.RepStart (URep.Start containerID cmdID))
         )
       Nothing -> (st, NoBehavior)
-behavior _ st (DownstreamEvent msg) = case msg of
-  DEvent.ThreadStart _ -> return (st, NoBehavior)
-  DEvent.ThreadProgress _ _ -> return (st, NoBehavior)
-  DEvent.ThreadPhaseContext _ _ -> return (st, NoBehavior)
-  DEvent.ThreadExit _ -> return (st, NoBehavior)
-  DEvent.CmdStart _ -> return (st, NoBehavior)
-  DEvent.CmdPerformance _ _ -> return (st, NoBehavior)
-  DEvent.CmdExit _ -> return (st, NoBehavior)
 behavior c st (Req clientid msg) = case msg of
   UReq.ReqContainerList _ ->
     return (st, Rep clientid (URep.RepList rep))
@@ -148,25 +141,36 @@ behavior c st (Req clientid msg) = case msg of
     return (st', KillChildren cmds [])
   UReq.ReqSetPower _ -> return (st, NoBehavior)
   UReq.ReqKillCmd UReq.KillCmd {..} ->
-    case DM.lookup killCmdID (cmdIDMap st) of
-      Nothing -> return (st, Rep clientid (URep.RepNoSuchCmd URep.NoSuchCmd))
-      Just (cmd, containerID, container) -> do
-        let endUpstreamRun = maybe [] (\x -> [(x, URep.RepThisCmdKilled URep.ThisCmdKilled)]) (upstreamClientID . cmdCore $ cmd)
-        let (st', killRep) =
-              if length (Ct.cmds container) == 1
-              then
-                ( removeContainer containerID st
-                , (clientid, URep.RepContainerKilled (URep.ContainerKilled containerID))
-                )
-              else
-                ( adjustContainer (\xc -> xc {Ct.cmds = DM.delete killCmdID (Ct.cmds xc)}) containerID st
-                , (clientid, URep.RepCmdKilled (URep.CmdKilled killCmdID))
-                )
-        return (st', KillChildren [killCmdID] $ killRep : endUpstreamRun)
+    return $ removeCmd (KCmdID killCmdID) st & \(info, _, cmd, containerID, st') ->
+      ( st'
+      , KillChildren [killCmdID] $
+        ( clientid
+        , case info of
+          CmdRemoved -> URep.RepCmdKilled (URep.CmdKilled killCmdID)
+          ContainerRemoved -> URep.RepContainerKilled (URep.ContainerKilled containerID)
+        ) :
+        maybe [] (\x -> [(x, URep.RepThisCmdKilled URep.ThisCmdKilled)]) (upstreamClientID . cmdCore $ cmd)
+      )
+behavior _ st (ChildDied pid exitcode) =
+  return $ case removeCmd (KProcessID pid) st of
+    (_, cmdID, cmd, _, st') ->
+      ( st'
+      , ClearChild cmdID
+        ( (,URep.RepCmdEnded (URep.CmdEnded exitcode)) <$>
+          (upstreamClientID . cmdCore $ cmd)
+        )
+      )
 behavior _ st DoSensor = return (st, NoBehavior)
 behavior _ st DoControl = return (st, NoBehavior)
 behavior _ st DoShutdown = return (st, NoBehavior)
-behavior _ st (DoChildren pid) = return (st, NoBehavior)
+behavior _ st (DownstreamEvent msg) = case msg of
+  DEvent.ThreadStart _ -> return (st, NoBehavior)
+  DEvent.ThreadProgress _ _ -> return (st, NoBehavior)
+  DEvent.ThreadPhaseContext _ _ -> return (st, NoBehavior)
+  DEvent.ThreadExit _ -> return (st, NoBehavior)
+  DEvent.CmdStart _ -> return (st, NoBehavior)
+  DEvent.CmdPerformance _ _ -> return (st, NoBehavior)
+  DEvent.CmdExit _ -> return (st, NoBehavior)
 
 -- | The sensitive unpacking that has to be pattern-matched on the python side.
 -- These toObject/fromObject functions do not correspond to each other and the instance
@@ -178,5 +182,6 @@ instance MessagePack Behavior where
   toObject (Pub msg) = toObject ("publish" :: Text, M.encodeT msg)
   toObject (StartChild cmdID cmd args env) = toObject ("cmd" :: Text, cmdID, cmd, args, env)
   toObject (KillChildren cmdIDs reps) = toObject ("kill" :: Text, cmdIDs, (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> reps)
+  toObject (ClearChild cmdID maybeRep) = toObject ("pop" :: Text, cmdID, (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> toList maybeRep)
 
   fromObject x = to <$> gFromObject x
