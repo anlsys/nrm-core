@@ -70,7 +70,8 @@ class Daemon(object):
 
     def do_signal(self, signum, frame):
         """
-            'do_signal' handles interruptions and children death.
+            'do_signal' installs interruption and children death handler in the current
+            ioloop round.
         """
         if signum == signal.SIGINT:
             ioloop.IOLoop.current().add_callback_from_signal(self.do_shutdown)

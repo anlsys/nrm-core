@@ -24,7 +24,7 @@ import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import Generics.Generic.Aeson
 import Nrm.Types.DownstreamClient
-import Nrm.Types.Process (Cmd (..), CmdID (..),CmdCore(..))
+import Nrm.Types.Process (Cmd (..), CmdCore (..), CmdID (..))
 import Protolude
 
 data Container
