@@ -13,14 +13,14 @@ module Nrm.NrmState
   , registerAwaiting
   , registerFailed
   , registerLaunched
-  , -- ** Removal
+  , -- * Removal
     -- ** Container removal
     removeContainer
   , -- ** Command removal
     CmdKey (..)
   , DeletionInfo (..)
   , removeCmd
-  , -- ** Queries
+  , -- * Queries
     listSensors
   , listActuators
   )
@@ -93,9 +93,11 @@ registerLibnrmDownstreamClient :: NrmState -> DownstreamThreadID -> NrmState
 registerLibnrmDownstreamClient s _ = s
 
 -- | Removes a container from the state
-removeContainer :: ContainerID -> NrmState -> NrmState
+removeContainer :: ContainerID -> NrmState -> (Maybe Container, NrmState)
 removeContainer containerID st =
-  st {containers = DM.delete containerID (containers st)}
+  ( DM.lookup containerID (containers st)
+  , st {containers = DM.delete containerID (containers st)}
+  )
 
 -- | Result annotation for command removal from the state.
 data DeletionInfo
@@ -120,7 +122,7 @@ removeCmd key st = case key of
   where
     go cmdID cmd containerID container =
       if length (cmds container) == 1
-      then (ContainerRemoved, cmdID, cmd, containerID, removeContainer containerID st)
+      then (ContainerRemoved, cmdID, cmd, containerID, snd $ removeContainer containerID st)
       else
         ( CmdRemoved
         , cmdID
@@ -158,37 +160,30 @@ registerAwaiting cmdID cmdValue containerID st =
 -- | Turns an awaiting command to a launched one.
 registerLaunched :: CmdID -> ProcessID -> NrmState -> Maybe (NrmState, ContainerID, UpstreamClientID)
 registerLaunched cmdID pid st =
-  case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
-    Nothing -> Nothing -- "internal nrm.so lookup error."
-    Just containerID -> case DM.lookup containerID (containers st) of
-      Nothing -> Nothing -- "container was deleted while command was registering"
-      Just container -> case DM.lookup cmdID (awaiting container) of
-        Nothing -> Nothing -- "internal nrm.so lookup error"
-        Just cmdValue -> case upstreamClientID cmdValue of
-          Nothing -> Nothing
-          Just clientID ->
-            Just
-              ( st
-                  { containers = DM.insert containerID
-                      ( container
-                        { cmds = DM.insert cmdID (Cmd {cmdCore = cmdValue, ..}) (cmds container)
-                        , awaiting = DM.delete cmdID (awaiting container)
-                        }
-                      )
-                      (containers st)
-                  }
-              , containerID
-              , clientID
-              )
+  case DM.lookup cmdID (awaitingCmdIDMap st) of
+    Nothing -> Nothing -- internal nrm.so lookup error.
+    Just (cmdCore, containerID, container) -> case upstreamClientID cmdCore of
+      Nothing -> Nothing
+      Just clientID ->
+        Just
+          ( st
+              { containers = DM.insert containerID
+                  ( container
+                    { cmds = DM.insert cmdID (Cmd {cmdCore = cmdCore, ..}) (cmds container)
+                    , awaiting = DM.delete cmdID (awaiting container)
+                    }
+                  )
+                  (containers st)
+              }
+          , containerID
+          , clientID
+          )
 
 -- | Fails an awaiting command.
-registerFailed :: CmdID -> NrmState -> NrmState
+registerFailed :: CmdID -> NrmState -> Maybe (NrmState, ContainerID, Container, CmdCore)
 registerFailed cmdID st =
-  case DM.lookup cmdID (awaitingCmdIDContainerIDMap st) of
-    Nothing ->
-      panic $ "pynrm/nrm.so interaction error: " <>
-        "command was not registered as awaiting in any container"
-    Just containerID -> st {containers = DM.update f containerID (containers st)}
+  DM.lookup cmdID (awaitingCmdIDMap st) <&> \(cmdCore, containerID, container) ->
+    (st {containers = DM.update f containerID (containers st)}, containerID, container, cmdCore)
   where
     f c =
       if null (cmds c)

@@ -17,6 +17,7 @@ module Nrm.Types.Messaging.UpstreamRep
   , ContainerKilled (..)
   , CmdEnded (..)
   , NoSuchCmd (..)
+  , StartFailure(..)
   , NoSuchContainer (..)
   , CmdKilled (..)
   , ThisCmdKilled (..)
@@ -43,6 +44,7 @@ data Rep
   | RepStdout Stdout
   | RepStderr Stderr
   | RepStart Start
+  | RepStartFailure StartFailure
   | RepCmdEnded CmdEnded
   | RepNoSuchContainer NoSuchContainer
   | RepNoSuchCmd NoSuchCmd
@@ -52,6 +54,10 @@ data Rep
   | RepGetPower GetPower
   | RepGetState GetState
   | RepGetConfig GetConfig
+  deriving (Show, Generic, MessagePack)
+
+data StartFailure
+  = StartFailure
   deriving (Show, Generic, MessagePack)
 
 data CmdEnded
@@ -134,6 +140,18 @@ instance NrmMessage Rep Rep where
   fromJ = identity
 
   toJ = identity
+
+instance ToJSON StartFailure where
+
+  toJSON = gtoJson
+
+instance FromJSON StartFailure where
+
+  parseJSON = gparseJson
+
+instance JSONSchema StartFailure where
+
+  schema = gSchema
 
 instance ToJSON ThisCmdKilled where
 

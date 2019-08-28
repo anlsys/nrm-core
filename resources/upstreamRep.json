@@ -184,6 +184,17 @@
         },
         {
             "required": [
+                "repStartFailure"
+            ],
+            "type": "object",
+            "properties": {
+                "repStartFailure": {
+                    "const": "\"startFailure\""
+                }
+            }
+        },
+        {
+            "required": [
                 "repCmdEnded"
             ],
             "type": "object",

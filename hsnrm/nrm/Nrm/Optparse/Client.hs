@@ -92,7 +92,7 @@ parserRun =
         ( long "manifest" <>
           metavar "MANIFEST" <>
           help
-            "Input manifest with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
+            "Input manifest with .yml/.yaml/.dh/.dhall extension."
         )
       ) <*>
     optional
@@ -116,8 +116,17 @@ parserRun =
         )
       )
 
-parserKill :: Parser ContainerID
-parserKill =
+parserKillCmd :: Parser P.CmdID
+parserKillCmd =
+  fromMaybe (panic "Couldn't parse CmdID") . P.fromText <$>
+    strArgument
+      ( metavar "COMMAND" <>
+        help
+          "ID of the command to kill"
+      )
+
+parserKillContainer :: Parser ContainerID
+parserKillContainer =
   parseContainerID <$>
     strArgument
       ( metavar "CONTAINER" <>
@@ -143,8 +152,12 @@ opts =
       ( info (run <$> parserRun <*> parserCommon) $
         progDesc "Run the application via NRM"
       ) <>
-    command "kill"
-      ( info (return <$> (Opts <$> (ReqKillContainer . KillContainer <$> parserKill) <*> parserCommon)) $
+    command "killcmd"
+      ( info (return <$> (Opts <$> (ReqKillCmd . KillCmd <$> parserKillCmd) <*> parserCommon)) $
+        progDesc "Kill cmd"
+      ) <>
+    command "killcontainer"
+      ( info (return <$> (Opts <$> (ReqKillContainer . KillContainer <$> parserKillContainer) <*> parserCommon)) $
         progDesc "Kill container"
       ) <>
     command

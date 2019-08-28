@@ -125,7 +125,7 @@ class Daemon(object):
             its cmdID with the state in the appropriate manner.
         """
         registerSuccess = self.wrap("registerCmdSuccess", cmdID)
-        registerFailed = self.wrap("registerCmdFailure")
+        registerFailed = self.wrap("registerCmdFailure", cmdID)
         environment = dict(environment)
         _logger.debug("starting command " + str(cmd) + " with argument list "
                       + str(arguments))
@@ -143,10 +143,9 @@ class Daemon(object):
             self.cmds[cmdID] = p
             registerSuccess(p.proc.pid)
             _logger.debug("Command start success.")
-        except FileNotFoundError as e:
+        except Exception:
             registerFailed()
             _logger.debug("Command start failure.")
-            raise e
 
     def kill(self, cmdIDs, messages):
         """

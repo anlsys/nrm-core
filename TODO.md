@@ -47,3 +47,5 @@ locate and remove {-*-} comments
 - change model to a list of behaviors
 
 -write the python code with _getattrs_ ?
+
+- properly do NoSuchCmd NoSuchContainer

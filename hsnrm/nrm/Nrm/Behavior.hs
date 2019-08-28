@@ -21,6 +21,7 @@ import Data.MessagePack
 import qualified Nrm.Classes.Messaging as M
 import Nrm.NrmState
 import qualified Nrm.Types.Configuration as Cfg
+import qualified Nrm.Types.Container as Ct
 import Nrm.Types.Messaging.DownstreamEvent as DEvent
 import qualified Nrm.Types.Messaging.UpstreamPub as UPub
 import qualified Nrm.Types.Messaging.UpstreamRep as URep
@@ -108,7 +109,11 @@ behavior _ st (DoOutput cmdID outputType content) = do
         Nothing -> NoBehavior
     )
 behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
-  NotLaunched -> return (registerFailed cmdID st, NoBehavior)
+  NotLaunched ->
+    return $ fromMaybe (st, NoBehavior) $
+      registerFailed cmdID st >>= \(st', _, _, cmdCore) ->
+      upstreamClientID cmdCore <&> \x ->
+        (st', Rep x (URep.RepStartFailure URep.StartFailure))
   Launched pid ->
     return $ case registerLaunched cmdID pid st of
       Just (st', containerID, clientID) ->
@@ -136,13 +141,18 @@ behavior c st (Req clientid msg) = case msg of
       , StartChild cmdID (cmd spec) (args spec) (env spec)
       )
   UReq.ReqKillContainer UReq.KillContainer {..} -> do
-    let st' = removeContainer killContainerID st
-    let cmds = getCmds st killContainerID
+    let (maybeContainer, st') = removeContainer killContainerID st
     return
       ( st'
-      , KillChildren cmds $
-        catMaybes $
-        ((\x -> (upstreamClientID . cmdCore $ x, URep.RepThisCmdKilled URep.ThisCmdKilled)) <$> cmds)
+      , fromMaybe NoBehavior
+        ( maybeContainer <&> \container ->
+          KillChildren (DM.keys $ Ct.cmds container) $
+            (clientid, URep.RepContainerKilled (URep.ContainerKilled killContainerID)) :
+            catMaybes
+              ( (upstreamClientID . cmdCore <$> DM.elems (Ct.cmds container)) <&>
+                fmap (,URep.RepThisCmdKilled URep.ThisCmdKilled)
+              )
+        )
       )
   UReq.ReqSetPower _ -> return (st, NoBehavior)
   UReq.ReqKillCmd UReq.KillCmd {..} ->
@@ -185,10 +195,22 @@ behavior _ st (DownstreamEvent msg) = case msg of
 instance MessagePack Behavior where
 
   toObject NoBehavior = toObject ("noop" :: Text)
-  toObject (Rep clientid msg) = toObject ("reply" :: Text, clientid, M.encodeT msg)
   toObject (Pub msg) = toObject ("publish" :: Text, M.encodeT msg)
-  toObject (StartChild cmdID cmd args env) = toObject ("cmd" :: Text, cmdID, cmd, args, env)
-  toObject (KillChildren cmdIDs reps) = toObject ("kill" :: Text, cmdIDs, (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> reps)
-  toObject (ClearChild cmdID maybeRep) = toObject ("pop" :: Text, cmdID, (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> toList maybeRep)
+  toObject (Rep clientid msg) =
+    toObject ("reply" :: Text, clientid, M.encodeT msg)
+  toObject (StartChild cmdID cmd args env) =
+    toObject ("cmd" :: Text, cmdID, cmd, args, env)
+  toObject (KillChildren cmdIDs reps) =
+    toObject
+      ( "kill" :: Text
+      , cmdIDs
+      , (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> reps
+      )
+  toObject (ClearChild cmdID maybeRep) =
+    toObject
+      ( "pop" :: Text
+      , cmdID
+      , (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> toList maybeRep
+      )
 
   fromObject x = to <$> gFromObject x
