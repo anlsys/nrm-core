@@ -59,7 +59,7 @@ library nrmlib
         NRM.Types.Units
         NRM.Types.Actuator
         NRM.Types.Sensor
-        NRM.Types.Metadata
+        NRM.Types.CPDL
         NRM.Types.Slice
         NRM.Types.Process
         NRM.Types.DownstreamClient
@@ -188,7 +188,7 @@ executable nrm.so
         NRM.Types.Units
         NRM.Types.Actuator
         NRM.Types.Sensor
-        NRM.Types.Metadata
+        NRM.Types.CPDL
         NRM.Types.Slice
         NRM.Types.Process
         NRM.Types.DownstreamClient
@@ -316,7 +316,7 @@ executable nrm
         NRM.Types.Units
         NRM.Types.Actuator
         NRM.Types.Sensor
-        NRM.Types.Metadata
+        NRM.Types.CPDL
         NRM.Types.Slice
         NRM.Types.Process
         NRM.Types.DownstreamClient
@@ -444,7 +444,7 @@ executable nrmd
         NRM.Types.Units
         NRM.Types.Actuator
         NRM.Types.Sensor
-        NRM.Types.Metadata
+        NRM.Types.CPDL
         NRM.Types.Slice
         NRM.Types.Process
         NRM.Types.DownstreamClient

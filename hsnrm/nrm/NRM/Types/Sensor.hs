@@ -26,7 +26,7 @@ import Data.JSON.Schema
 import Data.MessagePack
 import qualified Data.UUID as U
 import NRM.Classes.Messaging
-import NRM.Types.Metadata
+import NRM.Types.CPDL
 import NRM.Types.Process
 import NRM.Types.Topology
 import NRM.Types.Topology.Package

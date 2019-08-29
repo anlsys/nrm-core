@@ -204,7 +204,7 @@ let modules =
       , "NRM.Types.Units"
       , "NRM.Types.Actuator"
       , "NRM.Types.Sensor"
-      , "NRM.Types.Metadata"
+      , "NRM.Types.CPDL"
       , "NRM.Types.Slice"
       , "NRM.Types.Process"
       , "NRM.Types.DownstreamClient"
