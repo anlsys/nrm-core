@@ -115,6 +115,29 @@
         },
         {
             "required": [
+                "repStart"
+            ],
+            "type": "object",
+            "properties": {
+                "repStart": {
+                    "required": [
+                        "startContainerID",
+                        "startCmdID"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "startCmdID": {
+                            "type": "string"
+                        },
+                        "startContainerID": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
                 "repStdout"
             ],
             "type": "object",
@@ -161,22 +184,25 @@
         },
         {
             "required": [
-                "repStart"
+                "repEndStream"
             ],
             "type": "object",
             "properties": {
-                "repStart": {
+                "repEndStream": {
                     "required": [
-                        "startContainerID",
-                        "startCmdID"
+                        "streamType"
                     ],
                     "type": "object",
                     "properties": {
-                        "startCmdID": {
-                            "type": "string"
-                        },
-                        "startContainerID": {
-                            "type": "string"
+                        "streamType": {
+                            "oneOf": [
+                                {
+                                    "const": "\"stdoutOutput\""
+                                },
+                                {
+                                    "const": "\"stderrOutput\""
+                                }
+                            ]
                         }
                     }
                 }

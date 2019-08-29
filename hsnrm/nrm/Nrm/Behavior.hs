@@ -12,7 +12,6 @@ module Nrm.Behavior
   , -- * The Behavior specification
     Behavior (..)
   , CmdStatus (..)
-  , OutputType (..)
   )
 where
 
@@ -40,7 +39,7 @@ data NrmEvent
   | -- | Event from the application side.
     DownstreamEvent DEvent.Event
   | -- | Stdin/stdout data from the app side.
-    DoOutput CmdID OutputType Text
+    DoOutput CmdID URep.OutputType Text
   | -- | Child death event
     ChildDied ProcessID ExitCode
   | -- | Sensor callback
@@ -57,8 +56,6 @@ data CmdStatus
   | -- | In case the command to start a child failed.
     NotLaunched
   deriving (Generic, MessagePack)
-
-data OutputType = Stdout | Stderr
 
 -- | The Behavior datatype encodes a behavior to be executed by the NRM runtime.
 data Behavior
@@ -90,25 +87,25 @@ behavior _ st (DoOutput cmdID outputType content) = do
           DM.lookup cmdID (cmdIDMap st)
   return
     ( st
-    , if content == ""
-    then NoBehavior
-    else
-      case lookupCmd cmdID st of
-        Just c -> case (upstreamClientID . cmdCore) c of
-          Just ucID ->
+    , case lookupCmd cmdID st of
+      Just c -> case (upstreamClientID . cmdCore) c of
+        Just ucID ->
+          if content == ""
+          then Rep ucID $ URep.RepEndStream (URep.EndStream outputType)
+          else
             Rep ucID $ case outputType of
-              Stdout ->
+              URep.StdoutOutput ->
                 URep.RepStdout $ URep.Stdout
                   { URep.stdoutContainerID = containerID
                   , stdoutPayload = content
                   }
-              Stderr ->
+              URep.StderrOutput ->
                 URep.RepStderr $ URep.Stderr
                   { URep.stderrContainerID = containerID
                   , stderrPayload = content
                   }
-          Nothing -> NoBehavior
-        Nothing -> NoBehavior
+        Nothing -> Log "This command does not have a registered upstream client."
+      Nothing -> Log "No such command was found in the NRM state."
     )
 behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
   NotLaunched ->
@@ -147,7 +144,7 @@ behavior c st (Req clientid msg) = case msg of
     let (maybeContainer, st') = removeContainer killContainerID st
     return
       ( st'
-      , fromMaybe NoBehavior
+      , fromMaybe (Rep clientid $ URep.RepNoSuchContainer URep.NoSuchContainer)
         ( maybeContainer <&> \container ->
           KillChildren (DM.keys $ Ct.cmds container) $
             (clientid, URep.RepContainerKilled (URep.ContainerKilled killContainerID)) :

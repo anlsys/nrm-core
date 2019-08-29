@@ -10,6 +10,8 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.Messaging.UpstreamRep
   ( Rep (..)
+  , OutputType (..)
+  , EndStream (..)
   , ContainerList (..)
   , Stdout (..)
   , Stderr (..)
@@ -17,7 +19,7 @@ module Nrm.Types.Messaging.UpstreamRep
   , ContainerKilled (..)
   , CmdEnded (..)
   , NoSuchCmd (..)
-  , StartFailure(..)
+  , StartFailure (..)
   , NoSuchContainer (..)
   , CmdKilled (..)
   , ThisCmdKilled (..)
@@ -34,33 +36,59 @@ import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
 import Nrm.Types.Configuration as C
 import Nrm.Types.Container as C
+import Nrm.Orphans.ExitCode ()
 import Nrm.Types.NrmState as S
 import Nrm.Types.Process as P
 import Nrm.Types.Units as U
 import Protolude hiding (Rep)
 
 data Rep
-  = RepList ContainerList
-  | RepStdout Stdout
-  | RepStderr Stderr
-  | RepStart Start
-  | RepStartFailure StartFailure
-  | RepCmdEnded CmdEnded
-  | RepNoSuchContainer NoSuchContainer
-  | RepNoSuchCmd NoSuchCmd
-  | RepContainerKilled ContainerKilled
-  | RepCmdKilled CmdKilled
-  | RepThisCmdKilled ThisCmdKilled
-  | RepGetPower GetPower
-  | RepGetState GetState
-  | RepGetConfig GetConfig
+  = -- | Listing containers upon upstream request
+    RepList ContainerList
+  | -- | Command Started successfully
+    RepStart Start
+  | -- | Command Produced Stdout output
+    RepStdout Stdout
+  | -- | Command Produced Stderr output
+    RepStderr Stderr
+  | -- | Command out or err stream ended.
+    RepEndStream EndStream
+  | -- | Command failed to start
+    RepStartFailure StartFailure
+  | -- | Command ended with exit code
+    RepCmdEnded CmdEnded
+  | -- | No such container was found in the state
+    RepNoSuchContainer NoSuchContainer
+  | -- | No such command was found in the state
+    RepNoSuchCmd NoSuchCmd
+  | -- | A container was killed
+    RepContainerKilled ContainerKilled
+  | -- | A command was killed
+    RepCmdKilled CmdKilled
+  | -- | The command for this upstream client was killed
+    RepThisCmdKilled ThisCmdKilled
+  | -- | Power query response
+    RepGetPower GetPower
+  | -- | State query response
+    RepGetState GetState
+  | -- | Configuration query response
+    RepGetConfig GetConfig
+  deriving (Show, Generic, MessagePack)
+
+data OutputType = StdoutOutput | StderrOutput
+  deriving (Show, Generic, MessagePack)
+
+data EndStream
+  = EndStream
+      { streamType :: OutputType
+      }
   deriving (Show, Generic, MessagePack)
 
 data StartFailure
   = StartFailure
   deriving (Show, Generic, MessagePack)
 
-data CmdEnded
+newtype CmdEnded
   = CmdEnded
       { exitCode :: ExitCode
       }
@@ -105,7 +133,7 @@ data ThisCmdKilled
   = ThisCmdKilled
   deriving (Show, Generic, MessagePack)
 
-data CmdKilled
+newtype CmdKilled
   = CmdKilled
       { killedCmdID :: P.CmdID
       }
@@ -140,6 +168,30 @@ instance NrmMessage Rep Rep where
   fromJ = identity
 
   toJ = identity
+
+instance ToJSON OutputType where
+
+  toJSON = gtoJson
+
+instance FromJSON OutputType where
+
+  parseJSON = gparseJson
+
+instance JSONSchema OutputType where
+
+  schema = gSchema
+
+instance ToJSON EndStream where
+
+  toJSON = gtoJson
+
+instance FromJSON EndStream where
+
+  parseJSON = gparseJson
+
+instance JSONSchema EndStream where
+
+  schema = gSchema
 
 instance ToJSON StartFailure where
 
@@ -365,9 +417,3 @@ instance JSONSchema HwmonCfg where
 
   schema = gSchema
 
-instance MessagePack ExitCode where
-
-  toObject (ExitSuccess) = toObject (0 :: Int)
-  toObject (ExitFailure i) = toObject i
-
-  fromObject x = fromObject x <&> \y -> if y == 0 then ExitSuccess else ExitFailure y

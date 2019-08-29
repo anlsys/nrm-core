@@ -48,6 +48,7 @@ import qualified Nrm.Types.Configuration as C
 import qualified Nrm.Types.NrmState as TS
 import qualified Nrm.Types.Process as P
 import qualified Nrm.Types.UpstreamClient as UC
+import qualified Nrm.Types.Messaging.UpstreamRep as URep
 import Protolude hiding (stderr, stdout)
 import qualified System.Posix.Types as SPT
 import Text.Pretty.Simple
@@ -134,11 +135,11 @@ doShutdown c s = B.behavior c s B.DoShutdown
 
 -- | when a child produces something on its stdout
 doStdout :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
-doStdout = handleTag B.Stdout
+doStdout = handleTag URep.StdoutOutput
 
 -- | when a child produces something on its stderr
 doStderr :: C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
-doStderr = handleTag B.Stderr
+doStderr = handleTag URep.StderrOutput
 
 -- | when a command was properly started.
 registerCmdSuccess :: C.Cfg -> TS.NrmState -> Text -> Int -> IO (TS.NrmState, B.Behavior)
@@ -163,7 +164,7 @@ registerCmdFailure cfg s cmdIDT =
     )
 
 -- Utilities
-handleTag :: B.OutputType -> C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
+handleTag :: URep.OutputType -> C.Cfg -> TS.NrmState -> Text -> Text -> IO (TS.NrmState, B.Behavior)
 handleTag tag c s cmdIDT msg =
   B.behavior c s
     ( B.DoOutput

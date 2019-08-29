@@ -210,6 +210,7 @@ let modules =
       , "Nrm.Types.UpstreamClient"
       , "Nrm.Classes.Messaging"
       , "Nrm.Classes.Topology"
+      , "Nrm.Orphans.ExitCode"
       , "Nrm.Types.Messaging.DownstreamEvent"
       , "Nrm.Types.Messaging.DownstreamEvent.JSON"
       , "Nrm.Types.Messaging.UpstreamPub"

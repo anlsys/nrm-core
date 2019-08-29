@@ -18,6 +18,7 @@ import Data.Restricted
 import Nrm.Classes.Messaging
 import Nrm.Optparse
 import qualified Nrm.Optparse.Client as C
+import qualified Nrm.Types.Container as C
 import qualified Nrm.Types.Messaging.Protocols as Protocols
 import qualified Nrm.Types.Messaging.UpstreamRep as Rep
 import qualified Nrm.Types.Messaging.UpstreamReq as Req
@@ -131,15 +132,21 @@ reqrep s opts = \case
       msg <- ZMQ.receive s
       liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
       liftIO $ hFlush stdout
-  Protocols.KillCmd ->
-    const $ do
-      msg <- ZMQ.receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
-      liftIO $ hFlush stdout
   Protocols.KillContainer ->
     const $ do
-      msg <- ZMQ.receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
+      ZMQ.receive s <&> decode . toS >>= \case
+        Nothing -> putText "Couldn't decode reply"
+        Just (Rep.RepContainerKilled (Rep.ContainerKilled containerID)) ->
+          putText $ "Killed container ID: " <> C.toText containerID
+        _ -> putText "reply wasn't in protocol"
+      liftIO $ hFlush stdout
+  Protocols.KillCmd ->
+    const $ do
+      ZMQ.receive s <&> decode . toS >>= \case
+        Nothing -> putText "Couldn't decode reply"
+        Just (Rep.RepCmdKilled (Rep.CmdKilled cmdID)) ->
+          putText $ "Killed cmd ID: " <> P.toText cmdID
+        _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
 
 reqstream
@@ -153,23 +160,31 @@ reqstream s c Protocols.Run Req.Run {..} = do
   msg <- ZMQ.receive s
   case ((decode $ toS msg) :: Maybe Rep.Rep) of
     Nothing -> putText "error: received malformed message(1)."
-    Just (Rep.RepStart (Rep.Start _ cmdID)) -> zmqCCHandler (kill cmdID) >> go
+    Just (Rep.RepStart (Rep.Start _ cmdID)) -> zmqCCHandler (kill cmdID) >> go P.blankState
     _ -> putText "error: received wrong type of message(1)."
   where
-    go = do
-      msg <- ZMQ.receive s
-      when (C.verbose c == C.Verbose) $ liftIO $ print msg
-      case ((decode $ toS msg) :: Maybe Rep.Rep) of
-        Just (Rep.RepStdout (Rep.stdoutPayload -> x)) -> putStr x >> go
-        Just (Rep.RepStderr (Rep.stderrPayload -> x)) -> hPutStr stderr x >> go
-        Just (Rep.RepThisCmdKilled _) -> putText "\nCommand killed."
-        Just (Rep.RepCmdEnded (Rep.exitCode -> x)) -> case x of
-          ExitSuccess -> putText "\nCommand ended successfully."
-          ExitFailure exitcode -> liftIO $ die ("Command ended with exit code" <> show exitcode)
-        Nothing -> putText "error: nrm client received malformed message."
-        _ -> putText "error: nrm client received wrong type of message."
+    go ps@P.ProcessState {..} =
+      case P.isDone ps of
+        Just exitcode -> doDeath exitcode
+        Nothing -> do
+          msg <- ZMQ.receive s
+          when (C.verbose c == C.Verbose) $ liftIO $ print msg
+          case ((decode $ toS msg) :: Maybe Rep.Rep) of
+            Just (Rep.RepStdout (Rep.stdoutPayload -> x)) -> putStr x >> go ps
+            Just (Rep.RepStderr (Rep.stderrPayload -> x)) -> hPutStr stderr x >> go ps
+            Just (Rep.RepThisCmdKilled _) -> putText "\nCommand killed."
+            Just (Rep.RepCmdEnded (Rep.exitCode -> x)) -> go $ ps {P.ended = Just x}
+            Just (Rep.RepEndStream (Rep.streamType -> x)) ->
+              go $ case x of
+                Rep.StdoutOutput -> ps {P.stdoutFinished = True}
+                Rep.StderrOutput -> ps {P.stderrFinished = True}
+            Nothing -> putText "error: nrm client received malformed message."
+            _ -> putText "error: nrm client received wrong type of message."
     zmqCCHandler :: IO () -> ZMQ.ZMQ z ()
     zmqCCHandler h = void $ liftIO $ SPS.installHandler SPS.keyboardSignal (SPS.CatchOnce h) Nothing
+    doDeath x = case x of
+      ExitSuccess -> putText "\nCommand ended successfully."
+      ExitFailure exitcode -> liftIO $ die ("Command ended with exit code" <> show exitcode)
 
 kill :: P.CmdID -> IO ()
 kill cmdID =

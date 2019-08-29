@@ -11,6 +11,9 @@ module Nrm.Types.Process
   , mkCmd
   , registerPID
   , ProcessID (..)
+  , ProcessState (..)
+  , blankState
+  , isDone
   , ThreadID (..)
   , TaskID (..)
   , CmdID (..)
@@ -27,6 +30,7 @@ where
 import qualified Data.Aeson as A
 import Data.Aeson
 import Data.JSON.Schema
+import Data.Orphans.ExitCode ()
 import Data.MessagePack
 import Data.String (IsString (..))
 import qualified Data.UUID as U
@@ -36,6 +40,22 @@ import qualified Nrm.Types.UpstreamClient as UC
 import Protolude
 import qualified System.Posix.Types as P
 import Prelude (fail)
+
+data ProcessState
+  = ProcessState
+      { ended :: Maybe ExitCode
+      , stdoutFinished :: Bool
+      , stderrFinished :: Bool
+      }
+  deriving (Show, Generic, MessagePack, FromJSON, ToJSON, JSONSchema)
+
+blankState :: ProcessState
+blankState = ProcessState Nothing False False
+
+isDone :: ProcessState -> Maybe ExitCode
+isDone ProcessState {..} = case ended of
+  Just exc | stdoutFinished && stderrFinished -> Just exc
+  _ -> Nothing
 
 data CmdSpec
   = CmdSpec
@@ -57,6 +77,7 @@ data Cmd
   = Cmd
       { cmdCore :: CmdCore
       , pid :: ProcessID
+      , processState :: ProcessState
       }
   deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
 
