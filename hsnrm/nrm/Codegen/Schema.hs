@@ -18,7 +18,7 @@ import Data.HashMap.Strict as H
   ( fromList
   )
 import qualified Data.JSON.Schema as S
-import Nrm.Classes.Messaging as M
+import NRM.Classes.Messaging as M
 import Data.Vector as V
   ( fromList
   )
@@ -108,5 +108,5 @@ toOP (S.Constant aesonValue) =
   [("const", mkString $ toS (A.encode aesonValue))]
 toOP S.Any = []
 
-generatePretty :: (M.NrmMessage a b) => Proxy a -> Text
-generatePretty = toS . AP.encodePretty . toAeson . M.schema
+generatePretty :: (M.NRMMessage a b) => Proxy a -> Text
+generatePretty = toS . AP.encodePretty . toAeson . M.messageSchema

@@ -167,7 +167,7 @@ class Daemon(object):
         for cmdID in cmdIDs:
             if cmdID in self.cmds.keys():
                 self.cmds.pop(cmdID).proc.terminate()
-        assert(len(messages) == 1)
+        assert(len(messages) <= 1)
         for m in messages:
             self.upstream_rpc.send(*m)
 

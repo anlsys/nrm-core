@@ -63,7 +63,8 @@
                                                 "additionalProperties": {
                                                     "required": [
                                                         "cmdCore",
-                                                        "pid"
+                                                        "pid",
+                                                        "processState"
                                                     ],
                                                     "type": "object",
                                                     "properties": {
@@ -86,6 +87,48 @@
                                                                 },
                                                                 "cmdPath": {
                                                                     "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "processState": {
+                                                            "required": [
+                                                                "stdoutFinished",
+                                                                "stderrFinished"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "stderrFinished": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "stdoutFinished": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "ended": {
+                                                                    "oneOf": [
+                                                                        {
+                                                                            "required": [
+                                                                                "exitSuccess"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "exitSuccess": {
+                                                                                    "type": "object",
+                                                                                    "properties": {}
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "required": [
+                                                                                "exitFailure"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "exitFailure": {
+                                                                                    "type": "number"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    ]
                                                                 }
                                                             }
                                                         },

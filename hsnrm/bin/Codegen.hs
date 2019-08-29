@@ -9,4 +9,4 @@ module Codegen
   )
 where
 
-import Nrm.Codegen
+import NRM.Codegen

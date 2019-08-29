@@ -9,4 +9,4 @@ module Hnrm
   )
 where
 
-import Nrm.Client
+import NRM.Client

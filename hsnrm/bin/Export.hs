@@ -13,7 +13,7 @@ where
 
 import FFI.TypeUncurry.Msgpack
 import Foreign.C
-import qualified Nrm.Export as E
+import qualified NRM.Export as E
 import Protolude
 
 -- | All FFI exported names in this module must have this opaque type
