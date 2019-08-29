@@ -30,7 +30,6 @@ import NRM.Slices.Singularity as CS
 import NRM.Node.Hwloc
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
-import NRM.Types.Actuator
 import NRM.Types.Configuration
 import NRM.Types.Slice
 import NRM.Types.DownstreamClient

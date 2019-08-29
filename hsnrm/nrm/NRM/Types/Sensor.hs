@@ -17,35 +17,58 @@ module NRM.Types.Sensor
   , SensorTag (..)
   , -- * Rendering
     showSensorList
+  , showSensor
   )
 where
 
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
+import qualified Data.UUID as U
 import NRM.Classes.Messaging
 import NRM.Types.Metadata
-import NRM.Types.Process as P
+import NRM.Types.Process
 import NRM.Types.Topology
 import NRM.Types.Topology.Package
 import Protolude
 
+newtype SensorID = SensorID U.UUID
+  deriving (Show, Eq, Ord, Generic, MessagePack, ToJSONKey, FromJSONKey)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SensorID
+
 -- Internal view
-data PackageSensor = TagRaplSensor RaplSensor
+newtype PackageSensor = TagRaplSensor RaplSensor
   deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
 
 -- Controller
-data SensorTag = SensorTag Text
+newtype SensorTag = SensorTag Text
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SensorTag
 
-data Source = Process P.ProcessID | PU PUID
+data Source = Process ProcessID | PU PUID
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Source
 
-data Sensor = Sensor SensorTag Source Range
+data Sensor
+  = Sensor
+      { id :: SensorID
+      , tags :: [SensorTag]
+      , source :: Source
+      , meta :: Range
+      }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Sensor
 
 showSensorList :: [Sensor] -> Text
-showSensorList = undefined
+showSensorList sl = mconcat $ (\x -> showSensor x <> " ") <$> sl
+
+showSensor :: Sensor -> Text
+showSensor (Sensor id tags source range) =
+  "ID  " <> show id <>
+    " tags:" <>
+    (mconcat . intersperse " " $ show <$> tags) <>
+    " " <>
+    show source <>
+    " " <>
+    show range <>
+    " \n"

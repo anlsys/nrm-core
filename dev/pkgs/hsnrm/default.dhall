@@ -213,6 +213,7 @@ let modules =
       , "NRM.Classes.Messaging"
       , "NRM.Classes.Topology"
       , "NRM.Orphans.ExitCode"
+      , "NRM.Orphans.UUID"
       , "NRM.Types.Messaging.DownstreamEvent"
       , "NRM.Types.Messaging.DownstreamEvent.JSON"
       , "NRM.Types.Messaging.UpstreamPub"

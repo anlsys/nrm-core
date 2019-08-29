@@ -68,6 +68,7 @@ library nrmlib
         NRM.Classes.Messaging
         NRM.Classes.Topology
         NRM.Orphans.ExitCode
+        NRM.Orphans.UUID
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.DownstreamEvent.JSON
         NRM.Types.Messaging.UpstreamPub
@@ -196,6 +197,7 @@ executable nrm.so
         NRM.Classes.Messaging
         NRM.Classes.Topology
         NRM.Orphans.ExitCode
+        NRM.Orphans.UUID
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.DownstreamEvent.JSON
         NRM.Types.Messaging.UpstreamPub
@@ -323,6 +325,7 @@ executable nrm
         NRM.Classes.Messaging
         NRM.Classes.Topology
         NRM.Orphans.ExitCode
+        NRM.Orphans.UUID
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.DownstreamEvent.JSON
         NRM.Types.Messaging.UpstreamPub
@@ -450,6 +453,7 @@ executable nrmd
         NRM.Classes.Messaging
         NRM.Classes.Topology
         NRM.Orphans.ExitCode
+        NRM.Orphans.UUID
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.DownstreamEvent.JSON
         NRM.Types.Messaging.UpstreamPub

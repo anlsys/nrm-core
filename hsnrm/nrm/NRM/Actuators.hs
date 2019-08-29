@@ -9,9 +9,10 @@ module NRM.Actuators
   )
 where
 
-import NRM.Types.Sensor
+import NRM.Types.Actuator
 import NRM.Types.State
+import Protolude
 
 -- | List sensors
-listActuators :: NRMState -> [Sensor]
-listActuators = [Sensor.Sensor]
+listActuators :: NRMState -> [Actuator]
+listActuators = undefined

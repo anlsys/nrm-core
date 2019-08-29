@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-|
 Module      : NRM.Types.Process
 Copyright   : (c) UChicago Argonne, 2019
@@ -27,19 +29,18 @@ module NRM.Types.Process
   )
 where
 
-import qualified Data.Aeson as A
-import Data.Aeson
+import Data.Aeson as A
 import Data.JSON.Schema
-import NRM.Orphans.ExitCode ()
 import Data.MessagePack
 import Data.String (IsString (..))
 import qualified Data.UUID as U
-import Data.UUID.V1
-import Generics.Generic.Aeson
+import Data.UUID.V1 (nextUUID)
+import NRM.Classes.Messaging
+import NRM.Orphans.ExitCode ()
+import NRM.Orphans.UUID ()
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
 import qualified System.Posix.Types as P
-import Prelude (fail)
 
 data ProcessState
   = ProcessState
@@ -47,7 +48,8 @@ data ProcessState
       , stdoutFinished :: Bool
       , stderrFinished :: Bool
       }
-  deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
+  deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ProcessState
 
 blankState :: ProcessState
 blankState = ProcessState Nothing False False
@@ -63,7 +65,8 @@ data CmdSpec
       , args :: Arguments
       , env :: Env
       }
-  deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
+  deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdSpec
 
 data CmdCore
   = CmdCore
@@ -71,7 +74,8 @@ data CmdCore
       , arguments :: Arguments
       , upstreamClientID :: Maybe UC.UpstreamClientID
       }
-  deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
+  deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdCore
 
 data Cmd
   = Cmd
@@ -79,41 +83,29 @@ data Cmd
       , pid :: ProcessID
       , processState :: ProcessState
       }
-  deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
-
-instance JSONSchema CmdSpec where
-
-  schema = gSchema
-
-instance JSONSchema Cmd where
-
-  schema = gSchema
-
-instance JSONSchema CmdCore where
-
-  schema = gSchema
-
-instance JSONSchema ProcessState where
-
-  schema = gSchema
+  deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cmd
 
 mkCmd :: CmdSpec -> Maybe UC.UpstreamClientID -> CmdCore
 mkCmd s clientID = CmdCore {cmdPath = cmd s, arguments = args s, upstreamClientID = clientID}
 
 registerPID :: CmdCore -> ProcessID -> Cmd
-registerPID c pid = Cmd {cmdCore = c, processState = blankState ,..}
+registerPID c pid = Cmd {cmdCore = c, processState = blankState, ..}
 
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON TaskID
 
 newtype ThreadID = ThreadID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ThreadID
 
 newtype ProcessID = ProcessID P.CPid
   deriving (Eq, Ord, Show, Read, Generic)
 
 newtype Arg = Arg Text
   deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Arg
 
 instance StringConv Arg Text where
 
@@ -121,6 +113,7 @@ instance StringConv Arg Text where
 
 newtype Command = Command Text
   deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Command
 
 instance StringConv Command Text where
 
@@ -128,45 +121,11 @@ instance StringConv Command Text where
 
 newtype Arguments = Arguments [Arg]
   deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Arguments
 
 newtype Env = Env [(Text, Text)]
   deriving (Show, Generic, MessagePack)
-
-instance ToJSON Env where
-
-  toJSON = gtoJson
-
-instance FromJSON Env where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Env where
-
-  schema = gSchema
-
-instance ToJSON ThreadID where
-
-  toJSON = gtoJson
-
-instance FromJSON ThreadID where
-
-  parseJSON = gparseJson
-
-instance JSONSchema ThreadID where
-
-  schema = gSchema
-
-instance ToJSON TaskID where
-
-  toJSON = gtoJson
-
-instance FromJSON TaskID where
-
-  parseJSON = gparseJson
-
-instance JSONSchema TaskID where
-
-  schema = gSchema
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Env
 
 instance MessagePack ProcessID where
 
@@ -186,79 +145,19 @@ instance JSONSchema ProcessID where
 
   schema Proxy = schema (Proxy :: Proxy Int)
 
-instance ToJSON Command where
-
-  toJSON = gtoJson
-
-instance FromJSON Command where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Command where
-
-  schema = gSchema
-
-instance ToJSON Arguments where
-
-  toJSON = gtoJson
-
-instance FromJSON Arguments where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Arguments where
-
-  schema = gSchema
-
-instance ToJSON Arg where
-
-  toJSON = gtoJson
-
-instance FromJSON Arg where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Arg where
-
-  schema = gSchema
-
 newtype CmdID = CmdID U.UUID
-  deriving (Show, Eq, Ord, Generic, ToJSONKey, FromJSONKey)
+  deriving (Show, Eq, Ord, Generic, ToJSONKey, FromJSONKey, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdID
 
 instance IsString CmdID where
 
-  fromString x = fromMaybe (panic "couldn't decode cmdID in FromString instance") (decode $ toS x)
+  fromString x = fromMaybe (panic "couldn't decode cmdID in FromString instance") (A.decode $ toS x)
 
 nextCmdID :: IO (Maybe CmdID)
 nextCmdID = fmap CmdID <$> nextUUID
-
-parseCmdID :: Text -> Maybe CmdID
-parseCmdID = fmap CmdID <$> U.fromText
 
 toText :: CmdID -> Text
 toText (CmdID u) = U.toText u
 
 fromText :: Text -> Maybe CmdID
 fromText = fmap CmdID <$> U.fromText
-
-instance ToJSON CmdID where
-
-  toJSON = gtoJson
-
-instance FromJSON CmdID where
-
-  parseJSON = gparseJson
-
-instance JSONSchema CmdID where
-
-  schema Proxy = schema (Proxy :: Proxy Text)
-
-instance MessagePack CmdID where
-
-  toObject (CmdID c) = toObject $ U.toText c
-
-  fromObject x =
-    fromObject x >>= \y ->
-      case parseCmdID y of
-        Nothing -> fail "Couldn't parse CmdID"
-        Just t -> return t

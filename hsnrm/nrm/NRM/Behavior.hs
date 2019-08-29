@@ -19,7 +19,7 @@ import qualified Data.Map as DM
 import Data.MessagePack
 import NRM.Actuators (listActuators)
 import qualified NRM.Classes.Messaging as M
-import NRM.NRMState
+import NRM.State
 import NRM.Sensors (listSensors)
 import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Messaging.DownstreamEvent as DEvent

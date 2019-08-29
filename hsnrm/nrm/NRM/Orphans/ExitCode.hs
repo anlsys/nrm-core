@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-|
 Module      : NRM.Orphans.ExitCode
@@ -13,7 +15,7 @@ where
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
-import Generics.Generic.Aeson
+import NRM.Classes.Messaging
 import Protolude
 
 instance MessagePack ExitCode where
@@ -23,14 +25,8 @@ instance MessagePack ExitCode where
 
   fromObject x = fromObject x <&> \y -> if y == 0 then ExitSuccess else ExitFailure y
 
-instance ToJSON ExitCode where
+deriving via GenericJSON ExitCode instance JSONSchema ExitCode
 
-  toJSON = gtoJson
+deriving via GenericJSON ExitCode instance ToJSON ExitCode
 
-instance FromJSON ExitCode where
-
-  parseJSON = gparseJson
-
-instance JSONSchema ExitCode where
-
-  schema = gSchema
+deriving via GenericJSON ExitCode instance FromJSON ExitCode

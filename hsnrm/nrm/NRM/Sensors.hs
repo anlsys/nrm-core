@@ -11,7 +11,8 @@ where
 
 import NRM.Types.Sensor
 import NRM.Types.State
+import Protolude
 
 -- | List sensors
 listSensors :: NRMState -> [Sensor]
-listSensors = [Sensor.Sensor]
+listSensors s = undefined
