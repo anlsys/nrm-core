@@ -131,13 +131,8 @@ removeCmd key st = case key of
         , cmdID
         , cmd
         , containerID
-        , adjustContainer
-          ( \xc ->
-            xc
-              { cmds = DM.delete cmdID (cmds xc)
-              }
-          )
-          containerID
+        , insertContainer containerID
+          (container {cmds = DM.delete cmdID (cmds container)})
           st
         )
 
@@ -182,7 +177,7 @@ registerLaunched cmdID pid st =
         ( st
             { containers = DM.insert containerID
                 ( container
-                  { cmds = DM.insert cmdID (Cmd {cmdCore = cmdCore, ..}) (cmds container)
+                  { cmds = DM.insert cmdID (registerPID cmdCore pid) (cmds container)
                   , awaiting = DM.delete cmdID (awaiting container)
                   }
                 )

@@ -34,9 +34,9 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Generics.Generic.Aeson
 import Nrm.Classes.Messaging
+import Nrm.Orphans.ExitCode ()
 import Nrm.Types.Configuration as C
 import Nrm.Types.Container as C
-import Nrm.Orphans.ExitCode ()
 import Nrm.Types.NrmState as S
 import Nrm.Types.Process as P
 import Nrm.Types.Units as U
@@ -253,18 +253,6 @@ instance JSONSchema CmdEnded where
 
   schema = gSchema
 
-instance ToJSON ExitCode where
-
-  toJSON = gtoJson
-
-instance FromJSON ExitCode where
-
-  parseJSON = gparseJson
-
-instance JSONSchema ExitCode where
-
-  schema = gSchema
-
 instance ToJSON GetPower where
 
   toJSON = gtoJson
@@ -416,4 +404,3 @@ instance JSONSchema RaplCfg where
 instance JSONSchema HwmonCfg where
 
   schema = gSchema
-

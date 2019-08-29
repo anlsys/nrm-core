@@ -7,7 +7,7 @@ Maintainer  : fre@freux.fr
 module Nrm.Types.Container
   ( Container (..)
   , emptyContainer
-  , singleCommandContainer
+  , insertCmd
   , ContainerID (..)
   , nextContainerID
   , parseContainerID
@@ -27,15 +27,21 @@ import Nrm.Types.DownstreamClient
 import Nrm.Types.Process (Cmd (..), CmdCore (..), CmdID (..))
 import Protolude
 
+-- | NRM's internal view of the state of a container.
 data Container
   = Container
-      { cmds :: DM.Map CmdID Cmd
-      , awaiting :: DM.Map CmdID CmdCore
-      , downstreamCmds :: Map DownstreamCmdID DownstreamCmd
-      , downstreamThreads :: Map DownstreamThreadID DownstreamThread
+      { -- | map of running commands
+        cmds :: DM.Map CmdID Cmd
+      , -- | map of commands awaiting to be registered as running by the runtime
+        awaiting :: DM.Map CmdID CmdCore
+      , -- | map of downstream "command-level" clients for this container
+        downstreamCmds :: Map DownstreamCmdID DownstreamCmd
+      , -- | map of downstream "thread-level" clients for this container
+        downstreamThreads :: Map DownstreamThreadID DownstreamThread
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
+-- | Constructor for an empty container.
 emptyContainer :: Container
 emptyContainer = Container
   { cmds = DM.fromList []
@@ -44,13 +50,9 @@ emptyContainer = Container
   , downstreamThreads = DM.fromList []
   }
 
-singleCommandContainer :: CmdID -> Cmd -> Container
-singleCommandContainer cid cvalue = Container
-  { cmds = DM.singleton cid cvalue
-  , awaiting = DM.fromList []
-  , downstreamCmds = DM.fromList []
-  , downstreamThreads = DM.fromList []
-  }
+-- | Insert a running command in a container (with replace)
+insertCmd :: CmdID -> Cmd -> Container -> Container
+insertCmd cmdID cmd container = container {cmds = DM.insert cmdID cmd (cmds container)}
 
 data ContainerID = ContainerID U.UUID | Name Text
   deriving (Show, Eq, Ord, Generic, FromJSONKey, ToJSONKey)

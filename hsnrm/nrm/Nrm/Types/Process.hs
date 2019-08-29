@@ -30,7 +30,7 @@ where
 import qualified Data.Aeson as A
 import Data.Aeson
 import Data.JSON.Schema
-import Data.Orphans.ExitCode ()
+import Nrm.Orphans.ExitCode ()
 import Data.MessagePack
 import Data.String (IsString (..))
 import qualified Data.UUID as U
@@ -47,7 +47,7 @@ data ProcessState
       , stdoutFinished :: Bool
       , stderrFinished :: Bool
       }
-  deriving (Show, Generic, MessagePack, FromJSON, ToJSON, JSONSchema)
+  deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
 
 blankState :: ProcessState
 blankState = ProcessState Nothing False False
@@ -93,11 +93,15 @@ instance JSONSchema CmdCore where
 
   schema = gSchema
 
+instance JSONSchema ProcessState where
+
+  schema = gSchema
+
 mkCmd :: CmdSpec -> Maybe UC.UpstreamClientID -> CmdCore
 mkCmd s clientID = CmdCore {cmdPath = cmd s, arguments = args s, upstreamClientID = clientID}
 
 registerPID :: CmdCore -> ProcessID -> Cmd
-registerPID c pid = Cmd {cmdCore = c, ..}
+registerPID c pid = Cmd {cmdCore = c, processState = blankState ,..}
 
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)

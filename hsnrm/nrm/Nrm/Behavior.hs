@@ -76,37 +76,42 @@ data Behavior
   deriving (Generic)
 
 -- | The behavior function contains the main logic of the NRM daemon. It changes the state and
--- produces an associated behavior to be executed by the runtime.
+-- produces an associated behavior to be executed by the runtime. This contains the container
+-- management logic, the sensor callback logic, the control loop callback logic.
 behavior :: Cfg.Cfg -> NrmState -> NrmEvent -> IO (NrmState, Behavior)
-behavior _ st (DoOutput cmdID outputType content) = do
-  let (_, containerID, _) =
-        fromMaybe
-          ( panic
-            "received output for an absent CmdID: Internal nrm state management error."
-          ) $
-          DM.lookup cmdID (cmdIDMap st)
-  return
-    ( st
-    , case lookupCmd cmdID st of
-      Just c -> case (upstreamClientID . cmdCore) c of
-        Just ucID ->
-          if content == ""
-          then Rep ucID $ URep.RepEndStream (URep.EndStream outputType)
-          else
-            Rep ucID $ case outputType of
-              URep.StdoutOutput ->
-                URep.RepStdout $ URep.Stdout
-                  { URep.stdoutContainerID = containerID
-                  , stdoutPayload = content
-                  }
-              URep.StderrOutput ->
-                URep.RepStderr $ URep.Stderr
-                  { URep.stderrContainerID = containerID
-                  , stderrPayload = content
-                  }
-        Nothing -> Log "This command does not have a registered upstream client."
-      Nothing -> Log "No such command was found in the NRM state."
-    )
+behavior _ st (DoOutput cmdID outputType content) =
+  return $ case DM.lookup cmdID (cmdIDMap st) of
+    Just (c, containerID, container) -> case (upstreamClientID . cmdCore) c of
+      Just ucID ->
+        if content == ""
+        then
+          let newPstate = case outputType of
+                URep.StdoutOutput -> (processState c) {stdoutFinished = True}
+                URep.StderrOutput -> (processState c) {stderrFinished = True}
+           in ( case isDone newPstate of
+                  Just _ -> undefined
+                  Nothing ->
+                    insertContainer containerID
+                      (Ct.insertCmd cmdID (c {processState = newPstate}) container)
+                      st
+              , Rep ucID $ URep.RepEndStream (URep.EndStream outputType)
+              )
+        else
+          ( st
+          , Rep ucID $ case outputType of
+            URep.StdoutOutput ->
+              URep.RepStdout $ URep.Stdout
+                { URep.stdoutContainerID = containerID
+                , stdoutPayload = content
+                }
+            URep.StderrOutput ->
+              URep.RepStderr $ URep.Stderr
+                { URep.stderrContainerID = containerID
+                , stderrPayload = content
+                }
+          )
+      Nothing -> (st, Log "This command does not have a registered upstream client.")
+    Nothing -> (st, Log "No such command was found in the NRM state.")
 behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
   NotLaunched ->
     return $ fromMaybe (st, NoBehavior) $
@@ -168,15 +173,30 @@ behavior c st (Req clientid msg) = case msg of
         maybe [] (\x -> [(x, URep.RepThisCmdKilled URep.ThisCmdKilled)]) (upstreamClientID . cmdCore $ cmd)
       )
 behavior _ st (ChildDied pid exitcode) =
-  return $ case removeCmd (KProcessID pid) st of
-    Just (_, cmdID, cmd, _, st') ->
-      ( st'
-      , ClearChild cmdID
-        ( (,URep.RepCmdEnded (URep.CmdEnded exitcode)) <$>
-          (upstreamClientID . cmdCore $ cmd)
-        )
-      )
-    Nothing -> (st, NoBehavior)
+  return $
+    DM.lookup pid (pidMap st) & \case
+    Just (cmdID, cmd, containerID, container) ->
+      let newPstate = (processState cmd) {ended = Just exitcode}
+       in case isDone newPstate of
+            Just _ -> case removeCmd (KProcessID pid) st of
+              Just (_, _, _, _, st') ->
+                ( st'
+                , ClearChild cmdID
+                  ( (,URep.RepCmdEnded (URep.CmdEnded exitcode)) <$>
+                    (upstreamClientID . cmdCore $ cmd)
+                  )
+                )
+              Nothing -> (st, panic "Error during command removal from NRM state")
+            Nothing ->
+              ( insertContainer containerID
+                  (Ct.insertCmd cmdID cmd {processState = newPstate} container)
+                  st
+              , ClearChild cmdID
+                ( (,URep.RepCmdEnded (URep.CmdEnded exitcode)) <$>
+                  (upstreamClientID . cmdCore $ cmd)
+                )
+              )
+    Nothing -> (st, Log "No such PID in NRM's state.")
 behavior _ st DoSensor = return (st, NoBehavior)
 behavior _ st DoControl = return (st, NoBehavior)
 behavior _ st DoShutdown = return (st, NoBehavior)

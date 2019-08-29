@@ -6,14 +6,12 @@ Maintainer  : fre@freux.fr
 -}
 module Nrm.Types.NrmState
   ( NrmState (..)
-  , lookupCmd
-  , lookupContainer
-  , updateContainer
-  , adjustContainer
-  , cmdIDMap
+  , -- * Insertion
+    insertContainer
+  , -- * Useful maps
+    cmdIDMap
   , pidMap
-  , {-, runningCmdIDContainerIDMap-}
-    awaitingCmdIDMap
+  , awaitingCmdIDMap
   , runningCmdIDCmdMap
   , awaitingCmdIDCmdMap
   , -- * Rendering views
@@ -65,21 +63,9 @@ showContainers :: NrmState -> Text
 showContainers NrmState {..} =
   showContainerList $ DM.toList containers
 
--- | Looks up a command via ID
-lookupCmd :: CmdID -> NrmState -> Maybe Cmd
-lookupCmd cmdID s = DM.lookup cmdID (mconcat $ cmds <$> DM.elems (containers s))
-
--- | Update a container, with optional deletion
-updateContainer :: (Container -> Maybe Container) -> ContainerID -> NrmState -> NrmState
-updateContainer f containerID s = s {containers = DM.update f containerID (containers s)}
-
--- | Adjust a container
-adjustContainer :: (Container -> Container) -> ContainerID -> NrmState -> NrmState
-adjustContainer f containerID s = s {containers = DM.adjust f containerID (containers s)}
-
--- | Looks up a command via ID
-lookupContainer :: ContainerID -> NrmState -> Maybe Container
-lookupContainer containerID s = DM.lookup containerID (containers s)
+-- | Insert a container in the state (with replace)
+insertContainer :: ContainerID -> Container -> NrmState -> NrmState
+insertContainer containerID container s = s {containers = DM.insert containerID container (containers s)}
 
 -- | Nrm state map view by ProcessID.
 pidMap :: NrmState -> DM.Map ProcessID (CmdID, Cmd, ContainerID, Container)

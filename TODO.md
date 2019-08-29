@@ -2,6 +2,8 @@
 
 -Nrm+NRM
 
+-Container-> Slice
+
 only pass container list view in list reply
 
 dhall `expected`:  https://hackage.haskell.org/package/dhall-1.25.0/docs/Dhall.html#t:Type
@@ -46,6 +48,8 @@ locate and remove {-*-} comments
 
 - change model to a list of behaviors
 
--write the python code with _getattrs_ ?
+- write the python code with _getattrs_ ?
 
 - properly do NoSuchCmd NoSuchContainer
+
+- remove unused accessors and updaters from state interface.
