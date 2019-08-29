@@ -22,7 +22,7 @@ import qualified NRM.Types.Messaging.Protocols as Protocols
 import qualified NRM.Types.Messaging.UpstreamRep as Rep
 import qualified NRM.Types.Messaging.UpstreamReq as Req
 import NRM.Types.Messaging.UpstreamReq
-import NRM.Types.NRMState
+import NRM.Types.State
 import qualified NRM.Types.Process as P
 import qualified NRM.Types.Actuator as A
 import qualified NRM.Types.Sensor as S

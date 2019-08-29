@@ -17,14 +17,16 @@ where
 
 import qualified Data.Map as DM
 import Data.MessagePack
+import NRM.Actuators (listActuators)
 import qualified NRM.Classes.Messaging as M
 import NRM.NRMState
+import NRM.Sensors (listSensors)
 import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.UpstreamPub as UPub
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
-import NRM.Types.NRMState
+import NRM.Types.State
 import NRM.Types.Process
 import qualified NRM.Types.Slice as Ct
 import qualified NRM.Types.UpstreamClient as UC

@@ -1,10 +1,10 @@
 {-|
-Module      : NRM.NRMState
+Module      : NRM.State
 Copyright   : (c) 2019, UChicago Argonne, LL
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module NRM.NRMState
+module NRM.State
   ( -- * Initial state
     initialState
   , -- * Creation/Registration
@@ -20,9 +20,6 @@ module NRM.NRMState
     CmdKey (..)
   , DeletionInfo (..)
   , removeCmd
-  , -- * Queries
-    listSensors
-  , listActuators
   )
 where
 
@@ -37,7 +34,7 @@ import NRM.Types.Actuator
 import NRM.Types.Configuration
 import NRM.Types.Slice
 import NRM.Types.DownstreamClient
-import NRM.Types.NRMState
+import NRM.Types.State
 import NRM.Types.Process
 import qualified NRM.Types.Sensor as Sensor
 import NRM.Types.Topology
@@ -80,13 +77,6 @@ initialState c = do
       , ..
       }
 
--- | List sensors
-listSensors :: NRMState -> [Sensor.Sensor]
-listSensors = undefined
-
--- | List actuators
-listActuators :: NRMState -> [Actuator]
-listActuators = undefined
 
 -- | TODO
 registerLibnrmDownstreamClient :: NRMState -> DownstreamThreadID -> NRMState

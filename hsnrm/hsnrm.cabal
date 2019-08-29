@@ -42,8 +42,10 @@ library nrmlib
         NRM.Optparse
         NRM.Behavior
         NRM.Version
+        NRM.Sensors
+        NRM.Actuators
         NRM.Processes
-        NRM.NRMState
+        NRM.State
         NRM.Node.Sysfs.Internal
         NRM.Optparse.Client
         NRM.Optparse.Daemon
@@ -61,7 +63,7 @@ library nrmlib
         NRM.Types.Slice
         NRM.Types.Process
         NRM.Types.DownstreamClient
-        NRM.Types.NRMState
+        NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Topology
@@ -168,8 +170,10 @@ executable nrm.so
         NRM.Optparse
         NRM.Behavior
         NRM.Version
+        NRM.Sensors
+        NRM.Actuators
         NRM.Processes
-        NRM.NRMState
+        NRM.State
         NRM.Node.Sysfs.Internal
         NRM.Optparse.Client
         NRM.Optparse.Daemon
@@ -187,7 +191,7 @@ executable nrm.so
         NRM.Types.Slice
         NRM.Types.Process
         NRM.Types.DownstreamClient
-        NRM.Types.NRMState
+        NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Topology
@@ -293,8 +297,10 @@ executable nrm
         NRM.Optparse
         NRM.Behavior
         NRM.Version
+        NRM.Sensors
+        NRM.Actuators
         NRM.Processes
-        NRM.NRMState
+        NRM.State
         NRM.Node.Sysfs.Internal
         NRM.Optparse.Client
         NRM.Optparse.Daemon
@@ -312,7 +318,7 @@ executable nrm
         NRM.Types.Slice
         NRM.Types.Process
         NRM.Types.DownstreamClient
-        NRM.Types.NRMState
+        NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Topology
@@ -418,8 +424,10 @@ executable nrmd
         NRM.Optparse
         NRM.Behavior
         NRM.Version
+        NRM.Sensors
+        NRM.Actuators
         NRM.Processes
-        NRM.NRMState
+        NRM.State
         NRM.Node.Sysfs.Internal
         NRM.Optparse.Client
         NRM.Optparse.Daemon
@@ -437,7 +445,7 @@ executable nrmd
         NRM.Types.Slice
         NRM.Types.Process
         NRM.Types.DownstreamClient
-        NRM.Types.NRMState
+        NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Topology

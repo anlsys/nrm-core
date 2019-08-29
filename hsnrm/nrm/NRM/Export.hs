@@ -45,7 +45,7 @@ import qualified NRM.Types.Configuration as C
   , logfile
   , verbose
   )
-import qualified NRM.Types.NRMState as TS
+import qualified NRM.Types.State as TS
 import qualified NRM.Types.Process as P
 import qualified NRM.Types.UpstreamClient as UC
 import qualified NRM.Types.Messaging.UpstreamRep as URep

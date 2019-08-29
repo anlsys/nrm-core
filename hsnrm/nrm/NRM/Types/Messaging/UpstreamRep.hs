@@ -36,7 +36,7 @@ import NRM.Classes.Messaging
 import NRM.Orphans.ExitCode ()
 import NRM.Types.Actuator as A
 import NRM.Types.Configuration as C
-import NRM.Types.NRMState as S
+import NRM.Types.State as S
 import NRM.Types.Process as P
 import NRM.Types.Sensor as SS
 import NRM.Types.Slice as C
