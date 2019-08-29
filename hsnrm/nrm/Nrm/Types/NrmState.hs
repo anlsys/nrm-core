@@ -12,8 +12,8 @@ module Nrm.Types.NrmState
   , adjustContainer
   , cmdIDMap
   , pidMap
-  , runningCmdIDContainerIDMap
-  , awaitingCmdIDMap
+  , {-, runningCmdIDContainerIDMap-}
+    awaitingCmdIDMap
   , runningCmdIDCmdMap
   , awaitingCmdIDCmdMap
   , -- * Rendering views
@@ -85,27 +85,32 @@ lookupContainer containerID s = DM.lookup containerID (containers s)
 pidMap :: NrmState -> DM.Map ProcessID (CmdID, Cmd, ContainerID, Container)
 pidMap s = mconcat $ DM.toList (containers s) <&> mkMap
   where
-    mkMap x@(_, c) = DM.fromList $ zip (pid <$> DM.elems (cmds c)) (DM.toList (cmds c) <&> mkTriple x)
+    mkMap x@(_, c) =
+      DM.fromList $
+        zip (pid <$> DM.elems (cmds c))
+          (DM.toList (cmds c) <&> mkTriple x)
     mkTriple (cid, c) (cmid, cm) = (cmid, cm, cid, c)
 
 -- | Nrm state map view by cmdID of "running" commands..
 cmdIDMap :: NrmState -> DM.Map CmdID (Cmd, ContainerID, Container)
-cmdIDMap s = mconcat $ DM.toList (containers s) <&> mkMap
-  where
-    mkMap x@(_, c) = DM.fromList $ zip (DM.keys $ cmds c) (DM.elems (cmds c) <&> mkTriple x)
-    mkTriple (cid, c) cm = (cm, cid, c)
+cmdIDMap = mkCmdIDMap cmds
 
 -- | Nrm state map view by cmdID of "awaiting" commands.
 awaitingCmdIDMap :: NrmState -> DM.Map CmdID (CmdCore, ContainerID, Container)
-awaitingCmdIDMap s = mconcat $ DM.toList (containers s) <&> mkMap
-  where
-    mkMap x@(_, c) = DM.fromList $ zip (DM.keys $ cmds c) (DM.elems (awaiting c) <&> mkTriple x)
-    mkTriple (cid, c) cm = (cm, cid, c)
+awaitingCmdIDMap = mkCmdIDMap awaiting
 
-{-# WARNING runningCmdIDContainerIDMap "To remove" #-}
--- | Generate a map of all commands currently registered as running, and the associated containerID
-runningCmdIDContainerIDMap :: NrmState -> DM.Map CmdID ContainerID
-runningCmdIDContainerIDMap = containerMap cmds
+mkCmdIDMap
+  :: Ord k
+  => (Container -> Map k a)
+  -> NrmState
+  -> Map k (a, ContainerID, Container)
+mkCmdIDMap accessor s = mconcat $ DM.toList (containers s) <&> mkMap
+  where
+    mkMap x@(_, c) =
+      DM.fromList $
+        zip (DM.keys $ accessor c)
+          (DM.elems (accessor c) <&> mkTriple x)
+    mkTriple (cid, c) cm = (cm, cid, c)
 
 {-# WARNING runningCmdIDCmdMap "To remove" #-}
 -- | List commands currently registered as running
@@ -115,13 +120,6 @@ runningCmdIDCmdMap = cmdsMap cmds
 -- | List commands awaiting to be launched
 awaitingCmdIDCmdMap :: NrmState -> DM.Map CmdID CmdCore
 awaitingCmdIDCmdMap = cmdsMap awaiting
-
--- | Helper
-containerMap :: (Container -> Map CmdID a) -> NrmState -> Map CmdID ContainerID
-containerMap accessor s = mconcat $ f <$> DM.toList (containers s)
-  where
-    f :: (ContainerID, Container) -> Map CmdID ContainerID
-    f (containerID, container) = fromList $ (,containerID) <$> DM.keys (accessor container)
 
 -- | List commands awaiting to be launched
 cmdsMap :: (Container -> Map CmdID a) -> NrmState -> DM.Map CmdID a

@@ -64,6 +64,8 @@ data OutputType = Stdout | Stderr
 data Behavior
   = -- | The No-Op
     NoBehavior
+  | -- | Log a message
+    Log Text
   | -- | Reply to an upstream client.
     Rep UC.UpstreamClientID URep.Rep
   | -- | Publish a message on upstream
@@ -80,12 +82,12 @@ data Behavior
 -- produces an associated behavior to be executed by the runtime.
 behavior :: Cfg.Cfg -> NrmState -> NrmEvent -> IO (NrmState, Behavior)
 behavior _ st (DoOutput cmdID outputType content) = do
-  let containerID =
+  let (_, containerID, _) =
         fromMaybe
           ( panic
             "received output for an absent CmdID: Internal nrm state management error."
           ) $
-          DM.lookup cmdID (runningCmdIDContainerIDMap st)
+          DM.lookup cmdID (cmdIDMap st)
   return
     ( st
     , if content == ""
@@ -115,12 +117,13 @@ behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
       upstreamClientID cmdCore <&> \x ->
         (st', Rep x (URep.RepStartFailure URep.StartFailure))
   Launched pid ->
-    return $ case registerLaunched cmdID pid st of
-      Just (st', containerID, clientID) ->
+    mayLog st $
+      registerLaunched cmdID pid st <&> \(st', containerID, maybeClientID) ->
+      fromMaybe (st', NoBehavior) $
+        maybeClientID <&> \clientID ->
         ( st'
         , Rep clientID (URep.RepStart (URep.Start containerID cmdID))
         )
-      Nothing -> (st, NoBehavior)
 behavior c st (Req clientid msg) = case msg of
   UReq.ReqContainerList _ ->
     return (st, Rep clientid (URep.RepList rep))
@@ -195,6 +198,7 @@ behavior _ st (DownstreamEvent msg) = case msg of
 instance MessagePack Behavior where
 
   toObject NoBehavior = toObject ("noop" :: Text)
+  toObject (Log msg) = toObject ("log" :: Text, msg)
   toObject (Pub msg) = toObject ("publish" :: Text, M.encodeT msg)
   toObject (Rep clientid msg) =
     toObject ("reply" :: Text, clientid, M.encodeT msg)
@@ -214,3 +218,9 @@ instance MessagePack Behavior where
       )
 
   fromObject x = to <$> gFromObject x
+
+mayLog :: NrmState -> Either Text (NrmState, Behavior) -> IO (NrmState, Behavior)
+mayLog st =
+  return . \case
+    Left e -> (st, Log e)
+    Right x -> x

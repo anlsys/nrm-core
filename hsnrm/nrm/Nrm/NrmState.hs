@@ -111,7 +111,10 @@ data CmdKey = KCmdID CmdID | KProcessID ProcessID
 
 -- | Removes a command from the state, and also removes the container if it's
 -- empty as a result.
-removeCmd :: CmdKey -> NrmState -> Maybe (DeletionInfo, CmdID, Cmd, ContainerID, NrmState)
+removeCmd
+  :: CmdKey
+  -> NrmState
+  -> Maybe (DeletionInfo, CmdID, Cmd, ContainerID, NrmState)
 removeCmd key st = case key of
   KCmdID cmdID ->
     DM.lookup cmdID (cmdIDMap st) <&> \(cmd, containerID, container) ->
@@ -139,7 +142,10 @@ removeCmd key st = case key of
         )
 
 -- | Registers a container if not already tracked in the state, and returns the new state.
-createContainer :: ContainerID -> NrmState -> NrmState
+createContainer
+  :: ContainerID
+  -> NrmState
+  -> NrmState
 createContainer containerID st =
   case DM.lookup containerID (containers st) of
     Nothing -> st {containers = containers'}
@@ -148,7 +154,12 @@ createContainer containerID st =
     Just _ -> st
 
 -- | Registers an awaiting command in an existing container
-registerAwaiting :: CmdID -> CmdCore -> ContainerID -> NrmState -> NrmState
+registerAwaiting
+  :: CmdID
+  -> CmdCore
+  -> ContainerID
+  -> NrmState
+  -> NrmState
 registerAwaiting cmdID cmdValue containerID st =
   st {containers = DM.update f containerID (containers st)}
   where
@@ -158,29 +169,34 @@ registerAwaiting cmdID cmdValue containerID st =
 {-, cmds = DM.insert cmdID c (cmds container)-}
 
 -- | Turns an awaiting command to a launched one.
-registerLaunched :: CmdID -> ProcessID -> NrmState -> Maybe (NrmState, ContainerID, UpstreamClientID)
+registerLaunched
+  :: CmdID
+  -> ProcessID
+  -> NrmState
+  -> Either Text (NrmState, ContainerID, Maybe UpstreamClientID)
 registerLaunched cmdID pid st =
   case DM.lookup cmdID (awaitingCmdIDMap st) of
-    Nothing -> Nothing -- internal nrm.so lookup error.
-    Just (cmdCore, containerID, container) -> case upstreamClientID cmdCore of
-      Nothing -> Nothing
-      Just clientID ->
-        Just
-          ( st
-              { containers = DM.insert containerID
-                  ( container
-                    { cmds = DM.insert cmdID (Cmd {cmdCore = cmdCore, ..}) (cmds container)
-                    , awaiting = DM.delete cmdID (awaiting container)
-                    }
-                  )
-                  (containers st)
-              }
-          , containerID
-          , clientID
-          )
+    Nothing -> Left "No such awaiting command."
+    Just (cmdCore, containerID, container) ->
+      Right
+        ( st
+            { containers = DM.insert containerID
+                ( container
+                  { cmds = DM.insert cmdID (Cmd {cmdCore = cmdCore, ..}) (cmds container)
+                  , awaiting = DM.delete cmdID (awaiting container)
+                  }
+                )
+                (containers st)
+            }
+        , containerID
+        , upstreamClientID cmdCore
+        )
 
 -- | Fails an awaiting command.
-registerFailed :: CmdID -> NrmState -> Maybe (NrmState, ContainerID, Container, CmdCore)
+registerFailed
+  :: CmdID
+  -> NrmState
+  -> Maybe (NrmState, ContainerID, Container, CmdCore)
 registerFailed cmdID st =
   DM.lookup cmdID (awaitingCmdIDMap st) <&> \(cmdCore, containerID, container) ->
     (st {containers = DM.update f containerID (containers st)}, containerID, container, cmdCore)

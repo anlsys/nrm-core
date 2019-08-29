@@ -48,7 +48,8 @@ class Daemon(object):
             "reply": self.upstream_rpc.send,
             "cmd": self.cmd,
             "kill": self.kill,
-            "pop": self.popchild
+            "pop": self.popchild,
+            "log": _logger.debug
         }
 
         # register messaging server callbacks
