@@ -1,3 +1,11 @@
+{-|
+Module      : FFI.TypeUncurry.DataKinds
+Copyright   : Copyright (c) 2018  Niklas Hambüchen.
+License     : MIT License.
+
+MessagePack FFI code adapted from call-haskell-from-anything
+-}
+
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- | Converts function arguments to tuple-like types.

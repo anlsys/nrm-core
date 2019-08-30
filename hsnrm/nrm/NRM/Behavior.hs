@@ -19,16 +19,16 @@ import qualified Data.Map as DM
 import Data.MessagePack
 import NRM.Actuators (listActuators)
 import qualified NRM.Classes.Messaging as M
-import NRM.State
 import NRM.Sensors (listSensors)
+import NRM.State
 import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.UpstreamPub as UPub
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
-import NRM.Types.State
 import NRM.Types.Process
 import qualified NRM.Types.Slice as Ct
+import NRM.Types.State
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
 
@@ -138,7 +138,12 @@ behavior c st (Req clientid msg) = case msg of
     return
       ( st
       , Rep clientid
-        (URep.RepList $ URep.SliceList (DM.toList (slices st)) (listActuators st) (listSensors st))
+        ( URep.RepList $
+          URep.SliceList
+            (DM.toList (slices st))
+            (DM.toList (listActuators st))
+            (DM.toList (listSensors st))
+        )
       )
   UReq.ReqGetState _ ->
     return (st, Rep clientid (URep.RepGetState (URep.GetState st)))

@@ -55,3 +55,5 @@ locate and remove {-*-} comments
 - remove unused accessors and updaters from state interface.
 
 - upstream req fix for no such cmd
+
+- remove parseID -like functions

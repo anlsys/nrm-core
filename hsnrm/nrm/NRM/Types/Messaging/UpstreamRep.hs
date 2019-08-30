@@ -34,12 +34,11 @@ import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
 import NRM.Orphans.ExitCode ()
-import NRM.Types.Actuator as A
+import CPD.Core as CPD
 import NRM.Types.Configuration as C
-import NRM.Types.State as S
 import NRM.Types.Process as P
-import NRM.Types.Sensor as SS
 import NRM.Types.Slice as C
+import NRM.Types.State as S
 import NRM.Types.Units as U
 import Protolude hiding (Rep)
 
@@ -112,8 +111,8 @@ data NoSuchSlice
 data SliceList
   = SliceList
       { slices :: [(C.SliceID, C.Slice)]
-      , actuators :: [A.Actuator]
-      , sensors :: [SS.Sensor]
+      , actuators :: [(CPD.ActuatorID, CPD.Actuator)]
+      , sensors :: [(CPD.SensorID, CPD.Sensor)]
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceList

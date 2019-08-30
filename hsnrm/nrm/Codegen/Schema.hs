@@ -10,7 +10,6 @@ module Codegen.Schema
   )
 where
 
-{-import Codegen.CHeader-}
 import qualified Data.Aeson as A
 import Data.Aeson.Encode.Pretty as AP
 import qualified Data.Aeson.Types as AT
@@ -18,36 +17,12 @@ import Data.HashMap.Strict as H
   ( fromList
   )
 import qualified Data.JSON.Schema as S
-import NRM.Classes.Messaging as M
 import Data.Vector as V
   ( fromList
   )
+import NRM.Classes.Messaging as M
 import Protolude
 
---  data Schema =
---      Choice [Schema]      -- ^ A choice of multiple values, e.g. for sum types.
---    | Object [Field]       -- ^ A JSON object.
---    | Map    Schema        -- ^ A JSON object with arbitrary keys.
---    | Array LengthBound Bool Schema
---                           -- ^ An array. The LengthBound represent the
---                           -- lower and upper bound of the array
---                           -- size. The value 'unboundedLength' indicates no bound.
---                           -- The boolean denotes whether items have
---                           -- to be unique.
---    | Tuple [Schema]       -- ^ A fixed-length tuple of different values.
---    | Value LengthBound    -- ^ A string. The LengthBound denote the lower and
---                           -- upper bound of the length of the string. The
---                           -- value 'unboundedLength' indicates no bound.
---    | Boolean              -- ^ A Bool.
---    | Number Bound         -- ^ A number. The Bound denote the lower and
---                           -- upper bound on the value. The value 'unbounded'
---                           -- indicates no bound.
---    | Constant Aeson.Value -- ^ A Value that never changes. Can be
---                           -- combined with Choice to create enumerables.
---    | Any                  -- ^ Any value is allowed.
---    deriving (Eq, Show)
-
---data Field = Field { key :: Text, required :: Bool, content :: Schema } deriving (Eq, Show)
 newtype NSchema = NSchema S.Schema
 
 mkArray :: [AT.Value] -> AT.Value

@@ -30,13 +30,14 @@ import NRM.Slices.Singularity as CS
 import NRM.Node.Hwloc
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
-import NRM.Types.Configuration
+import NRM.Types.Configuration as Cfg
 import NRM.Types.Slice
 import NRM.Types.DownstreamClient
 import NRM.Types.State
 import NRM.Types.Process
 import qualified NRM.Types.Sensor as Sensor
 import NRM.Types.Topology
+import NRM.Types.Topology.Package as TP
 import NRM.Types.UpstreamClient
 import Protolude
 
@@ -46,7 +47,7 @@ initialState c = do
   hwl <- getHwlocData
   let packages' = DM.fromList $ (,Package {raplSensor = Nothing}) <$> selectPackageIDs hwl
   packages <-
-    getDefaultRAPLDirs (toS $ raplPath $ raplCfg c) <&> \case
+    getDefaultRAPLDirs (toS $ Cfg.raplPath $ raplCfg c) <&> \case
       Just (RAPLDirs rapldirs) -> Protolude.foldl goRAPL packages' rapldirs
       Nothing -> packages'
   return $ NRMState
@@ -68,9 +69,9 @@ initialState c = do
     goRAPL m RAPLDir {..} = DM.adjust (addRAPLSensor path maxEnergy) pkgid m
     addRAPLSensor path maxEnergy Package {..} = Package
       { raplSensor = Just
-          ( Sensor.RaplSensor
-            { raplPath = path
-            , max = maxEnergy
+          ( TP.RaplSensor
+            { TP.raplPath = path
+            , TP.max = maxEnergy
             }
           )
       , ..

@@ -1,5 +1,13 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
+{-|
+Module      : FFI.TypeUncurry.Msgpack
+Copyright   : Copyright (c) 2018  Niklas Hambüchen.
+License     : MIT License.
+
+MessagePack FFI code adapted from call-haskell-from-anything
+-}
+
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- | Easy FFI via MessagePack.

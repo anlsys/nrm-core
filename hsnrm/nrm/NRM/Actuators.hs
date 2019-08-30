@@ -9,10 +9,10 @@ module NRM.Actuators
   )
 where
 
-import NRM.Types.Actuator
+import CPD.Core
 import NRM.Types.State
-{-import Protolude-}
+import Protolude
 
 -- | List sensors
-listActuators :: NRMState -> [Actuator]
-listActuators _ = []
+listActuators :: NRMState -> Map ActuatorID Actuator
+listActuators _ = undefined

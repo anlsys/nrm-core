@@ -14,17 +14,17 @@ where
 
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import qualified Data.ByteString as SB
+{-import qualified NRM.Types.Messaging.UpstreamReq as -}
+import qualified Data.Map as DM
 import Data.Restricted
 import NRM.Classes.Messaging
 import NRM.Optparse
 import qualified NRM.Optparse.Client as C
-import qualified NRM.Types.Actuator as A
+import qualified CPD.Text as CPD
 import qualified NRM.Types.Messaging.Protocols as Protocols
-import qualified NRM.Types.Messaging.UpstreamRep as Rep
-import qualified NRM.Types.Messaging.UpstreamReq as Req
-import NRM.Types.Messaging.UpstreamReq
+import qualified NRM.Types.Messaging.UpstreamRep as URep
+import qualified NRM.Types.Messaging.UpstreamReq as UReq
 import qualified NRM.Types.Process as P
-import qualified NRM.Types.Sensor as S
 import qualified NRM.Types.Slice as C
 import NRM.Types.State
 import qualified NRM.Types.UpstreamClient as UC
@@ -61,7 +61,7 @@ main = do
 
 client
   :: ZMQ.Socket z ZMQ.Dealer
-  -> Req
+  -> UReq.Req
   -> C.CommonOpts
   -> ZMQ.ZMQ z ()
 client s req v = do
@@ -71,17 +71,17 @@ client s req v = do
 dispatchProtocol
   :: ZMQ.Socket z ZMQ.Dealer
   -> C.CommonOpts
-  -> Req
+  -> UReq.Req
   -> ZMQ.ZMQ z ()
 dispatchProtocol s v = \case
-  (ReqSliceList x) -> reqrep s v Protocols.SliceList x
-  (ReqKillSlice x) -> reqrep s v Protocols.KillSlice x
-  (ReqKillCmd x) -> reqrep s v Protocols.KillCmd x
-  (ReqSetPower x) -> reqrep s v Protocols.SetPower x
-  (ReqGetConfig x) -> reqrep s v Protocols.GetConfig x
-  (ReqGetState x) -> reqrep s v Protocols.GetState x
-  (ReqRun x) ->
-    if detachCmd x
+  (UReq.ReqSliceList x) -> reqrep s v Protocols.SliceList x
+  (UReq.ReqKillSlice x) -> reqrep s v Protocols.KillSlice x
+  (UReq.ReqKillCmd x) -> reqrep s v Protocols.KillCmd x
+  (UReq.ReqSetPower x) -> reqrep s v Protocols.SetPower x
+  (UReq.ReqGetConfig x) -> reqrep s v Protocols.GetConfig x
+  (UReq.ReqGetState x) -> reqrep s v Protocols.GetState x
+  (UReq.ReqRun x) ->
+    if UReq.detachCmd x
     then putText "Client detached."
     else reqstream s v Protocols.Run x
 
@@ -96,7 +96,7 @@ reqrep s opts = \case
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
-        Just (Rep.RepList (Rep.SliceList l as ss)) ->
+        Just (URep.RepList (URep.SliceList l as ss)) ->
           putText
             [text|
               $slicecount slice(s) currently running.
@@ -111,8 +111,8 @@ reqrep s opts = \case
             actuatorcount = show $ length as
             sensorcount = show $ length ss
             slices = showSliceList l
-            actuators = A.showActuatorList as
-            sensors = S.showSensorList ss
+            actuators = CPD.showActuators $ DM.fromList as
+            sensors = CPD.showSensors $ DM.fromList ss
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.GetState ->
@@ -120,7 +120,7 @@ reqrep s opts = \case
       msg <- ZMQ.receive s <&> toS
       case decode msg of
         Nothing -> putText "Couldn't decode reply"
-        Just (Rep.RepGetState (Rep.GetState st)) ->
+        Just (URep.RepGetState (URep.GetState st)) ->
           if C.jsonPrint opts
           then putText $ toS (AP.encodePretty st)
           else
@@ -133,7 +133,7 @@ reqrep s opts = \case
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
-        Just (Rep.RepGetConfig (Rep.GetConfig cfg)) ->
+        Just (URep.RepGetConfig (URep.GetConfig cfg)) ->
           if C.jsonPrint opts
           then putText $ toS (AP.encodePretty cfg)
           else
@@ -145,15 +145,15 @@ reqrep s opts = \case
   Protocols.SetPower ->
     const $ do
       msg <- ZMQ.receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe Rep.Rep)
+      liftIO . print $ ((decode $ toS msg) :: Maybe URep.Rep)
       liftIO $ hFlush stdout
   Protocols.KillSlice ->
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
-        Just (Rep.RepSliceKilled (Rep.SliceKilled sliceID)) ->
+        Just (URep.RepSliceKilled (URep.SliceKilled sliceID)) ->
           putText $ "Killed slice ID: " <> C.toText sliceID
-        Just (Rep.RepNoSuchSlice Rep.NoSuchSlice) ->
+        Just (URep.RepNoSuchSlice URep.NoSuchSlice) ->
           putText "No such slice ID. "
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
@@ -161,11 +161,11 @@ reqrep s opts = \case
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
-        Just (Rep.RepCmdKilled (Rep.CmdKilled cmdID)) ->
+        Just (URep.RepCmdKilled (URep.CmdKilled cmdID)) ->
           putText $ "Killed cmd ID: " <> P.toText cmdID
-        Just (Rep.RepSliceKilled (Rep.SliceKilled sliceID)) ->
+        Just (URep.RepSliceKilled (URep.SliceKilled sliceID)) ->
           putText $ "Killed slice ID: " <> C.toText sliceID
-        Just (Rep.RepNoSuchCmd Rep.NoSuchCmd) ->
+        Just (URep.RepNoSuchCmd URep.NoSuchCmd) ->
           putText "No such command ID. "
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
@@ -176,23 +176,23 @@ reqstream
   -> Protocols.ReqStream req rep
   -> req
   -> ZMQ.ZMQ z ()
-reqstream s c Protocols.Run Req.Run {..} = do
+reqstream s c Protocols.Run UReq.Run {..} = do
   ZMQ.connect s $ toS address
   msg <- ZMQ.receive s
-  case ((decode $ toS msg) :: Maybe Rep.Rep) of
+  case ((decode $ toS msg) :: Maybe URep.Rep) of
     Nothing -> putText "error: received malformed message(1)."
-    Just (Rep.RepStart (Rep.Start _ cmdID)) -> zmqCCHandler (kill cmdID) >> go
-    Just (Rep.RepStartFailure _) -> putText "Command start failure."
+    Just (URep.RepStart (URep.Start _ cmdID)) -> zmqCCHandler (kill cmdID) >> go
+    Just (URep.RepStartFailure _) -> putText "Command start failure."
     _ -> putText "NRM client error: received wrong type of message when starting job."
   where
     go = do
       msg <- ZMQ.receive s
       when (C.verbose c == C.Verbose) $ liftIO $ print msg
-      case ((decode $ toS msg) :: Maybe Rep.Rep) of
-        Just (Rep.RepStdout (Rep.stdoutPayload -> x)) -> putStr x >> go
-        Just (Rep.RepStderr (Rep.stderrPayload -> x)) -> hPutStr stderr x >> go
-        Just (Rep.RepThisCmdKilled _) -> putText "Command killed."
-        Just (Rep.RepCmdEnded (Rep.exitCode -> x)) -> case x of
+      case ((decode $ toS msg) :: Maybe URep.Rep) of
+        Just (URep.RepStdout (URep.stdoutPayload -> x)) -> putStr x >> go
+        Just (URep.RepStderr (URep.stderrPayload -> x)) -> hPutStr stderr x >> go
+        Just (URep.RepThisCmdKilled _) -> putText "Command killed."
+        Just (URep.RepCmdEnded (URep.exitCode -> x)) -> case x of
           ExitSuccess -> putText "Command ended successfully."
           ExitFailure exitcode -> liftIO $ die ("Command ended with exit code" <> show exitcode)
         Nothing -> putText "error: NRM client received malformed message."
@@ -212,4 +212,4 @@ kill cmdID =
     ZMQ.setSendHighWM (restrict (0 :: Int)) s
     ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
     ZMQ.connect s $ toS address
-    ZMQ.send s [] (toS $ encode $ Req.ReqKillCmd (Req.KillCmd cmdID))
+    ZMQ.send s [] (toS $ encode $ UReq.ReqKillCmd (UReq.KillCmd cmdID))

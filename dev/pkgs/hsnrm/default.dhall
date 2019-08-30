@@ -7,6 +7,7 @@ let defexts =
       [ types.Extension.LambdaCase True
       , types.Extension.QuasiQuotes True
       , types.Extension.DefaultSignatures True
+      , types.Extension.ExistentialQuantification True
       , types.Extension.RecordWildCards True
       , types.Extension.TypeSynonymInstances True
       , types.Extension.StandaloneDeriving True
@@ -204,7 +205,6 @@ let modules =
       , "NRM.Types.Units"
       , "NRM.Types.Actuator"
       , "NRM.Types.Sensor"
-      , "NRM.Types.CPDL"
       , "NRM.Types.Slice"
       , "NRM.Types.Process"
       , "NRM.Types.DownstreamClient"
@@ -235,6 +235,9 @@ let extramodules =
       , "Codegen.Schema"
       , "Codegen.Dhall"
       , "Codegen.CHeader"
+      , "CPD.Core"
+      , "CPD.Utils"
+      , "CPD.Text"
       ]
 
 let allmodules = modules # extramodules

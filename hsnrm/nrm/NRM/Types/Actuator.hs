@@ -8,19 +8,12 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Types.Actuator
   ( Actuator (..)
-  , showActuatorList
   )
 where
 
-import Data.Aeson
-import Data.JSON.Schema
-import Data.MessagePack
-import NRM.Classes.Messaging
-import Protolude
-
-data Actuator = Actuator
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Actuator
-
-showActuatorList :: [Actuator] -> Text
-showActuatorList _ = " "
+{-import Data.Aeson-}
+{-import Data.JSON.Schema-}
+{-import Data.MessagePack-}
+{-import NRM.Classes.Messaging-}
+{-import Protolude-}
+data Actuator a = Actuator a
