@@ -15,4 +15,8 @@ import Protolude
 
 -- | List sensors
 listSensors :: NRMState -> [Sensor]
-listSensors s = undefined
+listSensors s = listPackageSensors s <> []
+
+-- | List sensors
+listPackageSensors :: NRMState -> [Sensor]
+listPackageSensors _ = []

@@ -8,11 +8,13 @@
             "properties": {
                 "repList": {
                     "required": [
-                        "containers"
+                        "slices",
+                        "actuators",
+                        "sensors"
                     ],
                     "type": "object",
                     "properties": {
-                        "containers": {
+                        "slices": {
                             "uniqueItems": false,
                             "items": {
                                 "items": [
@@ -151,6 +153,102 @@
                                 "type": "array"
                             },
                             "type": "array"
+                        },
+                        "sensors": {
+                            "uniqueItems": false,
+                            "items": {
+                                "required": [
+                                    "id",
+                                    "tags",
+                                    "source",
+                                    "meta"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "source": {
+                                        "oneOf": [
+                                            {
+                                                "required": [
+                                                    "process"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "process": {
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "required": [
+                                                    "pU"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "pU": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "id": {
+                                        "type": "string"
+                                    },
+                                    "meta": {
+                                        "oneOf": [
+                                            {
+                                                "required": [
+                                                    "set"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "set": {
+                                                        "uniqueItems": false,
+                                                        "items": {
+                                                            "type": "string"
+                                                        },
+                                                        "type": "array"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "required": [
+                                                    "interval"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "interval": {
+                                                        "items": [
+                                                            {
+                                                                "type": "number"
+                                                            },
+                                                            {
+                                                                "type": "number"
+                                                            }
+                                                        ],
+                                                        "type": "array"
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    "tags": {
+                                        "uniqueItems": false,
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array"
+                                    }
+                                }
+                            },
+                            "type": "array"
+                        },
+                        "actuators": {
+                            "uniqueItems": false,
+                            "items": {
+                                "const": "\"actuator\""
+                            },
+                            "type": "array"
                         }
                     }
                 }
@@ -164,7 +262,7 @@
             "properties": {
                 "repStart": {
                     "required": [
-                        "startContainerID",
+                        "startSliceID",
                         "startCmdID"
                     ],
                     "type": "object",
@@ -172,7 +270,7 @@
                         "startCmdID": {
                             "type": "string"
                         },
-                        "startContainerID": {
+                        "startSliceID": {
                             "type": "string"
                         }
                     }
@@ -187,7 +285,7 @@
             "properties": {
                 "repStdout": {
                     "required": [
-                        "stdoutContainerID",
+                        "stdoutSliceID",
                         "stdoutPayload"
                     ],
                     "type": "object",
@@ -195,7 +293,7 @@
                         "stdoutPayload": {
                             "type": "string"
                         },
-                        "stdoutContainerID": {
+                        "stdoutSliceID": {
                             "type": "string"
                         }
                     }
@@ -210,7 +308,7 @@
             "properties": {
                 "repStderr": {
                     "required": [
-                        "stderrContainerID",
+                        "stderrSliceID",
                         "stderrPayload"
                     ],
                     "type": "object",
@@ -218,7 +316,7 @@
                         "stderrPayload": {
                             "type": "string"
                         },
-                        "stderrContainerID": {
+                        "stderrSliceID": {
                             "type": "string"
                         }
                     }
@@ -307,12 +405,12 @@
         },
         {
             "required": [
-                "repNoSuchContainer"
+                "repNoSuchSlice"
             ],
             "type": "object",
             "properties": {
-                "repNoSuchContainer": {
-                    "const": "\"noSuchContainer\""
+                "repNoSuchSlice": {
+                    "const": "\"noSuchSlice\""
                 }
             }
         },
@@ -329,17 +427,17 @@
         },
         {
             "required": [
-                "repContainerKilled"
+                "repSliceKilled"
             ],
             "type": "object",
             "properties": {
-                "repContainerKilled": {
+                "repSliceKilled": {
                     "required": [
-                        "killedContainerID"
+                        "killedSliceID"
                     ],
                     "type": "object",
                     "properties": {
-                        "killedContainerID": {
+                        "killedSliceID": {
                             "type": "string"
                         }
                     }
@@ -438,7 +536,7 @@
                                 "singularity",
                                 "dummy",
                                 "nodeos",
-                                "container_runtime",
+                                "slice_runtime",
                                 "downstreamCfg",
                                 "upstreamCfg",
                                 "raplCfg",
@@ -496,19 +594,6 @@
                                 "argo_perf_wrapper": {
                                     "type": "string"
                                 },
-                                "container_runtime": {
-                                    "oneOf": [
-                                        {
-                                            "const": "\"singularity\""
-                                        },
-                                        {
-                                            "const": "\"nodeos\""
-                                        },
-                                        {
-                                            "const": "\"dummy\""
-                                        }
-                                    ]
-                                },
                                 "downstreamCfg": {
                                     "required": [
                                         "downstreamBindAddress"
@@ -543,6 +628,19 @@
                                 },
                                 "dummy": {
                                     "type": "boolean"
+                                },
+                                "slice_runtime": {
+                                    "oneOf": [
+                                        {
+                                            "const": "\"singularity\""
+                                        },
+                                        {
+                                            "const": "\"nodeos\""
+                                        },
+                                        {
+                                            "const": "\"dummy\""
+                                        }
+                                    ]
                                 },
                                 "hwmonCfg": {
                                     "required": [

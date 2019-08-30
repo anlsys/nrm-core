@@ -8,12 +8,12 @@
             "properties": {
                 "start": {
                     "required": [
-                        "container_uuid",
+                        "slice_uuid",
                         "application_uuid"
                     ],
                     "type": "object",
                     "properties": {
-                        "container_uuid": {
+                        "slice_uuid": {
                             "type": "string"
                         },
                         "application_uuid": {
@@ -50,17 +50,17 @@
             "properties": {
                 "performance": {
                     "required": [
-                        "container_uuid",
+                        "slice_uuid",
                         "application_uuid",
                         "perf"
                     ],
                     "type": "object",
                     "properties": {
+                        "slice_uuid": {
+                            "type": "string"
+                        },
                         "perf": {
                             "type": "number"
-                        },
-                        "container_uuid": {
-                            "type": "string"
                         },
                         "application_uuid": {
                             "type": "string"

@@ -11,8 +11,8 @@ where
 
 import NRM.Types.Actuator
 import NRM.Types.State
-import Protolude
+{-import Protolude-}
 
 -- | List sensors
 listActuators :: NRMState -> [Actuator]
-listActuators = undefined
+listActuators _ = []

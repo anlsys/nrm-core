@@ -18,16 +18,17 @@ import Data.Restricted
 import NRM.Classes.Messaging
 import NRM.Optparse
 import qualified NRM.Optparse.Client as C
+import qualified NRM.Types.Actuator as A
 import qualified NRM.Types.Messaging.Protocols as Protocols
 import qualified NRM.Types.Messaging.UpstreamRep as Rep
 import qualified NRM.Types.Messaging.UpstreamReq as Req
 import NRM.Types.Messaging.UpstreamReq
-import NRM.Types.State
 import qualified NRM.Types.Process as P
-import qualified NRM.Types.Actuator as A
 import qualified NRM.Types.Sensor as S
 import qualified NRM.Types.Slice as C
+import NRM.Types.State
 import qualified NRM.Types.UpstreamClient as UC
+import NeatInterpolation
 import Protolude hiding (Rep)
 import System.IO (hFlush)
 import qualified System.Posix.Signals as SPS
@@ -95,16 +96,23 @@ reqrep s opts = \case
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
-        Just (Rep.RepList (Rep.SliceList l as ss)) -> do
-          case length l of
-            0 -> putText "No slices currently running."
-            x -> do
-              putText (show x <> " slice(s) currently running.")
-              putText $ showSliceList l
-          putText (show (length as) <> " actuators currently registered.")
-          putText $ A.showActuatorList as
-          putText (show (length ss) <> " sensors currently registered.")
-          putText $ S.showSensorList ss
+        Just (Rep.RepList (Rep.SliceList l as ss)) ->
+          putText
+            [text|
+              $slicecount slice(s) currently running.
+               $slices
+              $actuatorcount actuator(s) currently registered.
+               $actuators
+              $sensorcount sensor(s) currently registered.
+               $sensors
+             |]
+          where
+            slicecount = show $ length l
+            actuatorcount = show $ length as
+            sensorcount = show $ length ss
+            slices = showSliceList l
+            actuators = A.showActuatorList as
+            sensors = S.showSensorList ss
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.GetState ->

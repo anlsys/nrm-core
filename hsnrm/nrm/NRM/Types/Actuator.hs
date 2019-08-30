@@ -23,4 +23,4 @@ data Actuator = Actuator
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Actuator
 
 showActuatorList :: [Actuator] -> Text
-showActuatorList = undefined
+showActuatorList _ = " "

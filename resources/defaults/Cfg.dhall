@@ -31,7 +31,7 @@
     True
 , nodeos =
     False
-, container_runtime =
+, slice_runtime =
     < Singularity | Nodeos | Dummy >.Dummy
 , downstreamCfg =
     { downstreamBindAddress = "ipc:///tmp/nrm-downstream-event" }

@@ -31,7 +31,7 @@
     Bool
 , nodeos :
     Bool
-, container_runtime :
+, slice_runtime :
     < Singularity | Nodeos | Dummy >
 , downstreamCfg :
     { downstreamBindAddress : Text }

@@ -2,12 +2,12 @@
     "oneOf": [
         {
             "required": [
-                "reqContainerList"
+                "reqSliceList"
             ],
             "type": "object",
             "properties": {
-                "reqContainerList": {
-                    "const": "\"containerList\""
+                "reqSliceList": {
+                    "const": "\"sliceList\""
                 }
             }
         },
@@ -21,13 +21,16 @@
                     "required": [
                         "manifest",
                         "spec",
-                        "runContainerID",
+                        "runSliceID",
                         "detachCmd"
                     ],
                     "type": "object",
                     "properties": {
                         "detachCmd": {
                             "type": "boolean"
+                        },
+                        "runSliceID": {
+                            "type": "string"
                         },
                         "manifest": {
                             "required": [
@@ -245,9 +248,6 @@
                                     "type": "string"
                                 }
                             }
-                        },
-                        "runContainerID": {
-                            "type": "string"
                         }
                     }
                 }
@@ -255,17 +255,17 @@
         },
         {
             "required": [
-                "reqKillContainer"
+                "reqKillSlice"
             ],
             "type": "object",
             "properties": {
-                "reqKillContainer": {
+                "reqKillSlice": {
                     "required": [
-                        "killContainerID"
+                        "killSliceID"
                     ],
                     "type": "object",
                     "properties": {
-                        "killContainerID": {
+                        "killSliceID": {
                             "type": "string"
                         }
                     }
