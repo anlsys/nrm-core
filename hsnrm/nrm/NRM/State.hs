@@ -23,19 +23,20 @@ module NRM.State
   )
 where
 
+import CPD.Core
 import qualified Data.Map as DM
-import NRM.Slices.Dummy as CD
-import NRM.Slices.Nodeos as CN
-import NRM.Slices.Singularity as CS
 import NRM.Node.Hwloc
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
+import NRM.Slices.Dummy as CD
+import NRM.Slices.Nodeos as CN
+import NRM.Slices.Singularity as CS
 import NRM.Types.Configuration as Cfg
-import NRM.Types.Slice
 import NRM.Types.DownstreamClient
-import NRM.Types.State
 import NRM.Types.Process
-import qualified NRM.Types.Sensor as Sensor
+{-import qualified NRM.Types.Sensor as Sensor-}
+import NRM.Types.Slice
+import NRM.Types.State
 import NRM.Types.Topology
 import NRM.Types.Topology.Package as TP
 import NRM.Types.UpstreamClient
@@ -47,9 +48,9 @@ initialState c = do
   hwl <- getHwlocData
   let packages' = DM.fromList $ (,Package {raplSensor = Nothing}) <$> selectPackageIDs hwl
   packages <-
-    getDefaultRAPLDirs (toS $ Cfg.raplPath $ raplCfg c) <&> \case
-      Just (RAPLDirs rapldirs) -> Protolude.foldl goRAPL packages' rapldirs
-      Nothing -> packages'
+    getDefaultRAPLDirs (toS $ Cfg.raplPath $ raplCfg c) >>= \case
+      Just (RAPLDirs rapldirs) -> foldM goRAPL packages' rapldirs
+      Nothing -> return packages'
   return $ NRMState
     { slices = DM.fromList []
     , pus = DM.fromList $ (,PU) <$> selectPUIDs hwl
@@ -66,17 +67,24 @@ initialState c = do
     , ..
     }
   where
-    goRAPL m RAPLDir {..} = DM.adjust (addRAPLSensor path maxEnergy) pkgid m
-    addRAPLSensor path maxEnergy Package {..} = Package
+    goRAPL :: Map PackageID Package -> RAPLDir -> IO (Map PackageID Package)
+    goRAPL m RAPLDir {..} =
+      DM.lookup pkgid m & \case
+        Nothing -> return m
+        Just oldPackage -> do
+          uuid <- nextSensorID
+          return $ DM.insert pkgid (addRAPLSensor uuid path maxEnergy oldPackage) m
+    addRAPLSensor uuid path maxEnergy Package {..} = Package
       { raplSensor = Just
           ( TP.RaplSensor
-            { TP.raplPath = path
+            { id = uuid
+            , frequency = 3
+            , TP.raplPath = path
             , TP.max = maxEnergy
             }
           )
       , ..
       }
-
 
 -- | TODO
 registerLibnrmDownstreamClient :: NRMState -> DownstreamThreadID -> NRMState

@@ -19,12 +19,14 @@ module CPD.Core
   , HasSensors (..)
   , -- ** Definitions
     SensorID (..)
+  , nextSensorID
   , Sensor (..)
   , Source (..)
   , Tag (..)
   , -- * Actuators
     -- ** Classes
     ActuatorID (..)
+  , nextActuatorID
   , CPDLActuator (..)
   , -- ** Definitions
     Actuator (..)
@@ -35,6 +37,7 @@ import qualified Data.Aeson as A
 import Data.JSON.Schema
 import Data.MessagePack
 import qualified Data.UUID as U
+import qualified Data.UUID.V4 as UV4
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import Protolude
@@ -81,6 +84,9 @@ newtype SensorID = SensorID U.UUID
   deriving (Show, Eq, Ord, Generic, MessagePack, A.ToJSONKey, A.FromJSONKey)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorID
 
+nextSensorID :: IO SensorID
+nextSensorID = UV4.nextRandom <&> SensorID
+
 newtype Tag = Tag Text
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Tag
@@ -107,6 +113,9 @@ class CPDLActuator a where
 newtype ActuatorID = ActuatorID U.UUID
   deriving (Show, Eq, Ord, Generic, MessagePack, A.ToJSONKey, A.FromJSONKey)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorID
+
+nextActuatorID :: IO ActuatorID
+nextActuatorID = UV4.nextRandom <&> ActuatorID
 
 data Actuator = Actuator
   deriving (Show, Generic, MessagePack)

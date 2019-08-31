@@ -24,6 +24,7 @@ import Data.Flat
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
+{-import NRM.Types.Units-}
 import Dhall
 import NRM.Classes.Messaging
 import Protolude
@@ -69,6 +70,7 @@ data RaplCfg
   = RaplCfg
       { raplEnabled :: Bool
       , raplPath :: Text
+      {-, raplFrequency :: Integer-}
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON RaplCfg

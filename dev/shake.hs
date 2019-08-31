@@ -34,6 +34,7 @@ ghcidTarget target test =
   , "--restart=hsnrm.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"
+  , "-l"
   ] ++
     toList
       ( ("--test=" <>) <$>

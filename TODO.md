@@ -57,3 +57,5 @@ locate and remove {-*-} comments
 - upstream req fix for no such cmd
 
 - remove parseID -like functions
+
+- do derivingvia on units
