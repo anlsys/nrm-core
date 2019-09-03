@@ -39,6 +39,7 @@ import NRM.Types.Slice
 import NRM.Types.State
 import NRM.Types.Topology
 import NRM.Types.Topology.Package as TP
+import NRM.Types.Units
 import NRM.Types.UpstreamClient
 import Protolude
 
@@ -78,7 +79,7 @@ initialState c = do
       { raplSensor = Just
           ( TP.RaplSensor
             { id = uuid
-            , frequency = 3
+            , frequency = hz 3
             , TP.raplPath = path
             , TP.max = maxEnergy
             }

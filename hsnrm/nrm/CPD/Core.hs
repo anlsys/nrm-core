@@ -39,6 +39,7 @@ import qualified Data.UUID.V4 as UV4
 import Dhall
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
+import qualified NRM.Types.Units as Units
 import Protolude
 
 -- Metadata
@@ -70,25 +71,25 @@ data SensorKV
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorKV
 
 data Frequency
-  = MaxFrequency {maxFrequency :: Double}
-  | FixedFrequency {fixedFrequency :: Double}
-  deriving (Show, Read, Generic, MessagePack, Interpret)
+  = MaxFrequency {maxFrequency :: Units.Frequency}
+  | FixedFrequency {fixedFrequency :: Units.Frequency}
+  deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Frequency
 
 data Metadata = Metadata {range :: Range, frequency :: Frequency}
-  deriving (Show, Read, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Metadata
 
 data Range
   = Set {admissibleValues :: [Discrete]}
   | Interval {mix :: Double, max :: Double}
-  deriving (Show, Read, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Range
 
 data Value
   = DiscreteValue {discreteValue :: Discrete}
   | ContinuousValue {continuousValue :: Double}
-  deriving (Show, Read, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Value
 
 -------- SENSORS
@@ -142,7 +143,7 @@ newtype Target = Target {targetTag :: Text}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Source
 
 newtype ActuatorMetadata = ActuatorMetadata {actuatorRange :: Range}
-  deriving (Show, Read, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorMetadata
 
 data Actuator

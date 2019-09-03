@@ -119,6 +119,7 @@ runshake as =
             , "nrm.so"
             , "--ghc-option=-lHSrts-ghc" <> version
             , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
+            , "--jobs=4"
             ]
         )
       liftIO

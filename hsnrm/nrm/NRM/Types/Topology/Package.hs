@@ -16,6 +16,7 @@ import Data.MessagePack
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Sensor
 import NRM.Types.Topology.PackageID
+import NRM.Types.Units
 import NeatInterpolation
 import Protolude hiding (max)
 
@@ -25,24 +26,24 @@ data RaplSensor
       { id :: SensorID
       , raplPath :: FilePath
       , max :: MaxEnergy
-      , frequency :: Double
+      , frequency :: Frequency
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 raplToSensor :: forall k a1 (a2 :: k). Show a1 => a1 -> RaplSensor -> (SensorID, Sensor a2)
-raplToSensor packageID (RaplSensor id _path (MaxEnergy _energy) _freq) =
+raplToSensor packageID (RaplSensor id path (MaxEnergy maxEnergy) freq) =
   ( id
   , PassiveSensor
     { sensorTags = [Tag "power", Tag "RAPL"]
     , source = Source textID
-    , range = (0, 100)
-    , frequency = 100
+    , range = (0, fromuJ maxEnergy)
+    , frequency = freq
     , sensorDesc = Just
       [text| "
           Intel RAPL sensor for package ID $textID .
           Values are given in uJ.
         |]
-    , perform = return 3
+    , perform = measureRAPLDir path <&> fmap (fromuJ . energy)
     }
   )
   where

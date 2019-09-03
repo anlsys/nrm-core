@@ -10,11 +10,10 @@ module NRM.Sensors
 where
 
 import CPD.Core
-{-import NRM.Types.Sensor-}
 import Data.Map as DM
+import qualified NRM.Types.Sensor as S
 import NRM.Types.State
-
-{-import Protolude-}
+import Protolude
 
 -- | List sensors
 listSensors :: NRMState -> Map SensorID Sensor
@@ -22,4 +21,10 @@ listSensors = listPackageSensors
 
 -- | List sensors
 listPackageSensors :: NRMState -> Map SensorID Sensor
-listPackageSensors _ = DM.fromList []
+listPackageSensors s =
+  DM.fromList $ uncurry S.toCPDPackedSensor <$>
+    DM.toList
+      ( mconcat $
+        uncurry S.listSensors <$>
+        DM.toList (packages s)
+      )

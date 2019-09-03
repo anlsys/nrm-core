@@ -787,12 +787,16 @@
                                 "raplCfg": {
                                     "required": [
                                         "raplEnabled",
-                                        "raplPath"
+                                        "raplPath",
+                                        "raplFrequency"
                                     ],
                                     "type": "object",
                                     "properties": {
                                         "raplEnabled": {
                                             "type": "boolean"
+                                        },
+                                        "raplFrequency": {
+                                            "type": "number"
                                         },
                                         "raplPath": {
                                             "type": "string"

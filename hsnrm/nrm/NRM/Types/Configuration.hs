@@ -23,8 +23,8 @@ import Data.Default
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
-{-import NRM.Types.Units-}
 import Dhall
+import NRM.Types.Units
 import NRM.Classes.Messaging
 import Protolude
 
@@ -69,7 +69,7 @@ data RaplCfg
   = RaplCfg
       { raplEnabled :: Bool
       , raplPath :: Text
-      {-, raplFrequency :: Integer-}
+      , raplFrequency :: Frequency
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON RaplCfg
@@ -102,6 +102,7 @@ instance Default RaplCfg where
   def = RaplCfg
     { raplEnabled = True
     , raplPath = "/sys/devices/virtual/powercap/intel-rapl"
+    , raplFrequency = 1 & hz
     }
 
 instance Default DownstreamCfg where

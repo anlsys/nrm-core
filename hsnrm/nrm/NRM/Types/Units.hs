@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-|
 Module      : NRM.Types.Units
 Copyright   : (c) UChicago Argonne, 2019
@@ -9,19 +11,28 @@ module NRM.Types.Units
     Operations (..)
   , -- * Application Progress
     Progress (..)
+  , -- * Frequency
+    Frequency
+  , Hertz
+  , hz
+  , fromHz
   , -- * Time
     Time
   , Second
   , uS
+  , fromuS
   , -- * Energy
     Energy
   , Joule
   , uJ
+  , fromuJ
   , -- * Power
     Power
   , Watt
   , uW
+  , fromuW
   , watts
+  , fromWatts
   )
 where
 
@@ -30,44 +41,57 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Data.Metrology ((#), (%))
 import Data.Metrology.Poly (showIn)
-import qualified Data.Metrology.SI as DSI (Energy, Power, Time)
-import Data.Units.SI (Joule (..), Second (..), Watt (..))
+import Data.Functor.Contravariant (contramap)
+import qualified Data.Metrology.SI as DSI (Energy, Frequency, Power, Time)
+import Data.Units.SI (Hertz (..), Joule (..), Second (..), Watt (..))
 import Data.Units.SI.Prefixes (micro)
-import Generics.Generic.Aeson
+import Dhall
+import NRM.Classes.Messaging
 import Protolude hiding ((%))
 import qualified Prelude as PBase
 
 -- | CPU operations.
 newtype Operations = Operations Int
   deriving (Show, Generic, MessagePack)
-
-instance ToJSON Operations where
-
-  toJSON = gtoJson
-
-instance FromJSON Operations where
-
-  parseJSON = gparseJson
-
-instance JSONSchema Operations where
-
-  schema = gSchema
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Operations
 
 -- | Application progress.
 newtype Progress = Progress Int
   deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Progress
 
-instance ToJSON Progress where
+-- | Frequency newtype for Data.UNITS.SI Frequency
+newtype Frequency = Frequency DSI.Frequency
+  deriving (Eq, Generic)
 
-  toJSON = gtoJson
+instance Dhall.Inject Frequency where
+  injectWith = fmap (contramap fromHz) Dhall.injectWith
 
-instance FromJSON Progress where
+instance Interpret Frequency where
 
-  parseJSON = gparseJson
+  autoWith = fmap hz . autoWith
 
-instance JSONSchema Progress where
+instance ToJSON Frequency where
 
-  schema = gSchema
+  toJSON (Frequency x) = toJSON (x # Hertz)
+
+instance FromJSON Frequency where
+
+  parseJSON = fmap hz . parseJSON
+
+instance JSONSchema Frequency where
+
+  schema _ = schema (Proxy :: Proxy Double)
+
+instance PBase.Show Frequency where
+
+  show (Frequency x) = showIn x Hertz
+
+instance MessagePack Frequency where
+
+  toObject (Frequency x) = toObject (x # Hertz)
+
+  fromObject x = fromObject x <&> hz
 
 -- | Power newtype for Data.UNITS.SI Power
 newtype Power = Power DSI.Power
@@ -144,6 +168,21 @@ instance MessagePack Energy where
 
   fromObject x = fromObject x <&> uJ
 
+fromuJ :: Energy -> Double
+fromuJ (Energy x) = x # micro Joule
+
+fromuS :: Time -> Double
+fromuS (Time x) = x # micro Second
+
+fromuW :: Power -> Double
+fromuW (Power x) = x # micro Watt
+
+fromWatts :: Power -> Double
+fromWatts (Power x) = x # Watt
+
+fromHz :: Frequency -> Double
+fromHz (Frequency x) = x # Hertz
+
 -- | Microjoule value constructor.
 uJ :: Double -> Energy
 uJ x = Energy $ x % micro Joule
@@ -159,3 +198,7 @@ watts x = Power $ x % Watt
 -- | Microsecond value constructor.
 uS :: Double -> Time
 uS x = Time $ x % micro Second
+
+-- | Hertz value constructor.
+hz :: Double -> Frequency
+hz x = Frequency $ x % Hertz

@@ -13,6 +13,7 @@ module NRM.Types.Sensor
   , HasSensors (..)
   , IsSensor (..)
   , packSensor
+  , toCPDPackedSensor
   , -- * Re-exports
     CPD.Tag (..)
   , CPD.Source (..)
@@ -21,24 +22,24 @@ module NRM.Types.Sensor
 where
 
 import qualified CPD.Core as CPD
+import qualified NRM.Types.Units as U
 import Protolude
 
 data Sensor a
   = PassiveSensor
-      { perform :: IO Double
-      , frequency :: Double
+      { perform :: IO (Maybe Double)
+      , frequency :: U.Frequency
       , sensorTags :: [CPD.Tag]
       , source :: CPD.Source
       , range :: (Double, Double)
       , sensorDesc :: Maybe Text
       }
   | ActiveSensor
-      { maxFrequency :: Double
+      { maxFrequency :: U.Frequency
       , process :: Double -> Double
       , sensorTags :: [CPD.Tag]
       , source :: CPD.Source
       , range :: (Double, Double)
-      , frequency :: Double
       , sensorDesc :: Maybe Text
       }
 
@@ -60,7 +61,7 @@ instance IsSensor (Sensor a) where
     ( id
     , CPD.Sensor
       { sensorMeta = CPD.Metadata (uncurry CPD.Interval range)
-          (CPD.MaxFrequency frequency)
+          (CPD.MaxFrequency maxFrequency)
       , ..
       }
     )
@@ -74,3 +75,6 @@ packSensor = MkPackedSensor
 class HasSensors a aCtx | a -> aCtx where
 
   listSensors :: aCtx -> a -> Map CPD.SensorID PackedSensor
+
+toCPDPackedSensor :: CPD.SensorID -> PackedSensor -> (CPD.SensorID, CPD.Sensor)
+toCPDPackedSensor id (MkPackedSensor s) = toCPDSensor id s
