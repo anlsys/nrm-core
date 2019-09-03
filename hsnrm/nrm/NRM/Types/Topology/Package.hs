@@ -14,7 +14,6 @@ import Data.Aeson
 import qualified Data.Map as DM
 import Data.MessagePack
 import NRM.Node.Sysfs.Internal
-import CPD.Core
 import NRM.Types.Sensor
 import NRM.Types.Topology.PackageID
 import NeatInterpolation
@@ -30,31 +29,35 @@ data RaplSensor
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
-instance CPDLSensor RaplSensor PackageID where
-
-  toSensor packageID (RaplSensor id _path (MaxEnergy _energy) _freq) =
-    ( id
-    , Sensor
-      { tags = [Tag "power", Tag "RAPL"]
-      , source = Source $ textID
-      , meta = Metadata (Interval 0 100) (FixedFrequency 2)
-      , desc = Just $
-        [text| "
+raplToSensor :: forall k a1 (a2 :: k). Show a1 => a1 -> RaplSensor -> (SensorID, Sensor a2)
+raplToSensor packageID (RaplSensor id _path (MaxEnergy _energy) _freq) =
+  ( id
+  , PassiveSensor
+    { sensorTags = [Tag "power", Tag "RAPL"]
+    , source = Source textID
+    , range = (0, 100)
+    , frequency = 100
+    , sensorDesc = Just
+      [text| "
           Intel RAPL sensor for package ID $textID .
           Values are given in uJ.
         |]
-      }
-    )
-    where
-      textID = show packageID
+    , perform = return 3
+    }
+  )
+  where
+    textID = show packageID
 
-
-data Package
+newtype Package
   = Package
       { raplSensor :: Maybe RaplSensor
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
+{-instance CPDLSensors Package PackageID where-}
+
+{-toCPDSensors packageID Package {..} = DM.fromList (toList $ toCPDSensor packageID <$> raplSensor)-}
 instance HasSensors Package PackageID where
 
-  toSensors packageID Package {..} = DM.fromList (toList $ toSensor packageID <$> raplSensor)
+  listSensors packageID Package {..} =
+    DM.fromList (toList $ (\(x, y) -> (x, packSensor y)) . raplToSensor packageID <$> raplSensor)

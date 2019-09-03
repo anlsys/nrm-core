@@ -25,11 +25,11 @@ showSensor :: SensorID -> Sensor -> Text
 showSensor id Sensor {..} =
   "ID  " <> show id <> "Source  " <> show source <>
     " tags:" <>
-    (mconcat . intersperse " " $ show <$> tags) <>
+    (mconcat . intersperse " " $ show <$> sensorTags) <>
     " " <>
-    show meta <>
+    show sensorMeta <>
     " " <>
-    show desc <>
+    show sensorDesc <>
     " \n"
 
 showActuators :: Map ActuatorID Actuator -> Text

@@ -1,4 +1,4 @@
-{-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE ExistentialQuantification #-}
 
 {-|
 
@@ -8,45 +8,76 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module NRM.Types.Sensor
-  ( PassiveSensor (..)
-  , ActiveSensor (..)
-  , CPDLSensor (..)
+  ( -- * Internal representation
+    Sensor (..)
   , HasSensors (..)
+  , IsSensor (..)
+  , packSensor
+  , -- * Re-exports
+    CPD.Tag (..)
+  , CPD.Source (..)
+  , CPD.SensorID (..)
   )
 where
+
+-- * CPD representation
+{-CPDLSensor (..)-}
+{-, CPDLSensors (..)-}
 
 {-import Data.Aeson-}
 
 {-import NRM.Types.Topology.Package-}
 {-import NRM.Types.Sensor-}
-import CPD.Core
+import qualified CPD.Core as CPD
 {-import Data.MessagePack-}
 import Protolude
 
--- External (CPD) classes
+data Sensor a
+  = PassiveSensor
+      { perform :: IO Double
+      , frequency :: Double
+      , sensorTags :: [CPD.Tag]
+      , source :: CPD.Source
+      , range :: (Double, Double)
+      , sensorDesc :: Maybe Text
+      }
+  | ActiveSensor
+      { maxFrequency :: Double
+      , process :: Double -> Double
+      , sensorTags :: [CPD.Tag]
+      , source :: CPD.Source
+      , range :: (Double, Double)
+      , frequency :: Double
+      , sensorDesc :: Maybe Text
+      }
 
--- | Per the CPD model, a sensor has to be owned by a 'source'.
--- This typeclass is a helper for that.
-class HasSensors a ownerContext | a -> ownerContext where
+class IsSensor a where
 
-  toSensors :: ownerContext -> a -> Map SensorID Sensor
+  toCPDSensor :: CPD.SensorID -> a -> (CPD.SensorID, CPD.Sensor)
 
--- | Typeclass for a sensor that can be represented as
--- a CPD sensor.
-class CPDLSensor a sensorContext | a -> sensorContext where
+instance IsSensor (Sensor a) where
 
-  toSensor :: sensorContext -> a -> (SensorID, Sensor)
+  toCPDSensor id PassiveSensor {..} =
+    ( id
+    , CPD.Sensor
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range) (CPD.FixedFrequency frequency)
+      , ..
+      }
+    )
+  toCPDSensor id ActiveSensor {..} =
+    ( id
+    , CPD.Sensor
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range) (CPD.MaxFrequency frequency)
+      , ..
+      }
+    )
 
 -- Internal (NRM) classes
+data PackedSensor = forall a. IsSensor a => MkPackedSensor a
 
-class PassiveSensor a where
+packSensor :: IsSensor a => a -> PackedSensor
+packSensor = MkPackedSensor
 
-  maxFrequency :: a -> Double
+class HasSensors a aCtx | a -> aCtx where
 
-  validate :: a -> Value
-
-class ActiveSensor a where
-
-  frequency :: a -> Double
-
-  perform :: a -> Value
+  listSensors :: aCtx -> a -> Map CPD.SensorID PackedSensor

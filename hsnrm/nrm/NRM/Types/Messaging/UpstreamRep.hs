@@ -79,7 +79,7 @@ data OutputType = StdoutOutput | StderrOutput
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON OutputType
 
-data EndStream
+newtype EndStream
   = EndStream
       { streamType :: OutputType
       }

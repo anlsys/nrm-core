@@ -17,6 +17,7 @@ module NRM.Codegen
   )
 where
 
+import qualified CPD.Core
 import Codegen.CHeader
 import Codegen.Dhall
 import Codegen.Schema (generatePretty)
@@ -26,7 +27,6 @@ import qualified Dhall.Core as Dhall
 import qualified Dhall.Lint as Lint
 import qualified Dhall.Parser
 import qualified Dhall.TypeCheck as Dhall
-import NeatInterpolation
 import qualified NRM.Types.Configuration.Dhall as CD (Cfg)
 import qualified NRM.Types.Configuration.Yaml as CI (encodeDCfg)
 import qualified NRM.Types.Manifest as MI (Manifest)
@@ -36,6 +36,7 @@ import qualified NRM.Types.Messaging.DownstreamEvent.JSON as Down (Event (..))
 import NRM.Types.Messaging.UpstreamPub
 import NRM.Types.Messaging.UpstreamRep
 import NRM.Types.Messaging.UpstreamReq
+import NeatInterpolation
 import Protolude hiding (Rep)
 import System.Directory
 
@@ -175,6 +176,15 @@ getDefault x =
 generateDefaultConfigurations :: IO ()
 generateDefaultConfigurations = do
   putText "Codegen: Dhall types."
+  let destCPD = "../resources/types/CPD.dhall"
+  putText $ "  Writing type for CPD format. " <> " to " <> toS destCPD
+  createDirectoryIfMissing True (takeDirectory destCPD)
+  writeOutput licenseDhall destCPD
+    ( fmap Dhall.absurd
+      ( Dhall.expected
+        (Dhall.auto :: Dhall.Type CPD.Core.Problem)
+      )
+    )
   for_ [minBound .. maxBound] $ \t -> do
     let dest = prefix <> typeFile t
     putText $ "  Writing type for " <> show t <> " to " <> toS dest

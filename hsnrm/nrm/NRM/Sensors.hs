@@ -11,13 +11,14 @@ where
 
 import CPD.Core
 {-import NRM.Types.Sensor-}
-import NRM.Types.State
 import Data.Map as DM
+import NRM.Types.State
+
 {-import Protolude-}
 
 -- | List sensors
 listSensors :: NRMState -> Map SensorID Sensor
-listSensors s = listPackageSensors s
+listSensors = listPackageSensors
 
 -- | List sensors
 listPackageSensors :: NRMState -> Map SensorID Sensor

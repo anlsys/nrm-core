@@ -20,7 +20,6 @@ where
 
 import Data.Aeson
 import Data.Default
-import Data.Flat
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
@@ -30,11 +29,11 @@ import NRM.Classes.Messaging
 import Protolude
 
 data SliceRuntime = Singularity | Nodeos | Dummy
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceRuntime
 
 data DaemonVerbosity = Normal | Verbose | Debug
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DaemonVerbosity
 
 data Cfg
@@ -55,7 +54,7 @@ data Cfg
       , raplCfg :: RaplCfg
       , hwmonCfg :: HwmonCfg
       }
-  deriving (Eq, Show, Generic, MessagePack, Flat)
+  deriving (Eq, Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
 
 data HwmonCfg
@@ -63,7 +62,7 @@ data HwmonCfg
       { hwmonEnabled :: Bool
       , hwmonPath :: Text
       }
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON HwmonCfg
 
 data RaplCfg
@@ -72,14 +71,14 @@ data RaplCfg
       , raplPath :: Text
       {-, raplFrequency :: Integer-}
       }
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON RaplCfg
 
 newtype DownstreamCfg
   = DownstreamCfg
       { downstreamBindAddress :: Text
       }
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject, Flat)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamCfg
 
 data UpstreamCfg
@@ -88,7 +87,7 @@ data UpstreamCfg
       , pubPort :: Int
       , rpcPort :: Int
       }
-  deriving (Eq, Show, Generic, MessagePack, Flat)
+  deriving (Eq, Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON UpstreamCfg
 
 instance Default HwmonCfg where

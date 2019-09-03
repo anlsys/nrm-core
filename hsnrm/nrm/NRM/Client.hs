@@ -12,15 +12,15 @@ module NRM.Client
   )
 where
 
+{-import qualified NRM.Types.Messaging.UpstreamReq as -}
+import qualified CPD.Text as CPD
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import qualified Data.ByteString as SB
-{-import qualified NRM.Types.Messaging.UpstreamReq as -}
 import qualified Data.Map as DM
 import Data.Restricted
 import NRM.Classes.Messaging
 import NRM.Optparse
 import qualified NRM.Optparse.Client as C
-import qualified CPD.Text as CPD
 import qualified NRM.Types.Messaging.Protocols as Protocols
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
@@ -53,10 +53,7 @@ main = do
       Just c -> (restrict (toS $ UC.toText c) :: Restricted (N1, N254) SB.ByteString)
   ZMQ.runZMQ $ do
     s <- ZMQ.socket ZMQ.Dealer
-    ZMQ.setIdentity uuid s
-    ZMQ.setSendHighWM (restrict (0 :: Int)) s
-    ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
-    ZMQ.connect s $ toS address
+    combine uuid s
     client s req common
 
 client
@@ -208,8 +205,12 @@ kill cmdID =
       liftIO $ UC.nextUpstreamClientID <&> \case
         Nothing -> panic "couldn't generate next client ID"
         Just c -> (restrict (toS $ UC.toText c) :: Restricted (N1, N254) SB.ByteString)
-    ZMQ.setIdentity uuid s
-    ZMQ.setSendHighWM (restrict (0 :: Int)) s
-    ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
-    ZMQ.connect s $ toS address
+    combine uuid s
     ZMQ.send s [] (toS $ encode $ UReq.ReqKillCmd (UReq.KillCmd cmdID))
+
+combine :: Restricted (N1, N254) ByteString -> ZMQ.Socket z t -> ZMQ.ZMQ z ()
+combine uuid s = do
+  ZMQ.setIdentity uuid s
+  ZMQ.setSendHighWM (restrict (0 :: Int)) s
+  ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
+  ZMQ.connect s $ toS address

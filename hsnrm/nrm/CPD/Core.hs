@@ -8,7 +8,8 @@ Maintainer  : fre@freux.fr
 -}
 module CPD.Core
   ( -- * Metadata
-    Metadata (..)
+    Problem (..)
+  , Metadata (..)
   , Range (..)
   , Value (..)
   , Frequency (..)
@@ -43,16 +44,27 @@ import Protolude
 -- Metadata
 type Discrete = Text
 
-data Frequency = MaxFrequency Double | FixedFrequency Double
+data Problem
+  = Problem
+      { sensors :: [Sensor]
+      , actuators :: [Actuator]
+      , objective :: Objective
+      }
+  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
+
+data Frequency
+  = MaxFrequency {maxFrequency :: Double}
+  | FixedFrequency {fixedFrequency :: Double}
   deriving (Show, Read, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Frequency
 
-data Metadata = Metadata Range Frequency
+data Metadata = Metadata {range :: Range, frequency :: Frequency}
   deriving (Show, Read, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Metadata
 
 data Range
-  = Set {discreteRange :: [Discrete]}
+  = Set {admissibleValues :: [Discrete]}
   | Interval {mix :: Double, max :: Double}
   deriving (Show, Read, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Range
@@ -85,10 +97,10 @@ newtype Source = Source {sourceTag :: Text}
 
 data Sensor
   = Sensor
-      { tags :: [Tag]
+      { sensorTags :: [Tag]
       , source :: Source
-      , meta :: Metadata
-      , desc :: Maybe Text
+      , sensorMeta :: Metadata
+      , sensorDesc :: Maybe Text
       }
   deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Sensor
@@ -105,6 +117,29 @@ newtype ActuatorID = ActuatorID U.UUID
 nextActuatorID :: IO ActuatorID
 nextActuatorID = UV4.nextRandom <&> ActuatorID
 
-data Actuator = Actuator
+newtype Target = Target {targetTag :: Text}
+  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Source
+
+data Actuator
+  = Actuator
+      { actuatorTags :: [Tag]
+      , target :: Target
+      , actuatorMeta :: Metadata
+      , actuatorDesc :: Maybe Text
+      }
   deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator
+
+------- OBJECTIVE
+data Direction = Minimize | Maximize
+  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Direction
+
+data Objective
+  = Objective
+      { linearCombination :: [(Double, Tag)]
+      , direction :: Direction
+      }
+  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Objective
