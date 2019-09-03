@@ -57,6 +57,7 @@ server s =
 dummyReply :: Req.Req -> Socket z Router -> ByteString -> ZMQ z ()
 dummyReply = \case
   (Req.ReqSliceList x) -> sendOne $ encode (Rep.RepList (dummy Protocols.SliceList x))
+  (Req.ReqCPD x) -> sendOne $ encode (Rep.RepCPD (dummy Protocols.CPD x))
   (Req.ReqGetState x) -> sendOne $ encode (Rep.RepGetState (dummy Protocols.GetState x))
   (Req.ReqGetConfig x) -> sendOne $ encode (Rep.RepGetConfig (dummy Protocols.GetConfig x))
   (Req.ReqKillSlice x) -> sendOne $ encode (Rep.RepSliceKilled (dummy Protocols.KillSlice x))

@@ -20,6 +20,7 @@ data ReqRep req rep where
   SetPower :: ReqRep Req.SetPower Rep.GetPower
   KillSlice :: ReqRep Req.KillSlice Rep.SliceKilled
   KillCmd :: ReqRep Req.KillCmd Rep.CmdKilled
+  CPD :: ReqRep Req.CPD Rep.CPD
 
 data ReqStream req reps where
   Run :: ReqStream Req.Run '[Rep.Stdout, Rep.Stderr, Rep.CmdEnded]

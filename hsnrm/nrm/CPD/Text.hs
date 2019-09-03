@@ -7,17 +7,22 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module CPD.Text
-  ( 
-   showProblem
+  ( showProblemDhall
   )
 where
 
 import CPD.Core
-import qualified Data.Map as DM
+import qualified Data.Text.Prettyprint.Doc as Pretty
+import qualified Data.Text.Prettyprint.Doc.Render.Text as PrettyT
+import Dhall
+import qualified Dhall.Lint as Lint
+import qualified Dhall.TypeCheck as Dhall
 import Protolude
 
-showSensors :: [SensorKV] -> Text
-showSensors = show
+{-import qualified Data.Map as DM-}
+
+{-showSensors :: [SensorKV] -> Text-}
+{-showSensors = show-}
 
 {-showSensors :: DM.Map SensorID Sensor -> Text-}
 {-showSensors sl = mconcat $ (\(id, x) -> showSensor id x <> "\n ") <$> DM.toList sl-}
@@ -32,15 +37,22 @@ showSensors = show
 {-" " <>-}
 {-show sensorDesc <>-}
 {-" \n"-}
-showActuators :: [ActuatorKV] -> Text
-showActuators = show
+{-showActuators :: [ActuatorKV] -> Text-}
+{-showActuators = show-}
 
 {-showActuators sl = mconcat $ (\(id, x) -> showActuator id x <> "\n ") <$> DM.toList sl-}
 
 {-showActuator :: ActuatorID -> Actuator -> Text-}
 {-showActuator _ _ = "  "-}
-showObjective :: Objective -> Text
-showObjective = show
+{-showObjective :: Objective -> Text-}
+{-showObjective = show-}
+showProblemDhall :: Problem -> Text
+showProblemDhall p = PrettyT.renderStrict $ Pretty.layoutSmart prettyOpts (Pretty.pretty expr)
+  where
+    expr = Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) p
 
-showProblem :: Problem -> Text
-showProblem (Problem sensors actuators objective) = " "
+prettyOpts :: Pretty.LayoutOptions
+prettyOpts =
+  Pretty.defaultLayoutOptions
+    { Pretty.layoutPageWidth = Pretty.AvailablePerLine 80 1.0
+    }

@@ -10,8 +10,15 @@ module NRM.CPD
 where
 
 import CPD.Core
+import Data.Map as DM
 import NRM.Actuators
 import NRM.Sensors
+import NRM.Types.State
+import Protolude
 
 toCPD :: NRMState -> Problem
-toCPD = undefined
+toCPD s =
+  Problem
+    (DM.toList (listSensors s) <&> uncurry SensorKV)
+    (DM.toList (listActuators s) <&> uncurry ActuatorKV)
+    (Objective [] Minimize)

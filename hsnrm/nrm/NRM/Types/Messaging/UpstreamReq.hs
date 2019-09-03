@@ -10,6 +10,7 @@ module NRM.Types.Messaging.UpstreamReq
   ( Req (..)
   , Run (..)
   , SliceList (..)
+  , CPD (..)
   , KillSlice (..)
   , KillCmd (..)
   , SetPower (..)
@@ -32,6 +33,7 @@ data Req
   = ReqSliceList SliceList
   | ReqRun Run
   | ReqKillSlice KillSlice
+  | ReqCPD CPD
   | ReqKillCmd KillCmd
   | ReqSetPower SetPower
   | ReqGetState GetState
@@ -73,6 +75,10 @@ newtype SetPower
 data SliceList = SliceList
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON SliceList
+
+data CPD = CPD
+  deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON CPD
 
 data GetState = GetState
   deriving (Show, Generic, MessagePack)

@@ -37,6 +37,7 @@ module CPD.Core
 where
 
 import qualified Data.Aeson as A
+import Data.Functor.Contravariant (contramap)
 import Data.JSON.Schema
 import Data.Maybe (fromJust)
 import Data.MessagePack
@@ -57,7 +58,7 @@ data Problem
       , actuators :: [ActuatorKV]
       , objective :: Objective
       }
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
 
 data ActuatorKV
@@ -65,7 +66,7 @@ data ActuatorKV
       { actuatorKey :: ActuatorID
       , actuatorValue :: Actuator
       }
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorKV
 
 data SensorKV
@@ -73,29 +74,29 @@ data SensorKV
       { sensorKey :: SensorID
       , sensorValue :: Sensor
       }
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorKV
 
 data Frequency
   = MaxFrequency {maxFrequency :: Units.Frequency}
   | FixedFrequency {fixedFrequency :: Units.Frequency}
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Frequency
 
 data Metadata = Metadata {range :: Range, frequency :: Frequency}
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Metadata
 
 data Range
   = Set {admissibleValues :: [Discrete]}
   | Interval {mix :: Double, max :: Double}
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Range
 
 data Value
   = DiscreteValue {discreteValue :: Discrete}
   | ContinuousValue {continuousValue :: Double}
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Value
 
 -------- SENSORS
@@ -107,15 +108,19 @@ instance Interpret SensorID where
 
   autoWith = fmap (SensorID . fromJust . U.fromText) . autoWith
 
+instance Dhall.Inject SensorID where
+
+  injectWith = fmap (contramap (U.toText . sensorID)) Dhall.injectWith
+
 nextSensorID :: IO SensorID
 nextSensorID = UV4.nextRandom <&> SensorID
 
 newtype Tag = Tag {tag :: Text}
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Tag
 
 newtype Source = Source {sourceTag :: Text}
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Source
 
 data Sensor
@@ -125,7 +130,7 @@ data Sensor
       , sensorMeta :: Metadata
       , sensorDesc :: Maybe Text
       }
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Sensor
 
 ------- ACTUATORS
@@ -133,7 +138,7 @@ class CPDLActuator a where
 
   toActuator :: a -> Actuator
 
-newtype ActuatorID = ActuatorID U.UUID
+newtype ActuatorID = ActuatorID {actuatorID :: U.UUID}
   deriving (Ord, Eq, Show, Generic, MessagePack, A.ToJSONKey, A.FromJSONKey)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorID
 
@@ -141,15 +146,19 @@ instance Interpret ActuatorID where
 
   autoWith = fmap (ActuatorID . fromJust . U.fromText) . autoWith
 
+instance Dhall.Inject ActuatorID where
+
+  injectWith = fmap (contramap (U.toText . actuatorID)) Dhall.injectWith
+
 nextActuatorID :: IO ActuatorID
 nextActuatorID = UV4.nextRandom <&> ActuatorID
 
 newtype Target = Target {targetTag :: Text}
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Source
 
 newtype ActuatorMetadata = ActuatorMetadata {actuatorRange :: Range}
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorMetadata
 
 data Actuator
@@ -159,16 +168,16 @@ data Actuator
       , actuatorMeta :: ActuatorMetadata
       , actuatorDesc :: Maybe Text
       }
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator
 
 ------- OBJECTIVE
 data Direction = Minimize | Maximize
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Direction
 
 data X = X {w :: Double, x :: Source}
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON X
 
 data Objective
@@ -176,5 +185,5 @@ data Objective
       { linearCombination :: [X]
       , direction :: Direction
       }
-  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Objective

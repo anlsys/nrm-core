@@ -13,11 +13,10 @@ module NRM.Client
 where
 
 {-import qualified NRM.Types.Messaging.UpstreamReq as -}
-import qualified CPD.Text as CPD
 import qualified CPD.Core as CPDC
+import qualified CPD.Text as CPD
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import qualified Data.ByteString as SB
-import qualified Data.Map as DM
 import Data.Restricted
 import NRM.Classes.Messaging
 import NRM.Optparse
@@ -78,6 +77,7 @@ dispatchProtocol s v = \case
   (UReq.ReqSetPower x) -> reqrep s v Protocols.SetPower x
   (UReq.ReqGetConfig x) -> reqrep s v Protocols.GetConfig x
   (UReq.ReqGetState x) -> reqrep s v Protocols.GetState x
+  (UReq.ReqCPD x) -> reqrep s v Protocols.CPD x
   (UReq.ReqRun x) ->
     if UReq.detachCmd x
     then putText "Client detached."
@@ -90,28 +90,40 @@ reqrep
   -> req
   -> ZMQ.ZMQ z ()
 reqrep s opts = \case
+  Protocols.CPD ->
+    const $ do
+      ZMQ.receive s <&> decode . toS >>= \case
+        Nothing -> putText "Couldn't decode reply"
+        Just (URep.RepCPD (URep.CPD cpd)) ->
+          putText
+            [text|
+              $actuatorcount actuator(s) currently registered.
+              $sensorcount sensor(s) currently registered.
+              CPD Internal view
+               $cpdT
+              CPD Dhall view
+               $cpdTD
+             |]
+          where
+            cpdTD = CPD.showProblemDhall cpd
+            cpdT = show cpd
+            actuatorcount = show $ length (CPDC.actuators cpd)
+            sensorcount = show $ length (CPDC.sensors cpd)
+        _ -> putText "reply wasn't in protocol"
+      liftIO $ hFlush stdout
   Protocols.SliceList ->
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepList (URep.SliceList l cpd)) ->
+        Just (URep.RepList (URep.SliceList l)) ->
           putText
             [text|
               $slicecount slice(s) currently running.
                $slices
-              $actuatorcount actuator(s) currently registered.
-              $sensorcount sensor(s) currently registered.
-              Control Problem Description (CPD dhall format):
-               $cpdT
              |]
           where
             slicecount = show $ length l
-            actuatorcount = show $ length (CPDC.actuators cpd)
-            sensorcount = show $ length (CPDC.sensors cpd)
             slices = showSliceList l
-            {-actuatorsT = CPD.showActuators $ DM.fromList $ CPDC.actuators cpd-}
-            {-sensorsT = CPD.showSensors $ DM.fromList $ CPDC.sensors cpd-}
-            cpdT = CPD.showProblem cpd
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.GetState ->

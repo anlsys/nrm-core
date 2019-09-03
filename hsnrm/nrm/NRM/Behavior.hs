@@ -17,6 +17,7 @@ where
 
 import qualified Data.Map as DM
 import Data.MessagePack
+import qualified NRM.CPD as NRMCPD
 import qualified NRM.Classes.Messaging as M
 import NRM.State
 import qualified NRM.Types.Configuration as Cfg
@@ -132,6 +133,15 @@ behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
         , Rep clientID (URep.RepStart (URep.Start sliceID cmdID))
         )
 behavior c st (Req clientid msg) = case msg of
+  UReq.ReqCPD _ ->
+    return
+      ( st
+      , Rep clientid
+        ( URep.RepCPD $
+          URep.CPD
+            (NRMCPD.toCPD st)
+        )
+      )
   UReq.ReqSliceList _ ->
     return
       ( st
@@ -139,7 +149,6 @@ behavior c st (Req clientid msg) = case msg of
         ( URep.RepList $
           URep.SliceList
             (DM.toList (slices st))
-            (toCPD st)
         )
       )
   UReq.ReqGetState _ ->
