@@ -8,20 +8,36 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module NRM.Types.Sensor
-  (
-  PassiveSensor(..)
-  ,ActiveSensor(..)
+  ( PassiveSensor (..)
+  , ActiveSensor (..)
+  , CPDLSensor (..)
+  , HasSensors (..)
   )
 where
 
-import Data.Aeson
-import Data.MessagePack
-import NRM.Types.Topology.Package
+{-import Data.Aeson-}
+
+{-import NRM.Types.Topology.Package-}
+{-import NRM.Types.Sensor-}
+import CPD.Core
+{-import Data.MessagePack-}
 import Protolude
 
--- Internal view
-newtype PackageSensor = TagRaplSensor RaplSensor
-  deriving (Show, Generic, MessagePack, FromJSON, ToJSON)
+-- External (CPD) classes
+
+-- | Per the CPD model, a sensor has to be owned by a 'source'.
+-- This typeclass is a helper for that.
+class HasSensors a ownerContext | a -> ownerContext where
+
+  toSensors :: ownerContext -> a -> Map SensorID Sensor
+
+-- | Typeclass for a sensor that can be represented as
+-- a CPD sensor.
+class CPDLSensor a sensorContext | a -> sensorContext where
+
+  toSensor :: sensorContext -> a -> (SensorID, Sensor)
+
+-- Internal (NRM) classes
 
 class PassiveSensor a where
 

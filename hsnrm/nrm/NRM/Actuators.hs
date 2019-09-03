@@ -15,4 +15,4 @@ import Protolude
 
 -- | List sensors
 listActuators :: NRMState -> Map ActuatorID Actuator
-listActuators _ = undefined
+listActuators _ = panic "no"

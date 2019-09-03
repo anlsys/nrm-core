@@ -15,6 +15,7 @@ import qualified Data.Map as DM
 import Data.MessagePack
 import NRM.Node.Sysfs.Internal
 import CPD.Core
+import NRM.Types.Sensor
 import NRM.Types.Topology.PackageID
 import NeatInterpolation
 import Protolude hiding (max)
@@ -47,7 +48,6 @@ instance CPDLSensor RaplSensor PackageID where
     where
       textID = show packageID
 
-  {-frequency (RaplSensor _ _ _ _freq) = -}
 
 data Package
   = Package

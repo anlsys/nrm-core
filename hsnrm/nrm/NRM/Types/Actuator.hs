@@ -8,6 +8,7 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Types.Actuator
   ( Actuator (..)
+    -- ** Classes
   )
 where
 
@@ -16,4 +17,6 @@ where
 {-import Data.MessagePack-}
 {-import NRM.Classes.Messaging-}
 {-import Protolude-}
-data Actuator a = Actuator a
+import CPD.Core
+
+

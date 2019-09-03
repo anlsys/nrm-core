@@ -10,14 +10,10 @@ module CPD.Core
   ( -- * Metadata
     Metadata (..)
   , Range (..)
-  , Discrete (..)
   , Value (..)
   , Frequency (..)
   , -- * Sensors
-    -- ** Classes
-    CPDLSensor (..)
-  , HasSensors (..)
-  , -- ** Definitions
+    -- ** Definitions
     SensorID (..)
   , nextSensorID
   , Sensor (..)
@@ -35,64 +31,56 @@ where
 
 import qualified Data.Aeson as A
 import Data.JSON.Schema
+import Data.Maybe (fromJust)
 import Data.MessagePack
 import qualified Data.UUID as U
 import qualified Data.UUID.V4 as UV4
+import Dhall
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import Protolude
 
 -- Metadata
-newtype Discrete = D Text
-  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Discrete
+type Discrete = Text
 
 data Frequency = MaxFrequency Double | FixedFrequency Double
-  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
+  deriving (Show, Read, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Frequency
 
 data Metadata = Metadata Range Frequency
-  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
+  deriving (Show, Read, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Metadata
 
 data Range
-  = Set [Discrete]
-  | Interval Double Double
-  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
+  = Set {discreteRange :: [Discrete]}
+  | Interval {mix :: Double, max :: Double}
+  deriving (Show, Read, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Range
 
 data Value
-  = DiscreteValue Discrete
-  | ContinuousValue Double
-  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
+  = DiscreteValue {discreteValue :: Discrete}
+  | ContinuousValue {continuousValue :: Double}
+  deriving (Show, Read, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Value
 
 -------- SENSORS
-class HasSensors a ownerContext | a -> ownerContext where
-
-  toSensors :: ownerContext -> a -> Map SensorID Sensor
-
-class CPDLSensor a sensorContext | a -> sensorContext where
-
-  toSensor :: sensorContext -> a -> (SensorID, Sensor)
-
-{-data EncapsulatedSensor = forall a b. CPDLSensor a b  => MkEncapsulatedSensor a-}
-
-{-packSensor :: CPDLSensor a => a -> EncapsulatedSensor-}
-{-packSensor = MkEncapsulatedSensor-}
-newtype SensorID = SensorID U.UUID
-  deriving (Show, Eq, Ord, Generic, MessagePack, A.ToJSONKey, A.FromJSONKey)
+newtype SensorID = SensorID {sensorID :: U.UUID}
+  deriving (Ord, Eq, Show, Generic, MessagePack, A.ToJSONKey, A.FromJSONKey)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorID
+
+instance Interpret SensorID where
+
+  autoWith = fmap (SensorID . fromJust . U.fromText) . autoWith
 
 nextSensorID :: IO SensorID
 nextSensorID = UV4.nextRandom <&> SensorID
 
-newtype Tag = Tag Text
-  deriving (Show, Generic, MessagePack)
+newtype Tag = Tag {tag :: Text}
+  deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Tag
 
-data Source = Source Text
-  deriving (Show, Generic, MessagePack)
+newtype Source = Source {sourceTag :: Text}
+  deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Source
 
 data Sensor
@@ -102,7 +90,7 @@ data Sensor
       , meta :: Metadata
       , desc :: Maybe Text
       }
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Sensor
 
 ------- ACTUATORS
@@ -111,12 +99,12 @@ class CPDLActuator a where
   toActuator :: a -> Actuator
 
 newtype ActuatorID = ActuatorID U.UUID
-  deriving (Show, Eq, Ord, Generic, MessagePack, A.ToJSONKey, A.FromJSONKey)
+  deriving (Ord, Eq, Show, Generic, MessagePack, A.ToJSONKey, A.FromJSONKey)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorID
 
 nextActuatorID :: IO ActuatorID
 nextActuatorID = UV4.nextRandom <&> ActuatorID
 
 data Actuator = Actuator
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator
