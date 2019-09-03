@@ -15,7 +15,8 @@ module CPD.Core
   , Frequency (..)
   , -- * Sensors
     -- ** Definitions
-    SensorID (..)
+    SensorKV (..)
+  , SensorID (..)
   , nextSensorID
   , Sensor (..)
   , Source (..)
@@ -26,7 +27,12 @@ module CPD.Core
   , nextActuatorID
   , CPDLActuator (..)
   , -- ** Definitions
-    Actuator (..)
+    ActuatorKV (..)
+  , Actuator (..)
+  , -- * Objective
+    Objective (..)
+  , X (..)
+  , Direction (..)
   )
 where
 

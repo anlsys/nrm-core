@@ -29,12 +29,12 @@ module NRM.Types.Messaging.UpstreamRep
   )
 where
 
+import CPD.Core as CPD
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
 import NRM.Orphans.ExitCode ()
-import CPD.Core as CPD
 import NRM.Types.Configuration as C
 import NRM.Types.Process as P
 import NRM.Types.Slice as C
@@ -111,8 +111,7 @@ data NoSuchSlice
 data SliceList
   = SliceList
       { slices :: [(C.SliceID, C.Slice)]
-      , actuators :: [(CPD.ActuatorID, CPD.Actuator)]
-      , sensors :: [(CPD.SensorID, CPD.Sensor)]
+      , cpd :: CPD.Problem
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceList

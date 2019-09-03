@@ -39,6 +39,7 @@ library nrmlib
         NRM.Export
         NRM.Client
         NRM.Daemon
+        NRM.CPD
         NRM.Optparse
         NRM.Behavior
         NRM.Version
@@ -171,6 +172,7 @@ executable nrm.so
         NRM.Export
         NRM.Client
         NRM.Daemon
+        NRM.CPD
         NRM.Optparse
         NRM.Behavior
         NRM.Version
@@ -302,6 +304,7 @@ executable nrm
         NRM.Export
         NRM.Client
         NRM.Daemon
+        NRM.CPD
         NRM.Optparse
         NRM.Behavior
         NRM.Version
@@ -433,6 +436,7 @@ executable nrmd
         NRM.Export
         NRM.Client
         NRM.Daemon
+        NRM.CPD
         NRM.Optparse
         NRM.Behavior
         NRM.Version

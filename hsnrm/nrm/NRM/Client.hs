@@ -14,6 +14,7 @@ where
 
 {-import qualified NRM.Types.Messaging.UpstreamReq as -}
 import qualified CPD.Text as CPD
+import qualified CPD.Core as CPDC
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import qualified Data.ByteString as SB
 import qualified Data.Map as DM
@@ -93,23 +94,24 @@ reqrep s opts = \case
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepList (URep.SliceList l as ss)) ->
+        Just (URep.RepList (URep.SliceList l cpd)) ->
           putText
             [text|
               $slicecount slice(s) currently running.
                $slices
               $actuatorcount actuator(s) currently registered.
-               $actuators
               $sensorcount sensor(s) currently registered.
-               $sensors
+              Control Problem Description (CPD dhall format):
+               $cpdT
              |]
           where
             slicecount = show $ length l
-            actuatorcount = show $ length as
-            sensorcount = show $ length ss
+            actuatorcount = show $ length (CPDC.actuators cpd)
+            sensorcount = show $ length (CPDC.sensors cpd)
             slices = showSliceList l
-            actuators = CPD.showActuators $ DM.fromList as
-            sensors = CPD.showSensors $ DM.fromList ss
+            {-actuatorsT = CPD.showActuators $ DM.fromList $ CPDC.actuators cpd-}
+            {-sensorsT = CPD.showSensors $ DM.fromList $ CPDC.sensors cpd-}
+            cpdT = CPD.showProblem cpd
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.GetState ->

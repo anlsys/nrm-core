@@ -185,6 +185,7 @@ let modules =
       , "NRM.Export"
       , "NRM.Client"
       , "NRM.Daemon"
+      , "NRM.CPD"
       , "NRM.Optparse"
       , "NRM.Behavior"
       , "NRM.Version"

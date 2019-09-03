@@ -17,9 +17,7 @@ where
 
 import qualified Data.Map as DM
 import Data.MessagePack
-import NRM.Actuators (listActuators)
 import qualified NRM.Classes.Messaging as M
-import NRM.Sensors (listSensors)
 import NRM.State
 import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Messaging.DownstreamEvent as DEvent
@@ -141,8 +139,7 @@ behavior c st (Req clientid msg) = case msg of
         ( URep.RepList $
           URep.SliceList
             (DM.toList (slices st))
-            (DM.toList (listActuators st))
-            (DM.toList (listSensors st))
+            (toCPD st)
         )
       )
   UReq.ReqGetState _ ->

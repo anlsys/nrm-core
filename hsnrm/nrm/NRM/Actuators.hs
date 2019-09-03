@@ -10,9 +10,10 @@ module NRM.Actuators
 where
 
 import CPD.Core
+import Data.Map as DM
 import NRM.Types.State
-import Protolude
+{-import Protolude-}
 
 -- | List sensors
 listActuators :: NRMState -> Map ActuatorID Actuator
-listActuators _ = panic "no"
+listActuators _ = DM.fromList []
