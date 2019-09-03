@@ -10,20 +10,7 @@ MessagePack FFI code adapted from call-haskell-from-anything
 
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
--- | Easy FFI via MessagePack.
---
--- You can use this module to expose any Haskell function to other Programming languages.
---
--- It allows to convert functions that take multiple arguments
--- into functions that take one argument:
--- A 'ByteString' which contains all arguments encoded as a MessagePack array.
---
--- Common use cases:
---
--- * Write functions in fast native Haskell code, compile them into a dynamic.
---   library (@.so@ \/ @.dll@) and call them via C\/Python\/Ruby\/whatever via @dlopen()@ or equivalents.
---
--- * Expose Haskell functions via a socket / the web
+
 module FFI.TypeUncurry.Msgpack
   ( MessagePackRec (..)
   , getTypeListFromMsgpackArray

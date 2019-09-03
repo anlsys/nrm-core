@@ -13,53 +13,55 @@
 
 { sensors :
     List
-    { sensorTags :
-        List { tag : Text }
-    , source :
-        { sourceTag : Text }
-    , sensorMeta :
-        { range :
-            < Set :
-                { admissibleValues : List Text }
-            | Interval :
-                { mix : Double, max : Double }
-            >
-        , frequency :
-            < MaxFrequency :
-                { maxFrequency : Double }
-            | FixedFrequency :
-                { fixedFrequency : Double }
-            >
+    { sensorKey :
+        Text
+    , sensorValue :
+        { sensorTags :
+            List { tag : Text }
+        , source :
+            { sourceTag : Text }
+        , sensorMeta :
+            { range :
+                < Set :
+                    { admissibleValues : List Text }
+                | Interval :
+                    { mix : Double, max : Double }
+                >
+            , frequency :
+                < MaxFrequency :
+                    { maxFrequency : Double }
+                | FixedFrequency :
+                    { fixedFrequency : Double }
+                >
+            }
+        , sensorDesc :
+            Optional Text
         }
-    , sensorDesc :
-        Optional Text
     }
 , actuators :
     List
-    { actuatorTags :
-        List { tag : Text }
-    , target :
-        { targetTag : Text }
-    , actuatorMeta :
-        { range :
-            < Set :
-                { admissibleValues : List Text }
-            | Interval :
-                { mix : Double, max : Double }
-            >
-        , frequency :
-            < MaxFrequency :
-                { maxFrequency : Double }
-            | FixedFrequency :
-                { fixedFrequency : Double }
-            >
+    { actuatorKey :
+        Text
+    , actuatorValue :
+        { actuatorTags :
+            List { tag : Text }
+        , target :
+            { targetTag : Text }
+        , actuatorMeta :
+            { actuatorRange :
+                < Set :
+                    { admissibleValues : List Text }
+                | Interval :
+                    { mix : Double, max : Double }
+                >
+            }
+        , actuatorDesc :
+            Optional Text
         }
-    , actuatorDesc :
-        Optional Text
     }
 , objective :
     { linearCombination :
-        List { _1 : Double, _2 : { tag : Text } }
+        List { w : Double, x : { sourceTag : Text } }
     , direction :
         < Minimize | Maximize >
     }

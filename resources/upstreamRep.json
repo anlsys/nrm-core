@@ -349,54 +349,11 @@
                                             },
                                             "actuatorMeta": {
                                                 "required": [
-                                                    "range",
-                                                    "frequency"
+                                                    "actuatorRange"
                                                 ],
                                                 "type": "object",
                                                 "properties": {
-                                                    "frequency": {
-                                                        "oneOf": [
-                                                            {
-                                                                "required": [
-                                                                    "maxFrequency"
-                                                                ],
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "maxFrequency": {
-                                                                        "required": [
-                                                                            "maxFrequency"
-                                                                        ],
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "maxFrequency": {
-                                                                                "type": "number"
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            },
-                                                            {
-                                                                "required": [
-                                                                    "fixedFrequency"
-                                                                ],
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "fixedFrequency": {
-                                                                        "required": [
-                                                                            "fixedFrequency"
-                                                                        ],
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "fixedFrequency": {
-                                                                                "type": "number"
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        ]
-                                                    },
-                                                    "range": {
+                                                    "actuatorRange": {
                                                         "oneOf": [
                                                             {
                                                                 "required": [

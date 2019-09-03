@@ -20,16 +20,7 @@ module NRM.Types.Sensor
   )
 where
 
--- * CPD representation
-{-CPDLSensor (..)-}
-{-, CPDLSensors (..)-}
-
-{-import Data.Aeson-}
-
-{-import NRM.Types.Topology.Package-}
-{-import NRM.Types.Sensor-}
 import qualified CPD.Core as CPD
-{-import Data.MessagePack-}
 import Protolude
 
 data Sensor a
@@ -60,14 +51,16 @@ instance IsSensor (Sensor a) where
   toCPDSensor id PassiveSensor {..} =
     ( id
     , CPD.Sensor
-      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range) (CPD.FixedFrequency frequency)
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range)
+          (CPD.FixedFrequency frequency)
       , ..
       }
     )
   toCPDSensor id ActiveSensor {..} =
     ( id
     , CPD.Sensor
-      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range) (CPD.MaxFrequency frequency)
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range)
+          (CPD.MaxFrequency frequency)
       , ..
       }
     )

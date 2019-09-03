@@ -8,20 +8,6 @@ MessagePack FFI code adapted from call-haskell-from-anything
 
 {-# LANGUAGE ScopedTypeVariables #-}
 
--- | Converts function arguments to tuple-like types.
---
--- For example, take @f :: a -> b -> c -> r@.
--- This module can convert it to @f' :: (a, b, c) -> r@, at compile time.
---
--- This is especially useful for (de)serialization.
--- Suppose you have a function that takes multiple arguments
--- and you want to obtain all of its arguments from some serialized data.
--- The serialization library will make it very easy to unpack types
--- like tuples/lists, but de-serializing *fuction arguments* is not that simple.
---
--- Using this module, you can write an instance how to unpack the 'TypeList' type,
--- and then use 'translate' to make any function take such a single 'TypeList'
--- instead of multiple function arguments.
 module FFI.TypeUncurry.DataKinds
   ( TypeList (..)
   , ParamLength (..)

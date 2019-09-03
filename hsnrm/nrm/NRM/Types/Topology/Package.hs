@@ -54,10 +54,8 @@ newtype Package
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
-{-instance CPDLSensors Package PackageID where-}
-
-{-toCPDSensors packageID Package {..} = DM.fromList (toList $ toCPDSensor packageID <$> raplSensor)-}
 instance HasSensors Package PackageID where
 
   listSensors packageID Package {..} =
-    DM.fromList (toList $ (\(x, y) -> (x, packSensor y)) . raplToSensor packageID <$> raplSensor)
+    DM.fromList
+      (toList $ (\(x, y) -> (x, packSensor y)) . raplToSensor packageID <$> raplSensor)

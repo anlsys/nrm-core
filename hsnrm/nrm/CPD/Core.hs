@@ -46,12 +46,28 @@ type Discrete = Text
 
 data Problem
   = Problem
-      { sensors :: [Sensor]
-      , actuators :: [Actuator]
+      { sensors :: [SensorKV]
+      , actuators :: [ActuatorKV]
       , objective :: Objective
       }
   deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
+
+data ActuatorKV
+  = ActuatorKV
+      { actuatorKey :: ActuatorID
+      , actuatorValue :: Actuator
+      }
+  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorKV
+
+data SensorKV
+  = SensorKV
+      { sensorKey :: SensorID
+      , sensorValue :: Sensor
+      }
+  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorKV
 
 data Frequency
   = MaxFrequency {maxFrequency :: Double}
@@ -114,6 +130,10 @@ newtype ActuatorID = ActuatorID U.UUID
   deriving (Ord, Eq, Show, Generic, MessagePack, A.ToJSONKey, A.FromJSONKey)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorID
 
+instance Interpret ActuatorID where
+
+  autoWith = fmap (ActuatorID . fromJust . U.fromText) . autoWith
+
 nextActuatorID :: IO ActuatorID
 nextActuatorID = UV4.nextRandom <&> ActuatorID
 
@@ -121,11 +141,15 @@ newtype Target = Target {targetTag :: Text}
   deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Source
 
+newtype ActuatorMetadata = ActuatorMetadata {actuatorRange :: Range}
+  deriving (Show, Read, Generic, MessagePack, Interpret)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorMetadata
+
 data Actuator
   = Actuator
       { actuatorTags :: [Tag]
       , target :: Target
-      , actuatorMeta :: Metadata
+      , actuatorMeta :: ActuatorMetadata
       , actuatorDesc :: Maybe Text
       }
   deriving (Show, Generic, MessagePack, Interpret)
@@ -136,9 +160,13 @@ data Direction = Minimize | Maximize
   deriving (Show, Generic, MessagePack, Interpret)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Direction
 
+data X = X {w :: Double, x :: Source}
+  deriving (Show, Generic, MessagePack, Interpret)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON X
+
 data Objective
   = Objective
-      { linearCombination :: [(Double, Tag)]
+      { linearCombination :: [X]
       , direction :: Direction
       }
   deriving (Show, Generic, MessagePack, Interpret)
