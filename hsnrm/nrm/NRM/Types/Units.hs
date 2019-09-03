@@ -37,11 +37,11 @@ module NRM.Types.Units
 where
 
 import Data.Aeson
+import Data.Functor.Contravariant (contramap)
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.Metrology ((#), (%))
 import Data.Metrology.Poly (showIn)
-import Data.Functor.Contravariant (contramap)
 import qualified Data.Metrology.SI as DSI (Energy, Frequency, Power, Time)
 import Data.Units.SI (Hertz (..), Joule (..), Second (..), Watt (..))
 import Data.Units.SI.Prefixes (micro)
@@ -51,7 +51,7 @@ import Protolude hiding ((%))
 import qualified Prelude as PBase
 
 -- | CPU operations.
-newtype Operations = Operations Int
+newtype Operations = Operations {ops :: Int}
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Operations
 
@@ -65,6 +65,7 @@ newtype Frequency = Frequency DSI.Frequency
   deriving (Eq, Generic)
 
 instance Dhall.Inject Frequency where
+
   injectWith = fmap (contramap fromHz) Dhall.injectWith
 
 instance Interpret Frequency where

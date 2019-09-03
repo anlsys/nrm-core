@@ -81,5 +81,3 @@ instance FromJSON DownstreamThreadID where
 instance JSONSchema DownstreamThreadID where
 
   schema Proxy = schema (Proxy :: Proxy Text)
-
--- MessagePack Instances

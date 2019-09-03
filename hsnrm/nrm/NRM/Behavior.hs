@@ -212,13 +212,13 @@ behavior _ st DoSensor = return (st, NoBehavior)
 behavior _ st DoControl = return (st, NoBehavior)
 behavior _ st DoShutdown = return (st, NoBehavior)
 behavior _ st (DownstreamEvent msg) = case msg of
-  DEvent.ThreadStart _ -> return (st, NoBehavior)
-  DEvent.ThreadProgress _ _ -> return (st, NoBehavior)
-  DEvent.ThreadPhaseContext _ _ -> return (st, NoBehavior)
-  DEvent.ThreadExit _ -> return (st, NoBehavior)
-  DEvent.CmdStart _ -> return (st, NoBehavior)
-  DEvent.CmdPerformance _ _ -> return (st, NoBehavior)
-  DEvent.CmdExit _ -> return (st, NoBehavior)
+  DEvent.EventThreadStart _ -> return (st, NoBehavior)
+  DEvent.EventThreadProgress _ -> return (st, NoBehavior)
+  DEvent.EventThreadPhaseContext _ -> return (st, NoBehavior)
+  DEvent.EventThreadExit _ -> return (st, NoBehavior)
+  DEvent.EventCmdStart _ -> return (st, NoBehavior)
+  DEvent.EventCmdPerformance _ -> return (st, NoBehavior)
+  DEvent.EventCmdExit _ -> return (st, NoBehavior)
 
 -- | The sensitive unpacking that has to be pattern-matched on the python side.
 -- These toObject/fromObject functions do not correspond to each other and the instance

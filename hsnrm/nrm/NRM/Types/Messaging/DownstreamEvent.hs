@@ -6,38 +6,77 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Types.Messaging.DownstreamEvent
   ( Event (..)
-  , Progress (..)
-  , PhaseContext (..)
-  , Performance (..)
+  , CmdStart
+  , CmdPerformance
+  , CmdExit
+  , ThreadStart
+  , ThreadProgress
+  , ThreadPhaseContext
+  , ThreadExit
   )
 where
 
+import Data.Maybe (fromJust)
 import Data.MessagePack
 import qualified NRM.Classes.Messaging as M
 import qualified NRM.Types.DownstreamClient as D
 import qualified NRM.Types.Messaging.DownstreamEvent.JSON as J
+import qualified NRM.Types.Process as P
 import qualified NRM.Types.Units as U
 import Protolude
 
 data Event
-  = ThreadStart D.DownstreamThreadID
-  | ThreadProgress D.DownstreamThreadID Progress
-  | ThreadPhaseContext D.DownstreamThreadID PhaseContext
-  | ThreadExit D.DownstreamThreadID
-  | CmdStart D.DownstreamCmdID
-  | CmdPerformance D.DownstreamCmdID Performance
-  | CmdExit D.DownstreamCmdID
+  = EventCmdStart CmdStart
+  | EventCmdPerformance CmdPerformance
+  | EventCmdExit CmdExit
+  | EventThreadStart ThreadStart
+  | EventThreadProgress ThreadProgress
+  | EventThreadPhaseContext ThreadPhaseContext
+  | EventThreadExit ThreadExit
   deriving (Generic, MessagePack)
 
-newtype Performance
-  = Performance
-      { perf :: U.Operations
+newtype ThreadStart
+  = ThreadSTart
+      { startDownstreamThreadID :: D.DownstreamThreadID
       }
   deriving (Generic, MessagePack)
 
-newtype Progress
-  = Progress
-      { payload :: U.Progress
+data ThreadProgress
+  = ThreadProgress
+      { progressDownstreamThreadID :: D.DownstreamThreadID
+      , progress :: U.Progress
+      }
+  deriving (Generic, MessagePack)
+
+data ThreadPhaseContext
+  = ThreadPhaseContext
+      { threadPhaseContext :: D.DownstreamThreadID
+      , phaseContext :: PhaseContext
+      }
+  deriving (Generic, MessagePack)
+
+newtype ThreadExit
+  = ThreadExit
+      { exitDownstreamThreadId :: D.DownstreamThreadID
+      }
+  deriving (Generic, MessagePack)
+
+newtype CmdStart
+  = CmdStart
+      { cmdStartCmdID :: P.CmdID
+      }
+  deriving (Generic, MessagePack)
+
+data CmdPerformance
+  = CmdPerformance
+      { cmdPerformanceCmdID :: P.CmdID
+      , perf :: U.Operations
+      }
+  deriving (Generic, MessagePack)
+
+newtype CmdExit
+  = CmdExit
+      { cmdExitCmdID :: P.CmdID
       }
   deriving (Generic, MessagePack)
 
@@ -53,59 +92,22 @@ data PhaseContext
 
 instance M.NRMMessage Event J.Event where
 
-  toJ = panic "need to implement toJ for DownstreamEvent"
+  toJ = \case
+    EventCmdStart CmdStart {..} ->
+      J.CmdStart $ P.toText cmdStartCmdID
+    EventCmdPerformance CmdPerformance {..} ->
+      J.CmdPerformance
+        { cmdID = P.toText cmdPerformanceCmdID
+        , perf = U.ops perf
+        }
+    EventCmdExit CmdExit {..} ->
+      J.CmdExit $ P.toText cmdExitCmdID
+    _ -> panic "Non-Cmd downstream API not implemented yet."
 
-  {-toJ = \case-}
-  {-EventStart Start {..} -> J.Start-}
-  {-{ slice_uuid = C.toText startSliceID-}
-  {-, application_uuid = D.toText startDownstreamID-}
-  {-}-}
-  {-EventExit Exit {..} -> J.Exit-}
-  {-{ application_uuid = D.toText exitDownstreamID-}
-  {-}-}
-  {-EventPerformance Performance {..} -> J.Performance-}
-  {-{ slice_uuid = C.toText performanceSliceID-}
-  {-, application_uuid = D.toText performanceDownstreamID-}
-  {-, perf = o-}
-  {-}-}
-  {-where-}
-  {-(U.Operations o) = perf-}
-  {-EventProgress Progress {..} -> J.Progress-}
-  {-{ application_uuid = D.toText progressDownstreamID-}
-  {-, payload = p-}
-  {-}-}
-  {-where-}
-  {-(U.Progress p) = payload-}
-  {-EventPhaseContext PhaseContext {..} -> J.PhaseContext {..}-}
-  fromJ = panic "need to implement toJ for DownstreamEvent"
-
-{-fromJ = \case-}
-{-J.Start {..} ->-}
-{-EventStart $ Start-}
-{-{ startSliceID = C.parseSliceID slice_uuid-}
-{-, startDownstreamID = fromMaybe-}
-{-(panic "DownstreamEvent fromJ error on Application ID")-}
-{-(D.parseDownstreamID application_uuid)-}
-{-}-}
-{-J.Exit {..} ->-}
-{-EventExit $ Exit-}
-{-{ exitDownstreamID = fromMaybe-}
-{-(panic "DownstreamEvent fromJ error on Application ID")-}
-{-(D.parseDownstreamID application_uuid)-}
-{-}-}
-{-J.Performance {..} ->-}
-{-EventPerformance $ Performance-}
-{-{ performanceSliceID = C.parseSliceID slice_uuid-}
-{-, performanceDownstreamID = fromMaybe-}
-{-(panic "DownstreamEvent fromJ error on Application ID")-}
-{-(D.parseDownstreamID application_uuid)-}
-{-, perf = U.Operations perf-}
-{-}-}
-{-J.Progress {..} ->-}
-{-EventProgress $ Progress-}
-{-{ progressDownstreamID = fromMaybe-}
-{-(panic "DownstreamEvent fromJ error on Application ID")-}
-{-(D.parseDownstreamID application_uuid)-}
-{-, payload = U.Progress payload-}
-{-}-}
-{-J.PhaseContext {..} -> EventPhaseContext PhaseContext {..}-}
+  fromJ = \case
+    J.CmdStart {..} -> EventCmdStart (CmdStart $ fromJust $ P.fromText cmdID)
+    J.CmdExit {..} -> EventCmdExit (CmdExit $ fromJust $ P.fromText cmdID)
+    J.CmdPerformance {..} ->
+      EventCmdPerformance
+        (CmdPerformance (fromJust $ P.fromText cmdID) (U.Operations perf))
+    _ -> panic "Non-Cmd downstream API not implemented yet."

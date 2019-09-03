@@ -2,21 +2,17 @@
     "oneOf": [
         {
             "required": [
-                "start"
+                "cmdStart"
             ],
             "type": "object",
             "properties": {
-                "start": {
+                "cmdStart": {
                     "required": [
-                        "slice_uuid",
-                        "application_uuid"
+                        "cmdID"
                     ],
                     "type": "object",
                     "properties": {
-                        "slice_uuid": {
-                            "type": "string"
-                        },
-                        "application_uuid": {
+                        "cmdID": {
                             "type": "string"
                         }
                     }
@@ -25,44 +21,40 @@
         },
         {
             "required": [
-                "exit"
+                "cmdPerformance"
             ],
             "type": "object",
             "properties": {
-                "exit": {
+                "cmdPerformance": {
                     "required": [
-                        "application_uuid"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "application_uuid": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "required": [
-                "performance"
-            ],
-            "type": "object",
-            "properties": {
-                "performance": {
-                    "required": [
-                        "slice_uuid",
-                        "application_uuid",
+                        "cmdID",
                         "perf"
                     ],
                     "type": "object",
                     "properties": {
-                        "slice_uuid": {
+                        "cmdID": {
                             "type": "string"
                         },
                         "perf": {
                             "type": "number"
-                        },
-                        "application_uuid": {
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "cmdExit"
+            ],
+            "type": "object",
+            "properties": {
+                "cmdExit": {
+                    "required": [
+                        "cmdID"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "cmdID": {
                             "type": "string"
                         }
                     }
@@ -71,21 +63,64 @@
         },
         {
             "required": [
-                "progress"
+                "threadStart"
             ],
             "type": "object",
             "properties": {
-                "progress": {
+                "threadStart": {
                     "required": [
-                        "application_uuid",
+                        "cmdID",
+                        "processID",
+                        "taskID",
+                        "threadID"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "cmdID": {
+                            "type": "string"
+                        },
+                        "taskID": {
+                            "type": "string"
+                        },
+                        "processID": {
+                            "type": "string"
+                        },
+                        "threadID": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "threadProgress"
+            ],
+            "type": "object",
+            "properties": {
+                "threadProgress": {
+                    "required": [
+                        "cmdID",
+                        "processID",
+                        "taskID",
+                        "threadID",
                         "payload"
                     ],
                     "type": "object",
                     "properties": {
+                        "cmdID": {
+                            "type": "string"
+                        },
+                        "taskID": {
+                            "type": "string"
+                        },
+                        "processID": {
+                            "type": "string"
+                        },
                         "payload": {
                             "type": "number"
                         },
-                        "application_uuid": {
+                        "threadID": {
                             "type": "string"
                         }
                     }
@@ -94,12 +129,16 @@
         },
         {
             "required": [
-                "phaseContext"
+                "threadPhaseContext"
             ],
             "type": "object",
             "properties": {
-                "phaseContext": {
+                "threadPhaseContext": {
                     "required": [
+                        "cmdID",
+                        "processID",
+                        "taskID",
+                        "threadID",
                         "cpu",
                         "startcompute",
                         "endcompute",
@@ -108,6 +147,9 @@
                     ],
                     "type": "object",
                     "properties": {
+                        "cmdID": {
+                            "type": "string"
+                        },
                         "endcompute": {
                             "type": "number"
                         },
@@ -120,8 +162,48 @@
                         "startcompute": {
                             "type": "number"
                         },
+                        "taskID": {
+                            "type": "string"
+                        },
+                        "processID": {
+                            "type": "string"
+                        },
+                        "threadID": {
+                            "type": "string"
+                        },
                         "cpu": {
                             "type": "number"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "threadExit"
+            ],
+            "type": "object",
+            "properties": {
+                "threadExit": {
+                    "required": [
+                        "cmdID",
+                        "processID",
+                        "taskID",
+                        "threadID"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "cmdID": {
+                            "type": "string"
+                        },
+                        "taskID": {
+                            "type": "string"
+                        },
+                        "processID": {
+                            "type": "string"
+                        },
+                        "threadID": {
+                            "type": "string"
                         }
                     }
                 }
