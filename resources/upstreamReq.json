@@ -274,6 +274,17 @@
         },
         {
             "required": [
+                "reqCPD"
+            ],
+            "type": "object",
+            "properties": {
+                "reqCPD": {
+                    "const": "\"cPD\""
+                }
+            }
+        },
+        {
+            "required": [
                 "reqKillCmd"
             ],
             "type": "object",

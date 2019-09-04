@@ -13,8 +13,11 @@ module NRM.Orphans.UUID
 where
 
 import Data.JSON.Schema
+import Data.Maybe (fromJust)
 import Data.MessagePack
 import Data.UUID as U (UUID, fromText, toText)
+import Dhall
+import Data.Functor.Contravariant (contramap)
 import Protolude
 import Prelude (fail)
 
@@ -31,3 +34,11 @@ instance MessagePack UUID where
       case fromText y of
         Nothing -> fail "Couldn't parse CmdID"
         Just t -> return t
+
+instance Interpret UUID where
+
+  autoWith = fmap (fromJust . U.fromText) . autoWith
+
+instance Dhall.Inject UUID where
+
+  injectWith = fmap (contramap (U.toText)) Dhall.injectWith

@@ -17,9 +17,9 @@
         Text
     , sensorValue :
         { sensorTags :
-            List { tag : Text }
+            List Text
         , source :
-            { sourceTag : Text }
+            Text
         , sensorMeta :
             { range :
                 < Set :
@@ -29,7 +29,7 @@
                 >
             , frequency :
                 < MaxFrequency :
-                    { maxFrequency : Double }
+                    { _1 : Double }
                 | FixedFrequency :
                     { fixedFrequency : Double }
                 >
@@ -44,24 +44,22 @@
         Text
     , actuatorValue :
         { actuatorTags :
-            List { tag : Text }
+            List Text
         , target :
-            { targetTag : Text }
+            Text
         , actuatorMeta :
-            { actuatorRange :
-                < Set :
-                    { admissibleValues : List Text }
-                | Interval :
-                    { mix : Double, max : Double }
-                >
-            }
+            < Set :
+                { admissibleValues : List Text }
+            | Interval :
+                { mix : Double, max : Double }
+            >
         , actuatorDesc :
             Optional Text
         }
     }
 , objective :
     { linearCombination :
-        List { w : Double, x : { sourceTag : Text } }
+        List { w : Double, x : Text }
     , direction :
         < Minimize | Maximize >
     }

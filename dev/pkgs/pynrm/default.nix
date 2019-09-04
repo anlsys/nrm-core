@@ -13,6 +13,7 @@ pythonPackages.buildPythonPackage {
     pythonPackages.docopt
     pythonPackages.scipy
     pythonPackages.warlock
+    pythonPackages.jsonschema
   ];
   checkPhase = "true";
 }

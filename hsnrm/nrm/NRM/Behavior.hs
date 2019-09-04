@@ -163,7 +163,8 @@ behavior c st (Req clientid msg) = case msg of
           runSliceID .
           createSlice runSliceID $
           st
-      , StartChild cmdID (cmd spec) (args spec) (env spec)
+      , StartChild cmdID (cmd spec) (args spec)
+        (env spec <> Env [("NRM_cmdID", toText cmdID)])
       )
   UReq.ReqKillSlice UReq.KillSlice {..} -> do
     let (maybeSlice, st') = removeSlice killSliceID st

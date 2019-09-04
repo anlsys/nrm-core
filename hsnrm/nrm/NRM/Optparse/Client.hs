@@ -17,12 +17,12 @@ import qualified Data.ByteString as B
   )
 import Data.Default
 import Dhall
-import NRM.Types.Slice
 import NRM.Types.Manifest
 import qualified NRM.Types.Manifest.Dhall as D
 import qualified NRM.Types.Manifest.Yaml as Y
 import NRM.Types.Messaging.UpstreamReq
 import qualified NRM.Types.Process as P
+import NRM.Types.Slice
 import qualified NRM.Types.Units as U
 import Options.Applicative
 import Protolude
@@ -153,11 +153,27 @@ opts =
         progDesc "Run the application via NRM"
       ) <>
     command "killcmd"
-      ( info (return <$> (Opts <$> (ReqKillCmd . KillCmd <$> parserKillCmd) <*> parserCommon)) $
+      ( info
+        ( return <$>
+          ( Opts <$>
+            ( ReqKillCmd . KillCmd <$>
+              parserKillCmd
+            ) <*>
+            parserCommon
+          )
+        ) $
         progDesc "Kill cmd"
       ) <>
     command "killslice"
-      ( info (return <$> (Opts <$> (ReqKillSlice . KillSlice <$> parserKillSlice) <*> parserCommon)) $
+      ( info
+        ( return <$>
+          ( Opts <$>
+            ( ReqKillSlice . KillSlice <$>
+              parserKillSlice
+            ) <*>
+            parserCommon
+          )
+        ) $
         progDesc "Kill slice"
       ) <>
     command
@@ -169,6 +185,11 @@ opts =
           )
         ) $
         progDesc "Set power limit"
+      ) <>
+    command
+      "cpd"
+      ( info (return <$> (Opts (ReqCPD CPD) <$> parserCommon)) $
+        progDesc "Show current CPD"
       ) <>
     command
       "list"
@@ -254,13 +275,3 @@ run rc common = do
         }
       )
       common
-
-{-sliceName :: Maybe Text-}
-{-cmd :: Text-}
-{-args :: [Text]-}
-
-{-printY :: ManifestLocationCfg -> IO Manifest-}
-{-printY c = do-}
-{-manifest <- load c-}
-{-putText . toS . Y.encodeManifest $ manifest-}
-{-return manifest-}

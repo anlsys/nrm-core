@@ -71,21 +71,22 @@ in rec {
     (o: { buildInputs = o.buildInputs ++ [ pkgs.astyle ]; });
 
   hack = hsnrm-hack.overrideAttrs (o: {
-    buildInputs = o.buildInputs
-      ++ [ (pkgs.python37.withPackages (ps: [ ps.msgpack ps.pyzmq ps.tornado ])) ]
-      ++ libnrm-hack.buildInputs ++ [
-        nrmPythonPackages.flake8
-        nrmPythonPackages.autopep8
-        nrmPythonPackages.black
-        nrmPythonPackages.mypy
-        nrmPythonPackages.pytype
-        nrmPythonPackages.sphinx
-      ];
+    buildInputs = o.buildInputs ++ [
+      (pkgs.python37.withPackages
+      (ps: [ ps.msgpack ps.pyzmq ps.tornado ps.jsonschema ps.pyyaml ]))
+    ] ++ libnrm-hack.buildInputs ++ [
+      nrmPythonPackages.flake8
+      nrmPythonPackages.autopep8
+      nrmPythonPackages.black
+      nrmPythonPackages.mypy
+      nrmPythonPackages.pytype
+      nrmPythonPackages.sphinx
+    ];
     shellHook = ''
-        alias dev-nrmd="PYTHONPATH=$PYTHONPATH:./pynrm/ pynrm/bin/nrmd"
-        alias dev-nrm="hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrmdep/build/nrmdep/nrmdep"
-        PATH=$PATH:./dev/
-      '';
+      alias dev-nrmd="PYTHONPATH=$PYTHONPATH:./pynrm/ pynrm/bin/nrmd"
+      alias dev-nrm="hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrmdep/build/nrmdep/nrmdep"
+      PATH=$PATH:./dev/
+    '';
   });
 }
 

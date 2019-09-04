@@ -8,7 +8,162 @@
             "properties": {
                 "repList": {
                     "required": [
-                        "slices",
+                        "slices"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "slices": {
+                            "uniqueItems": false,
+                            "items": {
+                                "items": [
+                                    {
+                                        "type": "string"
+                                    },
+                                    {
+                                        "required": [
+                                            "cmds",
+                                            "awaiting",
+                                            "downstreamCmds",
+                                            "downstreamThreads"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "downstreamCmds": {
+                                                "additionalProperties": {
+                                                    "const": "\"downstreamCmd\""
+                                                },
+                                                "type": "object"
+                                            },
+                                            "awaiting": {
+                                                "additionalProperties": {
+                                                    "required": [
+                                                        "cmdPath",
+                                                        "arguments"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "upstreamClientID": {
+                                                            "type": "string"
+                                                        },
+                                                        "arguments": {
+                                                            "uniqueItems": false,
+                                                            "items": {
+                                                                "type": "string"
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "cmdPath": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "cmds": {
+                                                "additionalProperties": {
+                                                    "required": [
+                                                        "cmdCore",
+                                                        "pid",
+                                                        "processState"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "cmdCore": {
+                                                            "required": [
+                                                                "cmdPath",
+                                                                "arguments"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "upstreamClientID": {
+                                                                    "type": "string"
+                                                                },
+                                                                "arguments": {
+                                                                    "uniqueItems": false,
+                                                                    "items": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "type": "array"
+                                                                },
+                                                                "cmdPath": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        "processState": {
+                                                            "required": [
+                                                                "stdoutFinished",
+                                                                "stderrFinished"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "stderrFinished": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "stdoutFinished": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "ended": {
+                                                                    "oneOf": [
+                                                                        {
+                                                                            "required": [
+                                                                                "exitSuccess"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "exitSuccess": {
+                                                                                    "type": "object",
+                                                                                    "properties": {}
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "required": [
+                                                                                "exitFailure"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "exitFailure": {
+                                                                                    "type": "number"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "pid": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            },
+                                            "downstreamThreads": {
+                                                "additionalProperties": {
+                                                    "const": "\"downstreamThread\""
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    }
+                                ],
+                                "type": "array"
+                            },
+                            "type": "array"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "repCPD"
+            ],
+            "type": "object",
+            "properties": {
+                "repCPD": {
+                    "required": [
                         "cpd"
                     ],
                     "type": "object",
@@ -129,15 +284,7 @@
                                                                         "type": "object",
                                                                         "properties": {
                                                                             "maxFrequency": {
-                                                                                "required": [
-                                                                                    "maxFrequency"
-                                                                                ],
-                                                                                "type": "object",
-                                                                                "properties": {
-                                                                                    "maxFrequency": {
-                                                                                        "type": "number"
-                                                                                    }
-                                                                                }
+                                                                                "type": "number"
                                                                             }
                                                                         }
                                                                     },
@@ -353,146 +500,6 @@
                                     "type": "array"
                                 }
                             }
-                        },
-                        "slices": {
-                            "uniqueItems": false,
-                            "items": {
-                                "items": [
-                                    {
-                                        "type": "string"
-                                    },
-                                    {
-                                        "required": [
-                                            "cmds",
-                                            "awaiting",
-                                            "downstreamCmds",
-                                            "downstreamThreads"
-                                        ],
-                                        "type": "object",
-                                        "properties": {
-                                            "downstreamCmds": {
-                                                "additionalProperties": {
-                                                    "const": "\"downstreamCmd\""
-                                                },
-                                                "type": "object"
-                                            },
-                                            "awaiting": {
-                                                "additionalProperties": {
-                                                    "required": [
-                                                        "cmdPath",
-                                                        "arguments"
-                                                    ],
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "upstreamClientID": {
-                                                            "type": "string"
-                                                        },
-                                                        "arguments": {
-                                                            "uniqueItems": false,
-                                                            "items": {
-                                                                "type": "string"
-                                                            },
-                                                            "type": "array"
-                                                        },
-                                                        "cmdPath": {
-                                                            "type": "string"
-                                                        }
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "cmds": {
-                                                "additionalProperties": {
-                                                    "required": [
-                                                        "cmdCore",
-                                                        "pid",
-                                                        "processState"
-                                                    ],
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "cmdCore": {
-                                                            "required": [
-                                                                "cmdPath",
-                                                                "arguments"
-                                                            ],
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "upstreamClientID": {
-                                                                    "type": "string"
-                                                                },
-                                                                "arguments": {
-                                                                    "uniqueItems": false,
-                                                                    "items": {
-                                                                        "type": "string"
-                                                                    },
-                                                                    "type": "array"
-                                                                },
-                                                                "cmdPath": {
-                                                                    "type": "string"
-                                                                }
-                                                            }
-                                                        },
-                                                        "processState": {
-                                                            "required": [
-                                                                "stdoutFinished",
-                                                                "stderrFinished"
-                                                            ],
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "stderrFinished": {
-                                                                    "type": "boolean"
-                                                                },
-                                                                "stdoutFinished": {
-                                                                    "type": "boolean"
-                                                                },
-                                                                "ended": {
-                                                                    "oneOf": [
-                                                                        {
-                                                                            "required": [
-                                                                                "exitSuccess"
-                                                                            ],
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "exitSuccess": {
-                                                                                    "type": "object",
-                                                                                    "properties": {}
-                                                                                }
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            "required": [
-                                                                                "exitFailure"
-                                                                            ],
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "exitFailure": {
-                                                                                    "type": "number"
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    ]
-                                                                }
-                                                            }
-                                                        },
-                                                        "pid": {
-                                                            "type": "number"
-                                                        }
-                                                    }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "downstreamThreads": {
-                                                "additionalProperties": {
-                                                    "const": "\"downstreamThread\""
-                                                },
-                                                "type": "object"
-                                            }
-                                        }
-                                    }
-                                ],
-                                "type": "array"
-                            },
-                            "type": "array"
                         }
                     }
                 }

@@ -9,39 +9,74 @@
 ###############################################################################
 
 import json
+import os
 import logging
+import yaml
 import uuid
-import zmq  # type: ignore
-import zmq.utils  # type: ignore
-import zmq.utils.monitor  # type: ignore
-from zmq.eventloop import zmqstream  # type: ignore
+from jsonschema import Draft4Validator
+import zmq
+import warlock
+import zmq.utils
+import zmq.utils.monitor
+from zmq.eventloop import zmqstream
 
 
-_logger = logging.getLogger('nrm')
+_logger = logging.getLogger("nrm")
+_jsonexts = ["json"]
+_yamlexts = ["yml", "yaml"]
 
 
-def send(apiname):
+def loadschema(ext, api):
+    sourcedir = os.path.dirname(os.path.realpath(__file__))
+    with open(os.path.join(sourcedir, "schemas", api + "." + ext)) as f:
+        if ext in _jsonexts:
+            s = json.load(f)
+        elif ext in _yamlexts:
+            s = yaml.load(f)
+        else:
+            raise ("Schema extension not in %s" % str(_jsonexts + _yamlexts))
+        Draft4Validator.check_schema(s)
+        return warlock.model_factory(s)
+
+
+def send(apiname=None):
+    if apiname:
+        model = loadschema("json", apiname)
+
     def wrap(cls):
 
-        def send(self, msg):
-            self.socket.send(msg)
+        if model:
+
+            def send(self, *args, **kwargs):
+                self.socket.send(json.dumps(model(dict(*args, **kwargs))))
+
+        else:
+
+            def send(self, msg):
+                self.socket.send(msg)
+
         setattr(cls, "send", send)
 
-        return(cls)
-    return(wrap)
+        return cls
+
+    return wrap
 
 
-def recv_callback(apiname):
+def recv_callback(apiname=None):
+    if apiname:
+        return recv_callback_api(apiname)
+    else:
+        return recv_callback_noapi()
+
+
+def recv_callback_noapi():
     def wrap(cls):
         def recv(self):
-            """Receives a response to a message."""
             wire = self.socket.recv()
             _logger.debug("received message: %r", wire)
-            return (wire)
+            return wire
 
         def do_recv_callback(self, frames):
-            """Receives a message from zmqstream.on_recv, passing it to a user
-            callback."""
             _logger.info("receiving message: %r", frames)
             assert len(frames) == 2
             msg = frames[1]
@@ -49,7 +84,6 @@ def recv_callback(apiname):
             self.callback(msg, frames[0])
 
         def setup_recv_callback(self, callback):
-            """Setup a ioloop-backed callback for receiving messages."""
             self.stream = zmqstream.ZMQStream(self.socket)
             self.callback = callback
             self.stream.on_recv(self.do_recv_callback)
@@ -58,8 +92,39 @@ def recv_callback(apiname):
         setattr(cls, "do_recv_callback", do_recv_callback)
         setattr(cls, "setup_recv_callback", setup_recv_callback)
 
-        return(cls)
-    return(wrap)
+        return cls
+
+    return wrap
+
+
+def recv_callback_api(apiname):
+    def wrap(cls):
+        model = loadschema("json", apiname)
+
+        def recv(self):
+            wire = self.socket.recv()
+            _logger.debug("received message: %r", wire)
+            return model(json.loads(wire))
+
+        def do_recv_callback(self, frames):
+            _logger.info("receiving message: %r", frames)
+            assert len(frames) == 2
+            msg = model(json.loads(frames[1]))
+            assert self.callback
+            self.callback(msg, str(frames[0]))
+
+        def setup_recv_callback(self, callback):
+            self.stream = zmqstream.ZMQStream(self.socket)
+            self.callback = callback
+            self.stream.on_recv(self.do_recv_callback)
+
+        setattr(cls, "recv", recv)
+        setattr(cls, "do_recv_callback", do_recv_callback)
+        setattr(cls, "setup_recv_callback", setup_recv_callback)
+
+        return cls
+
+    return wrap
 
 
 class RPCClient(object):
@@ -82,7 +147,7 @@ class RPCClient(object):
         while wait:
             msg = zmq.utils.monitor.recv_monitor_message(monitor)
             _logger.debug("monitor message: %r", msg)
-            if int(msg['event']) == zmq.EVENT_CONNECTED:
+            if int(msg["event"]) == zmq.EVENT_CONNECTED:
                 _logger.debug("socket connected")
                 break
         self.socket.disable_monitor()
@@ -99,18 +164,6 @@ class RPCServer(object):
         self.socket.setsockopt(zmq.SNDHWM, 0)
         self.socket.setsockopt(zmq.RCVHWM, 0)
         self.socket.bind(address)
-
-
-# @send("upstreamReq")
-# class UpstreamRPCClient(RPCClient):
-
-    # """Implements the message layer client to the upstream RPC API."""
-
-    # def recv(self):
-        # """Receives a response to a message."""
-        # wire = self.socket.recv()
-        # _logger.debug("received message: %r", wire)
-        # return wire
 
 
 @recv_callback("upstreamReq")
@@ -147,7 +200,7 @@ class UpstreamPubClient(object):
         self.zmq_context = zmq.Context.instance()
         self.socket = self.zmq_context.socket(zmq.SUB)
         self.socket.setsockopt(zmq.RCVHWM, 0)
-        self.socket.setsockopt(zmq.SUBSCRIBE, '')
+        self.socket.setsockopt(zmq.SUBSCRIBE, "")
 
     def connect(self, wait=True):
         """Creates a monitor socket and wait for the connect event."""
@@ -156,7 +209,7 @@ class UpstreamPubClient(object):
         while wait:
             msg = zmq.utils.monitor.recv_monitor_message(monitor)
             _logger.debug("monitor message: %r", msg)
-            if int(msg['event']) == zmq.EVENT_CONNECTED:
+            if int(msg["event"]) == zmq.EVENT_CONNECTED:
                 _logger.debug("socket connected")
                 break
         self.socket.disable_monitor()

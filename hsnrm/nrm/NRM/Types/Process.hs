@@ -126,6 +126,7 @@ newtype Arguments = Arguments [Arg]
 newtype Env = Env [(Text, Text)]
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Env
+  deriving (Semigroup, Monoid) via [(Text,Text)]
 
 instance MessagePack ProcessID where
 
