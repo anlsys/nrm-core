@@ -207,11 +207,11 @@
                                                     },
                                                     "x": {
                                                         "required": [
-                                                            "sourceTag"
+                                                            "sensorID"
                                                         ],
                                                         "type": "object",
                                                         "properties": {
-                                                            "sourceTag": {
+                                                            "sensorID": {
                                                                 "type": "string"
                                                             }
                                                         }

@@ -59,7 +59,7 @@
     }
 , objective :
     { linearCombination :
-        List { w : Double, x : Text }
+        List { w : Double, x : { sensorID : Text } }
     , direction :
         < Minimize | Maximize >
     }
