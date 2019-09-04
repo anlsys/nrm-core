@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-|
 Module      : NRM.Types.Slice
 Copyright   : (c) UChicago Argonne, 2019
@@ -15,14 +17,13 @@ module NRM.Types.Slice
   )
 where
 
-import qualified Data.Aeson as A
 import Data.Aeson
 import Data.JSON.Schema
 import qualified Data.Map as DM
 import Data.MessagePack
 import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
-import Generics.Generic.Aeson
+import NRM.Classes.Messaging
 import NRM.Types.DownstreamClient
 import NRM.Types.Process (Cmd (..), CmdCore (..), CmdID (..))
 import Protolude
@@ -39,7 +40,8 @@ data Slice
       , -- | map of downstream "thread-level" clients for this slice
         downstreamThreads :: Map DownstreamThreadID DownstreamThread
       }
-  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, MessagePack)
+  deriving (ToJSON, FromJSON, JSONSchema) via GenericJSON Slice
 
 -- | Constructor for an empty slice.
 emptySlice :: Slice
@@ -56,6 +58,7 @@ insertCmd cmdID cmd slice = slice {cmds = DM.insert cmdID cmd (cmds slice)}
 
 data SliceID = SliceID U.UUID | Name Text
   deriving (Show, Eq, Ord, Generic, FromJSONKey, ToJSONKey)
+  deriving (ToJSON, FromJSON) via GenericJSON SliceID
 
 nextSliceID :: IO (Maybe SliceID)
 nextSliceID = fmap SliceID <$> nextUUID
@@ -69,14 +72,6 @@ toText :: SliceID -> Text
 toText (SliceID u) = U.toText u
 toText (Name n) = n
 
-instance ToJSON SliceID where
-
-  toJSON = gtoJson
-
-instance FromJSON SliceID where
-
-  parseJSON = gparseJson
-
 instance JSONSchema SliceID where
 
   schema Proxy = schema (Proxy :: Proxy Text)
@@ -87,7 +82,3 @@ instance MessagePack SliceID where
   toObject (Name c) = toObject c
 
   fromObject x = fromObject x <&> parseSliceID
-
-instance JSONSchema Slice where
-
-  schema = gSchema

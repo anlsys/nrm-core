@@ -41,4 +41,4 @@ instance Interpret UUID where
 
 instance Dhall.Inject UUID where
 
-  injectWith = fmap (contramap (U.toText)) Dhall.injectWith
+  injectWith = fmap (contramap U.toText) Dhall.injectWith

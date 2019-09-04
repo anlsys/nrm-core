@@ -14,7 +14,7 @@
 { sensors :
     List
     { sensorKey :
-        Text
+        { sensorID : Text }
     , sensorValue :
         { sensorTags :
             List Text
@@ -29,7 +29,7 @@
                 >
             , frequency :
                 < MaxFrequency :
-                    { _1 : Double }
+                    { maxFrequency : Double }
                 | FixedFrequency :
                     { fixedFrequency : Double }
                 >
@@ -41,7 +41,7 @@
 , actuators :
     List
     { actuatorKey :
-        Text
+        { actuatorID : Text }
     , actuatorValue :
         { actuatorTags :
             List Text

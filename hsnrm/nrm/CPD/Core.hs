@@ -38,7 +38,6 @@ where
 
 import qualified Data.Aeson as A
 import Data.JSON.Schema
-{-import Data.Maybe (fromJust)-}
 import Data.MessagePack
 import qualified Data.UUID as U
 import qualified Data.UUID.V4 as UV4
@@ -100,9 +99,18 @@ data Value
 
 -------- SENSORS
 newtype SensorID = SensorID {sensorID :: U.UUID}
-  deriving (Ord, Eq, Show, Generic, MessagePack, A.ToJSONKey, A.FromJSONKey)
+  deriving
+    ( Ord
+    , Eq
+    , Show
+    , Generic
+    , MessagePack
+    , A.ToJSONKey
+    , A.FromJSONKey
+    , Interpret
+    , Inject
+    )
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorID
-  deriving (Interpret, Inject) via U.UUID
 
 nextSensorID :: IO SensorID
 nextSensorID = UV4.nextRandom <&> SensorID
@@ -133,9 +141,18 @@ class CPDLActuator a where
   toActuator :: a -> Actuator
 
 newtype ActuatorID = ActuatorID {actuatorID :: U.UUID}
-  deriving (Ord, Eq, Show, Generic, MessagePack, A.ToJSONKey, A.FromJSONKey)
+  deriving
+    ( Ord
+    , Eq
+    , Show
+    , Generic
+    , MessagePack
+    , A.ToJSONKey
+    , A.FromJSONKey
+    , Interpret
+    , Inject
+    )
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorID
-  deriving (Interpret, Inject) via U.UUID
 
 nextActuatorID :: IO ActuatorID
 nextActuatorID = UV4.nextRandom <&> ActuatorID
@@ -165,7 +182,7 @@ data Direction = Minimize | Maximize
   deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Direction
 
-data X = X {w :: Double, x :: Source}
+data X = X {w :: Double, x :: SensorID}
   deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON X
 

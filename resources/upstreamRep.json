@@ -284,7 +284,15 @@
                                                                         "type": "object",
                                                                         "properties": {
                                                                             "maxFrequency": {
-                                                                                "type": "number"
+                                                                                "required": [
+                                                                                    "maxFrequency"
+                                                                                ],
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "maxFrequency": {
+                                                                                        "type": "number"
+                                                                                    }
+                                                                                }
                                                                             }
                                                                         }
                                                                     },
