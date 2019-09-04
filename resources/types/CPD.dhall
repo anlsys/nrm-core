@@ -16,9 +16,7 @@
     { sensorKey :
         { sensorID : Text }
     , sensorValue :
-        { sensorTags :
-            List Text
-        , source :
+        { source :
             Text
         , sensorMeta :
             { range :
@@ -34,8 +32,6 @@
                     { fixedFrequency : Double }
                 >
             }
-        , sensorDesc :
-            Optional Text
         }
     }
 , actuators :
@@ -43,9 +39,7 @@
     { actuatorKey :
         { actuatorID : Text }
     , actuatorValue :
-        { actuatorTags :
-            List Text
-        , target :
+        { target :
             Text
         , actuatorMeta :
             < Set :
@@ -53,8 +47,6 @@
             | Interval :
                 { mix : Double, max : Double }
             >
-        , actuatorDesc :
-            Optional Text
         }
     }
 , objective :

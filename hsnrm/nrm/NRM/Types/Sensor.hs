@@ -10,13 +10,13 @@ Maintainer  : fre@freux.fr
 module NRM.Types.Sensor
   ( -- * Internal representation
     Sensor (..)
+  , Tag (..)
   , HasSensors (..)
   , IsSensor (..)
   , packSensor
   , toCPDPackedSensor
   , -- * Re-exports
-    CPD.Tag (..)
-  , CPD.Source (..)
+    CPD.Source (..)
   , CPD.SensorID (..)
   )
 where
@@ -25,19 +25,21 @@ import qualified CPD.Core as CPD
 import qualified NRM.Types.Units as U
 import Protolude
 
+newtype Tag = Tag Text
+
 data Sensor a
   = PassiveSensor
       { perform :: IO (Maybe Double)
+      , sensorTags :: [Tag]
       , frequency :: U.Frequency
-      , sensorTags :: [CPD.Tag]
       , source :: CPD.Source
       , range :: (Double, Double)
       , sensorDesc :: Maybe Text
       }
   | ActiveSensor
       { maxFrequency :: U.Frequency
+      , sensorTags :: [Tag]
       , process :: Double -> Double
-      , sensorTags :: [CPD.Tag]
       , source :: CPD.Source
       , range :: (Double, Double)
       , sensorDesc :: Maybe Text

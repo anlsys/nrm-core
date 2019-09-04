@@ -59,17 +59,7 @@ commonParser =
       (long "edit" <> short 'e' <> help "Edit yaml in $EDITOR before running the NRM daemon.")
 
 opts :: Parser (IO Cfg)
-opts =
-  hsubparser $
-    command
-      "run"
-      (info (load <$> commonParser) $ progDesc "Run the NRM daemon") <>
-    command
-      "print"
-      ( info (printY <$> commonParser) $
-        progDesc "Just print the daemon configuration (don't run the NRM daemon)."
-      ) <>
-    help "Choice of operation."
+opts = (load <$> commonParser) <**> helper
 
 data SourceType = Dhall | Yaml
   deriving (Eq)
@@ -115,9 +105,3 @@ editing c =
     Right cfg -> return cfg
   where
     yt = mkTemplate "yaml"
-
-printY :: MainCfg -> IO Cfg
-printY c = do
-  cfg <- load c
-  putText . toS . Y.encodeCfg $ cfg
-  return cfg

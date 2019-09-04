@@ -233,30 +233,11 @@
                                         "properties": {
                                             "sensorValue": {
                                                 "required": [
-                                                    "sensorTags",
                                                     "source",
                                                     "sensorMeta"
                                                 ],
                                                 "type": "object",
                                                 "properties": {
-                                                    "sensorDesc": {
-                                                        "type": "string"
-                                                    },
-                                                    "sensorTags": {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "required": [
-                                                                "tag"
-                                                            ],
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "tag": {
-                                                                    "type": "string"
-                                                                }
-                                                            }
-                                                        },
-                                                        "type": "array"
-                                                    },
                                                     "source": {
                                                         "required": [
                                                             "sourceTag"
@@ -397,30 +378,11 @@
                                         "properties": {
                                             "actuatorValue": {
                                                 "required": [
-                                                    "actuatorTags",
                                                     "target",
                                                     "actuatorMeta"
                                                 ],
                                                 "type": "object",
                                                 "properties": {
-                                                    "actuatorTags": {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "required": [
-                                                                "tag"
-                                                            ],
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "tag": {
-                                                                    "type": "string"
-                                                                }
-                                                            }
-                                                        },
-                                                        "type": "array"
-                                                    },
-                                                    "actuatorDesc": {
-                                                        "type": "string"
-                                                    },
                                                     "actuatorMeta": {
                                                         "required": [
                                                             "actuatorRange"

@@ -42,6 +42,8 @@ def loadschema(ext, api):
 def send(apiname=None):
     if apiname:
         model = loadschema("json", apiname)
+    else:
+        model = None
 
     def wrap(cls):
 
@@ -166,7 +168,7 @@ class RPCServer(object):
         self.socket.bind(address)
 
 
-@recv_callback("upstreamReq")
+@recv_callback()
 class UpstreamRPCServer(RPCServer):
 
     """Implements the message layer server to the upstream RPC API."""
@@ -177,7 +179,7 @@ class UpstreamRPCServer(RPCServer):
         self.socket.send_multipart([client_uuid.encode(), msg.encode()])
 
 
-@send("upstreamPub")
+@send()
 class UpstreamPubServer(object):
 
     """Implements the message layer server for the upstream PUB/SUB API."""

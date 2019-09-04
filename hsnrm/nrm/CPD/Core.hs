@@ -20,7 +20,6 @@ module CPD.Core
   , nextSensorID
   , Sensor (..)
   , Source (..)
-  , Tag (..)
   , -- * Actuators
     -- ** Classes
     ActuatorID (..)
@@ -94,11 +93,12 @@ data Range
 data Value
   = DiscreteValue {discreteValue :: Discrete}
   | ContinuousValue {continuousValue :: Double}
-  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Value
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
 
 -------- SENSORS
 newtype SensorID = SensorID {sensorID :: U.UUID}
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorID
   deriving
     ( Ord
     , Eq
@@ -110,15 +110,9 @@ newtype SensorID = SensorID {sensorID :: U.UUID}
     , Interpret
     , Inject
     )
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorID
 
 nextSensorID :: IO SensorID
 nextSensorID = UV4.nextRandom <&> SensorID
-
-newtype Tag = Tag {tag :: Text}
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Tag
-  deriving (Interpret, Inject) via Text
 
 newtype Source = Source {sourceTag :: Text}
   deriving (Show, Generic, MessagePack)
@@ -127,10 +121,8 @@ newtype Source = Source {sourceTag :: Text}
 
 data Sensor
   = Sensor
-      { sensorTags :: [Tag]
-      , source :: Source
+      { source :: Source
       , sensorMeta :: Metadata
-      , sensorDesc :: Maybe Text
       }
   deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Sensor
@@ -158,38 +150,36 @@ nextActuatorID :: IO ActuatorID
 nextActuatorID = UV4.nextRandom <&> ActuatorID
 
 newtype Target = Target {targetTag :: Text}
-  deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Source
+  deriving (Show, Generic, MessagePack)
   deriving (Interpret, Inject) via Text
 
 newtype ActuatorMetadata = ActuatorMetadata {actuatorRange :: Range}
-  deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorMetadata
+  deriving (Show, Generic, MessagePack)
   deriving (Interpret, Inject) via Range
 
 data Actuator
   = Actuator
-      { actuatorTags :: [Tag]
-      , target :: Target
+      { target :: Target
       , actuatorMeta :: ActuatorMetadata
-      , actuatorDesc :: Maybe Text
       }
-  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
 
 ------- OBJECTIVE
 data Direction = Minimize | Maximize
-  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Direction
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
 
 data X = X {w :: Double, x :: SensorID}
-  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON X
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
 
 data Objective
   = Objective
       { linearCombination :: [X]
       , direction :: Direction
       }
-  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Objective
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
