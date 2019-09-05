@@ -138,7 +138,7 @@ class RPCClient(object):
         self.uuid = str(uuid.uuid4())
         self.zmq_context = zmq.Context.instance()
         self.socket = self.zmq_context.socket(zmq.DEALER)
-        self.socket.setsockopt(zmq.IDENTITY, self.uuid)
+        self.socket.setsockopt(zmq.IDENTITY, self.uuid.encode())
         self.socket.setsockopt(zmq.SNDHWM, 0)
         self.socket.setsockopt(zmq.RCVHWM, 0)
 

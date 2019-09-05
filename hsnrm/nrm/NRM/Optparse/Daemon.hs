@@ -14,7 +14,7 @@ import qualified Data.ByteString as B
   )
 import Dhall
 import NRM.Types.Configuration
-import qualified NRM.Types.Configuration.Dhall as D
+import qualified NRM.Types.Configuration as C
 import qualified NRM.Types.Configuration.Yaml as Y
 import Options.Applicative
 import Protolude
@@ -80,7 +80,7 @@ load MainCfg {..} =
   (if edit then editing else return) =<< case ext stdinType inputfile of
     (FinallyFile Dhall filename) ->
       (if v then detailed else identity) $
-        D.inputCfg =<<
+        C.inputCfg =<<
         toS <$>
         makeAbsolute (toS filename)
     (FinallyFile Yaml filename) ->
@@ -89,7 +89,7 @@ load MainCfg {..} =
       B.getContents <&> Y.decodeCfg >>= \case
         Left e -> Prelude.print e >> die "yaml parsing exception."
         Right cfg -> return cfg
-    (FinallyStdin Dhall) -> B.getContents >>= D.inputCfg . toS
+    (FinallyStdin Dhall) -> B.getContents >>= C.inputCfg . toS
     NoExt ->
       die
         ( "couldn't figure out extension for input file. " <>

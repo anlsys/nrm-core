@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-|
 Module      : NRM.Manifest.Examples
 Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -9,6 +10,14 @@ module NRM.Manifest.Examples
   )
 where
 
-import NRM.Classes.Example
+import Data.Default
+import Data.Map
+import NRM.Classes.Examples
 import NRM.Types.Manifest
 import Protolude
+
+instance Examples Manifest where
+
+  examples =
+    fromList
+      [("perfwrap", def {app = def {perfwrapper = True}})]

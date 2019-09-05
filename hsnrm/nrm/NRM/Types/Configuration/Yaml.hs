@@ -16,9 +16,8 @@ import Data.Aeson
 import Data.Default
 import Data.Yaml
 import qualified NRM.Types.Configuration as I
-import qualified NRM.Types.Configuration.Dhall as D
-import Protolude
 import qualified NRM.Types.Process as Process
+import Protolude
 import System.IO.Error
 
 data Cfg
@@ -33,11 +32,11 @@ data Cfg
       , singularity :: Maybe Bool
       , dummy :: Maybe Bool
       , nodeos :: Maybe Bool
-      , slice_runtime :: Maybe D.SliceRuntime
-      , downstreamCfg :: Maybe D.DownstreamCfg
-      , upstreamCfg :: Maybe D.UpstreamCfg
-      , raplCfg :: Maybe D.RaplCfg
-      , hwmonCfg :: Maybe D.HwmonCfg
+      , slice_runtime :: Maybe I.SliceRuntime
+      , downstreamCfg :: Maybe I.DownstreamCfg
+      , upstreamCfg :: Maybe I.UpstreamCfg
+      , raplCfg :: Maybe I.RaplCfg
+      , hwmonCfg :: Maybe I.HwmonCfg
       }
   deriving (Generic)
 
@@ -51,49 +50,49 @@ instance FromJSON Cfg where
 
   parseJSON = genericParseJSON I.jsonOptions
 
-toInternal :: Cfg -> D.Cfg
-toInternal d = D.Cfg
-  { verbose = if verbose d == Just True then D.Verbose else D.Normal
-  , logfile = fromDefault logfile D.logfile
-  , hwloc = fromDefault hwloc D.hwloc
-  , perf = fromDefault perf D.perf
-  , argo_perf_wrapper = fromDefault argo_perf_wrapper D.argo_perf_wrapper
-  , argo_nodeos_config = fromDefault argo_nodeos_config D.argo_nodeos_config
-  , pmpi_lib = fromDefault pmpi_lib D.pmpi_lib
-  , singularity = fromDefault singularity D.singularity
-  , dummy = fromDefault dummy D.dummy
-  , nodeos = fromDefault nodeos D.nodeos
-  , slice_runtime = fromDefault slice_runtime D.slice_runtime
-  , downstreamCfg = fromDefault downstreamCfg D.downstreamCfg
-  , upstreamCfg = fromDefault upstreamCfg D.upstreamCfg
-  , raplCfg = fromDefault raplCfg D.raplCfg
-  , hwmonCfg = fromDefault hwmonCfg D.hwmonCfg
+toInternal :: Cfg -> I.Cfg
+toInternal d = I.Cfg
+  { verbose = if verbose d == Just True then I.Verbose else I.Normal
+  , logfile = fromDefault logfile I.logfile
+  , hwloc = fromDefault hwloc I.hwloc
+  , perf = fromDefault perf I.perf
+  , argo_perf_wrapper = fromDefault argo_perf_wrapper I.argo_perf_wrapper
+  , argo_nodeos_config = fromDefault argo_nodeos_config I.argo_nodeos_config
+  , pmpi_lib = fromDefault pmpi_lib I.pmpi_lib
+  , singularity = fromDefault singularity I.singularity
+  , dummy = fromDefault dummy I.dummy
+  , nodeos = fromDefault nodeos I.nodeos
+  , slice_runtime = fromDefault slice_runtime I.slice_runtime
+  , downstreamCfg = fromDefault downstreamCfg I.downstreamCfg
+  , upstreamCfg = fromDefault upstreamCfg I.upstreamCfg
+  , raplCfg = fromDefault raplCfg I.raplCfg
+  , hwmonCfg = fromDefault hwmonCfg I.hwmonCfg
   }
   where
     fromDefault :: Default a => (Cfg -> Maybe c) -> (a -> c) -> c
     fromDefault attr attd = fromMaybe (attd def) (attr d)
 
-fromInternal :: D.Cfg -> Cfg
+fromInternal :: I.Cfg -> Cfg
 fromInternal d = Cfg
-  { verbose = if D.verbose d == D.verbose (def :: D.Cfg) then Just True else Nothing
-  , logfile = toJust D.logfile
-  , hwloc = toJust D.hwloc
-  , perf = toJust D.perf
-  , argo_perf_wrapper = toJust D.argo_perf_wrapper
-  , argo_nodeos_config = toJust D.argo_nodeos_config
-  , pmpi_lib = toJust D.pmpi_lib
-  , singularity = toJust D.singularity
-  , dummy = toJust D.dummy
-  , nodeos = toJust D.nodeos
-  , slice_runtime = toJust D.slice_runtime
-  , downstreamCfg = toJust D.downstreamCfg
-  , upstreamCfg = toJust D.upstreamCfg
-  , raplCfg = toJust D.raplCfg
-  , hwmonCfg = toJust D.hwmonCfg
+  { verbose = if I.verbose d == I.verbose (def :: I.Cfg) then Just True else Nothing
+  , logfile = toJust I.logfile
+  , hwloc = toJust I.hwloc
+  , perf = toJust I.perf
+  , argo_perf_wrapper = toJust I.argo_perf_wrapper
+  , argo_nodeos_config = toJust I.argo_nodeos_config
+  , pmpi_lib = toJust I.pmpi_lib
+  , singularity = toJust I.singularity
+  , dummy = toJust I.dummy
+  , nodeos = toJust I.nodeos
+  , slice_runtime = toJust I.slice_runtime
+  , downstreamCfg = toJust I.downstreamCfg
+  , upstreamCfg = toJust I.upstreamCfg
+  , raplCfg = toJust I.raplCfg
+  , hwmonCfg = toJust I.hwmonCfg
   }
   where
-    toJust :: (Eq a) => (D.Cfg -> a) -> Maybe a
-    toJust x = if x (def :: D.Cfg) == xd then Nothing else Just xd
+    toJust :: (Eq a) => (I.Cfg -> a) -> Maybe a
+    toJust x = if x (def :: I.Cfg) == xd then Nothing else Just xd
       where
         xd = x d
 
@@ -102,13 +101,13 @@ decodeCfgFile fn =
   liftIO $ try (decodeFileEither (toS fn)) >>= \case
     Left e -> throwError e
     Right (Left pa) -> throwError $ userError $ "parse fail:" <> show pa
-    Right (Right a) -> return $ D.toInternal $ toInternal a
+    Right (Right a) -> return $ toInternal a
 
 decodeCfg :: ByteString -> Either ParseException I.Cfg
-decodeCfg fn = D.toInternal . toInternal <$> decodeEither' fn
+decodeCfg fn = toInternal <$> decodeEither' fn
 
 encodeCfg :: I.Cfg -> ByteString
-encodeCfg = Data.Yaml.encode . Data.Aeson.toJSON . fromInternal . D.fromInternal
+encodeCfg = Data.Yaml.encode . Data.Aeson.toJSON . fromInternal
 
-encodeDCfg :: D.Cfg -> ByteString
+encodeDCfg :: I.Cfg -> ByteString
 encodeDCfg = Data.Yaml.encode . Data.Aeson.toJSON . fromInternal

@@ -22,14 +22,17 @@ import Codegen.CHeader
 import Codegen.Dhall
 import Codegen.Schema (generatePretty)
 import Data.Default
+import qualified Data.Map as DM
 import Dhall
 import qualified Dhall.Core as Dhall
 import qualified Dhall.Lint as Lint
 import qualified Dhall.Parser
 import qualified Dhall.TypeCheck as Dhall
-import qualified NRM.Types.Configuration.Dhall as CD (Cfg)
+import qualified NRM.Classes.Examples as Examples
+import qualified NRM.Manifest.Examples ()
+import qualified NRM.Types.Configuration as C
 import qualified NRM.Types.Configuration.Yaml as CI (encodeDCfg)
-import qualified NRM.Types.Manifest as MI (Manifest)
+import qualified NRM.Types.Manifest as MI
 import qualified NRM.Types.Manifest.Yaml as MI (encodeManifest)
 import NRM.Types.Messaging.DownstreamEvent
 import qualified NRM.Types.Messaging.DownstreamEvent.JSON as Down (Event (..))
@@ -145,11 +148,11 @@ data KnownType
 dhallType :: KnownType -> Dhall.Expr Dhall.Parser.Src a
 dhallType =
   fmap Dhall.absurd <$> \case
-    Cfg -> Dhall.expected (Dhall.auto :: Dhall.Type CD.Cfg)
+    Cfg -> Dhall.expected (Dhall.auto :: Dhall.Type C.Cfg)
     Manifest -> Dhall.expected (Dhall.auto :: Dhall.Type MI.Manifest)
 
 yamlType :: KnownType -> ByteString
-yamlType Cfg = CI.encodeDCfg (def :: CD.Cfg)
+yamlType Cfg = CI.encodeDCfg (def :: C.Cfg)
 yamlType Manifest = MI.encodeManifest (def :: MI.Manifest)
 
 sandwich :: Semigroup a => a -> a -> a -> a
@@ -170,7 +173,7 @@ typeFile = sandwich "types/" ".dhall" . show
 getDefault :: KnownType -> Dhall.Expr Dhall.Parser.Src b
 getDefault x =
   Dhall.absurd <$> case x of
-    Cfg -> embed (injectWith defaultInterpretOptions) (def :: CD.Cfg)
+    Cfg -> embed (injectWith defaultInterpretOptions) (def :: C.Cfg)
     Manifest -> embed (injectWith defaultInterpretOptions) (def :: MI.Manifest)
 
 generateDefaultConfigurations :: IO ()
@@ -196,6 +199,13 @@ generateDefaultConfigurations = do
     putStrLn $ "  Writing default for " <> show defaultType <> " to " <> dest <> "."
     createDirectoryIfMissing True (takeDirectory dest)
     writeOutput licenseDhall dest (Lint.lint $ getDefault defaultType)
+  putText "Codegen: Manifest examples."
+  for_ (DM.toList (Examples.examples :: Map Text MI.Manifest)) $ \(defName, defValue) -> do
+    let dest = toS prefix <> "examples/" <> defName <> ".dhall"
+    putText $ "  Writing default for " <> defName <> " to " <> dest <> "."
+    createDirectoryIfMissing True (takeDirectory $ toS dest)
+    writeOutput licenseDhall (toS dest)
+      (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
   putText "Codegen: YAMl example files."
   for_ [minBound .. maxBound] $ \t -> do
     let yaml = yamlType t

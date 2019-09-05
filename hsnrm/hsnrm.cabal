@@ -70,6 +70,7 @@ library nrmlib
         NRM.Classes.Examples
         NRM.Orphans.ExitCode
         NRM.Orphans.UUID
+        NRM.Orphans.Dhall
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.DownstreamEvent.JSON
         NRM.Types.Messaging.UpstreamPub
@@ -79,7 +80,6 @@ library nrmlib
         NRM.Types.Configuration
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
-        NRM.Types.Configuration.Dhall
         NRM.Types.Manifest
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
@@ -209,6 +209,7 @@ executable nrm.so
         NRM.Classes.Examples
         NRM.Orphans.ExitCode
         NRM.Orphans.UUID
+        NRM.Orphans.Dhall
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.DownstreamEvent.JSON
         NRM.Types.Messaging.UpstreamPub
@@ -218,7 +219,6 @@ executable nrm.so
         NRM.Types.Configuration
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
-        NRM.Types.Configuration.Dhall
         NRM.Types.Manifest
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
@@ -347,6 +347,7 @@ executable nrm
         NRM.Classes.Examples
         NRM.Orphans.ExitCode
         NRM.Orphans.UUID
+        NRM.Orphans.Dhall
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.DownstreamEvent.JSON
         NRM.Types.Messaging.UpstreamPub
@@ -356,7 +357,6 @@ executable nrm
         NRM.Types.Configuration
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
-        NRM.Types.Configuration.Dhall
         NRM.Types.Manifest
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
@@ -485,6 +485,7 @@ executable nrmd
         NRM.Classes.Examples
         NRM.Orphans.ExitCode
         NRM.Orphans.UUID
+        NRM.Orphans.Dhall
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.DownstreamEvent.JSON
         NRM.Types.Messaging.UpstreamPub
@@ -494,7 +495,6 @@ executable nrmd
         NRM.Types.Configuration
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
-        NRM.Types.Configuration.Dhall
         NRM.Types.Manifest
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples

@@ -5,7 +5,7 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module NRM.Classes.Examples
-  ( Examples
+  ( Examples(..)
   )
 where
 
@@ -13,4 +13,4 @@ import Protolude
 
 class Examples a where
 
-  examples :: [a]
+  examples :: Map Text a

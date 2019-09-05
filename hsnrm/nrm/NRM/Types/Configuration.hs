@@ -15,6 +15,7 @@ module NRM.Types.Configuration
   , RaplCfg (..)
   , HwmonCfg (..)
   , jsonOptions
+  , inputCfg
   )
 where
 
@@ -24,9 +25,10 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
 import Dhall
-import NRM.Types.Units
-import qualified NRM.Types.Process as Process
 import NRM.Classes.Messaging
+import NRM.Orphans.Dhall ()
+import qualified NRM.Types.Process as Process
+import NRM.Types.Units
 import Protolude
 
 data SliceRuntime = Singularity | Nodeos | Dummy
@@ -55,7 +57,7 @@ data Cfg
       , raplCfg :: RaplCfg
       , hwmonCfg :: HwmonCfg
       }
-  deriving (Eq, Show, Generic, MessagePack)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
 
 data HwmonCfg
@@ -88,7 +90,7 @@ data UpstreamCfg
       , pubPort :: Int
       , rpcPort :: Int
       }
-  deriving (Eq, Show, Generic, MessagePack)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON UpstreamCfg
 
 instance Default HwmonCfg where
@@ -110,5 +112,39 @@ instance Default DownstreamCfg where
 
   def = DownstreamCfg {downstreamBindAddress = "ipc:///tmp/nrm-downstream-event"}
 
+instance Default Cfg where
+
+  def = Cfg
+    { logfile = "/tmp/nrm.log"
+    , hwloc = "hwloc"
+    , perf = "perf"
+    , argo_perf_wrapper = "nrm-perfwrapper"
+    , argo_nodeos_config = "argo_nodeos_config"
+    , pmpi_lib = "pmpi_lib"
+    , singularity = False
+    , dummy = True
+    , nodeos = False
+    , slice_runtime = Dummy
+    , downstreamCfg = def
+    , upstreamCfg = def
+    , raplCfg = def
+    , hwmonCfg = def
+    , verbose = Normal
+    }
+
+instance Default UpstreamCfg where
+
+  def = UpstreamCfg
+    { upstreamBindAddress = "*"
+    , pubPort = 2345
+    , rpcPort = 3456
+    }
+
 jsonOptions :: Options
 jsonOptions = defaultOptions {omitNothingFields = True}
+
+inputCfg :: (MonadIO m) => Text -> m Cfg
+inputCfg fn =
+  liftIO $ try (input (Dhall.auto :: Dhall.Type Cfg) fn) >>= \case
+    Right d -> return d
+    Left e -> throwError e

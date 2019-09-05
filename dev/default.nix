@@ -83,9 +83,10 @@ in rec {
       nrmPythonPackages.sphinx
     ];
     shellHook = ''
+      export PATH=$PATH:./dev/
+      export PYTHONPATH=$PYTHONPATH:./pynrm/
       alias dev-nrmd="PYTHONPATH=$PYTHONPATH:./pynrm/ pynrm/bin/nrmd"
-      alias dev-nrm="hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrmdep/build/nrmdep/nrmdep"
-      PATH=$PATH:./dev/
+      alias dev-nrm="PYTHONPATH=$PYTHONPATH:./pynrm/ hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrmdep/build/nrmdep/nrmdep"
     '';
   });
 }
