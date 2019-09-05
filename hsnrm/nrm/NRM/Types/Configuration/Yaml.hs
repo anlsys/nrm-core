@@ -18,6 +18,7 @@ import Data.Yaml
 import qualified NRM.Types.Configuration as I
 import qualified NRM.Types.Configuration.Dhall as D
 import Protolude
+import qualified NRM.Types.Process as Process
 import System.IO.Error
 
 data Cfg
@@ -26,8 +27,8 @@ data Cfg
       , logfile :: Maybe Text
       , hwloc :: Maybe Text
       , perf :: Maybe Text
-      , argo_perf_wrapper :: Maybe Text
-      , argo_nodeos_config :: Maybe Text
+      , argo_perf_wrapper :: Maybe Process.Command
+      , argo_nodeos_config :: Maybe Process.Command
       , pmpi_lib :: Maybe Text
       , singularity :: Maybe Bool
       , dummy :: Maybe Bool

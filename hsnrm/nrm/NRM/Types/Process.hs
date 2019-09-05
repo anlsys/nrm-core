@@ -26,6 +26,7 @@ module NRM.Types.Process
   , nextCmdID
   , toText
   , fromText
+  , wrap
   )
 where
 
@@ -35,6 +36,7 @@ import Data.MessagePack
 import Data.String (IsString (..))
 import qualified Data.UUID as U
 import Data.UUID.V1 (nextUUID)
+import Dhall
 import NRM.Classes.Messaging
 import NRM.Orphans.ExitCode ()
 import NRM.Orphans.UUID ()
@@ -112,8 +114,9 @@ instance StringConv Arg Text where
   strConv _ (Arg x) = toS x
 
 newtype Command = Command Text
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Eq, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Command
+  deriving (IsString, Interpret, Inject) via Text
 
 instance StringConv Command Text where
 
@@ -126,7 +129,7 @@ newtype Arguments = Arguments [Arg]
 newtype Env = Env [(Text, Text)]
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Env
-  deriving (Semigroup, Monoid) via [(Text,Text)]
+  deriving (Semigroup, Monoid) via [(Text, Text)]
 
 instance MessagePack ProcessID where
 
@@ -162,3 +165,6 @@ toText (CmdID u) = U.toText u
 
 fromText :: Text -> Maybe CmdID
 fromText = fmap CmdID <$> U.fromText
+
+wrap :: Command -> (Command, Arguments) -> (Command, Arguments)
+wrap c (Command a, Arguments as) = (c, Arguments $ Arg a : as)

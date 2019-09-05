@@ -21,11 +21,12 @@ import qualified NRM.CPD as NRMCPD
 import qualified NRM.Classes.Messaging as M
 import NRM.State
 import qualified NRM.Types.Configuration as Cfg
+import qualified NRM.Types.Manifest as Manifest
 import NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.UpstreamPub as UPub
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
-import NRM.Types.Process
+import NRM.Types.Process as Process
 import qualified NRM.Types.Slice as Ct
 import NRM.Types.State
 import qualified NRM.Types.UpstreamClient as UC
@@ -157,13 +158,19 @@ behavior c st (Req clientid msg) = case msg of
     return (st, Rep clientid (URep.RepGetConfig (URep.GetConfig c)))
   UReq.ReqRun UReq.Run {..} -> do
     cmdID <- nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
+    let (runCmd, runArgs) =
+          (cmd spec, args spec) &
+            ( if Manifest.perfwrapper $ Manifest.app manifest
+            then Process.wrap (Cfg.argo_perf_wrapper c)
+            else identity
+            )
     return
       ( registerAwaiting cmdID
           (mkCmd spec (if detachCmd then Nothing else Just clientid))
           runSliceID .
           createSlice runSliceID $
           st
-      , StartChild cmdID (cmd spec) (args spec)
+      , StartChild cmdID runCmd runArgs
         (env spec <> Env [("NRM_cmdID", toText cmdID)])
       )
   UReq.ReqKillSlice UReq.KillSlice {..} -> do
@@ -219,13 +226,13 @@ behavior _ st DoSensor = return (st, NoBehavior)
 behavior _ st DoControl = return (st, NoBehavior)
 behavior _ st DoShutdown = return (st, NoBehavior)
 behavior _ st (DownstreamEvent msg) = case msg of
-  DEvent.EventThreadStart _ -> return (st, NoBehavior)
-  DEvent.EventThreadProgress _ -> return (st, NoBehavior)
-  DEvent.EventThreadPhaseContext _ -> return (st, NoBehavior)
-  DEvent.EventThreadExit _ -> return (st, NoBehavior)
-  DEvent.EventCmdStart _ -> return (st, NoBehavior)
-  DEvent.EventCmdPerformance _ -> return (st, NoBehavior)
-  DEvent.EventCmdExit _ -> return (st, NoBehavior)
+  DEvent.EventThreadStart _ -> return (st, Log "thread start event received")
+  DEvent.EventThreadProgress _ -> return (st, Log "downstream event received")
+  DEvent.EventThreadPhaseContext _ -> return (st, Log "downstream event received")
+  DEvent.EventThreadExit _ -> return (st, Log "downstream event received")
+  DEvent.EventCmdStart _ -> return (st, Log "downstream event received")
+  DEvent.EventCmdPerformance _ -> return (st, Log "downstream event received")
+  DEvent.EventCmdExit _ -> return (st, Log "downstream event received")
 
 -- | The sensitive unpacking that has to be pattern-matched on the python side.
 -- These toObject/fromObject functions do not correspond to each other and the instance

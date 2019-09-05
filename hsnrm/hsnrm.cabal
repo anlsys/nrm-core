@@ -67,6 +67,7 @@ library nrmlib
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Topology
+        NRM.Classes.Examples
         NRM.Orphans.ExitCode
         NRM.Orphans.UUID
         NRM.Types.Messaging.DownstreamEvent
@@ -77,9 +78,11 @@ library nrmlib
         NRM.Types.Messaging.Protocols
         NRM.Types.Configuration
         NRM.Types.Configuration.Yaml
+        NRM.Configuration.Examples
         NRM.Types.Configuration.Dhall
         NRM.Types.Manifest
         NRM.Types.Manifest.Yaml
+        NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
@@ -87,6 +90,9 @@ library nrmlib
         Codegen.Schema
         Codegen.Dhall
         Codegen.CHeader
+        Bandit.Class
+        Bandit.Exp3
+        Bandit.EpsGreedy
         CPD.Core
         CPD.Utils
         CPD.Text
@@ -200,6 +206,7 @@ executable nrm.so
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Topology
+        NRM.Classes.Examples
         NRM.Orphans.ExitCode
         NRM.Orphans.UUID
         NRM.Types.Messaging.DownstreamEvent
@@ -210,9 +217,11 @@ executable nrm.so
         NRM.Types.Messaging.Protocols
         NRM.Types.Configuration
         NRM.Types.Configuration.Yaml
+        NRM.Configuration.Examples
         NRM.Types.Configuration.Dhall
         NRM.Types.Manifest
         NRM.Types.Manifest.Yaml
+        NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
@@ -220,6 +229,9 @@ executable nrm.so
         Codegen.Schema
         Codegen.Dhall
         Codegen.CHeader
+        Bandit.Class
+        Bandit.Exp3
+        Bandit.EpsGreedy
         CPD.Core
         CPD.Utils
         CPD.Text
@@ -332,6 +344,7 @@ executable nrm
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Topology
+        NRM.Classes.Examples
         NRM.Orphans.ExitCode
         NRM.Orphans.UUID
         NRM.Types.Messaging.DownstreamEvent
@@ -342,9 +355,11 @@ executable nrm
         NRM.Types.Messaging.Protocols
         NRM.Types.Configuration
         NRM.Types.Configuration.Yaml
+        NRM.Configuration.Examples
         NRM.Types.Configuration.Dhall
         NRM.Types.Manifest
         NRM.Types.Manifest.Yaml
+        NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
@@ -352,6 +367,9 @@ executable nrm
         Codegen.Schema
         Codegen.Dhall
         Codegen.CHeader
+        Bandit.Class
+        Bandit.Exp3
+        Bandit.EpsGreedy
         CPD.Core
         CPD.Utils
         CPD.Text
@@ -464,6 +482,7 @@ executable nrmd
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Topology
+        NRM.Classes.Examples
         NRM.Orphans.ExitCode
         NRM.Orphans.UUID
         NRM.Types.Messaging.DownstreamEvent
@@ -474,9 +493,11 @@ executable nrmd
         NRM.Types.Messaging.Protocols
         NRM.Types.Configuration
         NRM.Types.Configuration.Yaml
+        NRM.Configuration.Examples
         NRM.Types.Configuration.Dhall
         NRM.Types.Manifest
         NRM.Types.Manifest.Yaml
+        NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
@@ -484,6 +505,9 @@ executable nrmd
         Codegen.Schema
         Codegen.Dhall
         Codegen.CHeader
+        Bandit.Class
+        Bandit.Exp3
+        Bandit.EpsGreedy
         CPD.Core
         CPD.Utils
         CPD.Text

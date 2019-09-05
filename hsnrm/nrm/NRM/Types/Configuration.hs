@@ -25,6 +25,7 @@ import Data.MessagePack
 import Data.Yaml.Internal ()
 import Dhall
 import NRM.Types.Units
+import qualified NRM.Types.Process as Process
 import NRM.Classes.Messaging
 import Protolude
 
@@ -42,8 +43,8 @@ data Cfg
       , logfile :: Text
       , hwloc :: Text
       , perf :: Text
-      , argo_perf_wrapper :: Text
-      , argo_nodeos_config :: Text
+      , argo_perf_wrapper :: Process.Command
+      , argo_nodeos_config :: Process.Command
       , pmpi_lib :: Text
       , singularity :: Bool
       , dummy :: Bool

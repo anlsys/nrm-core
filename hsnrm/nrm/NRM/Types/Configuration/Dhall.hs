@@ -22,6 +22,7 @@ import Data.Aeson
 import Data.Default
 import Dhall
 import qualified NRM.Types.Configuration as I
+import qualified NRM.Types.Process as Process
 import Protolude
 
 -- As soon as Internal.Cfg isn't Interpretable, we write a dhall
@@ -33,8 +34,8 @@ data Cfg
       , logfile :: Text
       , hwloc :: Text
       , perf :: Text
-      , argo_perf_wrapper :: Text
-      , argo_nodeos_config :: Text
+      , argo_perf_wrapper ::  Process.Command
+      , argo_nodeos_config :: Process.Command
       , pmpi_lib :: Text
       , singularity :: Bool
       , dummy :: Bool
