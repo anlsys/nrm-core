@@ -29,6 +29,7 @@ import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
 import NRM.Types.Slice as C
 import NRM.Types.Process as P
+import NRM.Types.Cmd as Cmd
 import NRM.Types.Topology
 import Protolude
 
@@ -53,9 +54,9 @@ showSliceList l =
   mconcat $ l <&> \(sliceID, Slice {..}) ->
     "slice: ID " <> C.toText sliceID <> "\n" <> mconcat (descCmd <$> DM.toList cmds)
   where
-    descCmd (cmdID, cmdCore -> P.CmdCore {..}) =
-      " command: ID " <> P.toText cmdID <> descSpec cmdPath arguments <> "\n"
-    descSpec (P.Command cmd) (Arguments args) =
+    descCmd (cmdID, cmdCore -> CmdCore {..}) =
+      " command: ID " <> Cmd.toText cmdID <> descSpec cmdPath arguments <> "\n"
+    descSpec (Command cmd) (Arguments args) =
       " : " <> toS cmd <> " " <> (mconcat . intersperse " " $ toS <$> args)
 
 -- | Renders a textual view of running slices

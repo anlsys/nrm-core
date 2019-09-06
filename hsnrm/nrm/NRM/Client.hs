@@ -21,10 +21,10 @@ import Data.Restricted
 import NRM.Classes.Messaging
 import NRM.Optparse
 import qualified NRM.Optparse.Client as C
+import qualified NRM.Types.Cmd as Cmd
 import qualified NRM.Types.Messaging.Protocols as Protocols
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
-import qualified NRM.Types.Process as P
 import qualified NRM.Types.Slice as C
 import NRM.Types.State
 import qualified NRM.Types.UpstreamClient as UC
@@ -173,7 +173,7 @@ reqrep s opts = \case
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
         Just (URep.RepCmdKilled (URep.CmdKilled cmdID)) ->
-          putText $ "Killed cmd ID: " <> P.toText cmdID
+          putText $ "Killed cmd ID: " <> Cmd.toText cmdID
         Just (URep.RepSliceKilled (URep.SliceKilled sliceID)) ->
           putText $ "Killed slice ID: " <> C.toText sliceID
         Just (URep.RepNoSuchCmd URep.NoSuchCmd) ->
@@ -211,7 +211,7 @@ reqstream s c Protocols.Run UReq.Run {..} = do
     zmqCCHandler :: IO () -> ZMQ.ZMQ z ()
     zmqCCHandler h = void $ liftIO $ SPS.installHandler SPS.keyboardSignal (SPS.CatchOnce h) Nothing
 
-kill :: P.CmdID -> IO ()
+kill :: Cmd.CmdID -> IO ()
 kill cmdID =
   ZMQ.runZMQ $ do
     s <- ZMQ.socket ZMQ.Dealer

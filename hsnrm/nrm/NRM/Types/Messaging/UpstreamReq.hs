@@ -24,7 +24,7 @@ import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
 import NRM.Types.Manifest
-import qualified NRM.Types.Process as P
+import qualified NRM.Types.Cmd as Cmd
 import qualified NRM.Types.Slice as C
 import qualified NRM.Types.Units as U
 import Protolude
@@ -44,7 +44,7 @@ data Req
 data Run
   = Run
       { manifest :: Manifest
-      , spec :: P.CmdSpec
+      , spec :: Cmd.CmdSpec
       , runSliceID :: C.SliceID
       , detachCmd :: Bool
       }
@@ -60,7 +60,7 @@ newtype KillSlice
 
 newtype KillCmd
   = KillCmd
-      { killCmdID :: P.CmdID
+      { killCmdID :: Cmd.CmdID
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON KillCmd

@@ -61,8 +61,10 @@ library nrmlib
         NRM.Types.Actuator
         NRM.Types.Sensor
         NRM.Types.Slice
+        NRM.Types.Cmd
         NRM.Types.Process
-        NRM.Types.DownstreamClient
+        NRM.Types.DownstreamThreadClient
+        NRM.Types.DownstreamCmdClient
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
@@ -200,8 +202,10 @@ executable nrm.so
         NRM.Types.Actuator
         NRM.Types.Sensor
         NRM.Types.Slice
+        NRM.Types.Cmd
         NRM.Types.Process
-        NRM.Types.DownstreamClient
+        NRM.Types.DownstreamThreadClient
+        NRM.Types.DownstreamCmdClient
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
@@ -338,8 +342,10 @@ executable nrm
         NRM.Types.Actuator
         NRM.Types.Sensor
         NRM.Types.Slice
+        NRM.Types.Cmd
         NRM.Types.Process
-        NRM.Types.DownstreamClient
+        NRM.Types.DownstreamThreadClient
+        NRM.Types.DownstreamCmdClient
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
@@ -476,8 +482,10 @@ executable nrmd
         NRM.Types.Actuator
         NRM.Types.Sensor
         NRM.Types.Slice
+        NRM.Types.Cmd
         NRM.Types.Process
-        NRM.Types.DownstreamClient
+        NRM.Types.DownstreamThreadClient
+        NRM.Types.DownstreamCmdClient
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging

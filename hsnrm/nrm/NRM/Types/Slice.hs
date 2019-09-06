@@ -24,8 +24,7 @@ import Data.MessagePack
 import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import NRM.Classes.Messaging
-import NRM.Types.DownstreamClient
-import NRM.Types.Process (Cmd (..), CmdCore (..), CmdID (..))
+import NRM.Types.Cmd (Cmd (..), CmdCore (..), CmdID (..))
 import Protolude
 
 -- | NRM's internal view of the state of a slice.
@@ -35,10 +34,6 @@ data Slice
         cmds :: DM.Map CmdID Cmd
       , -- | map of commands awaiting to be registered as running by the runtime
         awaiting :: DM.Map CmdID CmdCore
-      , -- | map of downstream "command-level" clients for this slice
-        downstreamCmds :: Map DownstreamCmdID DownstreamCmd
-      , -- | map of downstream "thread-level" clients for this slice
-        downstreamThreads :: Map DownstreamThreadID DownstreamThread
       }
   deriving (Show, Generic, MessagePack)
   deriving (ToJSON, FromJSON, JSONSchema) via GenericJSON Slice
@@ -48,8 +43,6 @@ emptySlice :: Slice
 emptySlice = Slice
   { cmds = DM.fromList []
   , awaiting = DM.fromList []
-  , downstreamCmds = DM.fromList []
-  , downstreamThreads = DM.fromList []
   }
 
 -- | Insert a running command in a slice (with replace)

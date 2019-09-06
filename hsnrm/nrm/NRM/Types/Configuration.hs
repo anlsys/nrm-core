@@ -27,7 +27,7 @@ import Data.Yaml.Internal ()
 import Dhall
 import NRM.Classes.Messaging
 import NRM.Orphans.Dhall ()
-import qualified NRM.Types.Process as Process
+import qualified NRM.Types.Cmd as Cmd
 import NRM.Types.Units
 import Protolude
 
@@ -45,8 +45,8 @@ data Cfg
       , logfile :: Text
       , hwloc :: Text
       , perf :: Text
-      , argo_perf_wrapper :: Process.Command
-      , argo_nodeos_config :: Process.Command
+      , argo_perf_wrapper :: Cmd.Command
+      , argo_nodeos_config :: Cmd.Command
       , pmpi_lib :: Text
       , singularity :: Bool
       , dummy :: Bool

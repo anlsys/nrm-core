@@ -15,19 +15,20 @@ where
 import Data.Aeson
 import Data.MessagePack
 import NRM.Types.Slice
-import NRM.Types.Process as P
+import NRM.Types.Process as Process
+import NRM.Types.Cmd as Cmd
 import Protolude
 
 data ApplicationProcess
-  = Registered P.CmdID P.ProcessID
-  | Unregistered P.CmdID
+  = Registered Cmd.CmdID Process.ProcessID
+  | Unregistered Cmd.CmdID
   deriving (Ord, Eq, Show, Generic, MessagePack, ToJSON, FromJSON)
 
 data AppStartConfig
   = AppStartConfig
       { command :: Command
       , arguments :: Arguments
-      , cmdID :: P.CmdID
+      , cmdID :: Cmd.CmdID
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
@@ -62,13 +63,13 @@ class
   registerStartApp
     :: runtime
     -> SliceID
-    -> P.CmdID
-    -> P.ProcessID
+    -> Cmd.CmdID
+    -> Process.ProcessID
     -> runtime
 
   registerStopApp
     :: runtime
-    -> Either P.ProcessID P.CmdID
+    -> Either Process.ProcessID Cmd.CmdID
     -> runtime
 
   listApplications

@@ -46,7 +46,8 @@ import qualified NRM.Types.Configuration as C
   , verbose
   )
 import qualified NRM.Types.State as TS
-import qualified NRM.Types.Process as P
+import qualified NRM.Types.Cmd as Cmd
+import qualified NRM.Types.Process as Process
 import qualified NRM.Types.UpstreamClient as UC
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import Protolude hiding (stderr, stdout)
@@ -93,8 +94,8 @@ showState :: TS.NRMState -> Text
 showState = toS . pShow
 
 -- | Behave on downstream message
-downstreamReceive :: C.Cfg -> TS.NRMState -> Text -> IO (TS.NRMState, B.Behavior)
-downstreamReceive cfg s msg =
+downstreamReceive :: C.Cfg -> TS.NRMState -> Text -> Text -> IO (TS.NRMState, B.Behavior)
+downstreamReceive cfg s msg _uuid =
   B.behavior cfg s $
     B.DownstreamEvent $
     fromMaybe (panic "couldn't decode downstream rcv")
@@ -125,7 +126,7 @@ doControl c s = B.behavior c s B.DoControl
 childDied :: C.Cfg -> TS.NRMState -> Int -> Int -> IO (TS.NRMState, B.Behavior)
 childDied c s pid status =
   B.behavior c s
-    ( B.ChildDied (P.ProcessID . SPT.CPid $ fromIntegral pid)
+    ( B.ChildDied (Process.ProcessID . SPT.CPid $ fromIntegral pid)
       (if status == 0 then ExitSuccess else ExitFailure status)
     )
 
@@ -148,8 +149,8 @@ registerCmdSuccess cfg s cmdIDT pid =
     cfg
     s
     ( B.RegisterCmd
-      (fromMaybe (panic "couldn't decode cmdID") (P.fromText cmdIDT))
-      (B.Launched (P.ProcessID $ SPT.CPid $ fromIntegral pid))
+      (fromMaybe (panic "couldn't decode cmdID") (Cmd.fromText cmdIDT))
+      (B.Launched (Process.ProcessID $ SPT.CPid $ fromIntegral pid))
     )
 
 -- | when a command failed even starting.
@@ -159,7 +160,7 @@ registerCmdFailure cfg s cmdIDT =
     cfg
     s
     ( B.RegisterCmd
-      (fromMaybe (panic "couldn't decode cmdID") (P.fromText cmdIDT))
+      (fromMaybe (panic "couldn't decode cmdID") (Cmd.fromText cmdIDT))
       B.NotLaunched
     )
 
@@ -168,7 +169,7 @@ handleTag :: URep.OutputType -> C.Cfg -> TS.NRMState -> Text -> Text -> IO (TS.N
 handleTag tag c s cmdIDT msg =
   B.behavior c s
     ( B.DoOutput
-      (fromMaybe (panic "couldn't decode cmdID") (P.fromText cmdIDT))
+      (fromMaybe (panic "couldn't decode cmdID") (Cmd.fromText cmdIDT))
       tag
       msg
     )

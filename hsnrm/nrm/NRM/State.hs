@@ -31,10 +31,10 @@ import NRM.Node.Sysfs.Internal
 import NRM.Slices.Dummy as CD
 import NRM.Slices.Nodeos as CN
 import NRM.Slices.Singularity as CS
+import NRM.Types.Cmd
 import NRM.Types.Configuration as Cfg
-import NRM.Types.DownstreamClient
+import NRM.Types.DownstreamThreadClient
 import NRM.Types.Process
-{-import qualified NRM.Types.Sensor as Sensor-}
 import NRM.Types.Slice
 import NRM.Types.State
 import NRM.Types.Topology
@@ -199,3 +199,14 @@ registerFailed cmdID st =
       if null (cmds c)
       then Nothing
       else Just $ c {awaiting = DM.delete cmdID (awaiting c)}
+
+-- | Registers a downstream Cmd client
+{-registerDownstreamCmdClient-}
+{-:: CmdID-}
+{--> NRMState-}
+{--> Maybe NRMState-}
+{-registerDownstreamCmdClient cmdID st =-}
+{-DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->-}
+{-st {slices = DM.update f sliceID (slices st)}-}
+{-where-}
+{-f s = Just $ s { DM.insert cmdID downstreamCmds = DownstreamCmd downstreamCmds s }-}

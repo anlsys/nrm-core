@@ -20,6 +20,7 @@ import Data.MessagePack
 import qualified NRM.CPD as NRMCPD
 import qualified NRM.Classes.Messaging as M
 import NRM.State
+import NRM.Types.Cmd
 import qualified NRM.Types.Configuration as Cfg
 import qualified NRM.Types.Manifest as Manifest
 import NRM.Types.Messaging.DownstreamEvent as DEvent
@@ -161,7 +162,7 @@ behavior c st (Req clientid msg) = case msg of
     let (runCmd, runArgs) =
           (cmd spec, args spec) &
             ( if Manifest.perfwrapper $ Manifest.app manifest
-            then Process.wrap (Cfg.argo_perf_wrapper c)
+            then wrapCmd (Cfg.argo_perf_wrapper c)
             else identity
             )
     return
@@ -231,6 +232,8 @@ behavior _ st (DownstreamEvent msg) = case msg of
   DEvent.EventThreadPhaseContext _ -> return (st, Log "downstream event received")
   DEvent.EventThreadExit _ -> return (st, Log "downstream event received")
   DEvent.EventCmdStart _ -> return (st, Log "downstream event received")
+  {-return $ fromMaybe (st, Rep clientid (URep.RepNoSuchCmd URep.NoSuchCmd)) $-}
+  {-removeCmd (KCmdID killCmdID) st <&> \(info, _, cmd, sliceID, st') ->-}
   DEvent.EventCmdPerformance _ -> return (st, Log "downstream event received")
   DEvent.EventCmdExit _ -> return (st, Log "downstream event received")
 

@@ -16,7 +16,7 @@ import Data.Aeson
 import Data.Default
 import Data.Yaml
 import qualified NRM.Types.Configuration as I
-import qualified NRM.Types.Process as Process
+import qualified NRM.Types.Cmd as Cmd
 import Protolude
 import System.IO.Error
 
@@ -26,8 +26,8 @@ data Cfg
       , logfile :: Maybe Text
       , hwloc :: Maybe Text
       , perf :: Maybe Text
-      , argo_perf_wrapper :: Maybe Process.Command
-      , argo_nodeos_config :: Maybe Process.Command
+      , argo_perf_wrapper :: Maybe Cmd.Command
+      , argo_nodeos_config :: Maybe Cmd.Command
       , pmpi_lib :: Maybe Text
       , singularity :: Maybe Bool
       , dummy :: Maybe Bool

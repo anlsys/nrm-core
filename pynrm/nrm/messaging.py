@@ -50,7 +50,7 @@ def send(apiname=None):
         if model:
 
             def send(self, *args, **kwargs):
-                self.socket.send(json.dumps(model(dict(*args, **kwargs))))
+                self.socket.send(json.dumps(model(dict(*args, **kwargs))).encode())
 
         else:
 
@@ -238,7 +238,7 @@ class UpstreamPubClient(object):
         self.stream.on_recv(self.do_recv_callback)
 
 
-@recv_callback("downstreamEvent")
+@recv_callback()
 class DownstreamEventServer(RPCServer):
     pass
 

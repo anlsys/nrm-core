@@ -15,7 +15,7 @@ import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
-import NRM.Types.DownstreamClient as D
+import NRM.Types.DownstreamThreadClient as D
 import NRM.Types.Slice as C
 import qualified NRM.Types.Units as U
 import Protolude

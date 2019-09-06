@@ -19,9 +19,9 @@ where
 import Data.Maybe (fromJust)
 import Data.MessagePack
 import qualified NRM.Classes.Messaging as M
-import qualified NRM.Types.DownstreamClient as D
+import qualified NRM.Types.Cmd as Cmd
+import qualified NRM.Types.DownstreamThreadClient as D
 import qualified NRM.Types.Messaging.DownstreamEvent.JSON as J
-import qualified NRM.Types.Process as P
 import qualified NRM.Types.Units as U
 import Protolude
 
@@ -63,20 +63,20 @@ newtype ThreadExit
 
 newtype CmdStart
   = CmdStart
-      { cmdStartCmdID :: P.CmdID
+      { cmdStartCmdID :: Cmd.CmdID
       }
   deriving (Generic, MessagePack)
 
 data CmdPerformance
   = CmdPerformance
-      { cmdPerformanceCmdID :: P.CmdID
+      { cmdPerformanceCmdID :: Cmd.CmdID
       , perf :: U.Operations
       }
   deriving (Generic, MessagePack)
 
 newtype CmdExit
   = CmdExit
-      { cmdExitCmdID :: P.CmdID
+      { cmdExitCmdID :: Cmd.CmdID
       }
   deriving (Generic, MessagePack)
 
@@ -94,20 +94,20 @@ instance M.NRMMessage Event J.Event where
 
   toJ = \case
     EventCmdStart CmdStart {..} ->
-      J.CmdStart $ P.toText cmdStartCmdID
+      J.CmdStart $ Cmd.toText cmdStartCmdID
     EventCmdPerformance CmdPerformance {..} ->
       J.CmdPerformance
-        { cmdID = P.toText cmdPerformanceCmdID
+        { cmdID = Cmd.toText cmdPerformanceCmdID
         , perf = U.ops perf
         }
     EventCmdExit CmdExit {..} ->
-      J.CmdExit $ P.toText cmdExitCmdID
+      J.CmdExit $ Cmd.toText cmdExitCmdID
     _ -> panic "Non-Cmd downstream API not implemented yet."
 
   fromJ = \case
-    J.CmdStart {..} -> EventCmdStart (CmdStart $ fromJust $ P.fromText cmdID)
-    J.CmdExit {..} -> EventCmdExit (CmdExit $ fromJust $ P.fromText cmdID)
+    J.CmdStart {..} -> EventCmdStart (CmdStart $ fromJust $ Cmd.fromText cmdID)
+    J.CmdExit {..} -> EventCmdExit (CmdExit $ fromJust $ Cmd.fromText cmdID)
     J.CmdPerformance {..} ->
       EventCmdPerformance
-        (CmdPerformance (fromJust $ P.fromText cmdID) (U.Operations perf))
+        (CmdPerformance (fromJust $ Cmd.fromText cmdID) (U.Operations perf))
     _ -> panic "Non-Cmd downstream API not implemented yet."

@@ -21,7 +21,7 @@ import NRM.Types.Manifest
 import qualified NRM.Types.Manifest.Dhall as D
 import qualified NRM.Types.Manifest.Yaml as Y
 import NRM.Types.Messaging.UpstreamReq
-import qualified NRM.Types.Process as P
+import qualified NRM.Types.Cmd as Cmd
 import NRM.Types.Slice
 import qualified NRM.Types.Units as U
 import Options.Applicative
@@ -116,9 +116,9 @@ parserRun =
         )
       )
 
-parserKillCmd :: Parser P.CmdID
+parserKillCmd :: Parser Cmd.CmdID
 parserKillCmd =
-  fromMaybe (panic "Couldn't parse CmdID") . P.fromText <$>
+  fromMaybe (panic "Couldn't parse CmdID") . Cmd.fromText <$>
     strArgument
       ( metavar "COMMAND" <>
         help
@@ -265,10 +265,10 @@ run rc common = do
     Opts
       ( ReqRun $ Run
         { manifest = manifest
-        , spec = P.CmdSpec
-          { cmd = P.Command $ cmd rc
-          , args = P.Arguments $ P.Arg <$> runargs rc
-          , env = P.Env env
+        , spec = Cmd.CmdSpec
+          { cmd = Cmd.Command $ cmd rc
+          , args = Cmd.Arguments $ Cmd.Arg <$> runargs rc
+          , env = Cmd.Env env
           }
         , detachCmd = detach rc
         , runSliceID = cn

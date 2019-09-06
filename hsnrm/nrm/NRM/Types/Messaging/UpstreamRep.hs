@@ -37,7 +37,7 @@ import Data.MessagePack
 import NRM.Classes.Messaging
 import NRM.Orphans.ExitCode ()
 import NRM.Types.Configuration as C
-import NRM.Types.Process as P
+import NRM.Types.Cmd
 import NRM.Types.Slice as C
 import NRM.Types.State as S
 import NRM.Types.Units as U
@@ -144,7 +144,7 @@ data Stderr
 data Start
   = Start
       { startSliceID :: C.SliceID
-      , startCmdID :: P.CmdID
+      , startCmdID :: CmdID
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Start
@@ -156,7 +156,7 @@ data ThisCmdKilled
 
 newtype CmdKilled
   = CmdKilled
-      { killedCmdID :: P.CmdID
+      { killedCmdID :: CmdID
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdKilled
