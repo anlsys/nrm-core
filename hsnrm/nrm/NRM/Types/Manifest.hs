@@ -17,6 +17,7 @@ module NRM.Types.Manifest
   , Power (..)
   , Monitoring (..)
   , ImageType (..)
+  , Perfwrapper (..)
   , Image (..)
   , jsonOptions
   )
@@ -30,6 +31,7 @@ import Data.Yaml.Internal ()
 import Dhall hiding (Type)
 import Generics.Generic.Aeson ()
 import NRM.Classes.Messaging
+import qualified NRM.Types.Units as U
 import Protolude
 
 data Manifest
@@ -50,7 +52,7 @@ data App
   = App
       { slice :: Slice
       , scheduler :: Scheduler
-      , perfwrapper :: Bool
+      , perfwrapper :: Perfwrapper
       , power :: Power
       , monitoring :: Monitoring
       }
@@ -77,14 +79,22 @@ data Power
   = Power
       { policy :: PowerPolicy
       , profile :: Bool
-      , slowdown :: Integer -- TODO shoul be <1
+      , slowdown :: Integer
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Power
 
+data Perfwrapper
+  = PerfwrapperDisabled
+  | Perfwrapper
+      { perfFreq :: U.Frequency
+      }
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Perfwrapper
+
 newtype Monitoring
   = Monitoring
-      { ratelimit :: Integer -- TODO >0
+      { ratelimit :: U.Frequency
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Monitoring
@@ -125,14 +135,18 @@ instance Default App where
   def = App
     { slice = def
     , scheduler = FIFO
-    , perfwrapper = False
+    , perfwrapper = def
     , power = def
     , monitoring = def
     }
 
+instance Default Perfwrapper where
+
+  def = PerfwrapperDisabled
+
 instance Default Monitoring where
 
-  def = Monitoring {ratelimit = 1}
+  def = Monitoring {ratelimit = U.hz 1}
 
 instance Default Image where
 

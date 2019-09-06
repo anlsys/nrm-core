@@ -162,7 +162,8 @@ behavior c st (Req clientid msg) = case msg of
     cmdID <- nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
     let (runCmd, runArgs) =
           (cmd spec, args spec) &
-            ( if Manifest.perfwrapper $ Manifest.app manifest
+            ( if Manifest.perfwrapper (Manifest.app manifest) /=
+              Manifest.PerfwrapperDisabled
             then wrapCmd (Cfg.argo_perf_wrapper c)
             else identity
             )
@@ -237,7 +238,7 @@ behavior _ st (DownstreamEvent clientid msg) = case msg of
       registerDownstreamCmdClient cmdStartCmdID clientid st <&>
       (,Log "downstream cmd client registered.")
   DEvent.EventCmdPerformance _ -> return (st, Log "Downstream performance event received")
-  DEvent.EventCmdExit DEvent.CmdExit {..} -> 
+  DEvent.EventCmdExit DEvent.CmdExit {..} ->
     return $ fromMaybe (st, Log "No corresponding command for this downstream cmd registration request.") $
       unRegisterDownstreamCmdClient cmdExitCmdID clientid st <&>
       (,Log "downstream cmd client un-registered.")

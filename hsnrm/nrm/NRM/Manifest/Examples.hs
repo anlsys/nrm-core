@@ -14,10 +14,15 @@ import Data.Default
 import Data.Map
 import NRM.Classes.Examples
 import NRM.Types.Manifest
-import Protolude
+import NRM.Types.Units as U
 
 instance Examples Manifest where
 
   examples =
     fromList
-      [("perfwrap", def {app = def {perfwrapper = True}})]
+      [ ( "perfwrap"
+        , def
+          { app = def {perfwrapper = Perfwrapper {perfFreq = U.hz 1}}
+          }
+        )
+      ]

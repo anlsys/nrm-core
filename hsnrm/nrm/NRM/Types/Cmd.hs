@@ -40,7 +40,7 @@ import NRM.Classes.Sensors
 import NRM.Orphans.ExitCode ()
 import NRM.Orphans.UUID ()
 import qualified NRM.Types.DownstreamCmdClient as DCC
-import NRM.Types.Manifest (Manifest)
+import NRM.Types.Manifest (Manifest, app, monitoring, ratelimit)
 import NRM.Types.Process
 import NRM.Types.Sensor
 import qualified NRM.Types.UpstreamClient as UC
@@ -160,9 +160,9 @@ instance HasSensors Cmd CmdID where
           { sensorTags = [Tag "perf"]
           , source = Source $ show cmdID
           , range = (0, 1)
-          , maxFrequency = undefined
+          , maxFrequency = ratelimit $ monitoring $ app $ manifest cmdCore
           , sensorDesc = Just "CPU instruction counter sensor from linux perf."
-          , process = undefined
+          , process = identity
           }
         )
       )

@@ -19,14 +19,14 @@ import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.String (IsString (..))
-import NRM.Types.Sensor
 import qualified Data.UUID as U
 import NRM.Classes.Messaging
+import NRM.Types.Sensor
 import Protolude
 import Prelude (fail)
 
 newtype DownstreamCmdClientID = DownstreamCmdClientID U.UUID
-  deriving (Show, Eq, Ord, Generic, Read, ToJSONKey,FromJSONKey)
+  deriving (Show, Eq, Ord, Generic, Read, ToJSONKey, FromJSONKey)
 
 toSensorID :: DownstreamCmdClientID -> SensorID
 toSensorID (DownstreamCmdClientID uuid) = SensorID uuid
@@ -37,8 +37,8 @@ toText (DownstreamCmdClientID u) = U.toText u
 fromText :: Text -> Maybe DownstreamCmdClientID
 fromText = fmap DownstreamCmdClientID <$> U.fromText
 
-
-data DownstreamCmdClient = DownstreamCmdClient
+newtype DownstreamCmdClient
+  = DownstreamCmdClient
       { id :: SensorID
       }
   deriving (Eq, Ord, Show, Generic, MessagePack)
@@ -46,7 +46,9 @@ data DownstreamCmdClient = DownstreamCmdClient
 
 instance IsString DownstreamCmdClientID where
 
-  fromString x = fromMaybe (panic "couldn't decode DownstreamCmdID") (Data.Aeson.decode $ toS x)
+  fromString x =
+    fromMaybe (panic "couldn't decode DownstreamCmdID")
+      (Data.Aeson.decode $ toS x)
 
 instance ToJSON DownstreamCmdClientID where
 

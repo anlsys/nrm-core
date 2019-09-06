@@ -36,7 +36,7 @@ data App
   = App
       { slice :: I.Slice
       , scheduler :: Maybe I.Scheduler
-      , perfwrapper :: Maybe Bool
+      , perfwrapper :: Maybe I.Perfwrapper
       , power :: Maybe I.Power
       , monitoring :: Maybe I.Monitoring
       }

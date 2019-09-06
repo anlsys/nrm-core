@@ -68,6 +68,7 @@ library nrmlib
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
+        NRM.Classes.Sensors
         NRM.Classes.Topology
         NRM.Classes.Examples
         NRM.Orphans.ExitCode
@@ -211,6 +212,7 @@ executable nrm.so
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
+        NRM.Classes.Sensors
         NRM.Classes.Topology
         NRM.Classes.Examples
         NRM.Orphans.ExitCode
@@ -353,6 +355,7 @@ executable nrm
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
+        NRM.Classes.Sensors
         NRM.Classes.Topology
         NRM.Classes.Examples
         NRM.Orphans.ExitCode
@@ -495,6 +498,7 @@ executable nrmd
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
+        NRM.Classes.Sensors
         NRM.Classes.Topology
         NRM.Classes.Examples
         NRM.Orphans.ExitCode
