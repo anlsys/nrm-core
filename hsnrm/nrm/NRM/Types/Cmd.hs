@@ -22,6 +22,7 @@ module NRM.Types.Cmd
   , toText
   , fromText
   , wrapCmd
+  , addDownstreamCmdClient
   )
 where
 
@@ -36,7 +37,7 @@ import Dhall
 import NRM.Classes.Messaging
 import NRM.Orphans.ExitCode ()
 import NRM.Orphans.UUID ()
-import qualified NRM.Types.DownstreamCmdClient as DC
+import NRM.Types.DownstreamCmdClient
 import NRM.Types.Process
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
@@ -64,7 +65,7 @@ data Cmd
       { cmdCore :: CmdCore
       , pid :: ProcessID
       , processState :: ProcessState
-      , downstreamCmds :: Map DC.DownstreamCmdID DC.DownstreamCmd
+      , downstreamCmds :: Map DownstreamCmdID DownstreamCmd
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cmd
@@ -73,7 +74,17 @@ mkCmd :: CmdSpec -> Maybe UC.UpstreamClientID -> CmdCore
 mkCmd s clientID = CmdCore {cmdPath = cmd s, arguments = args s, upstreamClientID = clientID}
 
 registerPID :: CmdCore -> ProcessID -> Cmd
-registerPID c pid = Cmd {cmdCore = c, processState = blankState, downstreamCmds = DM.empty, ..}
+registerPID c pid = Cmd
+  { cmdCore = c
+  , processState = blankState
+  , downstreamCmds = DM.empty
+  , ..
+  }
+
+addDownstreamCmdClient :: Cmd -> DownstreamCmdID -> Cmd
+addDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
+  { downstreamCmds = DM.insert downstreamCmdClientID DownstreamCmd downstreamCmds
+  }
 
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)
