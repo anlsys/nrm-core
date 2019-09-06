@@ -88,6 +88,8 @@ let deps =
           nobound "typed-process"
       , optparse-applicative =
           nobound "optparse-applicative"
+      , random =
+          nobound "random"
       , hxt =
           nobound "hxt"
       , hxt-xpath =
@@ -140,6 +142,8 @@ let deps =
           nobound "dhall"
       , bytestring =
           nobound "bytestring"
+      , monadrandom =
+          nobound "MonadRandom"
       , data-msgpack =
           nobound "data-msgpack"
       , storable-endian =
@@ -257,6 +261,8 @@ let libdep =
       , deps.vcs-revision
       , deps.transformers
       , deps.bytestring
+      , deps.random
+      , deps.monadrandom
       , deps.prettyprinter
       , deps.zeromq4-haskell
       , deps.zeromq4-conduit

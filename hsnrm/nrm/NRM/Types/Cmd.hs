@@ -83,7 +83,10 @@ registerPID c pid = Cmd
 
 addDownstreamCmdClient :: Cmd -> DownstreamCmdID -> Cmd
 addDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
-  { downstreamCmds = DM.insert downstreamCmdClientID DownstreamCmd downstreamCmds
+  { downstreamCmds = DM.insert downstreamCmdClientID
+      DownstreamCmd
+      downstreamCmds
+  , ..
   }
 
 newtype TaskID = TaskID Int
