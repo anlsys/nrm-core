@@ -17,14 +17,23 @@ import Protolude
 
 -- | List sensors
 listSensors :: NRMState -> Map SensorID Sensor
-listSensors = listPackageSensors
+listSensors s = listPackageSensors s <> listDownstreamCmdSensors s
 
 -- | List sensors
 listPackageSensors :: NRMState -> Map SensorID Sensor
 listPackageSensors s =
-  DM.fromList $ uncurry S.toCPDPackedSensor <$>
+  DM.fromList $
+    uncurry S.toCPDPackedSensor <$>
     DM.toList
-      ( mconcat $
-        uncurry S.listSensors <$>
+      ( mconcat $ uncurry S.listSensors <$>
         DM.toList (packages s)
+      )
+
+listDownstreamCmdSensors :: NRMState -> Map SensorID Sensor
+listDownstreamCmdSensors s =
+  DM.fromList $
+    uncurry S.toCPDPackedSensor <$>
+    DM.toList
+      ( mconcat $ uncurry S.listSensors <$>
+        (DM.toList (cmdIDMap s) <&> \(cmdID, (cmd, _SliceID, _Slice)) -> (cmdID, cmd))
       )

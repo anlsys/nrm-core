@@ -7,8 +7,11 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module NRM.Types.DownstreamCmdClient
-  ( DownstreamCmdID (..)
-  , DownstreamCmd (..)
+  ( DownstreamCmdClientID (..)
+  , DownstreamCmdClient (..)
+  , fromText
+  , toText
+  , toSensorID
   )
 where
 
@@ -16,21 +19,53 @@ import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.String (IsString (..))
+import NRM.Types.Sensor
+import qualified Data.UUID as U
 import NRM.Classes.Messaging
-import NRM.Types.Process as P
 import Protolude
+import Prelude (fail)
 
-newtype DownstreamCmdID
-  = DownstreamCmdID
-      { perfcmdID :: P.ProcessID
+newtype DownstreamCmdClientID = DownstreamCmdClientID U.UUID
+  deriving (Show, Eq, Ord, Generic, Read, ToJSONKey,FromJSONKey)
+
+toSensorID :: DownstreamCmdClientID -> SensorID
+toSensorID (DownstreamCmdClientID uuid) = SensorID uuid
+
+toText :: DownstreamCmdClientID -> Text
+toText (DownstreamCmdClientID u) = U.toText u
+
+fromText :: Text -> Maybe DownstreamCmdClientID
+fromText = fmap DownstreamCmdClientID <$> U.fromText
+
+
+data DownstreamCmdClient = DownstreamCmdClient
+      { id :: SensorID
       }
-  deriving (Eq, Ord, Show, Generic, MessagePack, ToJSONKey, FromJSONKey)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamCmdID
-
-data DownstreamCmd = DownstreamCmd
   deriving (Eq, Ord, Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamCmd
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamCmdClient
 
-instance IsString DownstreamCmdID where
+instance IsString DownstreamCmdClientID where
 
   fromString x = fromMaybe (panic "couldn't decode DownstreamCmdID") (Data.Aeson.decode $ toS x)
+
+instance ToJSON DownstreamCmdClientID where
+
+  toJSON (DownstreamCmdClientID x) = toJSON x
+
+instance FromJSON DownstreamCmdClientID where
+
+  parseJSON = fmap DownstreamCmdClientID <$> parseJSON
+
+instance JSONSchema DownstreamCmdClientID where
+
+  schema Proxy = schema (Proxy :: Proxy Text)
+
+instance MessagePack DownstreamCmdClientID where
+
+  toObject (DownstreamCmdClientID c) = toObject $ U.toText c
+
+  fromObject x =
+    fromObject x >>= \y ->
+      case DownstreamCmdClientID <$> U.fromText y of
+        Nothing -> fail "Couldn't parse DownstreamCmdClientID"
+        Just t -> return t

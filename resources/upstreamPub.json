@@ -124,7 +124,27 @@
                             "type": "number"
                         },
                         "downstreamThreadID": {
-                            "type": "string"
+                            "required": [
+                                "libnrmcmdID",
+                                "libnrmprocessID",
+                                "libnrmtaskID",
+                                "libnrmthreadID"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "libnrmcmdID": {
+                                    "type": "number"
+                                },
+                                "libnrmthreadID": {
+                                    "type": "number"
+                                },
+                                "libnrmprocessID": {
+                                    "type": "number"
+                                },
+                                "libnrmtaskID": {
+                                    "type": "number"
+                                }
+                            }
                         }
                     }
                 }

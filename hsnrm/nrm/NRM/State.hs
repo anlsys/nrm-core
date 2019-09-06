@@ -13,6 +13,8 @@ module NRM.State
   , registerAwaiting
   , registerFailed
   , registerLaunched
+  , registerDownstreamCmdClient
+  , unRegisterDownstreamCmdClient
   , -- * Removal
     -- ** Slice removal
     removeSlice
@@ -33,6 +35,7 @@ import NRM.Slices.Nodeos as CN
 import NRM.Slices.Singularity as CS
 import NRM.Types.Cmd
 import NRM.Types.Configuration as Cfg
+import NRM.Types.DownstreamCmdClient
 import NRM.Types.DownstreamThreadClient
 import NRM.Types.Process
 import NRM.Types.Slice
@@ -201,12 +204,29 @@ registerFailed cmdID st =
       else Just $ c {awaiting = DM.delete cmdID (awaiting c)}
 
 -- | Registers a downstream Cmd client
-{-registerDownstreamCmdClient-}
-{-:: CmdID-}
-{--> NRMState-}
-{--> Maybe NRMState-}
-{-registerDownstreamCmdClient cmdID st =-}
-{-DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->-}
-{-st {slices = DM.update f sliceID (slices st)}-}
-{-where-}
-{-f s = Just $ s { DM.insert cmdID downstreamCmds = DownstreamCmd downstreamCmds s }-}
+registerDownstreamCmdClient :: CmdID -> DownstreamCmdClientID -> NRMState -> Maybe NRMState
+registerDownstreamCmdClient cmdID downstreamCmdID st =
+  DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
+    insertSlice sliceID
+      ( slice
+        { cmds = DM.insert
+            cmdID
+            (addDownstreamCmdClient cmd downstreamCmdID)
+            (cmds slice)
+        }
+      )
+      st
+
+-- | un-registers a downstream Cmd client
+unRegisterDownstreamCmdClient :: CmdID -> DownstreamCmdClientID -> NRMState -> Maybe NRMState
+unRegisterDownstreamCmdClient cmdID downstreamCmdID st =
+  DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
+    insertSlice sliceID
+      ( slice
+        { cmds = DM.insert
+            cmdID
+            (removeDownstreamCmdClient cmd downstreamCmdID)
+            (cmds slice)
+        }
+      )
+      st

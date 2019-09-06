@@ -34,9 +34,10 @@ where
 
 import qualified NRM.Behavior as B
 import qualified NRM.Classes.Messaging as M
-import qualified NRM.State as S
 import qualified NRM.Optparse as O (parseArgDaemonCli)
+import qualified NRM.State as S
 {-import qualified NRM.Types.Slice as Ct-}
+import qualified NRM.Types.Cmd as Cmd
 import qualified NRM.Types.Configuration as C
   ( Cfg (..)
   , DaemonVerbosity (..)
@@ -45,11 +46,11 @@ import qualified NRM.Types.Configuration as C
   , logfile
   , verbose
   )
-import qualified NRM.Types.State as TS
-import qualified NRM.Types.Cmd as Cmd
-import qualified NRM.Types.Process as Process
-import qualified NRM.Types.UpstreamClient as UC
+import qualified NRM.Types.DownstreamCmdClient as DC
 import qualified NRM.Types.Messaging.UpstreamRep as URep
+import qualified NRM.Types.Process as Process
+import qualified NRM.Types.State as TS
+import qualified NRM.Types.UpstreamClient as UC
 import Protolude hiding (stderr, stdout)
 import qualified System.Posix.Types as SPT
 import Text.Pretty.Simple
@@ -95,11 +96,17 @@ showState = toS . pShow
 
 -- | Behave on downstream message
 downstreamReceive :: C.Cfg -> TS.NRMState -> Text -> Text -> IO (TS.NRMState, B.Behavior)
-downstreamReceive cfg s msg _uuid =
+downstreamReceive cfg s msg clientid =
   B.behavior cfg s $
-    B.DownstreamEvent $
-    fromMaybe (panic "couldn't decode downstream rcv")
-      (M.decodeT $ toS msg)
+    B.DownstreamEvent
+      ( fromMaybe
+        (panic "couldn't parse downstream client ID")
+        (DC.fromText clientid)
+      )
+      ( fromMaybe
+        (panic "couldn't decode downstream rcv")
+        (M.decodeT $ toS msg)
+      )
 
 -- | Behave on upstream message
 upstreamReceive :: C.Cfg -> TS.NRMState -> Text -> Text -> IO (TS.NRMState, B.Behavior)

@@ -22,18 +22,10 @@
                                     {
                                         "required": [
                                             "cmds",
-                                            "awaiting",
-                                            "downstreamCmds",
-                                            "downstreamThreads"
+                                            "awaiting"
                                         ],
                                         "type": "object",
                                         "properties": {
-                                            "downstreamCmds": {
-                                                "additionalProperties": {
-                                                    "const": "\"downstreamCmd\""
-                                                },
-                                                "type": "object"
-                                            },
                                             "awaiting": {
                                                 "additionalProperties": {
                                                     "required": [
@@ -64,10 +56,17 @@
                                                     "required": [
                                                         "cmdCore",
                                                         "pid",
-                                                        "processState"
+                                                        "processState",
+                                                        "downstreamCmds"
                                                     ],
                                                     "type": "object",
                                                     "properties": {
+                                                        "downstreamCmds": {
+                                                            "additionalProperties": {
+                                                                "const": "\"downstreamCmdClient\""
+                                                            },
+                                                            "type": "object"
+                                                        },
                                                         "cmdCore": {
                                                             "required": [
                                                                 "cmdPath",
@@ -136,12 +135,6 @@
                                                             "type": "number"
                                                         }
                                                     }
-                                                },
-                                                "type": "object"
-                                            },
-                                            "downstreamThreads": {
-                                                "additionalProperties": {
-                                                    "const": "\"downstreamThread\""
                                                 },
                                                 "type": "object"
                                             }

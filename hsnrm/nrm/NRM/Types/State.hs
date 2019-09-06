@@ -27,9 +27,9 @@ import Data.MessagePack
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
-import NRM.Types.Slice as C
-import NRM.Types.Process as P
 import NRM.Types.Cmd as Cmd
+import NRM.Types.Process as P
+import NRM.Types.Slice as C
 import NRM.Types.Topology
 import Protolude
 
@@ -48,6 +48,7 @@ data NRMState
 instance JSONSchema NRMState where
 
   schema _ = schema (Proxy :: Proxy Text)
+
 
 showSliceList :: [(SliceID, Slice)] -> Text
 showSliceList l =

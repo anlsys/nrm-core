@@ -15,6 +15,7 @@ import logging
 import os
 import signal
 import tornado.process as process
+
 # import tornado.ioloop
 from zmq.eventloop import ioloop
 from nrm.messaging import UpstreamRPCServer, UpstreamPubServer, DownstreamEventServer
@@ -22,7 +23,7 @@ from dataclasses import dataclass
 import sys
 from typing import Any
 
-_logger = logging.getLogger('nrm')
+_logger = logging.getLogger("nrm")
 
 
 @dataclass
@@ -49,14 +50,12 @@ class Daemon(object):
             "cmd": self.cmd,
             "kill": self.kill,
             "pop": self.popchild,
-            "log": _logger.debug
+            "log": _logger.info,
         }
 
         # register messaging server callbacks
-        self.upstream_rpc.setup_recv_callback(
-            self.wrap("upstreamReceive"))
-        self.downstream_event.setup_recv_callback(
-            self.wrap("downstreamReceive"))
+        self.upstream_rpc.setup_recv_callback(self.wrap("upstreamReceive"))
+        self.downstream_event.setup_recv_callback(self.wrap("downstreamReceive"))
 
         # setup periodic sensor updates
         # ioloop.PeriodicCallback(self.wrap("doSensor"), 10000).start()
@@ -110,14 +109,15 @@ class Daemon(object):
         def r(*argsCallback, **kwargsCallback):
             args = argsConfig + argsCallback
             _logger.debug(
-                "calling into nrm.so with symbol %s and arguments %s", name, str(args))
-            kwargs = dict(kwargsConfig, ** kwargsCallback)
-            st, bh = self.lib.__getattr__(name)(
-                self.cfg, self.state, *args, **kwargs)
+                "calling into nrm.so with symbol %s and arguments %s", name, str(args)
+            )
+            kwargs = dict(kwargsConfig, **kwargsCallback)
+            st, bh = self.lib.__getattr__(name)(self.cfg, self.state, *args, **kwargs)
             self.state = st
             _logger.debug("received behavior from nrm.so: %s", str(bh))
             if bh != "noop":
                 self.dispatch[bh[0]](*bh[1:])
+
         return r
 
     def cmd(self, cmdID, cmd, arguments, environment):
@@ -128,25 +128,28 @@ class Daemon(object):
         registerSuccess = self.wrap("registerCmdSuccess", cmdID)
         registerFailed = self.wrap("registerCmdFailure", cmdID)
         environment = dict(environment)
-        _logger.debug("starting command " + str(cmd) + " with argument list "
-                      + str(arguments))
+        _logger.info(
+            "starting command " + str(cmd) + " with argument list " + str(arguments)
+        )
         try:
-            p = process.Subprocess([cmd] + arguments,
-                                   stdout=process.Subprocess.STREAM,
-                                   stderr=process.Subprocess.STREAM,
-                                   close_fds=True,
-                                   env=environment,
-                                   cwd=environment['PWD'])
+            p = process.Subprocess(
+                [cmd] + arguments,
+                stdout=process.Subprocess.STREAM,
+                stderr=process.Subprocess.STREAM,
+                close_fds=True,
+                env=environment,
+                cwd=environment["PWD"],
+            )
             outcb = self.wrap("doStdout", cmdID.encode())
             errcb = self.wrap("doStderr", cmdID.encode())
             p.stdout.read_until_close(outcb, outcb)
             p.stderr.read_until_close(errcb, errcb)
             self.cmds[cmdID] = p
             registerSuccess(p.proc.pid)
-            _logger.debug("Command start success.")
+            _logger.info("Command start success.")
         except Exception:
             registerFailed()
-            _logger.debug("Command start failure.")
+            _logger.info("Command start failure.")
 
     def kill(self, cmdIDs, messages):
         """
@@ -167,7 +170,7 @@ class Daemon(object):
         for cmdID in cmdIDs:
             if cmdID in self.cmds.keys():
                 self.cmds.pop(cmdID).proc.terminate()
-        assert(len(messages) <= 1)
+        assert len(messages) <= 1
         for m in messages:
             self.upstream_rpc.send(*m)
 
@@ -182,8 +185,7 @@ def runner(config, lib):
         _logger.setLevel(logging.INFO)
 
     if lib.isDebug(config):
-        _logger.info(
-            "Setting configuration to DEBUG level and redirecting to stdout.")
+        _logger.info("Setting configuration to DEBUG level and redirecting to stdout.")
         _logger.setLevel(logging.DEBUG)
         _logger.debug("NRM Daemon configuration:")
         _logger.debug(lib.showConfiguration(config))

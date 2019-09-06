@@ -24,6 +24,7 @@ where
 import qualified CPD.Core as CPD
 import qualified NRM.Types.Units as U
 import Protolude
+import NRM.Classes.Sensors
 
 newtype Tag = Tag Text
 
@@ -45,10 +46,6 @@ data Sensor a
       , sensorDesc :: Maybe Text
       }
 
-class IsSensor a where
-
-  toCPDSensor :: CPD.SensorID -> a -> (CPD.SensorID, CPD.Sensor)
-
 instance IsSensor (Sensor a) where
 
   toCPDSensor id PassiveSensor {..} =
@@ -67,16 +64,3 @@ instance IsSensor (Sensor a) where
       , ..
       }
     )
-
--- Internal (NRM) classes
-data PackedSensor = forall a. IsSensor a => MkPackedSensor a
-
-packSensor :: IsSensor a => a -> PackedSensor
-packSensor = MkPackedSensor
-
-class HasSensors a aCtx | a -> aCtx where
-
-  listSensors :: aCtx -> a -> Map CPD.SensorID PackedSensor
-
-toCPDPackedSensor :: CPD.SensorID -> PackedSensor -> (CPD.SensorID, CPD.Sensor)
-toCPDPackedSensor id (MkPackedSensor s) = toCPDSensor id s

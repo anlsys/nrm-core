@@ -6,13 +6,13 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Types.Messaging.DownstreamEvent
   ( Event (..)
-  , CmdStart
-  , CmdPerformance
-  , CmdExit
-  , ThreadStart
-  , ThreadProgress
-  , ThreadPhaseContext
-  , ThreadExit
+  , CmdStart (..)
+  , CmdPerformance (..)
+  , CmdExit (..)
+  , ThreadStart (..)
+  , ThreadProgress (..)
+  , ThreadPhaseContext (..)
+  , ThreadExit (..)
   )
 where
 

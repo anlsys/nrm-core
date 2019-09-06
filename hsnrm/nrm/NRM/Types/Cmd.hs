@@ -23,6 +23,7 @@ module NRM.Types.Cmd
   , fromText
   , wrapCmd
   , addDownstreamCmdClient
+  , removeDownstreamCmdClient
   )
 where
 
@@ -35,10 +36,13 @@ import qualified Data.UUID as U
 import Data.UUID.V1 (nextUUID)
 import Dhall
 import NRM.Classes.Messaging
+import NRM.Classes.Sensors
 import NRM.Orphans.ExitCode ()
 import NRM.Orphans.UUID ()
-import NRM.Types.DownstreamCmdClient
+import qualified NRM.Types.DownstreamCmdClient as DCC
+import NRM.Types.Manifest (Manifest)
 import NRM.Types.Process
+import NRM.Types.Sensor
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
 
@@ -56,6 +60,7 @@ data CmdCore
       { cmdPath :: Command
       , arguments :: Arguments
       , upstreamClientID :: Maybe UC.UpstreamClientID
+      , manifest :: Manifest
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdCore
@@ -65,13 +70,13 @@ data Cmd
       { cmdCore :: CmdCore
       , pid :: ProcessID
       , processState :: ProcessState
-      , downstreamCmds :: Map DownstreamCmdID DownstreamCmd
+      , downstreamCmds :: Map DCC.DownstreamCmdClientID DCC.DownstreamCmdClient
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cmd
 
-mkCmd :: CmdSpec -> Maybe UC.UpstreamClientID -> CmdCore
-mkCmd s clientID = CmdCore {cmdPath = cmd s, arguments = args s, upstreamClientID = clientID}
+mkCmd :: CmdSpec -> Manifest -> Maybe UC.UpstreamClientID -> CmdCore
+mkCmd s manifest clientID = CmdCore {cmdPath = cmd s, arguments = args s, upstreamClientID = clientID, ..}
 
 registerPID :: CmdCore -> ProcessID -> Cmd
 registerPID c pid = Cmd
@@ -81,11 +86,17 @@ registerPID c pid = Cmd
   , ..
   }
 
-addDownstreamCmdClient :: Cmd -> DownstreamCmdID -> Cmd
+addDownstreamCmdClient :: Cmd -> DCC.DownstreamCmdClientID -> Cmd
 addDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
   { downstreamCmds = DM.insert downstreamCmdClientID
-      DownstreamCmd
+      (DCC.DownstreamCmdClient (DCC.toSensorID downstreamCmdClientID))
       downstreamCmds
+  , ..
+  }
+
+removeDownstreamCmdClient :: Cmd -> DCC.DownstreamCmdClientID -> Cmd
+removeDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
+  { downstreamCmds = DM.delete downstreamCmdClientID downstreamCmds
   , ..
   }
 
@@ -138,3 +149,20 @@ fromText = fmap CmdID <$> U.fromText
 
 wrapCmd :: Command -> (Command, Arguments) -> (Command, Arguments)
 wrapCmd c (Command a, Arguments as) = (c, Arguments $ Arg a : as)
+
+instance HasSensors Cmd CmdID where
+
+  listSensors cmdID Cmd {..} =
+    DM.fromList
+      ( DM.elems downstreamCmds <&> \dc ->
+        ( DCC.id dc
+        , packSensor $ ActiveSensor
+          { sensorTags = [Tag "perf"]
+          , source = Source $ show cmdID
+          , range = (0, 1)
+          , maxFrequency = undefined
+          , sensorDesc = Just "CPU instruction counter sensor from linux perf."
+          , process = undefined
+          }
+        )
+      )

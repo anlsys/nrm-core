@@ -75,7 +75,7 @@ def recv_callback_noapi():
     def wrap(cls):
         def recv(self):
             wire = self.socket.recv()
-            _logger.debug("received message: %r", wire)
+            _logger.info("received message: %r", wire)
             return wire
 
         def do_recv_callback(self, frames):
@@ -175,7 +175,7 @@ class UpstreamRPCServer(RPCServer):
 
     def send(self, client_uuid, msg):
         """Sends a message to the identified client."""
-        _logger.debug("sending message: %r to client: %r", msg, client_uuid)
+        _logger.info("sending message: %r to client: %r", msg, client_uuid)
         self.socket.send_multipart([client_uuid.encode(), msg.encode()])
 
 
@@ -219,7 +219,7 @@ class UpstreamPubClient(object):
     def recv(self):
         """Receives a message and returns it."""
         frames = self.socket.recv_multipart()
-        _logger.debug("received message: %r", frames)
+        _logger.info("received message: %r", frames)
         assert len(frames) == 1
         return frames[0]
 
