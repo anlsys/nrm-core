@@ -14,13 +14,15 @@ where
 import CPD.Core
 import Protolude
 
-validate :: Range -> Value -> Maybe Value
+data Validation = Adjust Range | Ok | Illegal
+
+validate :: Range -> Value -> Validation
 validate (Set ds) (DiscreteValue d) =
   if d `elem` ds
-  then Just $ DiscreteValue d
-  else Nothing
-validate (Interval a b) (ContinuousValue d) =
-  if a <= d && d <= b
-  then Just $ ContinuousValue d
-  else Nothing
-validate _ _ = Nothing
+  then Ok
+  else Illegal
+validate (Interval a b) (ContinuousValue d)
+  | a <= d && d <= b = Ok
+  | d < a = Adjust $ Interval (2 * a - b) b
+  | otherwise = Adjust $ Interval a (2 * b - a)
+validate _ _ = Illegal

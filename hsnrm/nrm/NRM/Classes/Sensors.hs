@@ -7,6 +7,7 @@ Maintainer  : fre@freux.fr
 module NRM.Classes.Sensors
   ( IsSensor (..)
   , HasSensors (..)
+  , PackedSensor
   , packSensor
   , toCPDPackedSensor
   )
@@ -28,6 +29,8 @@ packSensor = MkPackedSensor
 class HasSensors a aCtx | a -> aCtx where
 
   listSensors :: aCtx -> a -> Map CPD.SensorID PackedSensor
+
+  adjustRange :: CPD.SensorID -> CPD.Range -> a -> a
 
 toCPDPackedSensor :: CPD.SensorID -> PackedSensor -> (CPD.SensorID, CPD.Sensor)
 toCPDPackedSensor id (MkPackedSensor s) = toCPDSensor id s

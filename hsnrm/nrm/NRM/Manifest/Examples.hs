@@ -22,7 +22,12 @@ instance Examples Manifest where
     fromList
       [ ( "perfwrap"
         , def
-          { app = def {perfwrapper = Perfwrapper {perfFreq = U.hz 1}}
+          { app = def
+              { perfwrapper = Perfwrapper
+                  { perfFreq = U.hz 1
+                  , perfLimit = U.Operations 100000
+                  }
+              }
           }
         )
       ]

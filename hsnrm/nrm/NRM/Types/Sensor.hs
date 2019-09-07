@@ -13,6 +13,7 @@ module NRM.Types.Sensor
   , Tag (..)
   , HasSensors (..)
   , IsSensor (..)
+  , PackedSensor
   , packSensor
   , toCPDPackedSensor
   , -- * Re-exports
@@ -28,7 +29,7 @@ import NRM.Classes.Sensors
 
 newtype Tag = Tag Text
 
-data Sensor a
+data Sensor
   = PassiveSensor
       { perform :: IO (Maybe Double)
       , sensorTags :: [Tag]
@@ -46,7 +47,7 @@ data Sensor a
       , sensorDesc :: Maybe Text
       }
 
-instance IsSensor (Sensor a) where
+instance IsSensor Sensor where
 
   toCPDSensor id PassiveSensor {..} =
     ( id

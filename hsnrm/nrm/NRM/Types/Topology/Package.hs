@@ -10,9 +10,12 @@ module NRM.Types.Topology.Package
   )
 where
 
+import qualified CPD.Core as CPD
 import Data.Aeson
+import Data.Generics.Product
 import qualified Data.Map as DM
 import Data.MessagePack
+import Lens.Micro
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Sensor
 import NRM.Types.Topology.PackageID
@@ -30,7 +33,7 @@ data RaplSensor
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
-raplToSensor :: forall k a1 (a2 :: k). Show a1 => a1 -> RaplSensor -> (SensorID, Sensor a2)
+raplToSensor :: Show a => a -> RaplSensor -> (SensorID, Sensor)
 raplToSensor packageID (RaplSensor id path (MaxEnergy maxEnergy) freq) =
   ( id
   , PassiveSensor
@@ -59,4 +62,17 @@ instance HasSensors Package PackageID where
 
   listSensors packageID Package {..} =
     DM.fromList
-      (toList $ (\(x, y) -> (x, packSensor y)) . raplToSensor packageID <$> raplSensor)
+      ( toList $ (\(x, y) -> (x, packSensor y)) .
+        raplToSensor packageID <$>
+        raplSensor
+      )
+
+  adjustRange sensorID (CPD.Interval _ b) p =
+    p & field @"raplSensor" %~
+      fmap
+        ( \rapl@RaplSensor {..} ->
+          if id == sensorID
+          then rapl & field @"max" .~ MaxEnergy (uJ b)
+          else rapl
+        )
+  adjustRange _ _ p = p

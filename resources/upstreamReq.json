@@ -190,7 +190,39 @@
                                             }
                                         },
                                         "perfwrapper": {
-                                            "type": "boolean"
+                                            "oneOf": [
+                                                {
+                                                    "required": [
+                                                        "perfwrapperDisabled"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "perfwrapperDisabled": {
+                                                            "type": "object",
+                                                            "properties": {}
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "required": [
+                                                        "perfwrapper"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "perfwrapper": {
+                                                            "required": [
+                                                                "perfFreq"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "perfFreq": {
+                                                                    "type": "number"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
                                         },
                                         "slice": {
                                             "required": [

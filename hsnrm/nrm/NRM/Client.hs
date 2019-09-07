@@ -106,7 +106,7 @@ reqrep s opts = \case
              |]
           where
             cpdTD = CPD.showProblemDhall cpd
-            cpdT = show cpd
+            cpdT = toS $ pShow cpd
             actuatorcount = show $ length (CPDC.actuators cpd)
             sensorcount = show $ length (CPDC.sensors cpd)
         _ -> putText "reply wasn't in protocol"

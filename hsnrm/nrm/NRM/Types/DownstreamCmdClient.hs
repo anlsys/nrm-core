@@ -22,6 +22,7 @@ import Data.String (IsString (..))
 import qualified Data.UUID as U
 import NRM.Classes.Messaging
 import NRM.Types.Sensor
+import NRM.Types.Units as Units
 import Protolude
 import Prelude (fail)
 
@@ -37,12 +38,15 @@ toText (DownstreamCmdClientID u) = U.toText u
 fromText :: Text -> Maybe DownstreamCmdClientID
 fromText = fmap DownstreamCmdClientID <$> U.fromText
 
-newtype DownstreamCmdClient
+data DownstreamCmdClient
   = DownstreamCmdClient
       { id :: SensorID
+      , maxValue :: Units.Operations
       }
   deriving (Eq, Ord, Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamCmdClient
+  deriving
+    (JSONSchema, ToJSON, FromJSON)
+    via GenericJSON DownstreamCmdClient
 
 instance IsString DownstreamCmdClientID where
 

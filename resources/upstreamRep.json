@@ -30,7 +30,8 @@
                                                 "additionalProperties": {
                                                     "required": [
                                                         "cmdPath",
-                                                        "arguments"
+                                                        "arguments",
+                                                        "manifest"
                                                     ],
                                                     "type": "object",
                                                     "properties": {
@@ -46,6 +47,220 @@
                                                         },
                                                         "cmdPath": {
                                                             "type": "string"
+                                                        },
+                                                        "manifest": {
+                                                            "required": [
+                                                                "name",
+                                                                "app",
+                                                                "hwbind",
+                                                                "image"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "image": {
+                                                                    "oneOf": [
+                                                                        {
+                                                                            "required": [
+                                                                                "image"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "image": {
+                                                                                    "required": [
+                                                                                        "path",
+                                                                                        "magetype"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "binds": {
+                                                                                            "uniqueItems": false,
+                                                                                            "items": {
+                                                                                                "type": "string"
+                                                                                            },
+                                                                                            "type": "array"
+                                                                                        },
+                                                                                        "path": {
+                                                                                            "type": "string"
+                                                                                        },
+                                                                                        "magetype": {
+                                                                                            "oneOf": [
+                                                                                                {
+                                                                                                    "const": "\"sif\""
+                                                                                                },
+                                                                                                {
+                                                                                                    "const": "\"docker\""
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            "required": [
+                                                                                "noImage"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "noImage": {
+                                                                                    "type": "object",
+                                                                                    "properties": {}
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                                "hwbind": {
+                                                                    "type": "boolean"
+                                                                },
+                                                                "app": {
+                                                                    "required": [
+                                                                        "slice",
+                                                                        "scheduler",
+                                                                        "perfwrapper",
+                                                                        "power",
+                                                                        "monitoring"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "scheduler": {
+                                                                            "oneOf": [
+                                                                                {
+                                                                                    "required": [
+                                                                                        "fIFO"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "fIFO": {
+                                                                                            "type": "object",
+                                                                                            "properties": {}
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "required": [
+                                                                                        "hPC"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "hPC": {
+                                                                                            "type": "object",
+                                                                                            "properties": {}
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "required": [
+                                                                                        "other"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "other": {
+                                                                                            "type": "number"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "monitoring": {
+                                                                            "required": [
+                                                                                "ratelimit"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "ratelimit": {
+                                                                                    "type": "number"
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "power": {
+                                                                            "required": [
+                                                                                "policy",
+                                                                                "profile",
+                                                                                "slowdown"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "slowdown": {
+                                                                                    "type": "number"
+                                                                                },
+                                                                                "profile": {
+                                                                                    "type": "boolean"
+                                                                                },
+                                                                                "policy": {
+                                                                                    "oneOf": [
+                                                                                        {
+                                                                                            "const": "\"noPowerPolicy\""
+                                                                                        },
+                                                                                        {
+                                                                                            "const": "\"dDCM\""
+                                                                                        },
+                                                                                        {
+                                                                                            "const": "\"dVFS\""
+                                                                                        },
+                                                                                        {
+                                                                                            "const": "\"combined\""
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "perfwrapper": {
+                                                                            "oneOf": [
+                                                                                {
+                                                                                    "required": [
+                                                                                        "perfwrapperDisabled"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "perfwrapperDisabled": {
+                                                                                            "type": "object",
+                                                                                            "properties": {}
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "required": [
+                                                                                        "perfwrapper"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "perfwrapper": {
+                                                                                            "required": [
+                                                                                                "perfFreq"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "perfFreq": {
+                                                                                                    "type": "number"
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "slice": {
+                                                                            "required": [
+                                                                                "cpus",
+                                                                                "mems"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "cpus": {
+                                                                                    "type": "number"
+                                                                                },
+                                                                                "mems": {
+                                                                                    "type": "number"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "name": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 },
@@ -63,14 +278,31 @@
                                                     "properties": {
                                                         "downstreamCmds": {
                                                             "additionalProperties": {
-                                                                "const": "\"downstreamCmdClient\""
+                                                                "required": [
+                                                                    "id"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "id": {
+                                                                        "required": [
+                                                                            "sensorID"
+                                                                        ],
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "sensorID": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
                                                             },
                                                             "type": "object"
                                                         },
                                                         "cmdCore": {
                                                             "required": [
                                                                 "cmdPath",
-                                                                "arguments"
+                                                                "arguments",
+                                                                "manifest"
                                                             ],
                                                             "type": "object",
                                                             "properties": {
@@ -86,6 +318,220 @@
                                                                 },
                                                                 "cmdPath": {
                                                                     "type": "string"
+                                                                },
+                                                                "manifest": {
+                                                                    "required": [
+                                                                        "name",
+                                                                        "app",
+                                                                        "hwbind",
+                                                                        "image"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "image": {
+                                                                            "oneOf": [
+                                                                                {
+                                                                                    "required": [
+                                                                                        "image"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "image": {
+                                                                                            "required": [
+                                                                                                "path",
+                                                                                                "magetype"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "binds": {
+                                                                                                    "uniqueItems": false,
+                                                                                                    "items": {
+                                                                                                        "type": "string"
+                                                                                                    },
+                                                                                                    "type": "array"
+                                                                                                },
+                                                                                                "path": {
+                                                                                                    "type": "string"
+                                                                                                },
+                                                                                                "magetype": {
+                                                                                                    "oneOf": [
+                                                                                                        {
+                                                                                                            "const": "\"sif\""
+                                                                                                        },
+                                                                                                        {
+                                                                                                            "const": "\"docker\""
+                                                                                                        }
+                                                                                                    ]
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                {
+                                                                                    "required": [
+                                                                                        "noImage"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "noImage": {
+                                                                                            "type": "object",
+                                                                                            "properties": {}
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            ]
+                                                                        },
+                                                                        "hwbind": {
+                                                                            "type": "boolean"
+                                                                        },
+                                                                        "app": {
+                                                                            "required": [
+                                                                                "slice",
+                                                                                "scheduler",
+                                                                                "perfwrapper",
+                                                                                "power",
+                                                                                "monitoring"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "scheduler": {
+                                                                                    "oneOf": [
+                                                                                        {
+                                                                                            "required": [
+                                                                                                "fIFO"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "fIFO": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {}
+                                                                                                }
+                                                                                            }
+                                                                                        },
+                                                                                        {
+                                                                                            "required": [
+                                                                                                "hPC"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "hPC": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {}
+                                                                                                }
+                                                                                            }
+                                                                                        },
+                                                                                        {
+                                                                                            "required": [
+                                                                                                "other"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "other": {
+                                                                                                    "type": "number"
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                "monitoring": {
+                                                                                    "required": [
+                                                                                        "ratelimit"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "ratelimit": {
+                                                                                            "type": "number"
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "power": {
+                                                                                    "required": [
+                                                                                        "policy",
+                                                                                        "profile",
+                                                                                        "slowdown"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "slowdown": {
+                                                                                            "type": "number"
+                                                                                        },
+                                                                                        "profile": {
+                                                                                            "type": "boolean"
+                                                                                        },
+                                                                                        "policy": {
+                                                                                            "oneOf": [
+                                                                                                {
+                                                                                                    "const": "\"noPowerPolicy\""
+                                                                                                },
+                                                                                                {
+                                                                                                    "const": "\"dDCM\""
+                                                                                                },
+                                                                                                {
+                                                                                                    "const": "\"dVFS\""
+                                                                                                },
+                                                                                                {
+                                                                                                    "const": "\"combined\""
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "perfwrapper": {
+                                                                                    "oneOf": [
+                                                                                        {
+                                                                                            "required": [
+                                                                                                "perfwrapperDisabled"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "perfwrapperDisabled": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {}
+                                                                                                }
+                                                                                            }
+                                                                                        },
+                                                                                        {
+                                                                                            "required": [
+                                                                                                "perfwrapper"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "perfwrapper": {
+                                                                                                    "required": [
+                                                                                                        "perfFreq"
+                                                                                                    ],
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "perfFreq": {
+                                                                                                            "type": "number"
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                },
+                                                                                "slice": {
+                                                                                    "required": [
+                                                                                        "cpus",
+                                                                                        "mems"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "cpus": {
+                                                                                            "type": "number"
+                                                                                        },
+                                                                                        "mems": {
+                                                                                            "type": "number"
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        },
+                                                                        "name": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
                                                                 }
                                                             }
                                                         },

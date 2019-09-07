@@ -88,6 +88,7 @@ data Perfwrapper
   = PerfwrapperDisabled
   | Perfwrapper
       { perfFreq :: U.Frequency
+      , perfLimit :: U.Operations
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Perfwrapper

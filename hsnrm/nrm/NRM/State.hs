@@ -25,8 +25,9 @@ module NRM.State
   )
 where
 
-import CPD.Core
+import CPD.Core as CPD
 import qualified Data.Map as DM
+import qualified NRM.CPD
 import NRM.Node.Hwloc
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
@@ -50,34 +51,50 @@ import Protolude
 initialState :: Cfg -> IO NRMState
 initialState c = do
   hwl <- getHwlocData
-  let packages' = DM.fromList $ (,Package {raplSensor = Nothing}) <$> selectPackageIDs hwl
+  let packages' =
+        DM.fromList $
+          (,Package {raplSensor = Nothing}) <$>
+          selectPackageIDs hwl
   packages <-
     getDefaultRAPLDirs (toS $ Cfg.raplPath $ raplCfg c) >>= \case
       Just (RAPLDirs rapldirs) -> foldM goRAPL packages' rapldirs
       Nothing -> return packages'
-  return $ NRMState
-    { slices = DM.fromList []
-    , pus = DM.fromList $ (,PU) <$> selectPUIDs hwl
-    , cores = DM.fromList $ (,Core) <$> selectCoreIDs hwl
-    , dummyRuntime = if dummy c
-    then Just CD.emptyRuntime
-    else Nothing
-    , singularityRuntime = if singularity c
-    then Just SingularityRuntime
-    else Nothing
-    , nodeosRuntime = if nodeos c
-    then Just NodeosRuntime
-    else Nothing
-    , ..
-    }
+  let s = NRMState
+        { cpd = CPD.emptyProblem
+        , slices = DM.fromList []
+        , pus = DM.fromList $ (,PU) <$> selectPUIDs hwl
+        , cores = DM.fromList $ (,Core) <$> selectCoreIDs hwl
+        , dummyRuntime = if dummy c
+        then Just CD.emptyRuntime
+        else Nothing
+        , singularityRuntime = if singularity c
+        then Just SingularityRuntime
+        else Nothing
+        , nodeosRuntime = if nodeos c
+        then Just NodeosRuntime
+        else Nothing
+        , ..
+        }
+   in return s {cpd = NRM.CPD.toCPD s}
   where
-    goRAPL :: Map PackageID Package -> RAPLDir -> IO (Map PackageID Package)
+    goRAPL
+      :: Map PackageID Package
+      -> RAPLDir
+      -> IO (Map PackageID Package)
     goRAPL m RAPLDir {..} =
       DM.lookup pkgid m & \case
         Nothing -> return m
         Just oldPackage -> do
           uuid <- nextSensorID
-          return $ DM.insert pkgid (addRAPLSensor uuid path maxEnergy oldPackage) m
+          return $
+            DM.insert pkgid
+              ( addRAPLSensor
+                uuid
+                path
+                maxEnergy
+                oldPackage
+              )
+              m
     addRAPLSensor uuid path maxEnergy Package {..} = Package
       { raplSensor = Just
           ( TP.RaplSensor
@@ -91,7 +108,10 @@ initialState c = do
       }
 
 -- | TODO
-registerLibnrmDownstreamClient :: NRMState -> DownstreamThreadID -> NRMState
+registerLibnrmDownstreamClient
+  :: NRMState
+  -> DownstreamThreadID
+  -> NRMState
 registerLibnrmDownstreamClient s _ = s
 
 -- | Removes a slice from the state
@@ -109,7 +129,9 @@ data DeletionInfo
     CmdRemoved
 
 -- | Wrapper for the type of key to lookup commands on
-data CmdKey = KCmdID CmdID | KProcessID ProcessID
+data CmdKey
+  = KCmdID CmdID
+  | KProcessID ProcessID
 
 -- | Removes a command from the state, and also removes the slice if it's
 -- empty as a result.
@@ -179,7 +201,9 @@ registerLaunched cmdID pid st =
         ( st
             { slices = DM.insert sliceID
                 ( slice
-                  { cmds = DM.insert cmdID (registerPID cmdCore pid) (cmds slice)
+                  { cmds = DM.insert cmdID
+                      (registerPID cmdCore pid)
+                      (cmds slice)
                   , awaiting = DM.delete cmdID (awaiting slice)
                   }
                 )
@@ -196,7 +220,11 @@ registerFailed
   -> Maybe (NRMState, SliceID, Slice, CmdCore)
 registerFailed cmdID st =
   DM.lookup cmdID (awaitingCmdIDMap st) <&> \(cmdCore, sliceID, slice) ->
-    (st {slices = DM.update f sliceID (slices st)}, sliceID, slice, cmdCore)
+    ( st {slices = DM.update f sliceID (slices st)}
+    , sliceID
+    , slice
+    , cmdCore
+    )
   where
     f c =
       if null (cmds c)
@@ -204,7 +232,11 @@ registerFailed cmdID st =
       else Just $ c {awaiting = DM.delete cmdID (awaiting c)}
 
 -- | Registers a downstream Cmd client
-registerDownstreamCmdClient :: CmdID -> DownstreamCmdClientID -> NRMState -> Maybe NRMState
+registerDownstreamCmdClient
+  :: CmdID
+  -> DownstreamCmdClientID
+  -> NRMState
+  -> Maybe NRMState
 registerDownstreamCmdClient cmdID downstreamCmdID st =
   DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
     insertSlice sliceID
@@ -218,7 +250,11 @@ registerDownstreamCmdClient cmdID downstreamCmdID st =
       st
 
 -- | un-registers a downstream Cmd client
-unRegisterDownstreamCmdClient :: CmdID -> DownstreamCmdClientID -> NRMState -> Maybe NRMState
+unRegisterDownstreamCmdClient
+  :: CmdID
+  -> DownstreamCmdClientID
+  -> NRMState
+  -> Maybe NRMState
 unRegisterDownstreamCmdClient cmdID downstreamCmdID st =
   DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
     insertSlice sliceID

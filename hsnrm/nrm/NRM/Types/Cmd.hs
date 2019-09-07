@@ -27,22 +27,26 @@ module NRM.Types.Cmd
   )
 where
 
+import CPD.Core as CPD
 import Data.Aeson as A
+import Data.Generics.Product
 import Data.JSON.Schema
 import Data.Map as DM
 import Data.MessagePack
 import Data.String (IsString (..))
 import qualified Data.UUID as U
 import Data.UUID.V1 (nextUUID)
-import Dhall
+import Dhall hiding (field)
+import Lens.Micro
 import NRM.Classes.Messaging
 import NRM.Classes.Sensors
 import NRM.Orphans.ExitCode ()
 import NRM.Orphans.UUID ()
 import qualified NRM.Types.DownstreamCmdClient as DCC
-import NRM.Types.Manifest (Manifest, app, monitoring, ratelimit)
+import NRM.Types.Manifest as Manifest
 import NRM.Types.Process
 import NRM.Types.Sensor
+import NRM.Types.Units as Units
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
 
@@ -86,10 +90,20 @@ registerPID c pid = Cmd
   , ..
   }
 
-addDownstreamCmdClient :: Cmd -> DCC.DownstreamCmdClientID -> Cmd
+addDownstreamCmdClient
+  :: Cmd
+  -> DCC.DownstreamCmdClientID
+  -> Cmd
 addDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
   { downstreamCmds = DM.insert downstreamCmdClientID
-      (DCC.DownstreamCmdClient (DCC.toSensorID downstreamCmdClientID))
+      ( DCC.DownstreamCmdClient
+        (DCC.toSensorID downstreamCmdClientID)
+        ( Manifest.perfLimit . Manifest.perfwrapper .
+          Manifest.app .
+          manifest $
+          cmdCore
+        )
+      )
       downstreamCmds
   , ..
   }
@@ -166,3 +180,13 @@ instance HasSensors Cmd CmdID where
           }
         )
       )
+
+  adjustRange sensorID (CPD.Interval _ b) cmd =
+    cmd & field @"downstreamCmds" %~
+      DM.map
+        ( \dc ->
+          if DCC.id dc == sensorID
+          then dc & field @"maxValue" .~ (Operations $ floor b)
+          else dc
+        )
+  adjustRange _ _ p = p

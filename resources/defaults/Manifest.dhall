@@ -19,7 +19,10 @@
     , scheduler =
         < FIFO | HPC | Other : { _1 : Integer } >.FIFO
     , perfwrapper =
-        False
+        < PerfwrapperDisabled
+        | Perfwrapper :
+            { perfFreq : Double }
+        >.PerfwrapperDisabled
     , power =
         { policy =
             < NoPowerPolicy | DDCM | DVFS | Combined >.NoPowerPolicy
@@ -29,7 +32,7 @@
             +1
         }
     , monitoring =
-        { ratelimit = +1 }
+        { ratelimit = 1.0 }
     }
 , hwbind =
     False

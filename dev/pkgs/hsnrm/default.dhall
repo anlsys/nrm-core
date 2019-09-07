@@ -22,6 +22,7 @@ let defexts =
       , types.Extension.DeriveAnyClass True
       , types.Extension.DeriveGeneric True
       , types.Extension.DerivingStrategies True
+      , types.Extension.TypeApplications True
       , types.Extension.MultiWayIf True
       , types.Extension.TemplateHaskell True
       , types.Extension.BlockArguments True
@@ -100,6 +101,8 @@ let deps =
           nobound "filepath"
       , neat-interpolation =
           nobound "neat-interpolation"
+      , generic-lens =
+          nobound "generic-lens"
       , yaml =
           nobound "yaml"
       , aeson =
@@ -156,6 +159,8 @@ let deps =
           nobound "resourcet"
       , async =
           nobound "async"
+      , microlens =
+          nobound "microlens"
       , mtl =
           nobound "mtl"
       , conduit =
@@ -267,6 +272,7 @@ let libdep =
       , deps.prettyprinter
       , deps.zeromq4-haskell
       , deps.zeromq4-conduit
+      , deps.generic-lens
       , deps.data-msgpack
       , deps.containers
       , deps.unordered-containers
@@ -304,6 +310,7 @@ let libdep =
       , deps.mtl
       , deps.brick
       , deps.filepath
+      , deps.microlens
       , deps.editor-open
       ]
 

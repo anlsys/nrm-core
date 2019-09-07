@@ -31,11 +31,13 @@ import NRM.Types.Cmd as Cmd
 import NRM.Types.Process as P
 import NRM.Types.Slice as C
 import NRM.Types.Topology
+import CPD.Core as CPD
 import Protolude
 
 data NRMState
   = NRMState
-      { pus :: Map PUID PU
+      { cpd :: CPD.Problem
+      , pus :: Map PUID PU
       , cores :: Map CoreID Core
       , packages :: Map PackageID Package
       , slices :: Map SliceID Slice

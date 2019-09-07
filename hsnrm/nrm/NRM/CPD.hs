@@ -19,6 +19,6 @@ import Protolude
 toCPD :: NRMState -> Problem
 toCPD s =
   Problem
-    (DM.toList (listSensors s) <&> uncurry SensorKV)
+    (DM.toList (listNRMSensors s) <&> uncurry SensorKV)
     (DM.toList (listActuators s) <&> uncurry ActuatorKV)
     (Objective [] Minimize)

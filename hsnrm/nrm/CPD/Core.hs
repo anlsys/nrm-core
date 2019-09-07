@@ -9,6 +9,7 @@ Maintainer  : fre@freux.fr
 module CPD.Core
   ( -- * Metadata
     Problem (..)
+  , emptyProblem
   , Metadata (..)
   , Range (..)
   , Value (..)
@@ -57,6 +58,9 @@ data Problem
       }
   deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
+
+emptyProblem :: Problem
+emptyProblem = Problem [] [] emptyObjective
 
 data ActuatorKV
   = ActuatorKV
@@ -183,3 +187,6 @@ data Objective
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Objective
   deriving (Show, Generic, MessagePack, Interpret, Inject)
+
+emptyObjective :: Objective
+emptyObjective = Objective [] Minimize

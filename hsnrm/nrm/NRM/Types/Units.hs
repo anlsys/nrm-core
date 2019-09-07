@@ -46,13 +46,14 @@ import qualified Data.Metrology.SI as DSI (Energy, Frequency, Power, Time)
 import Data.Units.SI (Hertz (..), Joule (..), Second (..), Watt (..))
 import Data.Units.SI.Prefixes (micro)
 import Dhall
+import NRM.Orphans.Dhall ()
 import NRM.Classes.Messaging
 import Protolude hiding ((%))
 import qualified Prelude as PBase
 
 -- | CPU operations.
 newtype Operations = Operations {ops :: Int}
-  deriving (Show, Generic, MessagePack)
+  deriving (Eq, Ord, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Operations
 
 -- | Application progress.

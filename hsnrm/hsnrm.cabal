@@ -106,9 +106,9 @@ library nrmlib
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        DeriveGeneric DerivingStrategies TypeApplications MultiWayIf
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
@@ -128,6 +128,7 @@ library nrmlib
         prettyprinter -any,
         zeromq4-haskell -any,
         zeromq4-conduit -any,
+        generic-lens -any,
         data-msgpack -any,
         containers -any,
         unordered-containers -any,
@@ -165,6 +166,7 @@ library nrmlib
         mtl -any,
         brick -any,
         filepath -any,
+        microlens -any,
         editor-open -any
 
 executable nrm.so
@@ -249,9 +251,9 @@ executable nrm.so
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        DeriveGeneric DerivingStrategies TypeApplications MultiWayIf
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
@@ -271,6 +273,7 @@ executable nrm.so
         prettyprinter -any,
         zeromq4-haskell -any,
         zeromq4-conduit -any,
+        generic-lens -any,
         data-msgpack -any,
         containers -any,
         unordered-containers -any,
@@ -308,6 +311,7 @@ executable nrm.so
         mtl -any,
         brick -any,
         filepath -any,
+        microlens -any,
         editor-open -any
 
 executable nrm
@@ -392,9 +396,9 @@ executable nrm
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        DeriveGeneric DerivingStrategies TypeApplications MultiWayIf
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
@@ -414,6 +418,7 @@ executable nrm
         prettyprinter -any,
         zeromq4-haskell -any,
         zeromq4-conduit -any,
+        generic-lens -any,
         data-msgpack -any,
         containers -any,
         unordered-containers -any,
@@ -451,6 +456,7 @@ executable nrm
         mtl -any,
         brick -any,
         filepath -any,
+        microlens -any,
         editor-open -any
 
 executable nrmd
@@ -535,9 +541,9 @@ executable nrmd
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        DeriveGeneric DerivingStrategies TypeApplications MultiWayIf
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
@@ -557,6 +563,7 @@ executable nrmd
         prettyprinter -any,
         zeromq4-haskell -any,
         zeromq4-conduit -any,
+        generic-lens -any,
         data-msgpack -any,
         containers -any,
         unordered-containers -any,
@@ -594,6 +601,7 @@ executable nrmd
         mtl -any,
         brick -any,
         filepath -any,
+        microlens -any,
         editor-open -any
 
 executable nrmdep
@@ -604,9 +612,9 @@ executable nrmdep
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        DeriveGeneric DerivingStrategies TypeApplications MultiWayIf
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
@@ -626,9 +634,9 @@ executable nrmddep
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        DeriveGeneric DerivingStrategies TypeApplications MultiWayIf
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
@@ -648,9 +656,9 @@ executable codegen
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DerivingStrategies MultiWayIf TemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        DeriveGeneric DerivingStrategies TypeApplications MultiWayIf
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
                  -Wincomplete-record-updates -Wmissing-home-modules -Widentities
