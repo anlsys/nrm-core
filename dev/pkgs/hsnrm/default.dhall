@@ -21,6 +21,7 @@ let defexts =
       , types.Extension.TypeFamilies True
       , types.Extension.DeriveAnyClass True
       , types.Extension.DeriveGeneric True
+      , types.Extension.DeriveDataTypeable True
       , types.Extension.DerivingStrategies True
       , types.Extension.TypeApplications True
       , types.Extension.MultiWayIf True
@@ -159,8 +160,8 @@ let deps =
           nobound "resourcet"
       , async =
           nobound "async"
-      , microlens =
-          nobound "microlens"
+      , lens =
+          nobound "lens"
       , mtl =
           nobound "mtl"
       , conduit =
@@ -310,7 +311,7 @@ let libdep =
       , deps.mtl
       , deps.brick
       , deps.filepath
-      , deps.microlens
+      , deps.lens
       , deps.editor-open
       ]
 

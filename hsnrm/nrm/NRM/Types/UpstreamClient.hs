@@ -19,9 +19,10 @@ import qualified Data.UUID as U
 import Data.UUID.V1
 import Protolude
 import Prelude (fail)
+import Data.Data
 
 newtype UpstreamClientID = UpstreamClientID U.UUID
-  deriving (Show, Eq, Ord, Generic, Read)
+  deriving (Show, Eq, Ord, Generic, Data,Read)
 
 nextUpstreamClientID :: IO (Maybe UpstreamClientID)
 nextUpstreamClientID = fmap UpstreamClientID <$> nextUUID

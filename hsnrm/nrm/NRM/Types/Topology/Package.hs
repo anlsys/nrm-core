@@ -11,11 +11,12 @@ module NRM.Types.Topology.Package
 where
 
 import qualified CPD.Core as CPD
+import Control.Lens
 import Data.Aeson
+import Data.Data
 import Data.Generics.Product
 import qualified Data.Map as DM
 import Data.MessagePack
-import Lens.Micro
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Sensor
 import NRM.Types.Topology.PackageID
@@ -31,7 +32,7 @@ data RaplSensor
       , max :: MaxEnergy
       , frequency :: Frequency
       }
-  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
 raplToSensor :: Show a => a -> RaplSensor -> (SensorID, Sensor)
 raplToSensor packageID (RaplSensor id path (MaxEnergy maxEnergy) freq) =
@@ -56,7 +57,7 @@ newtype Package
   = Package
       { raplSensor :: Maybe RaplSensor
       }
-  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic,Data, MessagePack, ToJSON, FromJSON)
 
 instance HasSensors Package PackageID where
 

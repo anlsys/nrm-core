@@ -18,6 +18,7 @@ module NRM.Types.Slice
 where
 
 import Data.Aeson
+import Data.Data
 import Data.JSON.Schema
 import qualified Data.Map as DM
 import Data.MessagePack
@@ -35,7 +36,7 @@ data Slice
       , -- | map of commands awaiting to be registered as running by the runtime
         awaiting :: DM.Map CmdID CmdCore
       }
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Generic, Data, MessagePack)
   deriving (ToJSON, FromJSON, JSONSchema) via GenericJSON Slice
 
 -- | Constructor for an empty slice.
@@ -50,7 +51,7 @@ insertCmd :: CmdID -> Cmd -> Slice -> Slice
 insertCmd cmdID cmd slice = slice {cmds = DM.insert cmdID cmd (cmds slice)}
 
 data SliceID = SliceID U.UUID | Name Text
-  deriving (Show, Eq, Ord, Generic, FromJSONKey, ToJSONKey)
+  deriving (Show, Eq, Ord, Generic, Data, FromJSONKey, ToJSONKey)
   deriving (ToJSON, FromJSON) via GenericJSON SliceID
 
 nextSliceID :: IO (Maybe SliceID)

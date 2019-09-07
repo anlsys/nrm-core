@@ -13,6 +13,7 @@ module NRM.Orphans.ExitCode
 where
 
 import Data.Aeson
+import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
@@ -30,3 +31,5 @@ deriving via GenericJSON ExitCode instance JSONSchema ExitCode
 deriving via GenericJSON ExitCode instance ToJSON ExitCode
 
 deriving via GenericJSON ExitCode instance FromJSON ExitCode
+
+deriving instance Data ExitCode

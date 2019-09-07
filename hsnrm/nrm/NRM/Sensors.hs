@@ -11,9 +11,9 @@ module NRM.Sensors
 where
 
 import CPD.Core
+import Control.Lens
 import Data.Generics.Product
 import Data.Map as DM
-import Lens.Micro
 import qualified NRM.Types.Sensor as S
 import NRM.Types.State
 import Protolude
@@ -46,3 +46,9 @@ instance S.HasSensors NRMState () where
       DM.map (S.adjustRange sensorID range) &
       field @"slices" %~
       fmap (field @"cmds" %~ DM.map (S.adjustRange sensorID range))
+
+{-updatePackage :: NRMState -> PackageID -> NRMState-}
+{-updatePackage s sensorID =-}
+  {-s &-}
+    {-((biplate :: (HasSensors a,Data m) => Traversal' m a) . at sensorID) %~-}
+    {-(fmap \s -> s & )-}

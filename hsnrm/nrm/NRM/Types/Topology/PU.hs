@@ -11,8 +11,9 @@ where
 
 import Data.Aeson
 import Data.MessagePack
+import Data.Data
 import Protolude
 
 -- | Record containing all information about a processing unit.
 data PU = PU
-  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic,Data, MessagePack, ToJSON, FromJSON)

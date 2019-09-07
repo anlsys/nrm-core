@@ -20,9 +20,11 @@ module NRM.Types.State
   )
 where
 
+import CPD.Core as CPD
 import Data.Aeson
 import Data.JSON.Schema
 import Data.Map as DM
+import Data.Data
 import Data.MessagePack
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
@@ -31,7 +33,6 @@ import NRM.Types.Cmd as Cmd
 import NRM.Types.Process as P
 import NRM.Types.Slice as C
 import NRM.Types.Topology
-import CPD.Core as CPD
 import Protolude
 
 data NRMState
@@ -45,12 +46,11 @@ data NRMState
       , singularityRuntime :: Maybe SingularityRuntime
       , nodeosRuntime :: Maybe NodeosRuntime
       }
-  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
 instance JSONSchema NRMState where
 
   schema _ = schema (Proxy :: Proxy Text)
-
 
 showSliceList :: [(SliceID, Slice)] -> Text
 showSliceList l =

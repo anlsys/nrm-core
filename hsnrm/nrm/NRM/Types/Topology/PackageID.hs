@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-|
 Module      : NRM.Types.Topology.PackageID
 Copyright   : (c) UChicago Argonne, 2019
@@ -10,31 +12,21 @@ module NRM.Types.Topology.PackageID
 where
 
 import Data.Aeson
-import Data.Either
+import Data.Data
 import Data.MessagePack
+import NRM.Classes.Messaging
 import NRM.Classes.Topology
 import Protolude
-import Refined
 import Refined.Orphan.Aeson ()
-import Prelude (fail)
 
 -- | A Package OS identifier.
-newtype PackageID = PackageID (Refined NonNegative Int)
-  deriving (Eq, Ord, Show, Generic, FromJSONKey, ToJSONKey, ToJSON, FromJSON)
-
--- MessagePack instances
-instance MessagePack PackageID where
-
-  toObject (PackageID x) = toObject (unrefine x)
-
-  fromObject x =
-    (fromObject x <&> refine) >>= \case
-      Right r -> return $ PackageID r
-      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
+newtype PackageID = PackageID Int
+  deriving (Eq, Ord, Show, Generic, Data, FromJSONKey, ToJSONKey, MessagePack)
+  deriving (FromJSON, ToJSON, JSONSchema) via GenericJSON PackageID
 
 instance IdFromString PackageID where
 
-  idFromString s = PackageID <$> readMaybe ("Refined " <> s)
+  idFromString s = PackageID <$> readMaybe s
 
 instance ToHwlocType PackageID where
 

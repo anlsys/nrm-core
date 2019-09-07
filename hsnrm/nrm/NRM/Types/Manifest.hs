@@ -25,6 +25,7 @@ where
 
 import Data.Aeson
 import Data.Default
+import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
@@ -41,11 +42,11 @@ data Manifest
       , hwbind :: Bool
       , image :: Image
       }
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Manifest
 
 data SliceRuntime = Singularity | Nodeos | Dummy
-  deriving (Eq, Show, Generic, MessagePack, Interpret)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceRuntime
 
 data App
@@ -56,7 +57,7 @@ data App
       , power :: Power
       , monitoring :: Monitoring
       }
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON App
 
 data Slice
@@ -64,15 +65,15 @@ data Slice
       { cpus :: Integer
       , mems :: Integer
       }
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Slice
 
 data Scheduler = FIFO | HPC | Other Integer
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Scheduler
 
 data PowerPolicy = NoPowerPolicy | DDCM | DVFS | Combined
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON PowerPolicy
 
 data Power
@@ -81,7 +82,7 @@ data Power
       , profile :: Bool
       , slowdown :: Integer
       }
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Power
 
 data Perfwrapper
@@ -90,18 +91,18 @@ data Perfwrapper
       { perfFreq :: U.Frequency
       , perfLimit :: U.Operations
       }
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Perfwrapper
 
 newtype Monitoring
   = Monitoring
       { ratelimit :: U.Frequency
       }
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Monitoring
 
 data ImageType = Sif | Docker
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ImageType
 
 data Image
@@ -111,7 +112,7 @@ data Image
       , binds :: Maybe [Text]
       }
   | NoImage
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Image
 
 instance Default Manifest where

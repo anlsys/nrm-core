@@ -11,9 +11,10 @@ module NRM.Slices.Nodeos
   )
 where
 
-import Data.MessagePack
 import Data.Aeson
+import Data.Data
+import Data.MessagePack
 import Protolude
 
 data NodeosRuntime = NodeosRuntime
-  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)

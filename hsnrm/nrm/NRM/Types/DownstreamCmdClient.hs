@@ -16,6 +16,7 @@ module NRM.Types.DownstreamCmdClient
 where
 
 import Data.Aeson
+import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.String (IsString (..))
@@ -27,7 +28,7 @@ import Protolude
 import Prelude (fail)
 
 newtype DownstreamCmdClientID = DownstreamCmdClientID U.UUID
-  deriving (Show, Eq, Ord, Generic, Read, ToJSONKey, FromJSONKey)
+  deriving (Show, Eq, Ord, Generic, Data, Read, ToJSONKey, FromJSONKey)
 
 toSensorID :: DownstreamCmdClientID -> SensorID
 toSensorID (DownstreamCmdClientID uuid) = SensorID uuid
@@ -43,7 +44,7 @@ data DownstreamCmdClient
       { id :: SensorID
       , maxValue :: Units.Operations
       }
-  deriving (Eq, Ord, Show, Generic, MessagePack)
+  deriving (Eq, Ord, Show, Generic, Data, MessagePack)
   deriving
     (JSONSchema, ToJSON, FromJSON)
     via GenericJSON DownstreamCmdClient

@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-|
 Module      : NRM.Types.Topology.CoreID
 Copyright   : (c) UChicago Argonne, 2019
@@ -10,31 +12,22 @@ module NRM.Types.Topology.CoreID
 where
 
 import Data.Aeson
-import Data.Either
+import Data.Data
+import Data.JSON.Schema
 import Data.MessagePack
-import Protolude
-import Refined
-import Refined.Orphan.Aeson ()
-import Prelude (fail)
+import NRM.Classes.Messaging
 import NRM.Classes.Topology
+import Protolude
 
 -- | A CPU Core OS identifier.
-newtype CoreID = CoreID (Refined Positive Int)
-  deriving (Show, Eq, Ord, Generic, ToJSONKey, ToJSON, FromJSON, FromJSONKey)
+newtype CoreID = CoreID Int
+  deriving (Show, Eq, Ord, Generic, Data, ToJSONKey, FromJSONKey, MessagePack)
+  deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON CoreID
 
-instance MessagePack CoreID where
+instance IdFromString CoreID where
 
-  toObject (CoreID x) = toObject (unrefine x)
-
-  fromObject x =
-    (fromObject x <&> refine) >>= \case
-      Right r -> return $ CoreID r
-      Left _ -> fail "Couldn't refine PackageID during MsgPack conversion"
+  idFromString s = CoreID <$> readMaybe s
 
 instance ToHwlocType CoreID where
 
   getType _ = "Core"
-
-instance IdFromString CoreID where
-
-  idFromString s = CoreID <$> readMaybe ("Refined " <> s)

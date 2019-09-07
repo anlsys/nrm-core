@@ -16,9 +16,10 @@ where
 
 import Data.Aeson
 import Data.Map
+import Data.Data
 import Data.MessagePack
-import NRM.Slices.Class
 import NRM.Processes
+import NRM.Slices.Class
 import NRM.Types.Slice
 import Protolude
 import qualified System.Posix.Signals as Signals
@@ -26,7 +27,7 @@ import qualified System.Posix.Signals as Signals
 type DummyRuntime = Dummy (Map SliceID [ApplicationProcess])
 
 newtype Dummy a = Dummy a
-  deriving (Show, Generic, Functor, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, Data, Functor, MessagePack, ToJSON, FromJSON)
 
 emptyRuntime :: Dummy (Map SliceID a)
 emptyRuntime = Dummy $ fromList []

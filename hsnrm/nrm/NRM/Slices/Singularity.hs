@@ -13,7 +13,8 @@ where
 
 import Data.MessagePack
 import Data.Aeson
+import Data.Data
 import Protolude
 
 data SingularityRuntime = SingularityRuntime
-  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic,Data, MessagePack, ToJSON, FromJSON)

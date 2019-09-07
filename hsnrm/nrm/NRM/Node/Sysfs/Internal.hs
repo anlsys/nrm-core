@@ -33,15 +33,16 @@ where
 
 import Control.Monad.Trans.Maybe
 import Data.Aeson
+import Data.Data
 import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
+import NRM.Classes.Topology
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
 import Protolude
 import System.Directory
 import Text.RE.TDFA.Text
-import NRM.Classes.Topology
 
 -- | RAPL directory locations
 newtype RAPLDirs = RAPLDirs [RAPLDir]
@@ -60,7 +61,7 @@ newtype MaxPower = MaxPower Power
 
 -- | Maximum RAPL energy measurement.
 newtype MaxEnergy = MaxEnergy Energy
-  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
 -- | RAPL energy measurement
 newtype MeasuredEnergy = MeasuredEnergy Energy
