@@ -41,8 +41,8 @@ data Measurement
 measure :: Problem -> Double -> SensorID -> Measurement
 measure (Problem sl _ _) _ sensorID =
   case DM.lookup sensorID (DM.fromList $ (\(SensorKV x y) -> (x, y)) <$> sl) of
-    Nothing -> NoSuchSensor
-    Just _ -> NoSuchSensor
+    Nothing -> NoSuchSensor -- TODO
+    Just _ -> NoSuchSensor -- TODO
 
 combine :: Problem -> Problem -> Maybe Problem
 combine (Problem a b goal) (Problem c d goal')

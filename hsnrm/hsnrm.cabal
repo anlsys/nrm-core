@@ -97,6 +97,7 @@ library nrmlib
         Bandit.Exp3
         Bandit.EpsGreedy
         CPD.Core
+        CPD.Values
         CPD.Utils
         CPD.Text
     hs-source-dirs: nrm bin
@@ -124,6 +125,7 @@ library nrmlib
         transformers -any,
         bytestring -any,
         random -any,
+        random-fu -any,
         MonadRandom -any,
         prettyprinter -any,
         zeromq4-haskell -any,
@@ -243,6 +245,7 @@ executable nrm.so
         Bandit.Exp3
         Bandit.EpsGreedy
         CPD.Core
+        CPD.Values
         CPD.Utils
         CPD.Text
     default-language: Haskell2010
@@ -269,6 +272,7 @@ executable nrm.so
         transformers -any,
         bytestring -any,
         random -any,
+        random-fu -any,
         MonadRandom -any,
         prettyprinter -any,
         zeromq4-haskell -any,
@@ -388,6 +392,7 @@ executable nrm
         Bandit.Exp3
         Bandit.EpsGreedy
         CPD.Core
+        CPD.Values
         CPD.Utils
         CPD.Text
     default-language: Haskell2010
@@ -414,6 +419,7 @@ executable nrm
         transformers -any,
         bytestring -any,
         random -any,
+        random-fu -any,
         MonadRandom -any,
         prettyprinter -any,
         zeromq4-haskell -any,
@@ -533,6 +539,7 @@ executable nrmd
         Bandit.Exp3
         Bandit.EpsGreedy
         CPD.Core
+        CPD.Values
         CPD.Utils
         CPD.Text
     default-language: Haskell2010
@@ -559,6 +566,7 @@ executable nrmd
         transformers -any,
         bytestring -any,
         random -any,
+        random-fu -any,
         MonadRandom -any,
         prettyprinter -any,
         zeromq4-haskell -any,

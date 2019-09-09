@@ -92,6 +92,8 @@ let deps =
           nobound "optparse-applicative"
       , random =
           nobound "random"
+      , random-fu =
+          nobound "random-fu"
       , hxt =
           nobound "hxt"
       , hxt-xpath =
@@ -270,6 +272,7 @@ let libdep =
       , deps.transformers
       , deps.bytestring
       , deps.random
+      , deps.random-fu
       , deps.monadrandom
       , deps.prettyprinter
       , deps.zeromq4-haskell

@@ -9,11 +9,12 @@ module Bandit.Class
   )
 where
 
-import Protolude
-import Control.Monad.Random
+import Data.Random
 
-class Bandit b a reward where
+class Bandit b f a l where
 
-  initialBandit :: Int -> b
+  init :: f a -> b
 
-  step :: (MonadRandom m) => b -> m (b, a)
+  action :: b -> a
+
+  step :: (MonadRandom m) => b -> l -> m b
