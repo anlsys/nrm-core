@@ -30,7 +30,6 @@ module NRM.Types.Units
   , uW
   , fromuW
   , watts
-  , fromWatts
   )
 where
 
@@ -39,53 +38,32 @@ import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import Dhall
-import NRM.Classes.Messaging
 import NRM.Orphans.Dhall ()
 import Protolude hiding ((%))
 
--- | CPU operations.
-newtype Operations = Operations {ops :: Int}
+newtype Operations = Operations {fromOps :: Int}
   deriving (Eq, Ord, Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Operations
+  deriving (JSONSchema, ToJSON, FromJSON) via Int
 
--- | Application progress.
 newtype Progress = Progress Int
   deriving (Show, Generic, Data, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Progress
+  deriving (JSONSchema, ToJSON, FromJSON) via Int
 
--- | Frequency newtype for Data.UNITS.SI Frequency
-newtype Frequency = Frequency Double
+newtype Frequency = Frequency {fromHz :: Double}
   deriving (Eq, Show, Generic, Data, Inject, Interpret, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via Double
 
--- | Frequency newtype for Data.UNITS.SI Frequency
-newtype Power = Power Double
+newtype Power = Power {fromuW :: Double}
   deriving (Eq, Show, Generic, Data, Inject, Interpret, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via Double
 
--- | Frequency newtype for Data.UNITS.SI Frequency
-newtype Time = Time Double
+newtype Time = Time {fromuS :: Double}
   deriving (Eq, Show, Generic, Data, Inject, Interpret, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via Double
 
-newtype Energy = Energy Double
+newtype Energy = Energy {fromuJ :: Double}
   deriving (Eq, Show, Generic, Data, Inject, Interpret, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via Double
-
-fromuJ :: Energy -> Double
-fromuJ (Energy x) = x
-
-fromuS :: Time -> Double
-fromuS (Time x) = x
-
-fromuW :: Power -> Double
-fromuW (Power x) = x
-
-fromWatts :: Power -> Double
-fromWatts (Power x) = x
-
-fromHz :: Frequency -> Double
-fromHz (Frequency x) = x
 
 -- | Microjoule value constructor.
 uJ :: Double -> Energy

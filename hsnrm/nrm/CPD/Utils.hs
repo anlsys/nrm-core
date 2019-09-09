@@ -7,22 +7,44 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module CPD.Utils
-  ( validate
+  ( validateRange
+  , Validation (..)
+  , measure
+  , Measurement (..)
+  , combine
   )
 where
 
 import CPD.Core
+import CPD.Values
+import Data.Map as DM
 import Protolude
 
-data Validation = Adjust Range | Ok | Illegal
+data Validation = AdjustRange Range | Ok | Illegal
 
-validate :: Range -> Value -> Validation
-validate (Set ds) (DiscreteValue d) =
+validateRange :: Range -> Value -> Validation
+validateRange (Set ds) (DiscreteValue d) =
   if d `elem` ds
   then Ok
   else Illegal
-validate (Interval a b) (ContinuousValue d)
+validateRange (Interval a b) (ContinuousValue d)
   | a <= d && d <= b = Ok
-  | d < a = Adjust $ Interval (2 * a - b) b
-  | otherwise = Adjust $ Interval a (2 * b - a)
-validate _ _ = Illegal
+  | d < a = AdjustRange $ Interval (2 * a - b) b
+  | otherwise = AdjustRange $ Interval a (2 * b - a)
+validateRange _ _ = Illegal
+
+data Measurement
+  = Measured SensorData
+  | AdjustProblem Problem SensorData
+  | NoSuchSensor
+
+measure :: Problem -> Double -> SensorID -> Measurement
+measure (Problem sl _ _) _ sensorID =
+  case DM.lookup sensorID (DM.fromList $ (\(SensorKV x y) -> (x, y)) <$> sl) of
+    Nothing -> NoSuchSensor
+    Just _ -> NoSuchSensor
+
+combine :: Problem -> Problem -> Maybe Problem
+combine (Problem a b goal) (Problem c d goal')
+  | goal == goal' = Just $ Problem (a <> c) (b <> d) goal
+  | otherwise = Nothing

@@ -98,7 +98,7 @@ instance M.NRMMessage Event J.Event where
     EventCmdPerformance CmdPerformance {..} ->
       J.CmdPerformance
         { cmdID = Cmd.toText cmdPerformanceCmdID
-        , perf = U.ops perf
+        , perf = U.fromOps perf
         }
     EventCmdExit CmdExit {..} ->
       J.CmdExit $ Cmd.toText cmdExitCmdID

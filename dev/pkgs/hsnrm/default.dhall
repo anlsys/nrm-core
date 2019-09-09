@@ -256,6 +256,7 @@ let extramodules =
       , "Bandit.Exp3"
       , "Bandit.EpsGreedy"
       , "CPD.Core"
+      , "CPD.Values"
       , "CPD.Utils"
       , "CPD.Text"
       ]
