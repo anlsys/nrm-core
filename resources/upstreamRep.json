@@ -782,7 +782,7 @@
                                                                         "properties": {
                                                                             "interval": {
                                                                                 "required": [
-                                                                                    "mix",
+                                                                                    "min",
                                                                                     "max"
                                                                                 ],
                                                                                 "type": "object",
@@ -790,7 +790,7 @@
                                                                                     "max": {
                                                                                         "type": "number"
                                                                                     },
-                                                                                    "mix": {
+                                                                                    "min": {
                                                                                         "type": "number"
                                                                                     }
                                                                                 }
@@ -873,7 +873,7 @@
                                                                         "properties": {
                                                                             "interval": {
                                                                                 "required": [
-                                                                                    "mix",
+                                                                                    "min",
                                                                                     "max"
                                                                                 ],
                                                                                 "type": "object",
@@ -881,7 +881,7 @@
                                                                                     "max": {
                                                                                         "type": "number"
                                                                                     },
-                                                                                    "mix": {
+                                                                                    "min": {
                                                                                         "type": "number"
                                                                                     }
                                                                                 }

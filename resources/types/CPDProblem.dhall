@@ -23,7 +23,7 @@
                 < Set :
                     { admissibleValues : List Text }
                 | Interval :
-                    { mix : Double, max : Double }
+                    { min : Double, max : Double }
                 >
             , frequency :
                 < MaxFrequency :
@@ -45,7 +45,7 @@
             < Set :
                 { admissibleValues : List Text }
             | Interval :
-                { mix : Double, max : Double }
+                { min : Double, max : Double }
             >
         }
     }
