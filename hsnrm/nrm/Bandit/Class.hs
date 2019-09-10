@@ -10,11 +10,12 @@ module Bandit.Class
 where
 
 import Data.Random
+import Protolude
 
 class Bandit b f a l where
 
   init :: f a -> b
 
-  action :: b -> a
+  getAction :: b -> Maybe a
 
   step :: (MonadRandom m) => b -> l -> m b

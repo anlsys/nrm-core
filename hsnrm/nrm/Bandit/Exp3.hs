@@ -5,25 +5,25 @@ License     : MIT
 Maintainer  : fre@freux.fr
 -}
 module Bandit.Exp3
-  ( Exp3 (..)
+  ( Exp3
   )
 where
 
 import Bandit.Class
 import Control.Lens
 import Data.Generics.Product
+import Data.Random
 import qualified Data.Random.Distribution.Categorical as DC
 import qualified Data.Random.Sample as RS
-import Data.Random
 import Protolude
 import Refined
 
-data Exp3 f
+data Exp3 a
   = Exp3
       { t :: Int
-      , a :: Maybe Int
+      , lastAction :: Maybe a
       , k :: Int
-      , ws :: f Weight
+      , ws :: [Weight a]
       }
   deriving (Generic)
 
@@ -33,62 +33,57 @@ newtype Probability = Probability {getProbability :: Double}
 newtype CumulativeLoss = CumulativeLoss {getCumulativeLoss :: Double}
   deriving (Generic)
 
-data Weight
+data Weight a
   = Weight
       { probability :: Probability
       , cumulativeLoss :: CumulativeLoss
+      , action :: a
       }
   deriving (Generic)
 
-toCategorical :: f Weight -> DC.Categorical Double Int
-toCategorical = undefined
+sampleExp3 :: MonadRandom m => Exp3 a -> m a
+sampleExp3 bandit =
+  RS.sample . DC.fromWeightedList $
+    ws bandit <&> \(Weight p _ aktion) -> (getProbability p, aktion)
 
-sampleExp3 :: MonadRandom m => Exp3 f -> m Int
-sampleExp3 bandit = RS.sample (toCategorical $ ws bandit)
+instance (Eq a) => Bandit (Exp3 a) Set a (Refined (FromTo 0 1) Double) where
 
-instance
-  ( Functor f
-  , Traversable f
-  , Index (f Weight) ~ Int
-  , IxValue (f Weight) ~ Weight
-  , Ixed (f Weight)
-  )
-  => Bandit (Exp3 f) f Int (Refined (FromTo 0 1) Double) where
-
-  action Exp3 {..} = undefined
+  getAction = lastAction
 
   init as = Exp3
     { t = 1
-    , a = Nothing
+    , lastAction = Nothing
     , k = length as
-    , ws = Weight (Probability 1) (CumulativeLoss 0) <$ as
+    , ws = toList as <&> Weight (Probability 1) (CumulativeLoss 0)
     }
 
-  step b (unrefine -> l) = case a b of
-    Nothing -> sampleExp3 b <&> Just <&> \a -> Exp3 {..}
-    Just i -> do
-      let b' =
-            b &
-              (field @"ws" . ix i %~ updateCumLoss) &
-              (field @"ws" %~ recompute) &
-              (field @"t" +~ 1)
-      i <- sampleExp3 b'
-      return $ b' & field @"a" ?~ i
+  step b (unrefine -> l) = case lastAction b of
+    Nothing -> sampleExp3 b <&> \firstAction -> b & field @"lastAction" ?~ firstAction
+    Just i -> evalStateT (exp3 i) b
     where
-      updateCumLoss w@(Weight (Probability p) (CumulativeLoss cL)) =
-        w & field @"cumulativeLoss" .~ CumulativeLoss (cL + (l / p))
-      recompute ws = updatep <$> ws
-        where
-          updatep w@(Weight _ (CumulativeLoss cL)) =
-            w & field @"probability" . field @"getProbability" .~
-              expw cL /
-              denominator
-          expw l =
-            exp (- sqrt (2.0 * log (fromIntegral (k b)) / fromIntegral (t b * k b)) * l)
-          denominator =
-            getSum $
-              foldMap
-                ( \(getCumulativeLoss . cumulativeLoss -> cL) ->
-                  Sum $ expw cL
-                )
-                ws
+      exp3 i = do
+        field @"ws" %=
+          fmap (\w -> if action w == i then updateCumLoss l w else w)
+        t <- use $ field @"t"
+        k <- use $ field @"k"
+        field @"ws" %= recompute t k
+        field @"t" += 1
+        newAction <- get >>= lift . sampleExp3
+        field @"lastAction" ?= newAction
+        get
+
+updateCumLoss :: Double -> Weight a -> Weight a
+updateCumLoss l w@(Weight (Probability p) (CumulativeLoss cL) _) =
+  w & field @"cumulativeLoss" .~ CumulativeLoss (cL + (l / p))
+
+recompute :: Int -> Int -> [Weight a] -> [Weight a]
+recompute t k ws = updatep <$> ws
+  where
+    updatep w@(Weight _ (CumulativeLoss cL) _) =
+      w & field @"probability" . field @"getProbability" .~
+        expw cL /
+        denom
+    expw cL =
+      exp (- sqrt (2.0 * log (fromIntegral k) / fromIntegral (t * k)) * cL)
+    denom = getSum $ foldMap denomF ws
+    denomF (getCumulativeLoss . cumulativeLoss -> cL) = Sum $ expw cL

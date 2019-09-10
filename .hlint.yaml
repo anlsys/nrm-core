@@ -1,1 +1,1 @@
-arguments: [--color,  -XQuasiQuotes, -XTypeApplications]
+arguments: [--color,  -XQuasiQuotes, -XTypeApplications, -XViewPatterns]
