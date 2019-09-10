@@ -19,7 +19,14 @@
     , scheduler :
         < FIFO | HPC | Other : { _1 : Integer } >
     , perfwrapper :
-        < PerfwrapperDisabled | Perfwrapper : { perfFreq : Double } >
+        < PerfwrapperDisabled
+        | Perfwrapper :
+            { perfFreq :
+                { fromHz : Double }
+            , perfLimit :
+                { fromOps : Integer }
+            }
+        >
     , power :
         { policy :
             < NoPowerPolicy | DDCM | DVFS | Combined >
@@ -29,7 +36,7 @@
             Integer
         }
     , monitoring :
-        { ratelimit : Double }
+        { ratelimit : { fromHz : Double } }
     }
 , hwbind :
     Bool

@@ -21,9 +21,13 @@
     , perfwrapper =
         < PerfwrapperDisabled
         | Perfwrapper :
-            { perfFreq : Double }
+            { perfFreq :
+                { fromHz : Double }
+            , perfLimit :
+                { fromOps : Integer }
+            }
         >.Perfwrapper
-        { perfFreq = 1.0 }
+        { perfFreq = { fromHz = 1.0 }, perfLimit = { fromOps = +100000 } }
     , power =
         { policy =
             < NoPowerPolicy | DDCM | DVFS | Combined >.NoPowerPolicy
@@ -33,7 +37,7 @@
             +1
         }
     , monitoring =
-        { ratelimit = 1.0 }
+        { ratelimit = { fromHz = 1.0 } }
     }
 , hwbind =
     False

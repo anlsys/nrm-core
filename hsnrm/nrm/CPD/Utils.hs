@@ -10,8 +10,9 @@ module CPD.Utils
   ( validateRange
   , Validation (..)
   , measure
-  , Measurement (..)
+  , ValidatedMeasurement (..)
   , combine
+  , requiredSensors
   )
 where
 
@@ -22,6 +23,7 @@ import Protolude
 
 data Validation = AdjustRange Range | Ok | Illegal
 
+-- | validates a single sensor's range
 validateRange :: Range -> Value -> Validation
 validateRange (Set ds) (DiscreteValue d) =
   if d `elem` ds
@@ -33,18 +35,24 @@ validateRange (Interval a b) (ContinuousValue d)
   | otherwise = AdjustRange $ Interval a (2 * b - a)
 validateRange _ _ = Illegal
 
-data Measurement
-  = Measured SensorData
-  | AdjustProblem Problem SensorData
+data ValidatedMeasurement
+  = Measured Measurement
+  | AdjustProblem Problem
   | NoSuchSensor
 
-measure :: Problem -> Double -> SensorID -> Measurement
+-- | builds a measurement using a problem as context (with validation)
+measure :: Problem -> Double -> SensorID -> ValidatedMeasurement
 measure (Problem sl _ _) _ sensorID =
   case DM.lookup sensorID (DM.fromList $ (\(SensorKV x y) -> (x, y)) <$> sl) of
     Nothing -> NoSuchSensor -- TODO
     Just _ -> NoSuchSensor -- TODO
 
+-- | Combines problems by adding sensor lists and actuator lists
 combine :: Problem -> Problem -> Maybe Problem
 combine (Problem a b goal) (Problem c d goal')
   | goal == goal' = Just $ Problem (a <> c) (b <> d) goal
   | otherwise = Nothing
+
+-- | computes the list of sensors required for the goal to be computed entirely.
+requiredSensors :: Problem -> [SensorID]
+requiredSensors p = fmap x . linearCombination . objective $ p

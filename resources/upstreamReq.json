@@ -211,10 +211,14 @@
                                                     "properties": {
                                                         "perfwrapper": {
                                                             "required": [
-                                                                "perfFreq"
+                                                                "perfFreq",
+                                                                "perfLimit"
                                                             ],
                                                             "type": "object",
                                                             "properties": {
+                                                                "perfLimit": {
+                                                                    "type": "number"
+                                                                },
                                                                 "perfFreq": {
                                                                     "type": "number"
                                                                 }

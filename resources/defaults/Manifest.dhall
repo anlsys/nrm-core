@@ -21,7 +21,11 @@
     , perfwrapper =
         < PerfwrapperDisabled
         | Perfwrapper :
-            { perfFreq : Double }
+            { perfFreq :
+                { fromHz : Double }
+            , perfLimit :
+                { fromOps : Integer }
+            }
         >.PerfwrapperDisabled
     , power =
         { policy =
@@ -32,7 +36,7 @@
             +1
         }
     , monitoring =
-        { ratelimit = 1.0 }
+        { ratelimit = { fromHz = 1.0 } }
     }
 , hwbind =
     False

@@ -48,7 +48,7 @@ import NRM.Orphans.UUID ()
 import qualified NRM.Types.Units as Units
 import Protolude
 
--- Metadata
+-- METADATA
 newtype Discrete = Discrete Text
   deriving (Show,Eq, Generic, Data, MessagePack)
   deriving (JSONSchema, A.ToJSON, A.FromJSON, Interpret, Inject) via Text
@@ -93,7 +93,7 @@ data Metadata = Metadata {range :: Range, frequency :: Frequency}
 
 data Range
   = Set {admissibleValues :: [Discrete]}
-  | Interval {mix :: Double, max :: Double}
+  | Interval {min :: Double, max :: Double}
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Range
 

@@ -227,10 +227,14 @@
                                                                                     "properties": {
                                                                                         "perfwrapper": {
                                                                                             "required": [
-                                                                                                "perfFreq"
+                                                                                                "perfFreq",
+                                                                                                "perfLimit"
                                                                                             ],
                                                                                             "type": "object",
                                                                                             "properties": {
+                                                                                                "perfLimit": {
+                                                                                                    "type": "number"
+                                                                                                },
                                                                                                 "perfFreq": {
                                                                                                     "type": "number"
                                                                                                 }
@@ -279,10 +283,14 @@
                                                         "downstreamCmds": {
                                                             "additionalProperties": {
                                                                 "required": [
-                                                                    "id"
+                                                                    "id",
+                                                                    "maxValue"
                                                                 ],
                                                                 "type": "object",
                                                                 "properties": {
+                                                                    "maxValue": {
+                                                                        "type": "number"
+                                                                    },
                                                                     "id": {
                                                                         "required": [
                                                                             "sensorID"
@@ -498,10 +506,14 @@
                                                                                             "properties": {
                                                                                                 "perfwrapper": {
                                                                                                     "required": [
-                                                                                                        "perfFreq"
+                                                                                                        "perfFreq",
+                                                                                                        "perfLimit"
                                                                                                     ],
                                                                                                     "type": "object",
                                                                                                     "properties": {
+                                                                                                        "perfLimit": {
+                                                                                                            "type": "number"
+                                                                                                        },
                                                                                                         "perfFreq": {
                                                                                                             "type": "number"
                                                                                                         }

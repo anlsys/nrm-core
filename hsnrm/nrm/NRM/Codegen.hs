@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 {-|
 Module      : NRM.Codegen
 Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -18,6 +20,7 @@ module NRM.Codegen
 where
 
 import qualified CPD.Core
+import qualified CPD.Values
 import Codegen.CHeader
 import Codegen.Dhall
 import Codegen.Schema (generatePretty)
@@ -42,6 +45,7 @@ import NRM.Types.Messaging.UpstreamReq
 import NeatInterpolation
 import Protolude hiding (Rep)
 import System.Directory
+import Prelude (String)
 
 -- | The main code generation binary.
 main :: IO ()
@@ -179,15 +183,9 @@ getDefault x =
 generateDefaultConfigurations :: IO ()
 generateDefaultConfigurations = do
   putText "Codegen: Dhall types."
-  let destCPD = "../resources/types/CPD.dhall"
-  putText $ "  Writing type for CPD format. " <> " to " <> toS destCPD
-  createDirectoryIfMissing True (takeDirectory destCPD)
-  writeOutput licenseDhall destCPD
-    ( fmap Dhall.absurd
-      ( Dhall.expected
-        (Dhall.auto :: Dhall.Type CPD.Core.Problem)
-      )
-    )
+  typeToFile (Proxy :: Proxy CPD.Values.Measurements) "../resources/types/CPDMeasurements.dhall"
+  typeToFile (Proxy :: Proxy CPD.Values.Actions) "../resources/types/CPDActions.dhall"
+  typeToFile (Proxy :: Proxy CPD.Core.Problem) "../resources/types/CPDProblem.dhall"
   for_ [minBound .. maxBound] $ \t -> do
     let dest = prefix <> typeFile t
     putText $ "  Writing type for " <> show t <> " to " <> toS dest
@@ -213,3 +211,14 @@ generateDefaultConfigurations = do
     putText $ "  Writing yaml for " <> show t <> " to " <> toS dest
     createDirectoryIfMissing True (takeDirectory dest)
     writeFile dest $ licenseYaml <> toS yaml
+
+typeToFile :: Interpret x => Proxy x -> String -> IO ()
+typeToFile (Proxy :: Proxy x) fp = do
+  let destCPD = fp
+  putText $ "  Writing types for CPD format. " <> " to " <> toS destCPD
+  createDirectoryIfMissing True (takeDirectory destCPD)
+  writeOutput licenseDhall destCPD
+    ( fmap Dhall.absurd
+      ( Dhall.expected (Dhall.auto :: Dhall.Type x)
+      )
+    )

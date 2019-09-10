@@ -90,15 +90,7 @@
                     "type": "object",
                     "properties": {
                         "perf": {
-                            "required": [
-                                "ops"
-                            ],
-                            "type": "object",
-                            "properties": {
-                                "ops": {
-                                    "type": "number"
-                                }
-                            }
+                            "type": "number"
                         },
                         "perfSliceID": {
                             "type": "string"
@@ -176,15 +168,7 @@
                             "type": "number"
                         },
                         "performance": {
-                            "required": [
-                                "ops"
-                            ],
-                            "type": "object",
-                            "properties": {
-                                "ops": {
-                                    "type": "number"
-                                }
-                            }
+                            "type": "number"
                         },
                         "feedback_time": {
                             "type": "number"

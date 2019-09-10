@@ -38,7 +38,7 @@
 , upstreamCfg :
     { upstreamBindAddress : Text, pubPort : Integer, rpcPort : Integer }
 , raplCfg :
-    { raplEnabled : Bool, raplPath : Text, raplFrequency : Double }
+    { raplEnabled : Bool, raplPath : Text, raplFrequency : { fromHz : Double } }
 , hwmonCfg :
     { hwmonEnabled : Bool, hwmonPath : Text }
 }

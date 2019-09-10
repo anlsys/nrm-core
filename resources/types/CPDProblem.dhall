@@ -27,9 +27,9 @@
                 >
             , frequency :
                 < MaxFrequency :
-                    { maxFrequency : Double }
+                    { maxFrequency : { fromHz : Double } }
                 | FixedFrequency :
-                    { fixedFrequency : Double }
+                    { fixedFrequency : { fromHz : Double } }
                 >
             }
         }
