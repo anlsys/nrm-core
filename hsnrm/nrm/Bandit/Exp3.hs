@@ -37,7 +37,7 @@ data Exp3 a
       { t :: Int
       , lastAction :: Maybe a
       , k :: Int
-      , ws :: [Weight a]
+      , weights :: [Weight a]
       }
   deriving (Generic)
 
@@ -64,25 +64,25 @@ instance (Eq a) => Bandit (Exp3 a) () Set Proxy a (Refined (FromTo 0 1) Double) 
     { t = 1
     , lastAction = Nothing
     , k = length as
-    , ws = toList as <&> Weight (Probability 1) (CumulativeLoss 0)
+    , weights = toList as <&> Weight (Probability 1) (CumulativeLoss 0)
     }
 
   step (unrefine -> l) =
     get <&> lastAction >>= \case
       Nothing -> pickAction
       Just oldAction -> do
-        field @"ws" %=
+        field @"weights" %=
           fmap (\w -> if action w == oldAction then updateCumLoss l w else w)
         t <- use $ field @"t"
         k <- use $ field @"k"
-        field @"ws" %= recompute t k
+        field @"weights" %= recompute t k
         field @"t" += 1
         pickAction
 
 pickAction :: (MonadRandom m, MonadState (Exp3 a) m) => m a
 pickAction = get >>= s >>= btw (assign (field @"lastAction") . Just)
   where
-    s bandit = RS.sample . DC.fromWeightedList $ ws bandit <&> w2tuple
+    s bandit = RS.sample . DC.fromWeightedList $ weights bandit <&> w2tuple
     w2tuple (Weight p _ action) = (getProbability p, action)
 
 updateCumLoss :: Double -> Weight a -> Weight a
@@ -90,7 +90,7 @@ updateCumLoss l w@(Weight (Probability p) (CumulativeLoss cL) _) =
   w & field @"cumulativeLoss" .~ CumulativeLoss (cL + (l / p))
 
 recompute :: Int -> Int -> [Weight a] -> [Weight a]
-recompute t k ws = updatep <$> ws
+recompute t k weights = updatep <$> weights
   where
     updatep w@(Weight _ (CumulativeLoss cL) _) =
       w & field @"probability" . field @"getProbability" .~
@@ -98,7 +98,7 @@ recompute t k ws = updatep <$> ws
         denom
     expw cL =
       exp (- sqrt (2.0 * log (fromIntegral k) / fromIntegral (t * k)) * cL)
-    denom = getSum $ foldMap denomF ws
+    denom = getSum $ foldMap denomF weights
     denomF (getCumulativeLoss . cumulativeLoss -> cL) = Sum $ expw cL
 
 btw :: (Functor f) => (t -> f b) -> t -> f t
