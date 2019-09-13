@@ -50,7 +50,7 @@ import Protolude
 
 -- METADATA
 newtype Discrete = Discrete Text
-  deriving (Show,Eq, Generic, Data, MessagePack)
+  deriving (Show, Eq, Generic, Data, MessagePack)
   deriving (JSONSchema, A.ToJSON, A.FromJSON, Interpret, Inject) via Text
 
 data Problem
@@ -68,7 +68,7 @@ emptyProblem = Problem [] [] emptyObjective
 data ActuatorKV
   = ActuatorKV
       { actuatorKey :: ActuatorID
-      , actuatorValue :: Actuator
+      , actuatorDesc :: Actuator
       }
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorKV
@@ -76,7 +76,7 @@ data ActuatorKV
 data SensorKV
   = SensorKV
       { sensorKey :: SensorID
-      , sensorValue :: Sensor
+      , sensorDesc :: Sensor
       }
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorKV
@@ -173,11 +173,11 @@ data Actuator
 ------- OBJECTIVE
 data Direction = Minimize | Maximize
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Direction
-  deriving (Show,Eq, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (Show, Eq, Generic, Data, MessagePack, Interpret, Inject)
 
 data X = X {w :: Double, x :: SensorID}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON X
-  deriving (Show,Eq, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (Show, Eq, Generic, Data, MessagePack, Interpret, Inject)
 
 data Objective
   = Objective

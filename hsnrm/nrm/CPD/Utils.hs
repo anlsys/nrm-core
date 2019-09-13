@@ -55,4 +55,11 @@ combine (Problem a b goal) (Problem c d goal')
 
 -- | computes the list of sensors required for the goal to be computed entirely.
 requiredSensors :: Problem -> [SensorID]
-requiredSensors p = fmap x . linearCombination . objective $ p
+requiredSensors = fmap x . linearCombination . objective
+
+{-availableDiscreteActions :: Problem -> [Actions]-}
+{-availableDiscreteActions (Problem _ as _) = mconcat $ as <&> \aKv ->
+  [Actions (aKv ^. field @"actuatorKey") a | a <- listDiscreteActuatorActions]-}
+
+{-listDiscreteActuatorActions :: Actuator -> Actions-}
+{-listDiscreteActuatorActions = undefined-}

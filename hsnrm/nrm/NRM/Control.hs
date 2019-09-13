@@ -12,12 +12,12 @@ module NRM.Control
   ( Input (..)
   , Decision (..)
   , Controller (..)
+  , BanditActions (..)
   , control
   , initialController
   )
 where
 
-import Bandit.Class
 import Bandit.Exp3
 import CPD.Core as C
 import CPD.Values as V
@@ -27,7 +27,6 @@ import Data.Data
 import Data.Generics.Product
 import Data.JSON.Schema
 import Data.MessagePack
-import Data.Set
 import Dhall hiding (field)
 import NRM.Classes.Messaging
 import NRM.Types.Units
@@ -43,7 +42,7 @@ data Input
 
 data Decision = DoNothing | Decision V.Actions
 
-data BanditActions = BanditActions [V.Actions]
+newtype BanditActions = BanditActions [V.Actions]
 
 data Controller
   = Controller
@@ -61,6 +60,8 @@ control (Reconfigure c) = do
   field @"cpd" .= c
   {-field @"bandit" .= init [ ]-}
   return DoNothing
+
+-- Bunch of instances to serialize the bandit state..
 
 deriving via (GenericJSON (Weight SensorID)) instance JSONSchema (Weight SensorID)
 
@@ -93,3 +94,36 @@ deriving instance MessagePack (Exp3 SensorID)
 deriving instance Interpret (Exp3 SensorID)
 
 deriving instance Inject (Exp3 SensorID)
+
+deriving via (GenericJSON (Probability)) instance JSONSchema (Probability)
+
+deriving via (GenericJSON (Probability)) instance A.ToJSON (Probability)
+
+deriving via (GenericJSON (Probability)) instance A.FromJSON (Probability)
+
+deriving instance Show (Probability)
+
+deriving instance Data (Probability)
+
+deriving instance MessagePack (Probability)
+
+deriving instance Interpret (Probability)
+
+deriving instance Inject (Probability)
+
+deriving via (GenericJSON (CumulativeLoss)) instance JSONSchema (CumulativeLoss)
+
+deriving via (GenericJSON (CumulativeLoss)) instance A.ToJSON (CumulativeLoss)
+
+deriving via (GenericJSON (CumulativeLoss)) instance A.FromJSON (CumulativeLoss)
+
+deriving instance Show (CumulativeLoss)
+
+deriving instance Data (CumulativeLoss)
+
+deriving instance MessagePack (CumulativeLoss)
+
+deriving instance Interpret (CumulativeLoss)
+
+deriving instance Inject (CumulativeLoss)
+

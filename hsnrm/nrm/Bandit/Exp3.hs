@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DerivingVia #-}
 
 {-|
@@ -5,28 +6,32 @@ Module      : Bandit.Exp3
 Copyright   : (c) 2019, UChicago Argonne, LLC.
 License     : MIT
 Maintainer  : fre@freux.fr
+
+The exponential-weight algorithm for Exploration and Exploitation (EXP3). See [1]
+
+- [1] Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems,
+  Sebastien Bubeck and Nicolo Cesa-Bianchi. http://arxiv.org/abs/1204.5721
 -}
 module Bandit.Exp3
-  ( Exp3 (..)
-  , Weight (..)
+  ( -- * State
+    Exp3 (..)
+  , -- * Internal
+    Weight (..)
+  , Probability (..)
+  , CumulativeLoss (..)
   )
 where
 
 import Bandit.Class
 import Control.Lens
-import qualified Data.Aeson as A
-import Data.Data
 import Data.Generics.Product
-import Data.JSON.Schema
-import Data.MessagePack
 import Data.Random
 import qualified Data.Random.Distribution.Categorical as DC
 import qualified Data.Random.Sample as RS
-import Dhall hiding (field)
-import NRM.Classes.Messaging
 import Protolude
 import Refined
 
+-- | The EXP3 state
 data Exp3 a
   = Exp3
       { t :: Int
@@ -36,14 +41,15 @@ data Exp3 a
       }
   deriving (Generic)
 
+-- | Probability of picking an action
 newtype Probability = Probability {getProbability :: Double}
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Probability
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (Generic)
 
+-- | Cumulative loss counter for an action
 newtype CumulativeLoss = CumulativeLoss {getCumulativeLoss :: Double}
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON CumulativeLoss
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (Generic)
 
+-- | Exp3 weight for one action
 data Weight a
   = Weight
       { probability :: Probability
@@ -52,9 +58,9 @@ data Weight a
       }
   deriving (Generic)
 
-instance (Eq a) => Bandit (Exp3 a) Set a (Refined (FromTo 0 1) Double) where
+instance (Eq a) => Bandit (Exp3 a) () Set Proxy a (Refined (FromTo 0 1) Double) where
 
-  init as = Exp3
+  init _ as _ = Exp3
     { t = 1
     , lastAction = Nothing
     , k = length as
@@ -97,3 +103,9 @@ recompute t k ws = updatep <$> ws
 
 btw :: (Functor f) => (t -> f b) -> t -> f t
 btw k x = x <$ k x
+
+-- | Regret bound for this \(\mathbb{L}=[0,1]\)-loss hyperparameter-free EXP3 version:
+-- \[
+-- R_T \leq \sqrt{2 T K \ln K}
+-- \]
+instance (Eq a) => ParameterFreeMAB (Exp3 a) a (Refined (FromTo 0 1) Double)

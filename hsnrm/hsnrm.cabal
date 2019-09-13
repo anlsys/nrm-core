@@ -93,14 +93,91 @@ library nrmlib
         Codegen.Schema
         Codegen.Dhall
         Codegen.CHeader
-        Bandit.Class
-        Bandit.Exp3
-        Bandit.EpsGreedy
         CPD.Core
+        CPD.Integrated
         CPD.Values
         CPD.Utils
         CPD.Text
+        Bandit.Class
+        Bandit.Exp3
+        Bandit.EpsGreedy
     hs-source-dirs: nrm bin
+    default-language: Haskell2010
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        ExistentialQuantification RecordWildCards TypeSynonymInstances
+                        StandaloneDeriving FlexibleInstances TupleSections
+                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
+                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
+                        DeriveGeneric DeriveDataTypeable DerivingStrategies
+                        TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
+                        FlexibleContexts TypeOperators DataKinds PolyKinds
+                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns
+    build-depends:
+        base -any,
+        protolude -any,
+        vcs-revision -any,
+        transformers -any,
+        bytestring -any,
+        random -any,
+        random-fu -any,
+        MonadRandom -any,
+        prettyprinter -any,
+        zeromq4-haskell -any,
+        zeromq4-conduit -any,
+        generic-lens -any,
+        data-msgpack -any,
+        containers -any,
+        unordered-containers -any,
+        mtl -any,
+        aeson -any,
+        dhall -any,
+        conduit -any,
+        conduit-extra -any,
+        resourcet -any,
+        neat-interpolation -any,
+        generic-aeson -any,
+        aeson-pretty -any,
+        pretty-simple -any,
+        typed-process -any,
+        hxt -any,
+        hxt-xpath -any,
+        json-schema -any,
+        yaml -any,
+        data-default -any,
+        flat -any,
+        refined -any,
+        vector -any,
+        optparse-applicative -any,
+        directory -any,
+        regex -any,
+        units -any,
+        unix -any,
+        generic-deriving -any,
+        uuid -any,
+        async -any,
+        text -any,
+        units-defs -any,
+        storable-endian -any,
+        template-haskell -any,
+        mtl -any,
+        brick -any,
+        filepath -any,
+        lens -any,
+        editor-open -any
+
+library banditlib
+    exposed-modules:
+        Bandit.Class
+        Bandit.Exp3
+        Bandit.EpsGreedy
+    hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
@@ -241,13 +318,14 @@ executable nrm.so
         Codegen.Schema
         Codegen.Dhall
         Codegen.CHeader
-        Bandit.Class
-        Bandit.Exp3
-        Bandit.EpsGreedy
         CPD.Core
+        CPD.Integrated
         CPD.Values
         CPD.Utils
         CPD.Text
+        Bandit.Class
+        Bandit.Exp3
+        Bandit.EpsGreedy
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
@@ -264,7 +342,7 @@ executable nrm.so
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -fPIC -shared -dynamic -no-hs-main
+                 -fwarn-incomplete-patterns -fPIC -shared -no-hs-main
     build-depends:
         base -any,
         protolude -any,
@@ -388,13 +466,14 @@ executable nrm
         Codegen.Schema
         Codegen.Dhall
         Codegen.CHeader
-        Bandit.Class
-        Bandit.Exp3
-        Bandit.EpsGreedy
         CPD.Core
+        CPD.Integrated
         CPD.Values
         CPD.Utils
         CPD.Text
+        Bandit.Class
+        Bandit.Exp3
+        Bandit.EpsGreedy
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
@@ -535,13 +614,14 @@ executable nrmd
         Codegen.Schema
         Codegen.Dhall
         Codegen.CHeader
-        Bandit.Class
-        Bandit.Exp3
-        Bandit.EpsGreedy
         CPD.Core
+        CPD.Integrated
         CPD.Values
         CPD.Utils
         CPD.Text
+        Bandit.Class
+        Bandit.Exp3
+        Bandit.EpsGreedy
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances

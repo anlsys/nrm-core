@@ -254,16 +254,16 @@ let extramodules =
       , "Codegen.Schema"
       , "Codegen.Dhall"
       , "Codegen.CHeader"
-      , "Bandit.Class"
-      , "Bandit.Exp3"
-      , "Bandit.EpsGreedy"
       , "CPD.Core"
+      , "CPD.Integrated"
       , "CPD.Values"
       , "CPD.Utils"
       , "CPD.Text"
       ]
 
-let allmodules = modules # extramodules
+let banditmodules = [ "Bandit.Class", "Bandit.Exp3", "Bandit.EpsGreedy" ]
+
+let allmodules = modules # extramodules # banditmodules
 
 let libdep =
       [ deps.base
@@ -349,6 +349,20 @@ in    prelude.defaults.Package
             , name =
                 "nrmlib"
             }
+          , { library =
+                  λ(config : types.Config)
+                →   prelude.defaults.Library
+                  ⫽ { build-depends =
+                        libdep
+                    , hs-source-dirs =
+                        [ "nrm" ]
+                    , exposed-modules =
+                        banditmodules
+                    }
+                  ⫽ copts ([] : List Text)
+            , name =
+                "banditlib"
+            }
           ]
       , executables =
           [ { executable =
@@ -363,7 +377,7 @@ in    prelude.defaults.Package
                     , other-modules =
                         allmodules
                     }
-                  ⫽ copts [ "-fPIC", "-shared", "-dynamic", "-no-hs-main" ]
+                  ⫽ copts [ "-fPIC", "-shared", "-no-hs-main" ]
             , name =
                 "nrm.so"
             }
