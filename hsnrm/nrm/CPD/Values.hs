@@ -7,8 +7,7 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module CPD.Values
-  ( Value (..)
-  , Measurement (..)
+  ( Measurement (..)
   , Action (..)
   , Measurements (..)
   , Actions (..)
@@ -22,20 +21,14 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Dhall
 import NRM.Classes.Messaging
-import NRM.Types.Units
 import NRM.Orphans.UUID ()
+import NRM.Types.Units
 import Protolude
-
-data Value
-  = DiscreteValue {discreteValue :: Discrete}
-  | ContinuousValue {continuousValue :: Double}
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Value
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
 
 data Measurement
   = Measurement
       { sensorID :: SensorID
-      , sensorValue :: Value
+      , sensorValue :: Double
       , time :: Time
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Measurement
@@ -44,7 +37,7 @@ data Measurement
 data Action
   = Action
       { actuatorID :: ActuatorID
-      , actuatorValue :: Value
+      , actuatorValue :: Discrete
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Action
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)

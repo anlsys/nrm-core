@@ -7,8 +7,10 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module CPD.Utils
-  ( validateRange
-  , Validation (..)
+  ( validateAction
+  , validateMeasurement
+  , MeasurementValidation (..)
+  , ActionValidation (..)
   , measure
   , ValidatedMeasurement (..)
   , combine
@@ -21,19 +23,22 @@ import CPD.Values
 import Data.Map as DM
 import Protolude
 
-data Validation = AdjustRange Range | Ok | Illegal
+data MeasurementValidation = AdjustInterval Interval | MeasurementOk
+
+data ActionValidation = ActionOk | InvalidAction
 
 -- | validates a single sensor's range
-validateRange :: Range -> Value -> Validation
-validateRange (Set ds) (DiscreteValue d) =
+validateMeasurement :: Interval -> Double -> MeasurementValidation
+validateMeasurement (Interval a b) d
+  | a <= d && d <= b = MeasurementOk
+  | d < a = AdjustInterval $ Interval (2 * a - b) b
+  | otherwise = AdjustInterval $ Interval a (2 * b - a)
+
+validateAction :: Admissible -> Action -> ActionValidation
+validateAction (Admissible ds) (Action _actuator d) =
   if d `elem` ds
-  then Ok
-  else Illegal
-validateRange (Interval a b) (ContinuousValue d)
-  | a <= d && d <= b = Ok
-  | d < a = AdjustRange $ Interval (2 * a - b) b
-  | otherwise = AdjustRange $ Interval a (2 * b - a)
-validateRange _ _ = Illegal
+  then ActionOk
+  else InvalidAction
 
 data ValidatedMeasurement
   = Measured Measurement

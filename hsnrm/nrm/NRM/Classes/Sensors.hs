@@ -13,8 +13,8 @@ module NRM.Classes.Sensors
   )
 where
 
-import Protolude
 import qualified CPD.Core as CPD
+import Protolude
 
 class IsSensor a where
 
@@ -30,7 +30,7 @@ class HasSensors a aCtx | a -> aCtx where
 
   listSensors :: aCtx -> a -> Map CPD.SensorID PackedSensor
 
-  adjustRange :: CPD.SensorID -> CPD.Range -> a -> a
+  adjustRange :: CPD.SensorID -> CPD.Interval -> a -> a
 
 toCPDPackedSensor :: CPD.SensorID -> PackedSensor -> (CPD.SensorID, CPD.Sensor)
 toCPDPackedSensor id (MkPackedSensor s) = toCPDSensor id s

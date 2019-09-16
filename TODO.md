@@ -59,3 +59,5 @@ locate and remove {-*-} comments
 - remove parseID -like functions
 
 - do derivingvia on units
+
+- check adjustRange calls

@@ -11,7 +11,8 @@ module CPD.Core
     Problem (..)
   , emptyProblem
   , Metadata (..)
-  , Range (..)
+  , Interval (..)
+  , Admissible (..)
   , Discrete (..)
   , Frequency (..)
   , -- * Sensors
@@ -87,15 +88,18 @@ data Frequency
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Frequency
 
-data Metadata = Metadata {range :: Range, frequency :: Frequency}
+data Metadata = Metadata {range :: Interval, frequency :: Frequency}
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Metadata
 
-data Range
-  = Set {admissibleValues :: [Discrete]}
-  | Interval {min :: Double, max :: Double}
+data Interval
+  = Interval {min :: Double, max :: Double}
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Range
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Interval
+
+data Admissible = Admissible {admissibleValues :: [Discrete]}
+  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Admissible
 
 -------- SENSORS
 newtype SensorID = SensorID {sensorID :: U.UUID}
