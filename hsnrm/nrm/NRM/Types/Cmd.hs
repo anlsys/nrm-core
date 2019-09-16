@@ -28,6 +28,7 @@ module NRM.Types.Cmd
 where
 
 import CPD.Core as CPD
+import Control.Lens
 import Data.Aeson as A
 import Data.Data
 import Data.Generics.Product
@@ -38,7 +39,6 @@ import Data.String (IsString (..))
 import qualified Data.UUID as U
 import Data.UUID.V1 (nextUUID)
 import Dhall hiding (field)
-import Control.Lens
 import NRM.Classes.Messaging
 import NRM.Classes.Sensors
 import NRM.Orphans.ExitCode ()
@@ -57,7 +57,7 @@ data CmdSpec
       , args :: Arguments
       , env :: Env
       }
-  deriving (Show, Generic,Data, MessagePack)
+  deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdSpec
 
 data CmdCore
@@ -67,7 +67,7 @@ data CmdCore
       , upstreamClientID :: Maybe UC.UpstreamClientID
       , manifest :: Manifest
       }
-  deriving (Show, Generic,Data, MessagePack)
+  deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdCore
 
 data Cmd
@@ -77,7 +77,7 @@ data Cmd
       , processState :: ProcessState
       , downstreamCmds :: Map DCC.DownstreamCmdClientID DCC.DownstreamCmdClient
       }
-  deriving (Show, Generic,Data, MessagePack)
+  deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cmd
 
 mkCmd :: CmdSpec -> Manifest -> Maybe UC.UpstreamClientID -> CmdCore
@@ -116,11 +116,11 @@ removeDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
   }
 
 newtype TaskID = TaskID Int
-  deriving (Eq, Ord, Show, Read, Generic,Data, MessagePack)
+  deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON TaskID
 
 newtype Arg = Arg Text
-  deriving (Show, Generic,Data, MessagePack)
+  deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Arg
 
 instance StringConv Arg Text where
@@ -128,7 +128,7 @@ instance StringConv Arg Text where
   strConv _ (Arg x) = toS x
 
 newtype Command = Command Text
-  deriving (Show, Eq, Generic,Data, MessagePack)
+  deriving (Show, Eq, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Command
   deriving (IsString, Interpret, Inject) via Text
 
@@ -137,16 +137,16 @@ instance StringConv Command Text where
   strConv _ (Command x) = toS x
 
 newtype Arguments = Arguments [Arg]
-  deriving (Show, Generic,Data, MessagePack)
+  deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Arguments
 
 newtype Env = Env [(Text, Text)]
-  deriving (Show, Generic,Data, MessagePack)
+  deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Env
   deriving (Semigroup, Monoid) via [(Text, Text)]
 
 newtype CmdID = CmdID U.UUID
-  deriving (Show, Eq, Ord, Generic,Data, ToJSONKey, FromJSONKey, MessagePack)
+  deriving (Show, Eq, Ord, Generic, Data, ToJSONKey, FromJSONKey, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdID
 
 instance IsString CmdID where
@@ -190,4 +190,3 @@ instance HasSensors Cmd CmdID where
           then dc & field @"maxValue" .~ (Operations $ floor b)
           else dc
         )
-  adjustRange _ _ p = p

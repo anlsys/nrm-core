@@ -20,17 +20,19 @@ where
 
 import Bandit.Exp3
 import CPD.Core as C
+import CPD.Integrated as C
 import CPD.Values as V
 import Control.Lens
-import Data.Aeson  as A hiding ((.=))
+import Data.Aeson as A hiding ((.=))
 import Data.Data
 import Data.Generics.Product
 import Data.JSON.Schema
 import Data.MessagePack
 import Dhall hiding (field)
 import NRM.Classes.Messaging
-import NRM.Types.Units
+{-import NRM.Orphans.Dhall ()-}
 import NRM.Orphans.NonEmpty ()
+import NRM.Types.Units
 import Protolude
 
 data Input
@@ -48,6 +50,7 @@ newtype BanditActions = BanditActions [V.Actions]
 data Controller
   = Controller
       { cpd :: C.Problem
+      , integrator :: C.Integrator
       , bandit :: Maybe (Exp3 SensorID)
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
@@ -127,3 +130,19 @@ deriving instance MessagePack (CumulativeLoss)
 deriving instance Interpret (CumulativeLoss)
 
 deriving instance Inject (CumulativeLoss)
+
+deriving via (GenericJSON (Integrator)) instance JSONSchema (Integrator)
+
+deriving via (GenericJSON (Integrator)) instance A.ToJSON (Integrator)
+
+deriving via (GenericJSON (Integrator)) instance A.FromJSON (Integrator)
+
+deriving instance Show (Integrator)
+
+deriving instance Data (Integrator)
+
+deriving instance MessagePack (Integrator)
+
+deriving instance Interpret (Integrator)
+
+deriving instance Inject (Integrator)

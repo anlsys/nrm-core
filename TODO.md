@@ -61,3 +61,5 @@ locate and remove {-*-} comments
 - do derivingvia on units
 
 - check adjustRange calls
+
+- check presence of 'identity'

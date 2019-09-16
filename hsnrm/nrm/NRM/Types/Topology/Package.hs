@@ -57,7 +57,7 @@ newtype Package
   = Package
       { raplSensor :: Maybe RaplSensor
       }
-  deriving (Show, Generic,Data, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
 instance HasSensors Package PackageID where
 
@@ -76,4 +76,3 @@ instance HasSensors Package PackageID where
           then rapl & field @"max" .~ MaxEnergy (uJ b)
           else rapl
         )
-  adjustRange _ _ p = p

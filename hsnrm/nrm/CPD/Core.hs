@@ -41,6 +41,7 @@ import qualified Data.Aeson as A
 import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
+import Data.String (IsString (..))
 import qualified Data.UUID as U
 import qualified Data.UUID.V4 as UV4
 import Dhall
@@ -116,6 +117,13 @@ newtype SensorID = SensorID {sensorID :: U.UUID}
     , Interpret
     , Inject
     )
+
+instance IsString SensorID where
+
+  fromString x =
+    SensorID $
+      fromMaybe (panic "couldn't decode SensorID")
+        (U.fromText $ toS x)
 
 nextSensorID :: IO SensorID
 nextSensorID = UV4.nextRandom <&> SensorID
