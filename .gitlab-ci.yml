@@ -1,5 +1,6 @@
 doc:
   script: ./shake doc
   artifacts:
-    paths: ./html/
+    paths: 
+    - ./html/ 
     expire_in: 1 month
