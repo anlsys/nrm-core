@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE PackageImports #-}
 
 {-|
@@ -8,14 +9,17 @@ Copyright   : (c) Valentin Reis, 2018
 License     : MIT
 Maintainer  : fre@freux.fr
 -}
+
 import Control.Monad
 import Data.Text (dropEnd, strip)
 import Development.Shake hiding (getEnv)
 import Development.Shake.FilePath
 import Options.Applicative as OA
 import Protolude
+import Data.Text (lines)
 import System.Directory
 import System.Environment (getEnv, withArgs)
+import qualified Prelude
 import "Glob" System.FilePath.Glob
 import qualified System.IO as SIO
   ( BufferMode (..)
@@ -146,12 +150,15 @@ runshake as =
             , "nrmdep"
             ]
         )
-    phony "doc" $
-      liftIO
-        ( runProcess_ $ setWorkingDir "hsnrm" $
+    phony "doc" $do
+      (exitCode, out) <- liftIO
+        ( readProcessStdout $ setWorkingDir "hsnrm" $
           proc "cabal"
             [ "v2-haddock"
             , "nrm.so"
             , "--haddock-hyperlink-source"
             ]
         )
+      putText $ toS out
+      let path = Prelude.last $ Data.Text.lines $ toS out
+      liftIO ( runProcess_ $ proc "cp" ["-r",dropFileName $  toS path  , "html" ])

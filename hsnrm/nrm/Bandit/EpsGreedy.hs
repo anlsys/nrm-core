@@ -6,6 +6,8 @@ Maintainer  : fre@freux.fr
 -}
 module Bandit.EpsGreedy
   ( EpsGreedy (..)
+  , Weight (..)
+  , EpsGreedyHyper (..)
   , ScreeningGreedy (..)
   , ExploreExploitGreedy (..)
   )
@@ -90,33 +92,34 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
                   , k = length (screened sg) + 1
                   , weights = toW <$> ((l, screening sg) :| screened sg)
                   }
-            put $ ExploreExploit eeg
-            pickAction eeg
+            a <- pickAction eeg
+            put $ ExploreExploit $ eeg {lastAction = a}
+            return a
             where
               toW (loss, action) = Weight loss 1 action
-      ExploreExploit eeg -> 
+      ExploreExploit s -> do
+        let eeg =
+              s
+                { t = t s + 1
+                , weights = weights s <&> \w ->
+                  if action w == lastAction s
+                  then updateAvgLoss l w
+                  else w
+                }
+        a <- pickAction eeg
+        put $ ExploreExploit $ eeg {lastAction = a}
+        return a
 
 pickAction :: (MonadRandom m) => ExploreExploitGreedy a -> m a
 pickAction ExploreExploitGreedy {..} =
   RS.sample . DC.fromWeightedList $ toList $ weights <&> w2tuple
   where
-    w2tuple (Weight avgloss hits action) = (avgloss, action)
+    w2tuple (Weight avgloss _hits action) = (avgloss, action)
 
-{-Screening sg ->-}
-{-(screening sg) <&>-}
-{-sg &-}
-{-(field @"screened") <>=-}
-{-(screening sg)-}
-{-return $-}
-{-undefined-}
-{-ExploreExploit ig -> undefined-}
-
-{-s >>= btw (assign (field @"lastAction") . Just)-}
-{-where-}
-{-s bandit = RS.sample . DC.fromWeightedList $ catMaybes $ weights bandit <&> w2tuple-}
-{-w2tuple (Weight (Just (l, i)) action) = Just (l / i, action)-}
-{-w2tuple (Weight Nothing _) = Nothing-}
-
-{-updateCumLoss :: Double -> Weight a -> Weight a-}
-{-updateCumLoss l w@(Weight (Probability p) (CumulativeLoss cL) _) =-}
-{-w & field @"cumulativeLoss" .~ CumulativeLoss (cL + (l / p))-}
+-- | TODO improve numerical resiliency.
+updateAvgLoss :: Double -> Weight a -> Weight a
+updateAvgLoss l (Weight avgloss hits action) =
+  Weight
+    ((avgloss * fromIntegral hits + l) / (fromIntegral hits + 1))
+    (hits + 1)
+    action

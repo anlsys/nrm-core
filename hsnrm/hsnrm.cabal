@@ -123,6 +123,7 @@ library nrmlib
     build-depends:
         base -any,
         protolude -any,
+        mtl-compat -any,
         vcs-revision -any,
         transformers -any,
         bytestring -any,
@@ -199,6 +200,7 @@ library banditlib
     build-depends:
         base -any,
         protolude -any,
+        mtl-compat -any,
         vcs-revision -any,
         transformers -any,
         bytestring -any,
@@ -348,6 +350,7 @@ executable nrm.so
     build-depends:
         base -any,
         protolude -any,
+        mtl-compat -any,
         vcs-revision -any,
         transformers -any,
         bytestring -any,
@@ -497,6 +500,7 @@ executable nrm
     build-depends:
         base -any,
         protolude -any,
+        mtl-compat -any,
         vcs-revision -any,
         transformers -any,
         bytestring -any,
@@ -646,6 +650,7 @@ executable nrmd
     build-depends:
         base -any,
         protolude -any,
+        mtl-compat -any,
         vcs-revision -any,
         transformers -any,
         bytestring -any,

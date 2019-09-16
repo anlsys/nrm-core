@@ -120,6 +120,8 @@ let deps =
           nobound "regex"
       , units-defs =
           nobound "units-defs"
+      , mtl-compat =
+          nobound "mtl-compat"
       , units =
           nobound "units"
       , data-default =
@@ -269,6 +271,7 @@ let allmodules = modules # extramodules # banditmodules
 let libdep =
       [ deps.base
       , deps.protolude
+      , deps.mtl-compat
       , deps.vcs-revision
       , deps.transformers
       , deps.bytestring
