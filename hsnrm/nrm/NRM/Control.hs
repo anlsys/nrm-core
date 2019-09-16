@@ -22,7 +22,7 @@ import Bandit.Exp3
 import CPD.Core as C
 import CPD.Values as V
 import Control.Lens
-import qualified Data.Aeson as A
+import Data.Aeson  as A
 import Data.Data
 import Data.Generics.Product
 import Data.JSON.Schema
@@ -30,6 +30,7 @@ import Data.MessagePack
 import Dhall hiding (field)
 import NRM.Classes.Messaging
 import NRM.Types.Units
+import NRM.Orphans.NonEmpty
 import Protolude
 
 data Input
@@ -57,12 +58,12 @@ initialController = Controller {cpd = C.emptyProblem, bandit = Nothing}
 
 control :: (MonadState Controller m) => Input -> m Decision
 control (Reconfigure c) = do
-  field @"cpd" .= c
+  {-field @"cpd" .= c-}
   {-field @"bandit" .= init [ ]-}
   return DoNothing
 
 -- Bunch of instances to serialize the bandit state..
-
+--
 deriving via (GenericJSON (Weight SensorID)) instance JSONSchema (Weight SensorID)
 
 deriving via (GenericJSON (Weight SensorID)) instance A.ToJSON (Weight SensorID)
@@ -126,4 +127,3 @@ deriving instance MessagePack (CumulativeLoss)
 deriving instance Interpret (CumulativeLoss)
 
 deriving instance Inject (CumulativeLoss)
-

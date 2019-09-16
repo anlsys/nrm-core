@@ -51,8 +51,8 @@ insertCmd :: CmdID -> Cmd -> Slice -> Slice
 insertCmd cmdID cmd slice = slice {cmds = DM.insert cmdID cmd (cmds slice)}
 
 data SliceID = SliceID U.UUID | Name Text
-  deriving (Show, Eq, Ord, Generic, Data, FromJSONKey, ToJSONKey)
-  deriving (ToJSON, FromJSON) via GenericJSON SliceID
+  deriving (Show, Eq, Ord, Generic, Data, FromJSONKey, ToJSONKey, MessagePack)
+  deriving (ToJSON, FromJSON, JSONSchema) via GenericJSON SliceID
 
 nextSliceID :: IO (Maybe SliceID)
 nextSliceID = fmap SliceID <$> nextUUID
@@ -65,14 +65,3 @@ parseSliceID t = case U.fromText t of
 toText :: SliceID -> Text
 toText (SliceID u) = U.toText u
 toText (Name n) = n
-
-instance JSONSchema SliceID where
-
-  schema Proxy = schema (Proxy :: Proxy Text)
-
-instance MessagePack SliceID where
-
-  toObject (SliceID c) = toObject $ U.toText c
-  toObject (Name c) = toObject c
-
-  fromObject x = fromObject x <&> parseSliceID

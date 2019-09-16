@@ -232,6 +232,7 @@ let modules =
       , "NRM.Orphans.ExitCode"
       , "NRM.Orphans.UUID"
       , "NRM.Orphans.Dhall"
+      , "NRM.Orphans.NonEmpty"
       , "NRM.Types.Messaging.DownstreamEvent"
       , "NRM.Types.Messaging.DownstreamEvent.JSON"
       , "NRM.Types.Messaging.UpstreamPub"

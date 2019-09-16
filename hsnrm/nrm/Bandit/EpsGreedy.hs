@@ -6,63 +6,117 @@ Maintainer  : fre@freux.fr
 -}
 module Bandit.EpsGreedy
   ( EpsGreedy (..)
+  , ScreeningGreedy (..)
+  , ExploreExploitGreedy (..)
   )
 where
 
 import Bandit.Class
-import Control.Lens
-import Data.Generics.Product
+{-import qualified Data.List.NonEmpty as NE-}
 import Data.Random
 import qualified Data.Random.Distribution.Categorical as DC
 import qualified Data.Random.Sample as RS
 import Protolude
-import Refined
 
 data EpsGreedy a
-  = Initial
-      {actions :: [a]}
-  | Screening
-      { t :: Int
-      , lastAction :: Maybe a
-      , k :: Int
-      , screened :: [Double]
-      , actions :: [a]
-      }
-  | ExploreExploit
-      { t :: Int
-      , lastAction :: Maybe a
-      , k :: Int
-      , weights :: [Weight a]
+  = Screening (ScreeningGreedy a)
+  | ExploreExploit (ExploreExploitGreedy a)
+
+data ScreeningGreedy a
+  = ScreeningGreedy
+      { tScreening :: Int
+      , epsScreening :: Double
+      , screening :: a
+      , screened :: [(Double, a)]
+      , screenQueue :: [a]
       }
 
--- | Average loss counter for an action
-newtype AverageLoss = AverageLoss {getAverageLoss :: Double}
-  deriving (Generic)
+data ExploreExploitGreedy a
+  = ExploreExploitGreedy
+      { t :: Int
+      , eps :: Double
+      , lastAction :: a
+      , k :: Int
+      , weights :: NonEmpty (Weight a)
+      }
 
 -- | EpsGreedy data structure for one action
 data Weight a
   = Weight
-      { cumulativeLoss :: Maybe (AverageLoss, Int)
+      { averageLoss :: Double
+      , hits :: Int
       , action :: a
       }
   deriving (Generic)
 
-newtype Epsilon = Epsilon Double
+data EpsGreedyHyper a
+  = EpsGreedyHyper
+      { epsilon :: Double
+      , arms :: Arms a
+      }
 
-instance (Eq a) => Bandit (EpsGreedy a) Epsilon Set Proxy a Double where
+instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
 
-  init _ as _ = Initial {actions = as}
+  init (EpsGreedyHyper e (Arms (a :| as))) =
+    return $
+      ( Screening $ ScreeningGreedy
+          { tScreening = 1
+          , epsScreening = e
+          , screening = a
+          , screened = []
+          , screenQueue = as
+          }
+      , a
+      )
 
-{-step l =-}
-pickAction :: (MonadRandom m, MonadState (EpsGreedy a) m) => m a
-pickAction = get >>= s >>= btw (assign (field @"lastAction") . Just)
+  step l =
+    get >>= \case
+      Screening sg ->
+        case screenQueue sg of
+          (a : as) -> do
+            put $ Screening $
+              sg
+                { tScreening = tScreening sg + 1
+                , screening = a
+                , screened = (l, screening sg) : screened sg
+                , screenQueue = as
+                }
+            return a
+          [] -> do
+            let eeg = ExploreExploitGreedy
+                  { t = tScreening sg + 1
+                  , eps = epsScreening sg
+                  , lastAction = screening sg
+                  , k = length (screened sg) + 1
+                  , weights = toW <$> ((l, screening sg) :| screened sg)
+                  }
+            put $ ExploreExploit eeg
+            pickAction eeg
+            where
+              toW (loss, action) = Weight loss 1 action
+      ExploreExploit eeg -> 
+
+pickAction :: (MonadRandom m) => ExploreExploitGreedy a -> m a
+pickAction ExploreExploitGreedy {..} =
+  RS.sample . DC.fromWeightedList $ toList $ weights <&> w2tuple
   where
-    s bandit = RS.sample . DC.fromWeightedList $ catMaybes $ weights bandit <&> w2tuple
-    w2tuple (Weight (Just (l, i)) action) = Just (l / i, action)
-    w2tuple (Weight Nothing _) = Nothing
+    w2tuple (Weight avgloss hits action) = (avgloss, action)
+
+{-Screening sg ->-}
+{-(screening sg) <&>-}
+{-sg &-}
+{-(field @"screened") <>=-}
+{-(screening sg)-}
+{-return $-}
+{-undefined-}
+{-ExploreExploit ig -> undefined-}
+
+{-s >>= btw (assign (field @"lastAction") . Just)-}
+{-where-}
+{-s bandit = RS.sample . DC.fromWeightedList $ catMaybes $ weights bandit <&> w2tuple-}
+{-w2tuple (Weight (Just (l, i)) action) = Just (l / i, action)-}
+{-w2tuple (Weight Nothing _) = Nothing-}
 
 {-updateCumLoss :: Double -> Weight a -> Weight a-}
 {-updateCumLoss l w@(Weight (Probability p) (CumulativeLoss cL) _) =-}
 {-w & field @"cumulativeLoss" .~ CumulativeLoss (cL + (l / p))-}
-btw :: (Functor f) => (t -> f b) -> t -> f t
-btw k x = x <$ k x
