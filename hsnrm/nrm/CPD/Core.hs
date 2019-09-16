@@ -157,10 +157,10 @@ newtype Target = Target {targetTag :: Text}
   deriving (Show, Generic, Data, MessagePack)
   deriving (Interpret, Inject) via Text
 
-newtype ActuatorMetadata = ActuatorMetadata {actuatorRange :: Range}
+newtype ActuatorMetadata = ActuatorMetadata {actuatorRange :: Discrete}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorMetadata
   deriving (Show, Generic, Data, MessagePack)
-  deriving (Interpret, Inject) via Range
+  deriving (Interpret, Inject) via Discrete
 
 data Actuator
   = Actuator

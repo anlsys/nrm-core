@@ -10,3 +10,15 @@ module CPD.Integrated
   (
   )
 where
+
+import CPD.Core
+import CPD.Values
+import Protolude
+
+data Integrator = Integrator {}
+
+initIntegrator :: Problem -> Integrator
+initIntegrator = undefined
+
+updateIntegrator :: Integrator -> Measurement
+updateIntegrator = undefined
