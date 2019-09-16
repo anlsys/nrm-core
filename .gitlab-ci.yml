@@ -4,3 +4,4 @@ doc:
     paths: 
     - ./html/ 
     expire_in: 1 month
+  tag: integration
