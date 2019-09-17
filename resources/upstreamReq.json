@@ -30,7 +30,30 @@
                             "type": "boolean"
                         },
                         "runSliceID": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         },
                         "manifest": {
                             "required": [
@@ -302,7 +325,30 @@
                     "type": "object",
                     "properties": {
                         "killSliceID": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }

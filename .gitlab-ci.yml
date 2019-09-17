@@ -6,3 +6,4 @@ doc:
     expire_in: 1 month
   tags:
   - integration
+  - notknl

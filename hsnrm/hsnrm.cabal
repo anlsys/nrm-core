@@ -346,7 +346,7 @@ executable nrm.so
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -fPIC -shared -no-hs-main
+                 -fwarn-incomplete-patterns -fPIC -shared -no-hs-main -dynamic
     build-depends:
         base -any,
         protolude -any,

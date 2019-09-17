@@ -381,7 +381,7 @@ in    prelude.defaults.Package
                     , other-modules =
                         allmodules
                     }
-                  ⫽ copts [ "-fPIC", "-shared", "-no-hs-main" ]
+                  ⫽ copts [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]
             , name =
                 "nrm.so"
             }

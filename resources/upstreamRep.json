@@ -17,7 +17,30 @@
                             "items": {
                                 "items": [
                                     {
-                                        "type": "string"
+                                        "oneOf": [
+                                            {
+                                                "required": [
+                                                    "sliceID"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "sliceID": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "required": [
+                                                    "name"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        ]
                                     },
                                     {
                                         "required": [
@@ -678,11 +701,11 @@
                                     "items": {
                                         "required": [
                                             "sensorKey",
-                                            "sensorValue"
+                                            "sensorDesc"
                                         ],
                                         "type": "object",
                                         "properties": {
-                                            "sensorValue": {
+                                            "sensorDesc": {
                                                 "required": [
                                                     "source",
                                                     "sensorMeta"
@@ -750,54 +773,19 @@
                                                                 ]
                                                             },
                                                             "range": {
-                                                                "oneOf": [
-                                                                    {
-                                                                        "required": [
-                                                                            "set"
-                                                                        ],
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "set": {
-                                                                                "required": [
-                                                                                    "admissibleValues"
-                                                                                ],
-                                                                                "type": "object",
-                                                                                "properties": {
-                                                                                    "admissibleValues": {
-                                                                                        "uniqueItems": false,
-                                                                                        "items": {
-                                                                                            "type": "string"
-                                                                                        },
-                                                                                        "type": "array"
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
+                                                                "required": [
+                                                                    "min",
+                                                                    "max"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "max": {
+                                                                        "type": "number"
                                                                     },
-                                                                    {
-                                                                        "required": [
-                                                                            "interval"
-                                                                        ],
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "interval": {
-                                                                                "required": [
-                                                                                    "min",
-                                                                                    "max"
-                                                                                ],
-                                                                                "type": "object",
-                                                                                "properties": {
-                                                                                    "max": {
-                                                                                        "type": "number"
-                                                                                    },
-                                                                                    "min": {
-                                                                                        "type": "number"
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
+                                                                    "min": {
+                                                                        "type": "number"
                                                                     }
-                                                                ]
+                                                                }
                                                             }
                                                         }
                                                     }
@@ -823,11 +811,11 @@
                                     "items": {
                                         "required": [
                                             "actuatorKey",
-                                            "actuatorValue"
+                                            "actuatorDesc"
                                         ],
                                         "type": "object",
                                         "properties": {
-                                            "actuatorValue": {
+                                            "actuatorDesc": {
                                                 "required": [
                                                     "target",
                                                     "actuatorMeta"
@@ -841,54 +829,7 @@
                                                         "type": "object",
                                                         "properties": {
                                                             "actuatorRange": {
-                                                                "oneOf": [
-                                                                    {
-                                                                        "required": [
-                                                                            "set"
-                                                                        ],
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "set": {
-                                                                                "required": [
-                                                                                    "admissibleValues"
-                                                                                ],
-                                                                                "type": "object",
-                                                                                "properties": {
-                                                                                    "admissibleValues": {
-                                                                                        "uniqueItems": false,
-                                                                                        "items": {
-                                                                                            "type": "string"
-                                                                                        },
-                                                                                        "type": "array"
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    },
-                                                                    {
-                                                                        "required": [
-                                                                            "interval"
-                                                                        ],
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "interval": {
-                                                                                "required": [
-                                                                                    "min",
-                                                                                    "max"
-                                                                                ],
-                                                                                "type": "object",
-                                                                                "properties": {
-                                                                                    "max": {
-                                                                                        "type": "number"
-                                                                                    },
-                                                                                    "min": {
-                                                                                        "type": "number"
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                ]
+                                                                "type": "string"
                                                             }
                                                         }
                                                     },
@@ -943,7 +884,30 @@
                             "type": "string"
                         },
                         "startSliceID": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -966,7 +930,30 @@
                             "type": "string"
                         },
                         "stdoutSliceID": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -989,7 +976,30 @@
                             "type": "string"
                         },
                         "stderrSliceID": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1110,7 +1120,30 @@
                     "type": "object",
                     "properties": {
                         "killedSliceID": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }

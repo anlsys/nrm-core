@@ -38,7 +38,30 @@
                     "type": "object",
                     "properties": {
                         "startSliceID": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         },
                         "errno": {
                             "type": "number"
@@ -70,7 +93,30 @@
                             "type": "object"
                         },
                         "exitSliceID": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -93,7 +139,30 @@
                             "type": "number"
                         },
                         "perfSliceID": {
-                            "type": "string"
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
