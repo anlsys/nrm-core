@@ -30,7 +30,6 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Dhall hiding (field)
 import NRM.Classes.Messaging
-{-import NRM.Orphans.Dhall ()-}
 import NRM.Orphans.NonEmpty ()
 import NRM.Types.Units
 import Protolude

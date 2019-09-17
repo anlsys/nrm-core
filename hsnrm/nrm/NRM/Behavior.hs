@@ -237,7 +237,17 @@ behavior _ st (DownstreamEvent clientid msg) = case msg of
     return $ fromMaybe (st, Log "No corresponding command for this downstream cmd registration request.") $
       registerDownstreamCmdClient cmdStartCmdID clientid st <&>
       (,Log "downstream cmd client registered.")
-  DEvent.EventCmdPerformance _ -> return (st, Log "Downstream performance event received")
+  DEvent.EventCmdPerformance DEvent.CmdPerformance {..} ->
+    DM.lookup cmdPerformanceCmdID (cmdIDMap st) & \case
+      Just (_cmd, sliceID, _slice) ->
+        return
+          ( st
+          , Pub $ UPub.PubPerformance $ UPub.Performance
+            { UPub.perf = perf
+            , UPub.perfSliceID = sliceID
+            }
+          )
+      Nothing -> return (st, Log "Downstream performance event received, but no existing command associated to.")
   DEvent.EventCmdExit DEvent.CmdExit {..} ->
     return $ fromMaybe (st, Log "No corresponding command for this downstream cmd registration request.") $
       unRegisterDownstreamCmdClient cmdExitCmdID clientid st <&>

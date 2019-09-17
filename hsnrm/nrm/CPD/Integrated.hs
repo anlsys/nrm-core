@@ -11,7 +11,9 @@ module CPD.Integrated
   , IntegratedProblem (..)
   , IntegratorAction (..)
   , Integrated (..)
+  , integrateProblem
   , initIntegrator
+  , stepIntegrator
   )
 where
 
@@ -39,10 +41,10 @@ data Integrated
 data IntegratorAction = IntegratorPasses | TriggerStep Integrated
 
 integrateProblem :: Problem -> IntegratedProblem
-integrateProblem = undefined
+integrateProblem = panic "integrateProblem not implemented"
 
 initIntegrator :: IntegratedProblem -> Integrator
-initIntegrator = undefined
+initIntegrator = panic "initIntegrator not implemented"
 
-step :: (MonadState Integrator m) => Measurements -> m IntegratorAction
-step = undefined
+stepIntegrator :: (MonadState Integrator m) => Measurements -> m IntegratorAction
+stepIntegrator _measurements = panic "stepIntegrator not implemented"

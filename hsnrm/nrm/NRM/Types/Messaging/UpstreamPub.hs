@@ -8,6 +8,11 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Types.Messaging.UpstreamPub
   ( Pub (..)
+  , Performance (..)
+  , Progress (..)
+  , Power (..)
+  , SliceStart (..)
+  , SliceExit (..)
   )
 where
 
