@@ -399,7 +399,7 @@ in    prelude.defaults.Package
                     }
                   ⫽ copts [ "-main-is", "Hnrm" ]
             , name =
-                "nrm"
+                "nrmstatic"
             }
           , { executable =
                   λ(config : types.Config)
@@ -427,7 +427,7 @@ in    prelude.defaults.Package
                     }
                   ⫽ copts [ "-main-is", "Hnrm" ]
             , name =
-                "nrmdep"
+                "nrm"
             }
           , { executable =
                   λ(config : types.Config)

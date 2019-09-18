@@ -55,9 +55,15 @@ def send(apiname=None):
         else:
 
             def send(self, msg):
-                self.socket.send(msg)
+                self.socket.send(msg.encode())
 
         setattr(cls, "send", send)
+
+        def send_multi(self, msgs):
+            for msg in msgs:
+                send(msg)
+
+        setattr(cls, "send_multi", send_multi)
 
         return cls
 

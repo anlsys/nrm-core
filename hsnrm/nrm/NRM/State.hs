@@ -75,7 +75,7 @@ initialState c = do
         else Nothing
         , ..
         }
-   in return s {cpd = NRM.CPD.toCPD s}
+   in return $ s {cpd = NRM.CPD.toCPD s}
   where
     goRAPL
       :: Map PackageID Package

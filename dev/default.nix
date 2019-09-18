@@ -84,7 +84,7 @@ in rec {
       pkgs.nodejs pkgs.yarn 
     ];
     shellHook = ''
-      export PATH=$PATH:./dev/:./pynrm/bin:./hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrmdep/build/nrmdep/
+      export PATH=$PATH:./dev/:./pynrm/bin:./hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm/
       export PYTHONPATH=$PYTHONPATH:./pynrm/
     '';
   });

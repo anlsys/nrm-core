@@ -135,7 +135,7 @@ instance Default Cfg where
 instance Default UpstreamCfg where
 
   def = UpstreamCfg
-    { upstreamBindAddress = "tcp://localhost"
+    { upstreamBindAddress = "*"
     , pubPort = 2345
     , rpcPort = 3456
     }

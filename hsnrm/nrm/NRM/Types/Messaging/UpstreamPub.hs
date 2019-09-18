@@ -16,6 +16,8 @@ module NRM.Types.Messaging.UpstreamPub
   )
 where
 
+import CPD.Core as CPD
+import CPD.Values as CPD
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
@@ -26,7 +28,9 @@ import qualified NRM.Types.Units as U
 import Protolude
 
 data Pub
-  = PubPower Power
+  = PubMeasurements CPD.Measurements
+  | PubCPD CPD.Problem
+  | PubPower Power
   | PubSliceStart SliceStart
   | PubSliceExit SliceExit
   | PubPerformance Performance

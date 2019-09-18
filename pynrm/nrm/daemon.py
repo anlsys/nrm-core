@@ -47,6 +47,7 @@ class Daemon(object):
 
         self.dispatch = {
             "reply": self.upstream_rpc.send,
+            "publish": self.upstream_pub.send_multi,
             "cmd": self.cmd,
             "kill": self.kill,
             "pop": self.popchild,
@@ -129,11 +130,11 @@ class Daemon(object):
         registerFailed = self.wrap("registerCmdFailure", cmdID)
         environment = dict(environment)
         _logger.info(
-            "starting command " + str(cmd) + " with argument list " + str(arguments)
+            "starting command " + str(cmd) + " with argument list " + str(list(arguments))
         )
         try:
             p = process.Subprocess(
-                [cmd] + arguments,
+                [cmd] + list(arguments),
                 stdout=process.Subprocess.STREAM,
                 stderr=process.Subprocess.STREAM,
                 close_fds=True,

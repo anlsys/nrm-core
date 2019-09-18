@@ -69,15 +69,15 @@ data Behavior
     Log Text
   | -- | Reply to an upstream client.
     Rep UC.UpstreamClientID URep.Rep
-  | -- | Publish a message on upstream
-    Pub UPub.Pub
+  | -- | Publish messages on upstream
+    Pub [UPub.Pub]
   | -- | Start a child process
     StartChild CmdID Command Arguments Env
   | -- | Kill children processes and send some messages back upstream.
     KillChildren [CmdID] [(UC.UpstreamClientID, URep.Rep)]
   | -- | Pop one child process and may send a message back upstream.
     ClearChild CmdID (Maybe (UC.UpstreamClientID, URep.Rep))
-  deriving (Generic)
+  deriving (Show, Generic)
 
 mayRep :: Cmd -> URep.Rep -> Behavior
 mayRep c rep = case (upstreamClientID . cmdCore) c of
@@ -242,10 +242,10 @@ behavior _ st (DownstreamEvent clientid msg) = case msg of
       Just (_cmd, sliceID, _slice) ->
         return
           ( st
-          , Pub $ UPub.PubPerformance $ UPub.Performance
+          , Pub [ UPub.PubPerformance $ UPub.Performance
             { UPub.perf = perf
             , UPub.perfSliceID = sliceID
-            }
+            }]
           )
       Nothing -> return (st, Log "Downstream performance event received, but no existing command associated to.")
   DEvent.EventCmdExit DEvent.CmdExit {..} ->
@@ -260,7 +260,7 @@ instance MessagePack Behavior where
 
   toObject NoBehavior = toObject ("noop" :: Text)
   toObject (Log msg) = toObject ("log" :: Text, msg)
-  toObject (Pub msg) = toObject ("publish" :: Text, M.encodeT msg)
+  toObject (Pub msgs) = toObject ("publish" :: Text, M.encodeT <$> msgs)
   toObject (Rep clientid msg) =
     toObject ("reply" :: Text, clientid, M.encodeT msg)
   toObject (StartChild cmdID cmd args env) =

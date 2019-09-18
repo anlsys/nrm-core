@@ -84,8 +84,8 @@ main =
               (progDesc "run shake for cabal build.")
             ) <>
           OA.command
-            "binaries"
-            ( info (pure (runshake ["binaries"]))
+            "client"
+            ( info (pure (runshake ["client"]))
               (progDesc "run shake for cabal build.")
             ) <>
           help "Type of operation to run."
@@ -141,13 +141,12 @@ runshake as =
             , "codegen"
             ]
         )
-    phony "binaries" $
+    phony "client" $
       liftIO
         ( runProcess_ $ setWorkingDir "hsnrm" $
           proc "cabal"
             [ "v2-build"
-            , "nrmddep"
-            , "nrmdep"
+            , "nrm"
             ]
         )
     phony "doc" $do

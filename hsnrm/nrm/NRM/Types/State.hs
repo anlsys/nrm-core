@@ -22,9 +22,9 @@ where
 
 import CPD.Core as CPD
 import Data.Aeson
+import Data.Data
 import Data.JSON.Schema
 import Data.Map as DM
-import Data.Data
 import Data.MessagePack
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos

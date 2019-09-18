@@ -110,16 +110,11 @@ downstreamReceive cfg s msg clientid =
 
 -- | Behave on upstream message
 upstreamReceive :: C.Cfg -> TS.NRMState -> Text -> Text -> IO (TS.NRMState, B.Behavior)
-upstreamReceive cfg s msg clientid =
+upstreamReceive cfg s msg clientid = do
   B.behavior cfg s $
     B.Req
-      ( fromMaybe
-        (panic "couldn't parse upstream client ID")
-        (UC.fromText clientid)
-      )
-      ( fromMaybe (panic "couldn't decode downstream rcv")
-        (M.decodeT msg)
-      )
+      (fromMaybe (panic "couldn't parse upstream client ID") (UC.fromText clientid))
+      (fromMaybe (panic "couldn't decode downstream rcv") (M.decodeT msg))
 
 -- | when it's time to activate a sensor
 doSensor :: C.Cfg -> TS.NRMState -> IO (TS.NRMState, B.Behavior)

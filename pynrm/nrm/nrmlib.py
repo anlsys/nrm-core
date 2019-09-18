@@ -23,7 +23,7 @@ class HSO(CDLL):
             length_64bits = struct.pack(">q", len(packed))
             ptr = fun(length_64bits + packed)
             data_length = struct.unpack(">q", ptr[:8])[0]
-            res = msgpack.unpackb(ptr[8:8 + data_length], raw=False)
+            res = msgpack.unpackb(ptr[8:8 + data_length], raw=False,use_list=False)
             self.free(ptr)
             return res
 

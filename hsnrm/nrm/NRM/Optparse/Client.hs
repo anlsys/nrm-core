@@ -80,7 +80,7 @@ parserCommon =
   where
     rpc = Cfg.rpcPort . Cfg.upstreamCfg $ def
     pub = Cfg.pubPort . Cfg.upstreamCfg $ def
-    addr = Cfg.upstreamBindAddress . Cfg.upstreamCfg $ def
+    addr = "localhost"
 
 data RunCfg
   = RunCfg
@@ -236,6 +236,11 @@ opts =
       "config"
       ( info (return <$> (Opts (Right $ ReqGetConfig GetConfig) <$> parserCommon)) $
         progDesc "Show NRM configuration"
+      ) <>
+    command
+      "listen"
+      ( info (return <$> (Opts (Left Listen) <$> parserCommon)) $
+        progDesc "Listen to NRM upstream pub messages"
       ) <>
     help
       "Choice of operation."

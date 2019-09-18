@@ -40,10 +40,10 @@ import qualified System.ZMQ4.Monadic as ZMQ
 import Text.Pretty.Simple
 
 pubAddress :: C.CommonOpts -> Text
-pubAddress c = C.upstreamBindAddress c <> ":" <> (show $ C.pubPort c)
+pubAddress c = "tcp:://" <> C.upstreamBindAddress c <> ":" <> (show $ C.pubPort c)
 
 rpcAddress :: C.CommonOpts -> Text
-rpcAddress c = C.upstreamBindAddress c <> ":" <> (show $ C.rpcPort c)
+rpcAddress c = "tcp://" <> C.upstreamBindAddress c <> ":" <> (show $ C.rpcPort c)
 
 -- | The main user facing nrm client process
 main :: IO ()

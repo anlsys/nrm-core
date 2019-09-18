@@ -401,7 +401,7 @@ executable nrm.so
         lens -any,
         editor-open -any
 
-executable nrm
+executable nrmstatic
     main-is: Hnrm.hs
     hs-source-dirs: bin nrm
     other-modules:
@@ -701,7 +701,7 @@ executable nrmd
         lens -any,
         editor-open -any
 
-executable nrmdep
+executable nrm
     main-is: bin/Hnrm.hs
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
