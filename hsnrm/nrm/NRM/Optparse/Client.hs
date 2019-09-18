@@ -7,6 +7,7 @@ Maintainer  : fre@freux.fr
 module NRM.Optparse.Client
   ( opts
   , Opts (..)
+  , Listen (..)
   , ClientVerbosity (..)
   , CommonOpts (..)
   )
@@ -17,11 +18,12 @@ import qualified Data.ByteString as B
   )
 import Data.Default
 import Dhall
+import qualified NRM.Types.Cmd as Cmd
+import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Manifest
 import qualified NRM.Types.Manifest.Dhall as D
 import qualified NRM.Types.Manifest.Yaml as Y
 import NRM.Types.Messaging.UpstreamReq
-import qualified NRM.Types.Cmd as Cmd
 import NRM.Types.Slice
 import qualified NRM.Types.Units as U
 import Options.Applicative
@@ -38,6 +40,9 @@ data CommonOpts
   = CommonOpts
       { verbose :: ClientVerbosity
       , jsonPrint :: Bool
+      , pubPort :: Int
+      , rpcPort :: Int
+      , upstreamBindAddress :: Text
       }
 
 data ClientVerbosity = Normal | Verbose
@@ -51,7 +56,31 @@ parserCommon =
       (long "verbose" <> short 'v' <> help "Enable verbose mode.") <*>
     flag False
       True
-      (long "json" <> short 'v' <> help "Enable json printing.")
+      (long "json" <> short 'v' <> help "Enable json printing.") <*>
+    Options.Applicative.option Options.Applicative.auto
+      ( long "pubPort" <>
+        metavar "PORT" <>
+        help ("upstream pub port (default " <> show pub <> ").") <>
+        value pub
+      ) <*>
+    Options.Applicative.option
+      Options.Applicative.auto
+      ( long "rpcPort" <>
+        metavar "PORT" <>
+        help ("upstream rpc port (default " <> show rpc <> ").") <>
+        value rpc
+      ) <*>
+    Options.Applicative.option
+      Options.Applicative.auto
+      ( long "rpcPort" <>
+        metavar "PORT" <>
+        help ("upstream bind address (default " <> toS addr <> ").") <>
+        value addr
+      )
+  where
+    rpc = Cfg.rpcPort . Cfg.upstreamCfg $ def
+    pub = Cfg.pubPort . Cfg.upstreamCfg $ def
+    addr = Cfg.upstreamBindAddress . Cfg.upstreamCfg $ def
 
 data RunCfg
   = RunCfg
@@ -143,7 +172,9 @@ parserSetpower =
           "Power limit to set"
       )
 
-data Opts = Opts {req :: Req, commonOpts :: CommonOpts}
+data Listen = Listen
+
+data Opts = Opts {what :: Either Listen Req, commonOpts :: CommonOpts}
 
 opts :: Parser (IO Opts)
 opts =
@@ -156,7 +187,7 @@ opts =
       ( info
         ( return <$>
           ( Opts <$>
-            ( ReqKillCmd . KillCmd <$>
+            ( Right . ReqKillCmd . KillCmd <$>
               parserKillCmd
             ) <*>
             parserCommon
@@ -168,7 +199,7 @@ opts =
       ( info
         ( return <$>
           ( Opts <$>
-            ( ReqKillSlice . KillSlice <$>
+            ( Right . ReqKillSlice . KillSlice <$>
               parserKillSlice
             ) <*>
             parserCommon
@@ -180,7 +211,7 @@ opts =
       "setpower"
       ( info
         ( return <$>
-          ( Opts <$> (ReqSetPower . SetPower <$> parserSetpower) <*>
+          ( Opts <$> (Right . ReqSetPower . SetPower <$> parserSetpower) <*>
             parserCommon
           )
         ) $
@@ -188,22 +219,22 @@ opts =
       ) <>
     command
       "cpd"
-      ( info (return <$> (Opts (ReqCPD CPD) <$> parserCommon)) $
+      ( info (return <$> (Opts (Right $ ReqCPD CPD) <$> parserCommon)) $
         progDesc "Show current CPD"
       ) <>
     command
       "list"
-      ( info (return <$> (Opts (ReqSliceList SliceList) <$> parserCommon)) $
+      ( info (return <$> (Opts (Right $ ReqSliceList SliceList) <$> parserCommon)) $
         progDesc "List existing slices"
       ) <>
     command
       "state"
-      ( info (return <$> (Opts (ReqGetState GetState) <$> parserCommon)) $
+      ( info (return <$> (Opts (Right $ ReqGetState GetState) <$> parserCommon)) $
         progDesc "Show NRM state"
       ) <>
     command
       "config"
-      ( info (return <$> (Opts (ReqGetConfig GetConfig) <$> parserCommon)) $
+      ( info (return <$> (Opts (Right $ ReqGetConfig GetConfig) <$> parserCommon)) $
         progDesc "Show NRM configuration"
       ) <>
     help
@@ -263,7 +294,7 @@ run rc common = do
   env <- fmap (\(x, y) -> (toS x, toS y)) <$> getEnvironment
   return $
     Opts
-      ( ReqRun $ Run
+      ( Right . ReqRun $ Run
         { manifest = manifest
         , spec = Cmd.CmdSpec
           { cmd = Cmd.Command $ cmd rc
