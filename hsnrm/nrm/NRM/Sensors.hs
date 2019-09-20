@@ -14,41 +14,33 @@ import CPD.Core
 import Control.Lens
 import Data.Generics.Product
 import Data.Map as DM
-import qualified NRM.Types.Sensor as S
+import NRM.Classes.Sensors
 import NRM.Types.State
 import Protolude
 
--- | List sensors
 listNRMSensors :: NRMState -> Map SensorID Sensor
 listNRMSensors s =
   DM.fromList $
-    uncurry S.toCPDPackedSensor <$>
-    DM.toList (S.listSensors () s)
+    uncurry toCPDPackedSensor <$>
+    DM.toList (listSensors () s)
 
--- | List sensors
-listPackageSensors :: NRMState -> Map SensorID S.PackedSensor
+listPackageSensors :: NRMState -> Map SensorID PackedSensor
 listPackageSensors s =
-  mconcat $ uncurry S.listSensors <$>
+  mconcat $ uncurry listSensors <$>
     DM.toList (packages s)
 
-listDownstreamCmdSensors :: NRMState -> Map SensorID S.PackedSensor
+listDownstreamCmdSensors :: NRMState -> Map SensorID PackedSensor
 listDownstreamCmdSensors s =
-  mconcat $ uncurry S.listSensors <$>
+  mconcat $ uncurry listSensors <$>
     (DM.toList (cmdIDMap s) <&> \(cmdID, (cmd, _SliceID, _Slice)) -> (cmdID, cmd))
 
-instance S.HasSensors NRMState () where
+instance HasSensors NRMState () where
 
   listSensors _ s = listPackageSensors s <> listDownstreamCmdSensors s
 
   adjustRange sensorID range s =
     s &
       field @"packages" %~
-      DM.map (S.adjustRange sensorID range) &
+      DM.map (adjustRange sensorID range) &
       field @"slices" %~
-      fmap (field @"cmds" %~ DM.map (S.adjustRange sensorID range))
-
-{-updatePackage :: NRMState -> PackageID -> NRMState-}
-{-updatePackage s sensorID =-}
-  {-s &-}
-    {-((biplate :: (HasSensors a,Data m) => Traversal' m a) . at sensorID) %~-}
-    {-(fmap \s -> s & )-}
+      fmap (field @"cmds" %~ DM.map (adjustRange sensorID range))

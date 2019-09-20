@@ -2,6 +2,274 @@
     "oneOf": [
         {
             "required": [
+                "pubMeasurements"
+            ],
+            "type": "object",
+            "properties": {
+                "pubMeasurements": {
+                    "uniqueItems": false,
+                    "items": {
+                        "required": [
+                            "sensorID",
+                            "sensorValue",
+                            "time"
+                        ],
+                        "type": "object",
+                        "properties": {
+                            "time": {
+                                "type": "number"
+                            },
+                            "sensorValue": {
+                                "type": "number"
+                            },
+                            "sensorID": {
+                                "required": [
+                                    "sensorID"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "sensorID": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "type": "array"
+                }
+            }
+        },
+        {
+            "required": [
+                "pubCPD"
+            ],
+            "type": "object",
+            "properties": {
+                "pubCPD": {
+                    "required": [
+                        "sensors",
+                        "actuators",
+                        "objective"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "objective": {
+                            "required": [
+                                "linearCombination",
+                                "direction"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "direction": {
+                                    "oneOf": [
+                                        {
+                                            "const": "\"minimize\""
+                                        },
+                                        {
+                                            "const": "\"maximize\""
+                                        }
+                                    ]
+                                },
+                                "linearCombination": {
+                                    "uniqueItems": false,
+                                    "items": {
+                                        "required": [
+                                            "w",
+                                            "x"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "w": {
+                                                "type": "number"
+                                            },
+                                            "x": {
+                                                "required": [
+                                                    "sensorID"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "sensorID": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "type": "array"
+                                }
+                            }
+                        },
+                        "sensors": {
+                            "uniqueItems": false,
+                            "items": {
+                                "required": [
+                                    "sensorKey",
+                                    "sensorDesc"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "sensorDesc": {
+                                        "required": [
+                                            "source",
+                                            "sensorMeta"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "source": {
+                                                "required": [
+                                                    "sourceTag"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "sourceTag": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "sensorMeta": {
+                                                "required": [
+                                                    "range",
+                                                    "frequency"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "frequency": {
+                                                        "oneOf": [
+                                                            {
+                                                                "required": [
+                                                                    "maxFrequency"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "maxFrequency": {
+                                                                        "required": [
+                                                                            "maxFrequency"
+                                                                        ],
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "maxFrequency": {
+                                                                                "type": "number"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "required": [
+                                                                    "fixedFrequency"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "fixedFrequency": {
+                                                                        "required": [
+                                                                            "fixedFrequency"
+                                                                        ],
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "fixedFrequency": {
+                                                                                "type": "number"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    },
+                                                    "range": {
+                                                        "required": [
+                                                            "min",
+                                                            "max"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "max": {
+                                                                "type": "number"
+                                                            },
+                                                            "min": {
+                                                                "type": "number"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "sensorKey": {
+                                        "required": [
+                                            "sensorID"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "sensorID": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "type": "array"
+                        },
+                        "actuators": {
+                            "uniqueItems": false,
+                            "items": {
+                                "required": [
+                                    "actuatorKey",
+                                    "actuatorDesc"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "actuatorDesc": {
+                                        "required": [
+                                            "target",
+                                            "actuatorMeta"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "actuatorMeta": {
+                                                "required": [
+                                                    "actuatorRange"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "actuatorRange": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "target": {
+                                                "required": [
+                                                    "sourceTag"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "sourceTag": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "actuatorKey": {
+                                        "required": [
+                                            "actuatorID"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "actuatorID": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            "type": "array"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
                 "pubPower"
             ],
             "type": "object",

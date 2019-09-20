@@ -15,10 +15,13 @@ module NRM.Behavior
   )
 where
 
+import qualified CPD.Utils as CPD
+import qualified CPD.Values as CPD
 import qualified Data.Map as DM
 import Data.MessagePack
 import qualified NRM.CPD as NRMCPD
 import qualified NRM.Classes.Messaging as M
+import NRM.Classes.Sensors
 import NRM.State
 import NRM.Types.Cmd
 import qualified NRM.Types.Configuration as Cfg
@@ -31,6 +34,7 @@ import qualified NRM.Types.Messaging.UpstreamReq as UReq
 import NRM.Types.Process as Process
 import qualified NRM.Types.Slice as Ct
 import NRM.Types.State
+import qualified NRM.Types.Units as U
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
 
@@ -239,13 +243,28 @@ behavior _ st (DownstreamEvent clientid msg) = case msg of
       (,Log "downstream cmd client registered.")
   DEvent.EventCmdPerformance DEvent.CmdPerformance {..} ->
     DM.lookup cmdPerformanceCmdID (cmdIDMap st) & \case
-      Just (_cmd, sliceID, _slice) ->
+      Just (cmd, sliceID, _slice) -> do
+        (toPublish, st') <-
+          CPD.measure
+            (cpd st)
+            (fromIntegral $ U.fromOps perf)
+            (DCC.toSensorID clientid) & \case
+            CPD.Measured m -> return $ (UPub.PubMeasurements (CPD.Measurements [m]), st)
+            CPD.NoSuchSensor ->
+              panic
+                "no internal NRM sensor for this perf measurement"
+            CPD.AdjustProblem r p ->
+              return
+                (UPub.PubCPD p, identity (adjustRange (DCC.toSensorID clientid) r $ st {cpd = p}))
         return
-          ( st
-          , Pub [ UPub.PubPerformance $ UPub.Performance
-            { UPub.perf = perf
-            , UPub.perfSliceID = sliceID
-            }]
+          ( st'
+          , Pub $
+            [ UPub.PubPerformance $ UPub.Performance
+                { UPub.perf = perf
+                , UPub.perfSliceID = sliceID
+                }
+            , toPublish
+            ]
           )
       Nothing -> return (st, Log "Downstream performance event received, but no existing command associated to.")
   DEvent.EventCmdExit DEvent.CmdExit {..} ->

@@ -14,11 +14,14 @@ module NRM.Classes.Sensors
 where
 
 import qualified CPD.Core as CPD
+import NRM.Types.Sensor 
 import Protolude
 
 class IsSensor a where
 
   toCPDSensor :: CPD.SensorID -> a -> (CPD.SensorID, CPD.Sensor)
+
+  toNRMSensor :: a -> Sensor
 
 -- Internal (NRM) classes
 data PackedSensor = forall a. IsSensor a => MkPackedSensor a
@@ -34,3 +37,24 @@ class HasSensors a aCtx | a -> aCtx where
 
 toCPDPackedSensor :: CPD.SensorID -> PackedSensor -> (CPD.SensorID, CPD.Sensor)
 toCPDPackedSensor id (MkPackedSensor s) = toCPDSensor id s
+
+instance IsSensor Sensor where
+
+  toNRMSensor x = x
+
+  toCPDSensor id PassiveSensor {..} =
+    ( id
+    , CPD.Sensor
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range)
+          (CPD.FixedFrequency frequency)
+      , ..
+      }
+    )
+  toCPDSensor id ActiveSensor {..} =
+    ( id
+    , CPD.Sensor
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range)
+          (CPD.MaxFrequency maxFrequency)
+      , ..
+      }
+    )

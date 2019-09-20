@@ -110,7 +110,7 @@ downstreamReceive cfg s msg clientid =
 
 -- | Behave on upstream message
 upstreamReceive :: C.Cfg -> TS.NRMState -> Text -> Text -> IO (TS.NRMState, B.Behavior)
-upstreamReceive cfg s msg clientid = do
+upstreamReceive cfg s msg clientid = 
   B.behavior cfg s $
     B.Req
       (fromMaybe (panic "couldn't parse upstream client ID") (UC.fromText clientid))

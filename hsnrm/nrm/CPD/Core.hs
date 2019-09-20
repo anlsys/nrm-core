@@ -17,8 +17,7 @@ module CPD.Core
   , Frequency (..)
   , -- * Sensors
     -- ** Definitions
-    SensorKV (..)
-  , SensorID (..)
+    SensorID (..)
   , nextSensorID
   , Sensor (..)
   , Source (..)
@@ -28,8 +27,7 @@ module CPD.Core
   , nextActuatorID
   , CPDLActuator (..)
   , -- ** Definitions
-    ActuatorKV (..)
-  , Actuator (..)
+    Actuator (..)
   , -- * Objective
     Objective (..)
   , X (..)
@@ -40,6 +38,7 @@ where
 import qualified Data.Aeson as A
 import Data.Data
 import Data.JSON.Schema
+import qualified Data.Map as DM
 import Data.MessagePack
 import Data.String (IsString (..))
 import qualified Data.UUID as U
@@ -57,31 +56,15 @@ newtype Discrete = Discrete Text
 
 data Problem
   = Problem
-      { sensors :: [SensorKV]
-      , actuators :: [ActuatorKV]
+      { sensors :: Map SensorID Sensor
+      , actuators :: Map ActuatorID Actuator
       , objective :: Objective
       }
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
 
 emptyProblem :: Problem
-emptyProblem = Problem [] [] emptyObjective
-
-data ActuatorKV
-  = ActuatorKV
-      { actuatorKey :: ActuatorID
-      , actuatorDesc :: Actuator
-      }
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorKV
-
-data SensorKV
-  = SensorKV
-      { sensorKey :: SensorID
-      , sensorDesc :: Sensor
-      }
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorKV
+emptyProblem = Problem DM.empty DM.empty emptyObjective
 
 data Frequency
   = MaxFrequency {maxFrequency :: Units.Frequency}
@@ -160,6 +143,10 @@ newtype ActuatorID = ActuatorID {actuatorID :: U.UUID}
     , Inject
     )
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorID
+
+instance IsString ActuatorID where
+
+  fromString x = fromMaybe (panic "couldn't decode ActuatorID in FromString instance") (A.decode $ toS x)
 
 nextActuatorID :: IO ActuatorID
 nextActuatorID = UV4.nextRandom <&> ActuatorID

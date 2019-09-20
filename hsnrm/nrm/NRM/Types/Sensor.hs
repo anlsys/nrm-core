@@ -11,11 +11,6 @@ module NRM.Types.Sensor
   ( -- * Internal representation
     Sensor (..)
   , Tag (..)
-  , HasSensors (..)
-  , IsSensor (..)
-  , PackedSensor
-  , packSensor
-  , toCPDPackedSensor
   , -- * Re-exports
     CPD.Source (..)
   , CPD.SensorID (..)
@@ -25,7 +20,6 @@ where
 import qualified CPD.Core as CPD
 import qualified NRM.Types.Units as U
 import Protolude
-import NRM.Classes.Sensors
 
 newtype Tag = Tag Text
 
@@ -46,22 +40,3 @@ data Sensor
       , range :: (Double, Double)
       , sensorDesc :: Maybe Text
       }
-
-instance IsSensor Sensor where
-
-  toCPDSensor id PassiveSensor {..} =
-    ( id
-    , CPD.Sensor
-      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range)
-          (CPD.FixedFrequency frequency)
-      , ..
-      }
-    )
-  toCPDSensor id ActiveSensor {..} =
-    ( id
-    , CPD.Sensor
-      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range)
-          (CPD.MaxFrequency maxFrequency)
-      , ..
-      }
-    )

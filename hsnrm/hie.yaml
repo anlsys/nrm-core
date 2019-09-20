@@ -1,1 +1,1 @@
-cradle: {cabal: {component: "nrm.so"}}
+cradle: {cabal: {component: "nrmlib"}}

@@ -42,15 +42,17 @@ validateAction (Admissible ds) (Action _actuator d) =
 
 data ValidatedMeasurement
   = Measured Measurement
-  | AdjustProblem Problem
+  | AdjustProblem Interval Problem
   | NoSuchSensor
 
 -- | builds a measurement using a problem as context (with validation)
 measure :: Problem -> Double -> SensorID -> ValidatedMeasurement
-measure (Problem sl _ _) _ sensorID =
-  case DM.lookup sensorID (DM.fromList $ (\(SensorKV x y) -> (x, y)) <$> sl) of
+measure p@(Problem sl _ _) v sensorID =
+  case DM.lookup sensorID sl of
     Nothing -> NoSuchSensor -- TODO
-    Just _ -> NoSuchSensor -- TODO
+    Just sensor -> case validateMeasurement (range . sensorMeta $ sensor) v of
+      MeasurementOk -> Measured $ Measurement {}
+      AdjustInterval r -> AdjustProblem r p --TODO : use lens to update problem
 
 -- | Combines problems by adding sensor lists and actuator lists
 combine :: Problem -> Problem -> Maybe Problem

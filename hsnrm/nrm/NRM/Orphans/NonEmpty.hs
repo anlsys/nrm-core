@@ -22,7 +22,7 @@ import Prelude (fail)
 
 instance (JSONSchema a) => JSONSchema (NonEmpty a) where
 
-  schema _ = schema (Proxy :: Proxy ([a]))
+  schema _ = schema (Proxy :: Proxy [a])
 
 instance (MessagePack a) => MessagePack (NonEmpty a) where
 

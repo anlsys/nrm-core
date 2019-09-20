@@ -98,50 +98,50 @@ deriving instance Interpret (Exp3 SensorID)
 
 deriving instance Inject (Exp3 SensorID)
 
-deriving via (GenericJSON (Probability)) instance JSONSchema (Probability)
+deriving via (GenericJSON Probability) instance JSONSchema Probability
 
-deriving via (GenericJSON (Probability)) instance A.ToJSON (Probability)
+deriving via (GenericJSON Probability) instance A.ToJSON Probability
 
-deriving via (GenericJSON (Probability)) instance A.FromJSON (Probability)
+deriving via (GenericJSON Probability) instance A.FromJSON Probability
 
-deriving instance Show (Probability)
+deriving instance Show Probability
 
-deriving instance Data (Probability)
+deriving instance Data Probability
 
-deriving instance MessagePack (Probability)
+deriving instance MessagePack Probability
 
-deriving instance Interpret (Probability)
+deriving instance Interpret Probability
 
-deriving instance Inject (Probability)
+deriving instance Inject Probability
 
-deriving via (GenericJSON (CumulativeLoss)) instance JSONSchema (CumulativeLoss)
+deriving via (GenericJSON CumulativeLoss) instance JSONSchema CumulativeLoss
 
-deriving via (GenericJSON (CumulativeLoss)) instance A.ToJSON (CumulativeLoss)
+deriving via (GenericJSON CumulativeLoss) instance A.ToJSON CumulativeLoss
 
-deriving via (GenericJSON (CumulativeLoss)) instance A.FromJSON (CumulativeLoss)
+deriving via (GenericJSON CumulativeLoss) instance A.FromJSON CumulativeLoss
 
-deriving instance Show (CumulativeLoss)
+deriving instance Show CumulativeLoss
 
-deriving instance Data (CumulativeLoss)
+deriving instance Data CumulativeLoss
 
-deriving instance MessagePack (CumulativeLoss)
+deriving instance MessagePack CumulativeLoss
 
-deriving instance Interpret (CumulativeLoss)
+deriving instance Interpret CumulativeLoss
 
-deriving instance Inject (CumulativeLoss)
+deriving instance Inject CumulativeLoss
 
-deriving via (GenericJSON (Integrator)) instance JSONSchema (Integrator)
+deriving via (GenericJSON Integrator) instance JSONSchema Integrator
 
-deriving via (GenericJSON (Integrator)) instance A.ToJSON (Integrator)
+deriving via (GenericJSON Integrator) instance A.ToJSON Integrator
 
-deriving via (GenericJSON (Integrator)) instance A.FromJSON (Integrator)
+deriving via (GenericJSON Integrator) instance A.FromJSON Integrator
 
-deriving instance Show (Integrator)
+deriving instance Show Integrator
 
-deriving instance Data (Integrator)
+deriving instance Data Integrator
 
-deriving instance MessagePack (Integrator)
+deriving instance MessagePack Integrator
 
-deriving instance Interpret (Integrator)
+deriving instance Interpret Integrator
 
-deriving instance Inject (Integrator)
+deriving instance Inject Integrator

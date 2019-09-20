@@ -17,6 +17,7 @@ import Data.Data
 import Data.Generics.Product
 import qualified Data.Map as DM
 import Data.MessagePack
+import NRM.Classes.Sensors
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Sensor
 import NRM.Types.Topology.PackageID
