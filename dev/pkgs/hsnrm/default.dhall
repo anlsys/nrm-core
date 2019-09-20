@@ -60,6 +60,18 @@ let defcopts =
                   , "-fwarn-unused-do-bind"
                   , "-fwarn-wrong-do-bind"
                   , "-fwarn-incomplete-patterns"
+                  , "-Wincomplete-record-updates"
+                  , "-Wmonomorphism-restriction"
+                  , "-Wimplicit-prelude"
+                  , "-Wmissing-local-signatures"
+                  , "-Wmissing-exported-signatures"
+                  , "-Wmissing-export-lists"
+                  , "-Wmissing-home-modules"
+                  , "-Widentities"
+                  , "-Wredundant-constraints"
+                  , "-Wpartial-fields"
+                  , "-Wmissed-specialisations"
+                  , "-Wall-missed-specialisations"
                   ]
                 # addcopts
               : List Text

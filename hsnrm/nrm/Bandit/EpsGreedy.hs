@@ -96,6 +96,7 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
             put $ ExploreExploit $ eeg {lastAction = a}
             return a
             where
+              toW :: forall a. (Double, a) -> Weight a
               toW (loss, action) = Weight loss 1 action
       ExploreExploit s -> do
         let eeg =
@@ -114,6 +115,7 @@ pickAction :: (MonadRandom m) => ExploreExploitGreedy a -> m a
 pickAction ExploreExploitGreedy {..} =
   RS.sample . DC.fromWeightedList $ toList $ weights <&> w2tuple
   where
+    w2tuple :: Weight b -> (Double, b)
     w2tuple (Weight avgloss _hits action) = (avgloss, action)
 
 -- | TODO improve numerical resiliency.

@@ -15,6 +15,7 @@ import Data.Map
 import NRM.Classes.Examples
 import NRM.Types.Manifest
 import NRM.Types.Units as U
+import Protolude
 
 instance Examples Manifest where
 
@@ -23,7 +24,7 @@ instance Examples Manifest where
       [ ( "perfwrap"
         , def
           { app = def
-              { perfwrapper = Perfwrapper
+              { perfwrapper = Perfwrapper $ MkPw
                   { perfFreq = U.hz 1
                   , perfLimit = U.Operations 100000
                   }

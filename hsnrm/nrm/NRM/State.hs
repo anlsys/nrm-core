@@ -241,10 +241,9 @@ registerDownstreamCmdClient cmdID downstreamCmdID st =
   DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
     insertSlice sliceID
       ( slice
-        { cmds = DM.insert
-            cmdID
-            (addDownstreamCmdClient cmd downstreamCmdID)
-            (cmds slice)
+        { cmds = (addDownstreamCmdClient cmd downstreamCmdID) & \case
+            Just c -> DM.insert cmdID c (cmds slice)
+            Nothing -> cmds slice
         }
       )
       st

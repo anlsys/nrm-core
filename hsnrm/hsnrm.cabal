@@ -119,7 +119,12 @@ library nrmlib
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns
+                 -fwarn-incomplete-patterns -Wincomplete-record-updates
+                 -Wmonomorphism-restriction -Wimplicit-prelude
+                 -Wmissing-local-signatures -Wmissing-exported-signatures
+                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
+                 -Wall-missed-specialisations
     build-depends:
         base -any,
         protolude -any,
@@ -196,7 +201,12 @@ library banditlib
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns
+                 -fwarn-incomplete-patterns -Wincomplete-record-updates
+                 -Wmonomorphism-restriction -Wimplicit-prelude
+                 -Wmissing-local-signatures -Wmissing-exported-signatures
+                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
+                 -Wall-missed-specialisations
     build-depends:
         base -any,
         protolude -any,
@@ -346,7 +356,12 @@ executable nrm.so
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -fPIC -shared -no-hs-main -dynamic
+                 -fwarn-incomplete-patterns -Wincomplete-record-updates
+                 -Wmonomorphism-restriction -Wimplicit-prelude
+                 -Wmissing-local-signatures -Wmissing-exported-signatures
+                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
+                 -Wall-missed-specialisations -fPIC -shared -no-hs-main -dynamic
     build-depends:
         base -any,
         protolude -any,
@@ -496,7 +511,12 @@ executable nrmstatic
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -main-is Hnrm
+                 -fwarn-incomplete-patterns -Wincomplete-record-updates
+                 -Wmonomorphism-restriction -Wimplicit-prelude
+                 -Wmissing-local-signatures -Wmissing-exported-signatures
+                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
+                 -Wall-missed-specialisations -main-is Hnrm
     build-depends:
         base -any,
         protolude -any,
@@ -646,7 +666,12 @@ executable nrmd
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -main-is Hnrmd
+                 -fwarn-incomplete-patterns -Wincomplete-record-updates
+                 -Wmonomorphism-restriction -Wimplicit-prelude
+                 -Wmissing-local-signatures -Wmissing-exported-signatures
+                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
+                 -Wall-missed-specialisations -main-is Hnrmd
     build-depends:
         base -any,
         protolude -any,
@@ -719,7 +744,12 @@ executable nrm
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -main-is Hnrm
+                 -fwarn-incomplete-patterns -Wincomplete-record-updates
+                 -Wmonomorphism-restriction -Wimplicit-prelude
+                 -Wmissing-local-signatures -Wmissing-exported-signatures
+                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
+                 -Wall-missed-specialisations -main-is Hnrm
     build-depends:
         nrmlib -any
 
@@ -741,7 +771,12 @@ executable nrmddep
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -main-is Hnrmd
+                 -fwarn-incomplete-patterns -Wincomplete-record-updates
+                 -Wmonomorphism-restriction -Wimplicit-prelude
+                 -Wmissing-local-signatures -Wmissing-exported-signatures
+                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
+                 -Wall-missed-specialisations -main-is Hnrmd
     build-depends:
         nrmlib -any
 
@@ -763,6 +798,11 @@ executable codegen
                  -fwarn-unused-imports -fwarn-missing-signatures
                  -fwarn-name-shadowing -fprint-potential-instances
                  -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -main-is Codegen
+                 -fwarn-incomplete-patterns -Wincomplete-record-updates
+                 -Wmonomorphism-restriction -Wimplicit-prelude
+                 -Wmissing-local-signatures -Wmissing-exported-signatures
+                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
+                 -Wall-missed-specialisations -main-is Codegen
     build-depends:
         nrmlib -any

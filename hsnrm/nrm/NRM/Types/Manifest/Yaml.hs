@@ -65,7 +65,7 @@ toInternal d = D.Manifest
   { name = name d
   , app = toInternalApp $ app d
   , hwbind = fromDefault hwbind D.hwbind
-  , image = fromDefault image D.image
+  , image = Nothing
   }
   where
     fromDefault :: Default a => (Manifest -> Maybe c) -> (a -> c) -> c
@@ -88,7 +88,7 @@ fromInternal m = Manifest
   { name = D.name m
   , app = fromInternalApp $ D.app m
   , hwbind = toJust D.hwbind
-  , image = toJust D.image
+  , image = D.image m
   }
   where
     toJust :: (Eq a) => (D.Manifest -> a) -> Maybe a

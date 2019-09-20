@@ -51,6 +51,7 @@ toOP (S.Object fields) =
   where
     objectnames = mkString . toS . S.key <$> filter S.required fields
     objectdescs = (\S.Field {..} -> (key, toAeson content)) <$> fields
+    mqRequired :: (IsString a) => [AT.Value] -> Maybe (a, AT.Value)
     mqRequired = \case
       [] -> Nothing
       xs -> Just ("required", mkArray xs)

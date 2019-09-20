@@ -68,7 +68,6 @@ emptyProblem = Problem DM.empty DM.empty emptyObjective
 
 data Frequency
   = MaxFrequency {maxFrequency :: Units.Frequency}
-  | FixedFrequency {fixedFrequency :: Units.Frequency}
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Frequency
 

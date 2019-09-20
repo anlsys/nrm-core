@@ -46,7 +46,7 @@ instance IsSensor Sensor where
     ( id
     , CPD.Sensor
       { sensorMeta = CPD.Metadata (uncurry CPD.Interval range)
-          (CPD.FixedFrequency frequency)
+          (CPD.MaxFrequency frequency)
       , ..
       }
     )

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-partial-fields #-}
 {-|
 Module      : NRM.Types.Messaging.DownstreamEvent.JSON
 Copyright   : (c) UChicago Argonne, 2019

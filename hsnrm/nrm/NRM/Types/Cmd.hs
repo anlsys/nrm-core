@@ -94,20 +94,19 @@ registerPID c pid = Cmd
 addDownstreamCmdClient
   :: Cmd
   -> DCC.DownstreamCmdClientID
-  -> Cmd
-addDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
-  { downstreamCmds = DM.insert downstreamCmdClientID
-      ( DCC.DownstreamCmdClient
-        (DCC.toSensorID downstreamCmdClientID)
-        ( Manifest.perfLimit . Manifest.perfwrapper .
-          Manifest.app .
-          manifest $
-          cmdCore
-        )
-      )
-      downstreamCmds
-  , ..
-  }
+  -> Maybe Cmd
+addDownstreamCmdClient Cmd {..} downstreamCmdClientID =
+  cmdCore & manifest & Manifest.app & Manifest.perfwrapper & \case
+    PerfwrapperDisabled -> Nothing
+    Perfwrapper pw -> Just $ Cmd
+      { downstreamCmds = DM.insert downstreamCmdClientID
+          ( DCC.DownstreamCmdClient
+            (DCC.toSensorID downstreamCmdClientID)
+            (Manifest.perfLimit pw)
+          )
+          downstreamCmds
+      , ..
+      }
 
 removeDownstreamCmdClient :: Cmd -> DCC.DownstreamCmdClientID -> Cmd
 removeDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd

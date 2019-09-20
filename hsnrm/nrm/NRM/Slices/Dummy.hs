@@ -15,8 +15,8 @@ module NRM.Slices.Dummy
 where
 
 import Data.Aeson
-import Data.Map
 import Data.Data
+import Data.Map
 import Data.MessagePack
 import NRM.Processes
 import NRM.Slices.Class
@@ -40,6 +40,7 @@ instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
     for_ m $ mapM_ killIfRegistered
     return $ Right emptyRuntime
     where
+      killIfRegistered :: (MonadIO m) => ApplicationProcess -> m ()
       killIfRegistered (Registered _ pid) = liftIO $ signalProcess Signals.sigKILL pid
       killIfRegistered (Unregistered _) = return ()
 

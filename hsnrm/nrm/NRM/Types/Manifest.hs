@@ -18,6 +18,7 @@ module NRM.Types.Manifest
   , Monitoring (..)
   , ImageType (..)
   , Perfwrapper (..)
+  , Pw (..)
   , Image (..)
   , jsonOptions
   )
@@ -40,7 +41,7 @@ data Manifest
       { name :: Text
       , app :: App
       , hwbind :: Bool
-      , image :: Image
+      , image :: Maybe Image
       }
   deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Manifest
@@ -85,14 +86,17 @@ data Power
   deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Power
 
-data Perfwrapper
-  = PerfwrapperDisabled
-  | Perfwrapper
+data Perfwrapper = PerfwrapperDisabled | Perfwrapper Pw
+  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Perfwrapper
+
+data Pw
+  = MkPw
       { perfFreq :: U.Frequency
       , perfLimit :: U.Operations
       }
   deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Perfwrapper
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Pw
 
 newtype Monitoring
   = Monitoring
@@ -111,7 +115,6 @@ data Image
       , magetype :: ImageType
       , binds :: Maybe [Text]
       }
-  | NoImage
   deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Image
 
@@ -149,10 +152,6 @@ instance Default Perfwrapper where
 instance Default Monitoring where
 
   def = Monitoring {ratelimit = U.hz 1}
-
-instance Default Image where
-
-  def = NoImage
 
 instance Default Slice where
 
