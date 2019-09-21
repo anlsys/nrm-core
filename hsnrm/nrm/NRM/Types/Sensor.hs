@@ -11,6 +11,8 @@ module NRM.Types.Sensor
   ( -- * Internal representation
     Sensor (..)
   , Tag (..)
+  , ActiveSensor (..)
+  , PassiveSensor (..)
   , -- * Re-exports
     CPD.Source (..)
   , CPD.SensorID (..)
@@ -24,19 +26,23 @@ import Protolude
 newtype Tag = Tag Text
 
 data Sensor
+  = Passive PassiveSensor
+  | Active ActiveSensor
+
+data PassiveSensor
   = PassiveSensor
       { perform :: IO (Maybe Double)
-      , sensorTags :: [Tag]
+      , passiveTags :: [Tag]
       , frequency :: U.Frequency
-      , source :: CPD.Source
-      , range :: (Double, Double)
-      , sensorDesc :: Maybe Text
+      , passiveSource :: CPD.Source
+      , passiveRange :: (Double, Double)
       }
-  | ActiveSensor
+
+data ActiveSensor
+  = ActiveSensor
       { maxFrequency :: U.Frequency
-      , sensorTags :: [Tag]
+      , activeTags :: [Tag]
       , process :: Double -> Double
-      , source :: CPD.Source
-      , range :: (Double, Double)
-      , sensorDesc :: Maybe Text
+      , activeSource :: CPD.Source
+      , activeRange :: (Double, Double)
       }

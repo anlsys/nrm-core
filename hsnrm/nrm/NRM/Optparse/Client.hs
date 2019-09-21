@@ -80,7 +80,7 @@ parserCommon =
   where
     rpc = Cfg.rpcPort . Cfg.upstreamCfg $ def
     pub = Cfg.pubPort . Cfg.upstreamCfg $ def
-    addr = "localhost"
+    addr = "localhost" :: Text
 
 data RunCfg
   = RunCfg

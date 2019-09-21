@@ -59,6 +59,15 @@ showSliceList l =
   where
     descCmd (cmdID, cmdCore -> CmdCore {..}) =
       " command: ID " <> Cmd.toText cmdID <> descSpec cmdPath arguments <> "\n"
+    descSpec
+      :: ( IsString a
+         , Monoid a
+         , StringConv Text a
+         , StringConv Arg a
+         )
+      => Command
+      -> Arguments
+      -> a
     descSpec (Command cmd) (Arguments args) =
       " : " <> toS cmd <> " " <> (mconcat . intersperse " " $ toS <$> args)
 
@@ -75,11 +84,14 @@ insertSlice sliceID slice s = s {slices = DM.insert sliceID slice (slices s)}
 pidMap :: NRMState -> DM.Map ProcessID (CmdID, Cmd, SliceID, Slice)
 pidMap s = mconcat $ DM.toList (slices s) <&> mkMap
   where
+    mkMap :: forall c. (c, Slice) -> Map ProcessID (CmdID, Cmd, c, Slice)
     mkMap x@(_, c) =
       DM.fromList $
         zip (pid <$> DM.elems (cmds c))
           (DM.toList (cmds c) <&> mkTriple x)
-    mkTriple (cid, c) (cmid, cm) = (cmid, cm, cid, c)
+
+mkTriple :: (c,d) -> (a,b) -> (a,b,c,d)
+mkTriple (cid, c) (cmid, cm) = (cmid, cm, cid, c)
 
 -- | NRM state map view by cmdID of "running" commands..
 cmdIDMap :: NRMState -> DM.Map CmdID (Cmd, SliceID, Slice)
@@ -99,8 +111,9 @@ mkCmdIDMap accessor s = mconcat $ DM.toList (slices s) <&> mkMap
     mkMap x@(_, c) =
       DM.fromList $
         zip (DM.keys $ accessor c)
-          (DM.elems (accessor c) <&> mkTriple x)
-    mkTriple (cid, c) cm = (cm, cid, c)
+          (DM.elems (accessor c) <&> mk x)
+    mk :: (b,c) -> a -> (a,b,c)
+    mk (cid, c) cm = (cm, cid, c)
 
 {-# WARNING runningCmdIDCmdMap "To remove" #-}
 -- | List commands currently registered as running

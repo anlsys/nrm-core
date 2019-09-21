@@ -170,12 +170,11 @@ instance HasSensors Cmd CmdID where
     DM.fromList
       ( DM.elems downstreamCmds <&> \dc ->
         ( DCC.id dc
-        , packSensor $ ActiveSensor
-          { sensorTags = [Tag "perf"]
-          , source = Source $ show cmdID
-          , range = (0, 1)
+        , packSensor $ Active $ ActiveSensor
+          { activeTags = [Tag "perf"]
+          , activeSource = Source $ show cmdID
+          , activeRange = (0, 1)
           , maxFrequency = ratelimit $ monitoring $ app $ manifest cmdCore
-          , sensorDesc = Just "CPU instruction counter sensor from linux perf."
           , process = identity
           }
         )

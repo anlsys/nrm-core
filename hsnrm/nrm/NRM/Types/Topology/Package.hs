@@ -22,7 +22,6 @@ import NRM.Node.Sysfs.Internal
 import NRM.Types.Sensor
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
-import NeatInterpolation
 import Protolude hiding (max)
 
 -- | Record containing all information about a CPU Package.
@@ -38,16 +37,11 @@ data RaplSensor
 raplToSensor :: Show a => a -> RaplSensor -> (SensorID, Sensor)
 raplToSensor packageID (RaplSensor id path (MaxEnergy maxEnergy) freq) =
   ( id
-  , PassiveSensor
-    { sensorTags = [Tag "power", Tag "RAPL"]
-    , source = Source textID
-    , range = (0, fromuJ maxEnergy)
+  , Passive $ PassiveSensor
+    { passiveTags = [Tag "power", Tag "RAPL"]
+    , passiveSource = Source textID
+    , passiveRange = (0, fromuJ maxEnergy)
     , frequency = freq
-    , sensorDesc = Just
-      [text| "
-          Intel RAPL sensor for package ID $textID .
-          Values are given in uJ.
-        |]
     , perform = measureRAPLDir path <&> fmap (fromuJ . energy)
     }
   )

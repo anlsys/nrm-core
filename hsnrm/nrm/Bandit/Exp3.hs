@@ -96,7 +96,7 @@ instance
 pickAction :: (MonadRandom m, MonadState (Exp3 a) m) => m a
 pickAction = get >>= s >>= btw (assign (field @"lastAction"))
   where
-    s :: forall (m :: * -> * ) t . MonadRandom m => Exp3 t -> m t
+    s :: forall (m :: * -> *) t. MonadRandom m => Exp3 t -> m t
     s bandit = RS.sample . DC.fromWeightedList $ toList (weights bandit) <&> w2tuple
     w2tuple :: forall b. Weight b -> (Double, b)
     w2tuple (Weight p _ action) = (getProbability p, action)

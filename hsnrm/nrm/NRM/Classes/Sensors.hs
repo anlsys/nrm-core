@@ -42,19 +42,21 @@ instance IsSensor Sensor where
 
   toNRMSensor x = x
 
-  toCPDSensor id PassiveSensor {..} =
+  toCPDSensor id (Passive PassiveSensor {..}) =
     ( id
     , CPD.Sensor
-      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range)
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval passiveRange)
           (CPD.MaxFrequency frequency)
+      , source = passiveSource
       , ..
       }
     )
-  toCPDSensor id ActiveSensor {..} =
+  toCPDSensor id (Active ActiveSensor {..}) =
     ( id
     , CPD.Sensor
-      { sensorMeta = CPD.Metadata (uncurry CPD.Interval range)
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval activeRange)
           (CPD.MaxFrequency maxFrequency)
+      , source = activeSource
       , ..
       }
     )
