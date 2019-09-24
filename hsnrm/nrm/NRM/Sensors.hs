@@ -26,14 +26,17 @@ adjustSensorRange
   :: SensorID
   -> Interval
   -> NRMState
-  -> Identity NRMState
+  -> NRMState
 adjustSensorRange sensorID range =
-  constraints'
-    @AdjustSensors
-    (pure . adjust sensorID range)
+  runIdentity .
+    constraints'
+      @AdjustSensors
+      (pure . adjust sensorID range)
 
 cpdSensors :: NRMState -> LMap CPD.SensorID CPD.Sensor
-cpdSensors s = (passiveSensors s) & LM.mapKV toCPDSensor
+cpdSensors s =
+  (passiveSensors s & LM.mapKV toCPDSensor) <>
+    (activeSensors s & LM.mapKV toCPDSensor)
 
 -- Recursive sensor instances
 -- Leaf NoSensor instances

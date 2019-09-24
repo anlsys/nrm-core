@@ -14,6 +14,11 @@ module NRM.Types.State
   , awaitingCmdIDMap
   , runningCmdIDCmdMap
   , awaitingCmdIDCmdMap
+  , -- * lookups
+    lookupCmd
+  , lookupProcess
+  , lookupPassiveSensor
+  , lookupActiveSensor
   , -- * Rendering views
     showSliceList
   , showSlices
@@ -26,14 +31,15 @@ import Data.Aeson
 import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
-import NRM.Classes.Sensors
 import NRM.Classes.Actuators
+import NRM.Classes.Sensors
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
 import NRM.Types.Cmd as Cmd
 import NRM.Types.LMap as LM
 import NRM.Types.Process as P
+import NRM.Types.Sensor as Sensor
 import NRM.Types.Slice as C
 import NRM.Types.Topology
 import Protolude
@@ -105,6 +111,9 @@ showSlices NRMState {..} =
 insertSlice :: SliceID -> Slice -> NRMState -> NRMState
 insertSlice sliceID slice s = s {slices = LM.insert sliceID slice (slices s)}
 
+lookupProcess :: ProcessID -> NRMState -> Maybe (CmdID, Cmd, SliceID, Slice)
+lookupProcess cmdID st = LM.lookup cmdID (pidMap st)
+
 -- | NRM state map view by ProcessID.
 pidMap :: NRMState -> LMap ProcessID (CmdID, Cmd, SliceID, Slice)
 pidMap s = mconcat $ LM.toList (slices s) <&> mkMap
@@ -117,6 +126,15 @@ pidMap s = mconcat $ LM.toList (slices s) <&> mkMap
 
 mkTriple :: (c, d) -> (a, b) -> (a, b, c, d)
 mkTriple (cid, c) (cmid, cm) = (cmid, cm, cid, c)
+
+lookupCmd :: CmdID -> NRMState -> Maybe (Cmd, SliceID, Slice)
+lookupCmd cmdID st = LM.lookup cmdID (cmdIDMap st)
+
+lookupPassiveSensor :: CPD.SensorID -> NRMState -> Maybe PassiveSensor
+lookupPassiveSensor sensorID st = LM.lookup sensorID (passiveSensors st)
+
+lookupActiveSensor :: CPD.SensorID -> NRMState -> Maybe ActiveSensor
+lookupActiveSensor sensorID st = LM.lookup sensorID (activeSensors st)
 
 -- | NRM state map view by cmdID of "running" commands..
 cmdIDMap :: NRMState -> LMap CmdID (Cmd, SliceID, Slice)

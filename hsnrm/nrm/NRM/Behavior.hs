@@ -15,6 +15,7 @@ module NRM.Behavior
   )
 where
 
+import qualified CPD.Core as CPD
 import qualified CPD.Utils as CPD
 import qualified CPD.Values as CPD
 import Data.MessagePack
@@ -32,6 +33,7 @@ import qualified NRM.Types.Messaging.UpstreamPub as UPub
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
 import NRM.Types.Process as Process
+import qualified NRM.Types.Sensor as Sensor
 import qualified NRM.Types.Slice as Ct
 import NRM.Types.State
 import qualified NRM.Types.Units as U
@@ -93,7 +95,7 @@ mayRep c rep = case (upstreamClientID . cmdCore) c of
 -- management logic, the sensor callback logic, the control loop callback logic.
 behavior :: Cfg.Cfg -> NRMState -> NRMEvent -> IO (NRMState, Behavior)
 behavior _ st (DoOutput cmdID outputType content) =
-  return $ case LM.lookup cmdID (cmdIDMap st) of
+  return $ lookupCmd cmdID st & \case
     Just (c, sliceID, slice) ->
       if content == ""
       then
@@ -209,7 +211,7 @@ behavior c st (Req clientid msg) = case msg of
       )
 behavior _ st (ChildDied pid exitcode) =
   return $
-    LM.lookup pid (pidMap st) & \case
+    lookupProcess pid st & \case
     Just (cmdID, cmd, sliceID, slice) ->
       let newPstate = (processState cmd) {ended = Just exitcode}
        in case isDone newPstate of
@@ -232,7 +234,7 @@ behavior _ st (ChildDied pid exitcode) =
 behavior _ st DoSensor = return (st, NoBehavior)
 behavior _ st DoControl = return (st, NoBehavior)
 behavior _ st DoShutdown = return (st, NoBehavior)
-behavior _ st (DownstreamEvent clientid msg) = case msg of
+behavior cfg st (DownstreamEvent clientid msg) = case msg of
   DEvent.EventThreadStart _ -> return (st, Log "thread start event received")
   DEvent.EventThreadProgress _ -> return (st, Log "downstream event received")
   DEvent.EventThreadPhaseContext _ -> return (st, Log "downstream event received")
@@ -242,31 +244,25 @@ behavior _ st (DownstreamEvent clientid msg) = case msg of
       registerDownstreamCmdClient cmdStartCmdID clientid st <&>
       (,Log "downstream cmd client registered.")
   DEvent.EventCmdPerformance DEvent.CmdPerformance {..} ->
-    LM.lookup cmdPerformanceCmdID (cmdIDMap st) & \case
-      Just (_cmd, sliceID, _slice) -> do
-        (toPublish, st') <-
-          CPD.measure
-            (cpd st)
-            (fromIntegral $ U.fromOps perf)
-            (DCC.toSensorID clientid) & \case
-            CPD.Measured m -> return $ (UPub.PubMeasurements (CPD.Measurements [m]), st)
-            CPD.NoSuchSensor ->
-              panic
-                "no internal NRM sensor for this perf measurement"
-            CPD.AdjustProblem r p ->
-              return
-                (UPub.PubCPD p, runIdentity (adjustSensorRange (DCC.toSensorID clientid) r $ st {cpd = p}))
-        return
-          ( st'
-          , Pub $
-            [ UPub.PubPerformance $ UPub.Performance
-                { UPub.perf = perf
-                , UPub.perfSliceID = sliceID
-                }
-            , toPublish
-            ]
+    return $
+      passiveSensorBehavior
+        cfg
+        st
+        (DCC.toSensorID clientid)
+        (U.fromOps perf & fromIntegral) <&> \case
+      Left l -> Log l
+      Right toPublish ->
+        Pub $
+          toPublish :
+          ( lookupCmd cmdPerformanceCmdID st & \case
+            Nothing -> []
+            Just (_cmd, sliceID, _slice) ->
+              [ UPub.PubPerformance $ UPub.Performance
+                  { UPub.perf = perf
+                  , UPub.perfSliceID = sliceID
+                  }
+              ]
           )
-      Nothing -> return (st, Log "Downstream performance event received, but no existing command associated.")
   DEvent.EventCmdExit DEvent.CmdExit {..} ->
     return $ fromMaybe (st, Log "No corresponding command for this downstream cmd registration request.") $
       unRegisterDownstreamCmdClient cmdExitCmdID clientid st <&>
@@ -304,3 +300,24 @@ mayLog st =
   return . \case
     Left e -> (st, Log e)
     Right x -> x
+
+passiveSensorBehavior
+  :: Cfg.Cfg
+  -> NRMState
+  -> CPD.SensorID
+  -> Double
+  -> (NRMState, Either Text UPub.Pub)
+passiveSensorBehavior _cfg st sensorID value =
+  lookupPassiveSensor sensorID st & \case
+    Nothing -> (st, Left $ "So SensorID found.")
+    Just (Sensor.PassiveSensor {..}) ->
+      CPD.measure (cpd st) value sensorID & \case
+        CPD.Measured m -> (st, Right $ UPub.PubMeasurements (CPD.Measurements [m]))
+        CPD.NoSuchSensor -> panic "NRM bug: Internal CPD/NRMState coherency error"
+        CPD.AdjustProblem r p ->
+          ( adjustSensorRange
+              sensorID
+              r $
+              st {cpd = p}
+          , Right $ UPub.PubCPD p
+          )
