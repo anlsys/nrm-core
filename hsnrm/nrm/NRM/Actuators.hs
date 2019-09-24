@@ -5,15 +5,16 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module NRM.Actuators
-  ( listActuators
+  ( cpdActuators
   )
 where
 
-import CPD.Core
+import CPD.Core as CPD
 import Data.Map as DM
 import NRM.Types.State
-{-import Protolude-}
+import NRM.Classes.Actuators as CA
+import NRM.Types.LMap as LM
+import Protolude
 
--- | List sensors
-listActuators :: NRMState -> Map ActuatorID Actuator
-listActuators _ = DM.fromList []
+cpdActuators :: NRMState -> LMap CPD.ActuatorID CPD.Actuator
+cpdActuators s = (CA.actuators s) & LM.mapKV toCPDActuator

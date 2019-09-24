@@ -26,6 +26,7 @@ import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import NRM.Classes.Messaging
 import NRM.Classes.Sensors
+import NRM.Classes.Actuators
 import NRM.Types.Cmd (Cmd (..), CmdCore (..), CmdID (..))
 import NRM.Types.LMap as LM
 import Protolude
@@ -68,7 +69,6 @@ toText :: SliceID -> Text
 toText (SliceID u) = U.toText u
 toText (Name n) = n
 
--- Sensor instance
 instance Sensors (SliceID, Slice) where
 
   passiveSensors (_, slice) = passiveSensors (cmds slice)
@@ -85,3 +85,7 @@ instance AdjustSensors (SliceID, Slice) where
         (pure . adjust sensorID range)
         s
     )
+
+instance Actuators (SliceID, Slice) where
+
+  actuators (_, slice) = actuators (cmds slice)

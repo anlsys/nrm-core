@@ -20,13 +20,14 @@ module NRM.Types.State
   )
 where
 
-import CPD.Core as CPD
+import qualified CPD.Core as CPD
 import Control.Lens
 import Data.Aeson
 import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Sensors
+import NRM.Classes.Actuators
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
@@ -50,9 +51,27 @@ data NRMState
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
+instance Actuators NRMState where
+
+  actuators NRMState {..} =
+    actuators pus <>
+      actuators cores <>
+      actuators packages <>
+      actuators slices
+
 instance Sensors NRMState where
 
-  passiveSensors NRMState {..} = passiveSensors pus <> passiveSensors cores <> passiveSensors packages
+  passiveSensors NRMState {..} =
+    passiveSensors pus <>
+      passiveSensors cores <>
+      passiveSensors packages <>
+      passiveSensors slices
+
+  activeSensors NRMState {..} =
+    activeSensors pus <>
+      activeSensors cores <>
+      activeSensors packages <>
+      activeSensors slices
 
 instance JSONSchema NRMState where
 

@@ -20,7 +20,6 @@ import Data.Generics.Product
 import NRM.Classes.Sensors
 import NRM.Types.LMap as LM
 import NRM.Types.State
-import NRM.Types.Topology
 import Protolude
 
 adjustSensorRange
@@ -36,17 +35,8 @@ adjustSensorRange sensorID range =
 cpdSensors :: NRMState -> LMap CPD.SensorID CPD.Sensor
 cpdSensors s = (passiveSensors s) & LM.mapKV toCPDSensor
 
-{-cpdS :: SensorID -> Interval -> NRMState -> NRMState-}
-{-cpdS sensorID range =-}
-{-(constraints' @AdjustSensors) %~-}
-{-adjustAdjustRange sensorID range-}
-
--- State sensor instance hierarchy
-
 -- Recursive sensor instances
 -- Leaf NoSensor instances
 deriving via (NoSensors (CPD.Problem)) instance AdjustSensors CPD.Problem
 
 deriving via (NoSensors (CPD.Problem)) instance Sensors CPD.Problem
-
-

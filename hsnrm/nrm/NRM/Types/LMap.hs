@@ -28,13 +28,15 @@ import Data.Data
 import Data.JSON.Schema
 import qualified Data.Map as DM
 import Data.MessagePack
+import NRM.Classes.Messaging
 import Protolude
 
 -- | Sort of a hack around scaling limitations of generic-lens, This is
 -- Data.Map with a stupid internal representation.  Useful for generic
 -- programming where Map isn't supported yet.
 newtype LMap a b = LMap [(a, b)]
-  deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON, JSONSchema, Functor, Foldable)
+  deriving (Show, Generic, Data, MessagePack, Functor, Foldable)
+  deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON (LMap a b)
   deriving (Semigroup, Monoid) via [(a, b)]
 
 mapKV :: ((a, b) -> (c, d)) -> LMap a b -> LMap c d

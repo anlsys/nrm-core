@@ -33,8 +33,8 @@ measureRAPLDirs :: RAPLDirs -> IO [RAPLMeasurement]
 measureRAPLDirs (RAPLDirs rapldirpaths) = catMaybes <$> for rapldirpaths (measureRAPLDir . path)
 
 -- | Setting powercap values.
-{-setRAPLPowercaps :: RAPLDirs -> RAPLCommands -> IO ()-}
-{-setRAPLPowercaps rds = mapM_ (applyRAPLPcap rds)-}
+setRAPLPowercaps :: RAPLDirs -> RAPLCommands -> IO ()
+setRAPLPowercaps rds = undefined
 
 -- | Retreives coretemp Hwmon directories at the default location.
 getDefaultHwmonDirs :: FilePath -> IO HwmonDirs

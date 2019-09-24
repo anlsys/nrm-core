@@ -12,9 +12,6 @@ module NRM.Classes.Sensors
   )
 where
 
-{-, PackedSensor-}
-{-, packSensor-}
-{-, toCPDPackedSensor-}
 import qualified CPD.Core as CPD
 import NRM.Types.LMap as LM
 import NRM.Types.Sensor
@@ -24,14 +21,6 @@ class ToCPDSensor a where
 
   toCPDSensor :: (CPD.SensorID, a) -> (CPD.SensorID, CPD.Sensor)
 
-{--- Sensor manipulation-}
-{-data PackedSensor = forall a. IsSensor a => MkPackedSensor a-}
-
-{-packSensor :: IsSensor a => a -> PackedSensor-}
-{-packSensor = MkPackedSensor-}
-
-{-toCPDPackedSensor :: CPD.SensorID -> PackedSensor -> (CPD.SensorID, CPD.Sensor)-}
-{-toCPDPackedSensor id (MkPackedSensor s) = toCPDSensor id s-}
 instance ToCPDSensor ActiveSensor where
 
   toCPDSensor (id, ActiveSensor {..}) =
@@ -68,7 +57,9 @@ class AdjustSensors a where
   adjust :: CPD.SensorID -> CPD.Interval -> a -> a
 
 -- Newtype adapter for DerivingVia
-instance (AdjustSensors (k, v)) => AdjustSensors (LMap k v) --TODO
+instance (AdjustSensors (k, v)) => AdjustSensors (LMap k v) where
+
+  adjust i r = LM.mapKV (adjust i r)
 
 newtype NoSensors (a :: Type) = NoSensors {unNoSensors :: a}
 

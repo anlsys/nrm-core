@@ -244,6 +244,7 @@ let modules =
       , "NRM.Types.UpstreamClient"
       , "NRM.Classes.Messaging"
       , "NRM.Classes.Sensors"
+      , "NRM.Classes.Actuators"
       , "NRM.Classes.Topology"
       , "NRM.Classes.Examples"
       , "NRM.Orphans.ExitCode"

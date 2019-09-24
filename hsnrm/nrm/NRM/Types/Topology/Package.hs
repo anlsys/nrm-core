@@ -16,6 +16,7 @@ import Data.Aeson
 import Data.Data
 import Data.Generics.Product
 import Data.MessagePack
+import NRM.Classes.Actuators
 import NRM.Classes.Sensors
 import NRM.Node.Sysfs.Internal
 import NRM.Types.LMap as LM
@@ -34,7 +35,6 @@ data RaplSensor
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
-
 raplToSensor :: Show a => a -> RaplSensor -> (SensorID, PassiveSensor)
 raplToSensor packageID (RaplSensor id path (MaxEnergy maxEnergy) freq) =
   ( id
@@ -43,10 +43,10 @@ raplToSensor packageID (RaplSensor id path (MaxEnergy maxEnergy) freq) =
     , passiveSource = Source textID
     , passiveRange = (0, fromuJ maxEnergy)
     , frequency = freq
+    , perform = measureRAPLDir path <&> fmap (fromuJ . energy)
     }
   )
   where
-    {-, perform = measureRAPLDir path <&> fmap (fromuJ . energy)-}
     textID = show packageID
 
 newtype Package
@@ -54,6 +54,10 @@ newtype Package
       { raplSensor :: Maybe RaplSensor
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
+
+instance Actuators (PackageID, Package) where
+
+  actuators _ = undefined
 
 instance Sensors (PackageID, Package) where
 

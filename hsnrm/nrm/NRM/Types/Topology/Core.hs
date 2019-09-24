@@ -14,6 +14,7 @@ import Data.Aeson
 import Data.Data
 import Data.MessagePack
 import NRM.Classes.Sensors
+import NRM.Classes.Actuators
 import NRM.Types.Topology.CoreID
 import Protolude
 
@@ -24,3 +25,5 @@ data Core = Core
 deriving via (NoSensors (CoreID, Core)) instance Sensors (CoreID, Core)
 
 deriving via (NoSensors (CoreID, Core)) instance AdjustSensors (CoreID, Core)
+
+deriving via (NoActuators (CoreID, Core)) instance Actuators (CoreID, Core)

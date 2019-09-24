@@ -150,23 +150,10 @@ instance IsString ActuatorID where
 nextActuatorID :: IO ActuatorID
 nextActuatorID = UV4.nextRandom <&> ActuatorID
 
-newtype Target = Target {targetTag :: Text}
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Source
-  deriving (Show, Generic, Data, MessagePack)
-  deriving (Interpret, Inject) via Text
-
-newtype ActuatorMetadata = ActuatorMetadata {actuatorRange :: Discrete}
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorMetadata
-  deriving (Show, Generic, Data, MessagePack)
-  deriving (Interpret, Inject) via Discrete
-
-data Actuator
-  = Actuator
-      { target :: Target
-      , actuatorMeta :: ActuatorMetadata
-      }
+newtype Actuator = Actuator {actuatorRange :: [Discrete]}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (Show, Generic, Data, MessagePack)
+  deriving (Interpret, Inject) via [Discrete]
 
 ------- OBJECTIVE
 data Direction = Minimize | Maximize

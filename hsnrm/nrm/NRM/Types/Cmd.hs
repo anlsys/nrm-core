@@ -178,11 +178,11 @@ instance Sensors (CmdID, Cmd) where
           , activeSource = Source $ show cmdID
           , activeRange = (0, 1)
           , maxFrequency = ratelimit $ monitoring $ app $ manifest cmdCore
+          , process = identity
           }
         )
       )
 
-{-, process = identity-}
 instance AdjustSensors (CmdID, Cmd) where
 
   adjust sensorID (CPD.Interval _ b) =
