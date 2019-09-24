@@ -40,6 +40,7 @@ import Data.UUID.V1 (nextUUID)
 import Dhall hiding (field)
 import NRM.Classes.Messaging
 import NRM.Classes.Sensors
+import NRM.Classes.Actuators
 import NRM.Orphans.ExitCode ()
 import NRM.Orphans.UUID ()
 import qualified NRM.Types.DownstreamCmdClient as DCC
@@ -164,6 +165,8 @@ fromText = fmap CmdID <$> U.fromText
 
 wrapCmd :: Command -> (Command, Arguments) -> (Command, Arguments)
 wrapCmd c (Command a, Arguments as) = (c, Arguments $ Arg a : as)
+
+deriving via (NoActuators (CmdID, Cmd)) instance Actuators (CmdID, Cmd)
 
 instance Sensors (CmdID, Cmd) where
 

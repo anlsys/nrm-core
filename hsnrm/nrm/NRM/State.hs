@@ -37,10 +37,10 @@ import NRM.Types.Cmd
 import NRM.Types.Configuration as Cfg
 import NRM.Types.DownstreamCmdClient
 import NRM.Types.DownstreamThreadClient
+import NRM.Types.LMap as LM
 import NRM.Types.Process
 import NRM.Types.Slice
 import NRM.Types.State
-import NRM.Types.LMap as LM
 import NRM.Types.Topology
 import NRM.Types.Topology.Package as TP
 import NRM.Types.Units
@@ -53,7 +53,7 @@ initialState c = do
   hwl <- getHwlocData
   let packages' =
         LM.fromList $
-          (,Package {raplSensor = Nothing}) <$>
+          (,Package {rapl = Nothing}) <$>
           selectPackageIDs hwl
   packages <-
     getDefaultRAPLDirs (toS $ Cfg.raplPath $ raplCfg c) >>= \case
@@ -88,16 +88,16 @@ initialState c = do
           uuid <- nextSensorID
           return $
             LM.insert pkgid
-              ( addRAPLSensor
+              ( addRAPL
                 uuid
                 path
                 maxEnergy
                 oldPackage
               )
               m
-    addRAPLSensor uuid path maxEnergy Package {..} = Package
-      { raplSensor = Just
-          ( TP.RaplSensor
+    addRAPL uuid path maxEnergy Package {..} = Package
+      { rapl = Just
+          ( TP.Rapl
             { id = uuid
             , frequency = hz 3
             , TP.raplPath = path

@@ -10,10 +10,9 @@ module NRM.Actuators
 where
 
 import CPD.Core as CPD
-import Data.Map as DM
-import NRM.Types.State
 import NRM.Classes.Actuators as CA
 import NRM.Types.LMap as LM
+import NRM.Types.State
 import Protolude
 
 cpdActuators :: NRMState -> LMap CPD.ActuatorID CPD.Actuator

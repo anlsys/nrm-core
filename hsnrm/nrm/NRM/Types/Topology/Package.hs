@@ -6,19 +6,21 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Types.Topology.Package
   ( Package (..)
-  , RaplSensor (..)
+  , Rapl (..)
   )
 where
 
 import qualified CPD.Core as CPD
 import Control.Lens
 import Data.Aeson
+import Data.Coerce
 import Data.Data
 import Data.Generics.Product
 import Data.MessagePack
 import NRM.Classes.Actuators
 import NRM.Classes.Sensors
 import NRM.Node.Sysfs.Internal
+import NRM.Types.Actuator
 import NRM.Types.LMap as LM
 import NRM.Types.Sensor
 import NRM.Types.Topology.PackageID
@@ -26,8 +28,8 @@ import NRM.Types.Units
 import Protolude hiding (max)
 
 -- | Record containing all information about a CPU Package.
-data RaplSensor
-  = RaplSensor
+data Rapl
+  = Rapl
       { id :: SensorID
       , raplPath :: FilePath
       , max :: MaxEnergy
@@ -35,8 +37,8 @@ data RaplSensor
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
-raplToSensor :: Show a => a -> RaplSensor -> (SensorID, PassiveSensor)
-raplToSensor packageID (RaplSensor id path (MaxEnergy maxEnergy) freq) =
+raplToSensor :: Show a => a -> Rapl -> (SensorID, PassiveSensor)
+raplToSensor packageID (Rapl id path (MaxEnergy maxEnergy) freq) =
   ( id
   , PassiveSensor
     { passiveTags = [Tag "power", Tag "RAPL"]
@@ -49,15 +51,26 @@ raplToSensor packageID (RaplSensor id path (MaxEnergy maxEnergy) freq) =
   where
     textID = show packageID
 
-newtype Package
-  = Package
-      { raplSensor :: Maybe RaplSensor
-      }
+raplToActuator :: a -> Rapl -> (CPD.ActuatorID, Actuator)
+raplToActuator _packageID (Rapl id _path (MaxEnergy maxEnergy) _freq) =
+  ( coerce id
+  , Actuator
+    { actions = [fromuJ maxEnergy / 2, fromuJ maxEnergy]
+    , go = undefined
+    }
+  )
+
+newtype Package = Package {rapl :: Maybe Rapl}
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
 instance Actuators (PackageID, Package) where
 
-  actuators _ = undefined
+  actuators (packageID, Package {..}) =
+    LM.fromList
+      ( Protolude.toList $
+        raplToActuator packageID <$>
+        rapl
+      )
 
 instance Sensors (PackageID, Package) where
 
@@ -67,15 +80,15 @@ instance Sensors (PackageID, Package) where
     LM.fromList
       ( Protolude.toList $
         raplToSensor packageID <$>
-        raplSensor
+        rapl
       )
 
 instance AdjustSensors (PackageID, Package) where
 
   adjust sensorID (CPD.Interval _ b) =
-    _2 . field @"raplSensor" %~
+    _2 . field @"rapl" %~
       fmap
-        ( \rapl@RaplSensor {..} ->
+        ( \rapl@Rapl {..} ->
           if id == sensorID
           then rapl & field @"max" .~ MaxEnergy (uJ b)
           else rapl
