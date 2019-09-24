@@ -5,53 +5,36 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module NRM.Classes.Sensors
-  ( IsSensor (..)
-  , HasSensors (..)
-  , PackedSensor
-  , packSensor
-  , toCPDPackedSensor
+  ( ToCPDSensor (..)
+  , Sensors (..)
+  , AdjustSensors (..)
+  , NoSensors (..)
   )
 where
 
+{-, PackedSensor-}
+{-, packSensor-}
+{-, toCPDPackedSensor-}
 import qualified CPD.Core as CPD
-import NRM.Types.Sensor 
+import NRM.Types.LMap as LM
+import NRM.Types.Sensor
 import Protolude
 
-class IsSensor a where
+class ToCPDSensor a where
 
-  toCPDSensor :: CPD.SensorID -> a -> (CPD.SensorID, CPD.Sensor)
+  toCPDSensor :: (CPD.SensorID, a) -> (CPD.SensorID, CPD.Sensor)
 
-  toNRMSensor :: a -> Sensor
+{--- Sensor manipulation-}
+{-data PackedSensor = forall a. IsSensor a => MkPackedSensor a-}
 
--- Internal (NRM) classes
-data PackedSensor = forall a. IsSensor a => MkPackedSensor a
+{-packSensor :: IsSensor a => a -> PackedSensor-}
+{-packSensor = MkPackedSensor-}
 
-packSensor :: IsSensor a => a -> PackedSensor
-packSensor = MkPackedSensor
+{-toCPDPackedSensor :: CPD.SensorID -> PackedSensor -> (CPD.SensorID, CPD.Sensor)-}
+{-toCPDPackedSensor id (MkPackedSensor s) = toCPDSensor id s-}
+instance ToCPDSensor ActiveSensor where
 
-class HasSensors a aCtx | a -> aCtx where
-
-  listSensors :: aCtx -> a -> Map CPD.SensorID PackedSensor
-
-  adjustRange :: CPD.SensorID -> CPD.Interval -> a -> a
-
-toCPDPackedSensor :: CPD.SensorID -> PackedSensor -> (CPD.SensorID, CPD.Sensor)
-toCPDPackedSensor id (MkPackedSensor s) = toCPDSensor id s
-
-instance IsSensor Sensor where
-
-  toNRMSensor x = x
-
-  toCPDSensor id (Passive PassiveSensor {..}) =
-    ( id
-    , CPD.Sensor
-      { sensorMeta = CPD.Metadata (uncurry CPD.Interval passiveRange)
-          (CPD.MaxFrequency frequency)
-      , source = passiveSource
-      , ..
-      }
-    )
-  toCPDSensor id (Active ActiveSensor {..}) =
+  toCPDSensor (id, ActiveSensor {..}) =
     ( id
     , CPD.Sensor
       { sensorMeta = CPD.Metadata (uncurry CPD.Interval activeRange)
@@ -60,3 +43,60 @@ instance IsSensor Sensor where
       , ..
       }
     )
+
+instance ToCPDSensor PassiveSensor where
+
+  toCPDSensor (id, PassiveSensor {..}) =
+    ( id
+    , CPD.Sensor
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval passiveRange)
+          (CPD.MaxFrequency frequency)
+      , source = passiveSource
+      , ..
+      }
+    )
+
+-- Structural
+class Sensors a where
+
+  activeSensors :: a -> LMap CPD.SensorID ActiveSensor
+
+  passiveSensors :: a -> LMap CPD.SensorID PassiveSensor
+
+class AdjustSensors a where
+
+  adjust :: CPD.SensorID -> CPD.Interval -> a -> a
+
+-- Newtype adapter for DerivingVia
+instance (AdjustSensors (k, v)) => AdjustSensors (LMap k v) --TODO
+
+newtype NoSensors (a :: Type) = NoSensors {unNoSensors :: a}
+
+instance Sensors (NoSensors a) where
+
+  passiveSensors = const LM.empty
+
+  activeSensors = const LM.empty
+
+instance AdjustSensors (NoSensors a) where
+
+  adjust _ _ x = x
+
+-- Sensor querying
+instance (Sensors (k, v)) => Sensors (LMap k v) where
+
+  activeSensors (LM.toList -> m) = mconcat (m <&> activeSensors)
+
+  passiveSensors (LM.toList -> m) = mconcat (m <&> passiveSensors)
+
+instance (Sensors a) => Sensors (Maybe a) where
+
+  activeSensors (Just x) = activeSensors x
+  activeSensors Nothing = LM.empty
+
+  passiveSensors (Just x) = passiveSensors x
+  passiveSensors Nothing = LM.empty
+
+instance (AdjustSensors a) => AdjustSensors (Maybe a) where
+
+  adjust id interval x = adjust id interval <$> x

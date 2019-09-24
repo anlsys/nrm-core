@@ -1,3 +1,4 @@
+{-# LANGUAGE DerivingVia #-}
 {-|
 Module      : NRM.Types.Topology.Core
 Copyright   : (c) UChicago Argonne, 2019
@@ -12,8 +13,14 @@ where
 import Data.Aeson
 import Data.Data
 import Data.MessagePack
+import NRM.Classes.Sensors
+import NRM.Types.Topology.CoreID
 import Protolude
 
 -- | Record containing all information about a CPU Core.
 data Core = Core
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
+
+deriving via (NoSensors (CoreID, Core)) instance Sensors (CoreID, Core)
+
+deriving via (NoSensors (CoreID, Core)) instance AdjustSensors (CoreID, Core)

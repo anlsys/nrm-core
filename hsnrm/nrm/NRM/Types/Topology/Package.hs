@@ -15,10 +15,10 @@ import Control.Lens
 import Data.Aeson
 import Data.Data
 import Data.Generics.Product
-import qualified Data.Map as DM
 import Data.MessagePack
 import NRM.Classes.Sensors
 import NRM.Node.Sysfs.Internal
+import NRM.Types.LMap as LM
 import NRM.Types.Sensor
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
@@ -34,18 +34,19 @@ data RaplSensor
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
-raplToSensor :: Show a => a -> RaplSensor -> (SensorID, Sensor)
+
+raplToSensor :: Show a => a -> RaplSensor -> (SensorID, PassiveSensor)
 raplToSensor packageID (RaplSensor id path (MaxEnergy maxEnergy) freq) =
   ( id
-  , Passive $ PassiveSensor
+  , PassiveSensor
     { passiveTags = [Tag "power", Tag "RAPL"]
     , passiveSource = Source textID
     , passiveRange = (0, fromuJ maxEnergy)
     , frequency = freq
-    , perform = measureRAPLDir path <&> fmap (fromuJ . energy)
     }
   )
   where
+    {-, perform = measureRAPLDir path <&> fmap (fromuJ . energy)-}
     textID = show packageID
 
 newtype Package
@@ -54,17 +55,21 @@ newtype Package
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
-instance HasSensors Package PackageID where
+instance Sensors (PackageID, Package) where
 
-  listSensors packageID Package {..} =
-    DM.fromList
-      ( toList $ (\(x, y) -> (x, packSensor y)) .
+  activeSensors _ = LM.empty
+
+  passiveSensors (packageID, Package {..}) =
+    LM.fromList
+      ( Protolude.toList $
         raplToSensor packageID <$>
         raplSensor
       )
 
-  adjustRange sensorID (CPD.Interval _ b) p =
-    p & field @"raplSensor" %~
+instance AdjustSensors (PackageID, Package) where
+
+  adjust sensorID (CPD.Interval _ b) =
+    _2 . field @"raplSensor" %~
       fmap
         ( \rapl@RaplSensor {..} ->
           if id == sensorID

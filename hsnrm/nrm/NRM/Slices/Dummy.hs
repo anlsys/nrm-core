@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-|
 Module      : NRM.Slices.Dummy
 Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -16,8 +18,9 @@ where
 
 import Data.Aeson
 import Data.Data
-import Data.Map
+import Data.Map as DM
 import Data.MessagePack
+import NRM.Classes.Sensors
 import NRM.Processes
 import NRM.Slices.Class
 import NRM.Types.Slice
@@ -52,7 +55,7 @@ instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
   doPrepareStartApp runtime sliceID AppStartConfig {..} =
     return $
       Right
-        ( adjust (Unregistered cmdID :) sliceID <$> runtime
+        ( DM.adjust (Unregistered cmdID :) sliceID <$> runtime
         , command
         , arguments
         )
@@ -71,19 +74,24 @@ instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
   listSlices (Dummy l) = keys l
 
   registerStartApp runtime sliceID cmdID pid =
-    adjust (go <$>) sliceID <$> runtime
+    DM.adjust (go <$>) sliceID <$> runtime
     where
       go x
         | x == Unregistered cmdID = Registered cmdID pid
         | otherwise = x
 
-  registerStopApp runtime (Left processID) = Data.Map.map (Protolude.filter f) <$> runtime
+  registerStopApp runtime (Left processID) = DM.map (Protolude.filter f) <$> runtime
     where
       f (Registered _ pid) = pid == processID
       f (Unregistered _) = False
-  registerStopApp runtime (Right cmdID) = Data.Map.map (Protolude.filter f) <$> runtime
+  registerStopApp runtime (Right cmdID) = DM.map (Protolude.filter f) <$> runtime
     where
       f (Registered appid _) = appid == cmdID
       f (Unregistered appid) = appid == cmdID
 
   listApplications (Dummy runtime) sliceID = lookup sliceID runtime
+
+deriving via
+  (NoSensors (DummyRuntime))
+  instance
+    AdjustSensors DummyRuntime

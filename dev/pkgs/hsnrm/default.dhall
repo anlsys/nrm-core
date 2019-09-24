@@ -22,6 +22,7 @@ let defexts =
       , types.Extension.DeriveAnyClass True
       , types.Extension.DeriveGeneric True
       , types.Extension.DeriveDataTypeable True
+      , types.Extension.DeriveFoldable True
       , types.Extension.DerivingStrategies True
       , types.Extension.TypeApplications True
       , types.Extension.MultiWayIf True
@@ -112,6 +113,8 @@ let deps =
           nobound "hxt-xpath"
       , refined =
           nobound "refined"
+      , generic-data =
+          nobound "generic-data"
       , filepath =
           nobound "filepath"
       , neat-interpolation =
@@ -257,6 +260,7 @@ let modules =
       , "NRM.Types.Configuration.Yaml"
       , "NRM.Configuration.Examples"
       , "NRM.Types.Manifest"
+      , "NRM.Types.LMap"
       , "NRM.Types.Manifest.Yaml"
       , "NRM.Manifest.Examples"
       , "NRM.Types.Manifest.Dhall"
@@ -286,6 +290,7 @@ let libdep =
       , deps.mtl-compat
       , deps.vcs-revision
       , deps.transformers
+      , deps.generic-data
       , deps.bytestring
       , deps.random
       , deps.random-fu

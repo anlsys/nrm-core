@@ -14,10 +14,12 @@ import NRM.Actuators
 import NRM.Sensors
 import NRM.Types.State
 import Protolude
+import qualified Data.Map as DM
+import qualified NRM.Types.LMap as LM
 
 toCPD :: NRMState -> Problem
 toCPD = do
-  sensors <- listNRMSensors
+  sensors <- DM.fromList . LM.toList . cpdSensors
   actuators <- listActuators
   objective <- mkObjective
   return $ Problem {..}

@@ -17,15 +17,15 @@ where
 
 import qualified CPD.Utils as CPD
 import qualified CPD.Values as CPD
-import qualified Data.Map as DM
 import Data.MessagePack
 import qualified NRM.CPD as NRMCPD
 import qualified NRM.Classes.Messaging as M
-import NRM.Classes.Sensors
+import NRM.Sensors
 import NRM.State
 import NRM.Types.Cmd
 import qualified NRM.Types.Configuration as Cfg
 import qualified NRM.Types.DownstreamCmdClient as DCC
+import NRM.Types.LMap as LM
 import qualified NRM.Types.Manifest as Manifest
 import qualified NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.UpstreamPub as UPub
@@ -93,7 +93,7 @@ mayRep c rep = case (upstreamClientID . cmdCore) c of
 -- management logic, the sensor callback logic, the control loop callback logic.
 behavior :: Cfg.Cfg -> NRMState -> NRMEvent -> IO (NRMState, Behavior)
 behavior _ st (DoOutput cmdID outputType content) =
-  return $ case DM.lookup cmdID (cmdIDMap st) of
+  return $ case LM.lookup cmdID (cmdIDMap st) of
     Just (c, sliceID, slice) ->
       if content == ""
       then
@@ -155,7 +155,7 @@ behavior c st (Req clientid msg) = case msg of
       , Rep clientid
         ( URep.RepList $
           URep.SliceList
-            (DM.toList (slices st))
+            (LM.toList (slices st))
         )
       )
   UReq.ReqGetState _ ->
@@ -186,10 +186,10 @@ behavior c st (Req clientid msg) = case msg of
       ( st'
       , fromMaybe (Rep clientid $ URep.RepNoSuchSlice URep.NoSuchSlice)
         ( maybeSlice <&> \slice ->
-          KillChildren (DM.keys $ Ct.cmds slice) $
+          KillChildren (LM.keys $ Ct.cmds slice) $
             (clientid, URep.RepSliceKilled (URep.SliceKilled killSliceID)) :
             catMaybes
-              ( (upstreamClientID . cmdCore <$> DM.elems (Ct.cmds slice)) <&>
+              ( (upstreamClientID . cmdCore <$> LM.elems (Ct.cmds slice)) <&>
                 fmap (,URep.RepThisCmdKilled URep.ThisCmdKilled)
               )
         )
@@ -209,7 +209,7 @@ behavior c st (Req clientid msg) = case msg of
       )
 behavior _ st (ChildDied pid exitcode) =
   return $
-    DM.lookup pid (pidMap st) & \case
+    LM.lookup pid (pidMap st) & \case
     Just (cmdID, cmd, sliceID, slice) ->
       let newPstate = (processState cmd) {ended = Just exitcode}
        in case isDone newPstate of
@@ -242,7 +242,7 @@ behavior _ st (DownstreamEvent clientid msg) = case msg of
       registerDownstreamCmdClient cmdStartCmdID clientid st <&>
       (,Log "downstream cmd client registered.")
   DEvent.EventCmdPerformance DEvent.CmdPerformance {..} ->
-    DM.lookup cmdPerformanceCmdID (cmdIDMap st) & \case
+    LM.lookup cmdPerformanceCmdID (cmdIDMap st) & \case
       Just (_cmd, sliceID, _slice) -> do
         (toPublish, st') <-
           CPD.measure
@@ -255,7 +255,7 @@ behavior _ st (DownstreamEvent clientid msg) = case msg of
                 "no internal NRM sensor for this perf measurement"
             CPD.AdjustProblem r p ->
               return
-                (UPub.PubCPD p, identity (adjustRange (DCC.toSensorID clientid) r $ st {cpd = p}))
+                (UPub.PubCPD p, runIdentity (adjustSensorRange (DCC.toSensorID clientid) r $ st {cpd = p}))
         return
           ( st'
           , Pub $
@@ -294,7 +294,7 @@ instance MessagePack Behavior where
     toObject
       ( "pop" :: Text
       , cmdID
-      , (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> toList maybeRep
+      , (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> Protolude.toList maybeRep
       )
 
   fromObject x = to <$> gFromObject x

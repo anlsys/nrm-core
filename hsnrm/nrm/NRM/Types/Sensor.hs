@@ -31,8 +31,9 @@ data Sensor
 
 data PassiveSensor
   = PassiveSensor
-      { perform :: IO (Maybe Double)
-      , passiveTags :: [Tag]
+      {
+      {-perform :: IO (Maybe Double)-}
+       passiveTags :: [Tag]
       , frequency :: U.Frequency
       , passiveSource :: CPD.Source
       , passiveRange :: (Double, Double)
@@ -42,7 +43,7 @@ data ActiveSensor
   = ActiveSensor
       { maxFrequency :: U.Frequency
       , activeTags :: [Tag]
-      , process :: Double -> Double
+      {-, process :: Double -> Double-}
       , activeSource :: CPD.Source
       , activeRange :: (Double, Double)
       }

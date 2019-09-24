@@ -21,15 +21,17 @@ module NRM.Types.State
 where
 
 import CPD.Core as CPD
+import Control.Lens
 import Data.Aeson
 import Data.Data
 import Data.JSON.Schema
-import Data.Map as DM
 import Data.MessagePack
+import NRM.Classes.Sensors
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
 import NRM.Types.Cmd as Cmd
+import NRM.Types.LMap as LM
 import NRM.Types.Process as P
 import NRM.Types.Slice as C
 import NRM.Types.Topology
@@ -38,15 +40,19 @@ import Protolude
 data NRMState
   = NRMState
       { cpd :: CPD.Problem
-      , pus :: Map PUID PU
-      , cores :: Map CoreID Core
-      , packages :: Map PackageID Package
-      , slices :: Map SliceID Slice
+      , pus :: LMap PUID PU
+      , cores :: LMap CoreID Core
+      , packages :: LMap PackageID Package
+      , slices :: LMap SliceID Slice
       , dummyRuntime :: Maybe DummyRuntime
       , singularityRuntime :: Maybe SingularityRuntime
       , nodeosRuntime :: Maybe NodeosRuntime
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
+
+instance Sensors NRMState where
+
+  passiveSensors NRMState {..} = passiveSensors pus <> passiveSensors cores <> passiveSensors packages
 
 instance JSONSchema NRMState where
 
@@ -55,7 +61,7 @@ instance JSONSchema NRMState where
 showSliceList :: [(SliceID, Slice)] -> Text
 showSliceList l =
   mconcat $ l <&> \(sliceID, Slice {..}) ->
-    "slice: ID " <> C.toText sliceID <> "\n" <> mconcat (descCmd <$> DM.toList cmds)
+    "slice: ID " <> C.toText sliceID <> "\n" <> mconcat (descCmd <$> LM.toList cmds)
   where
     descCmd (cmdID, cmdCore -> CmdCore {..}) =
       " command: ID " <> Cmd.toText cmdID <> descSpec cmdPath arguments <> "\n"
@@ -74,56 +80,56 @@ showSliceList l =
 -- | Renders a textual view of running slices
 showSlices :: NRMState -> Text
 showSlices NRMState {..} =
-  showSliceList $ DM.toList slices
+  showSliceList $ LM.toList slices
 
 -- | Insert a slice in the state (with replace)
 insertSlice :: SliceID -> Slice -> NRMState -> NRMState
-insertSlice sliceID slice s = s {slices = DM.insert sliceID slice (slices s)}
+insertSlice sliceID slice s = s {slices = LM.insert sliceID slice (slices s)}
 
 -- | NRM state map view by ProcessID.
-pidMap :: NRMState -> DM.Map ProcessID (CmdID, Cmd, SliceID, Slice)
-pidMap s = mconcat $ DM.toList (slices s) <&> mkMap
+pidMap :: NRMState -> LMap ProcessID (CmdID, Cmd, SliceID, Slice)
+pidMap s = mconcat $ LM.toList (slices s) <&> mkMap
   where
-    mkMap :: forall c. (c, Slice) -> Map ProcessID (CmdID, Cmd, c, Slice)
+    mkMap :: forall c. (c, Slice) -> LMap ProcessID (CmdID, Cmd, c, Slice)
     mkMap x@(_, c) =
-      DM.fromList $
-        zip (pid <$> DM.elems (cmds c))
-          (DM.toList (cmds c) <&> mkTriple x)
+      LM.fromList $
+        zip (pid <$> LM.elems (cmds c))
+          (LM.toList (cmds c) <&> mkTriple x)
 
-mkTriple :: (c,d) -> (a,b) -> (a,b,c,d)
+mkTriple :: (c, d) -> (a, b) -> (a, b, c, d)
 mkTriple (cid, c) (cmid, cm) = (cmid, cm, cid, c)
 
 -- | NRM state map view by cmdID of "running" commands..
-cmdIDMap :: NRMState -> DM.Map CmdID (Cmd, SliceID, Slice)
+cmdIDMap :: NRMState -> LMap CmdID (Cmd, SliceID, Slice)
 cmdIDMap = mkCmdIDMap cmds
 
 -- | NRM state map view by cmdID of "awaiting" commands.
-awaitingCmdIDMap :: NRMState -> DM.Map CmdID (CmdCore, SliceID, Slice)
+awaitingCmdIDMap :: NRMState -> LMap CmdID (CmdCore, SliceID, Slice)
 awaitingCmdIDMap = mkCmdIDMap awaiting
 
 mkCmdIDMap
   :: Ord k
-  => (Slice -> Map k a)
+  => (Slice -> LMap k a)
   -> NRMState
-  -> Map k (a, SliceID, Slice)
-mkCmdIDMap accessor s = mconcat $ DM.toList (slices s) <&> mkMap
+  -> LMap k (a, SliceID, Slice)
+mkCmdIDMap accessor s = mconcat $ LM.toList (slices s) <&> mkMap
   where
     mkMap x@(_, c) =
-      DM.fromList $
-        zip (DM.keys $ accessor c)
-          (DM.elems (accessor c) <&> mk x)
-    mk :: (b,c) -> a -> (a,b,c)
+      LM.fromList $
+        zip (LM.keys $ accessor c)
+          (LM.elems (accessor c) <&> mk x)
+    mk :: (b, c) -> a -> (a, b, c)
     mk (cid, c) cm = (cm, cid, c)
 
 {-# WARNING runningCmdIDCmdMap "To remove" #-}
 -- | List commands currently registered as running
-runningCmdIDCmdMap :: NRMState -> DM.Map CmdID Cmd
+runningCmdIDCmdMap :: NRMState -> LMap CmdID Cmd
 runningCmdIDCmdMap = cmdsMap cmds
 
 -- | List commands awaiting to be launched
-awaitingCmdIDCmdMap :: NRMState -> DM.Map CmdID CmdCore
+awaitingCmdIDCmdMap :: NRMState -> LMap CmdID CmdCore
 awaitingCmdIDCmdMap = cmdsMap awaiting
 
 -- | List commands awaiting to be launched
-cmdsMap :: (Slice -> Map CmdID a) -> NRMState -> DM.Map CmdID a
-cmdsMap accessor s = mconcat $ accessor <$> elems (slices s)
+cmdsMap :: (Slice -> LMap CmdID a) -> NRMState -> LMap CmdID a
+cmdsMap accessor s = mconcat $ accessor <$> LM.elems (slices s)

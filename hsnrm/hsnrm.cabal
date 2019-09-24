@@ -85,6 +85,7 @@ library nrmlib
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
+        NRM.Types.LMap
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
@@ -109,7 +110,7 @@ library nrmlib
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DerivingStrategies
+                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
@@ -131,6 +132,7 @@ library nrmlib
         mtl-compat -any,
         vcs-revision -any,
         transformers -any,
+        generic-data -any,
         bytestring -any,
         random -any,
         random-fu -any,
@@ -191,7 +193,7 @@ library banditlib
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DerivingStrategies
+                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
@@ -213,6 +215,7 @@ library banditlib
         mtl-compat -any,
         vcs-revision -any,
         transformers -any,
+        generic-data -any,
         bytestring -any,
         random -any,
         random-fu -any,
@@ -323,6 +326,7 @@ executable nrm.so
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
+        NRM.Types.LMap
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
@@ -346,7 +350,7 @@ executable nrm.so
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DerivingStrategies
+                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
@@ -368,6 +372,7 @@ executable nrm.so
         mtl-compat -any,
         vcs-revision -any,
         transformers -any,
+        generic-data -any,
         bytestring -any,
         random -any,
         random-fu -any,
@@ -478,6 +483,7 @@ executable nrmstatic
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
+        NRM.Types.LMap
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
@@ -501,7 +507,7 @@ executable nrmstatic
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DerivingStrategies
+                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
@@ -523,6 +529,7 @@ executable nrmstatic
         mtl-compat -any,
         vcs-revision -any,
         transformers -any,
+        generic-data -any,
         bytestring -any,
         random -any,
         random-fu -any,
@@ -633,6 +640,7 @@ executable nrmd
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
+        NRM.Types.LMap
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
@@ -656,7 +664,7 @@ executable nrmd
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DerivingStrategies
+                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
@@ -678,6 +686,7 @@ executable nrmd
         mtl-compat -any,
         vcs-revision -any,
         transformers -any,
+        generic-data -any,
         bytestring -any,
         random -any,
         random-fu -any,
@@ -734,7 +743,7 @@ executable nrm
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DerivingStrategies
+                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
@@ -761,7 +770,7 @@ executable nrmddep
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DerivingStrategies
+                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
@@ -788,7 +797,7 @@ executable codegen
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DerivingStrategies
+                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
