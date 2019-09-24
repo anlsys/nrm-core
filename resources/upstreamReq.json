@@ -59,63 +59,38 @@
                             "required": [
                                 "name",
                                 "app",
-                                "hwbind",
-                                "image"
+                                "hwbind"
                             ],
                             "type": "object",
                             "properties": {
                                 "image": {
-                                    "oneOf": [
-                                        {
-                                            "required": [
-                                                "image"
-                                            ],
-                                            "type": "object",
-                                            "properties": {
-                                                "image": {
-                                                    "required": [
-                                                        "path",
-                                                        "magetype"
-                                                    ],
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "binds": {
-                                                            "uniqueItems": false,
-                                                            "items": {
-                                                                "type": "string"
-                                                            },
-                                                            "type": "array"
-                                                        },
-                                                        "path": {
-                                                            "type": "string"
-                                                        },
-                                                        "magetype": {
-                                                            "oneOf": [
-                                                                {
-                                                                    "const": "\"sif\""
-                                                                },
-                                                                {
-                                                                    "const": "\"docker\""
-                                                                }
-                                                            ]
-                                                        }
-                                                    }
-                                                }
-                                            }
+                                    "required": [
+                                        "path",
+                                        "magetype"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "binds": {
+                                            "uniqueItems": false,
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
                                         },
-                                        {
-                                            "required": [
-                                                "noImage"
-                                            ],
-                                            "type": "object",
-                                            "properties": {
-                                                "noImage": {
-                                                    "type": "object",
-                                                    "properties": {}
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "magetype": {
+                                            "oneOf": [
+                                                {
+                                                    "const": "\"sif\""
+                                                },
+                                                {
+                                                    "const": "\"docker\""
                                                 }
-                                            }
+                                            ]
                                         }
-                                    ]
+                                    }
                                 },
                                 "hwbind": {
                                     "type": "boolean"

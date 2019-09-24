@@ -100,169 +100,80 @@
                             }
                         },
                         "sensors": {
-                            "uniqueItems": false,
-                            "items": {
+                            "additionalProperties": {
                                 "required": [
-                                    "sensorKey",
-                                    "sensorDesc"
+                                    "source",
+                                    "sensorMeta"
                                 ],
                                 "type": "object",
                                 "properties": {
-                                    "sensorDesc": {
+                                    "source": {
                                         "required": [
-                                            "source",
-                                            "sensorMeta"
+                                            "sourceTag"
                                         ],
                                         "type": "object",
                                         "properties": {
-                                            "source": {
-                                                "required": [
-                                                    "sourceTag"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "sourceTag": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "sensorMeta": {
-                                                "required": [
-                                                    "range",
-                                                    "frequency"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "frequency": {
-                                                        "oneOf": [
-                                                            {
-                                                                "required": [
-                                                                    "maxFrequency"
-                                                                ],
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "maxFrequency": {
-                                                                        "required": [
-                                                                            "maxFrequency"
-                                                                        ],
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "maxFrequency": {
-                                                                                "type": "number"
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            },
-                                                            {
-                                                                "required": [
-                                                                    "fixedFrequency"
-                                                                ],
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "fixedFrequency": {
-                                                                        "required": [
-                                                                            "fixedFrequency"
-                                                                        ],
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "fixedFrequency": {
-                                                                                "type": "number"
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        ]
-                                                    },
-                                                    "range": {
-                                                        "required": [
-                                                            "min",
-                                                            "max"
-                                                        ],
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "max": {
-                                                                "type": "number"
-                                                            },
-                                                            "min": {
-                                                                "type": "number"
-                                                            }
-                                                        }
-                                                    }
-                                                }
+                                            "sourceTag": {
+                                                "type": "string"
                                             }
                                         }
                                     },
-                                    "sensorKey": {
+                                    "sensorMeta": {
                                         "required": [
-                                            "sensorID"
+                                            "range",
+                                            "frequency"
                                         ],
                                         "type": "object",
                                         "properties": {
-                                            "sensorID": {
-                                                "type": "string"
+                                            "frequency": {
+                                                "required": [
+                                                    "maxFrequency"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "maxFrequency": {
+                                                        "type": "number"
+                                                    }
+                                                }
+                                            },
+                                            "range": {
+                                                "required": [
+                                                    "min",
+                                                    "max"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "max": {
+                                                        "type": "number"
+                                                    },
+                                                    "min": {
+                                                        "type": "number"
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
                             },
-                            "type": "array"
+                            "type": "object"
                         },
                         "actuators": {
-                            "uniqueItems": false,
-                            "items": {
+                            "additionalProperties": {
                                 "required": [
-                                    "actuatorKey",
-                                    "actuatorDesc"
+                                    "actuatorRange"
                                 ],
                                 "type": "object",
                                 "properties": {
-                                    "actuatorDesc": {
-                                        "required": [
-                                            "target",
-                                            "actuatorMeta"
-                                        ],
-                                        "type": "object",
-                                        "properties": {
-                                            "actuatorMeta": {
-                                                "required": [
-                                                    "actuatorRange"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "actuatorRange": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            },
-                                            "target": {
-                                                "required": [
-                                                    "sourceTag"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "sourceTag": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    "actuatorKey": {
-                                        "required": [
-                                            "actuatorID"
-                                        ],
-                                        "type": "object",
-                                        "properties": {
-                                            "actuatorID": {
-                                                "type": "string"
-                                            }
-                                        }
+                                    "actuatorRange": {
+                                        "uniqueItems": false,
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "type": "array"
                                     }
                                 }
                             },
-                            "type": "array"
+                            "type": "object"
                         }
                     }
                 }

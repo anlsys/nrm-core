@@ -18,13 +18,17 @@
     , perfwrapper =
         < PerfwrapperDisabled
         | Perfwrapper :
-            { perfFreq :
-                { fromHz : Double }
-            , perfLimit :
-                { fromOps : Integer }
+            { _1 :
+                { perfFreq :
+                    { fromHz : Double }
+                , perfLimit :
+                    { fromOps : Integer }
+                }
             }
         >.Perfwrapper
-        { perfFreq = { fromHz = 1.0 }, perfLimit = { fromOps = +100000 } }
+        { _1 =
+            { perfFreq = { fromHz = 1.0 }, perfLimit = { fromOps = +100000 } }
+        }
     , power =
         { policy =
             < NoPowerPolicy | DDCM | DVFS | Combined >.NoPowerPolicy
@@ -39,14 +43,6 @@
 , hwbind =
     False
 , image =
-    < Image :
-        { path :
-            Text
-        , magetype :
-            < Sif | Docker >
-        , binds :
-            Optional (List Text)
-        }
-    | NoImage
-    >.NoImage
+    None
+    { path : Text, magetype : < Sif | Docker >, binds : Optional (List Text) }
 }

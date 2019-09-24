@@ -89,7 +89,9 @@ showSliceList l =
     "slice: ID " <> C.toText sliceID <> "\n" <> mconcat (descCmd <$> LM.toList cmds)
   where
     descCmd (cmdID, cmdCore -> CmdCore {..}) =
-      " command: ID " <> Cmd.toText cmdID <> descSpec cmdPath arguments <> "\n"
+      " command: ID " <> Cmd.toText cmdID <>
+        descSpec cmdPath arguments <>
+        "\n"
     descSpec
       :: ( IsString a
          , Monoid a

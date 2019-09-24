@@ -18,10 +18,12 @@
     , perfwrapper :
         < PerfwrapperDisabled
         | Perfwrapper :
-            { perfFreq :
-                { fromHz : Double }
-            , perfLimit :
-                { fromOps : Integer }
+            { _1 :
+                { perfFreq :
+                    { fromHz : Double }
+                , perfLimit :
+                    { fromOps : Integer }
+                }
             }
         >
     , power :
@@ -38,14 +40,6 @@
 , hwbind :
     Bool
 , image :
-    < Image :
-        { path :
-            Text
-        , magetype :
-            < Sif | Docker >
-        , binds :
-            Optional (List Text)
-        }
-    | NoImage
-    >
+    Optional
+    { path : Text, magetype : < Sif | Docker >, binds : Optional (List Text) }
 }

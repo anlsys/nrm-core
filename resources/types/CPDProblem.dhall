@@ -10,30 +10,21 @@
 
 { sensors :
     List
-    { sensorKey :
+    { _1 :
         { sensorID : Text }
-    , sensorDesc :
+    , _2 :
         { source :
             Text
         , sensorMeta :
             { range :
                 { min : Double, max : Double }
             , frequency :
-                < MaxFrequency :
-                    { maxFrequency : { fromHz : Double } }
-                | FixedFrequency :
-                    { fixedFrequency : { fromHz : Double } }
-                >
+                { maxFrequency : { fromHz : Double } }
             }
         }
     }
 , actuators :
-    List
-    { actuatorKey :
-        { actuatorID : Text }
-    , actuatorDesc :
-        { target : Text, actuatorMeta : Text }
-    }
+    List { _1 : { actuatorID : Text }, _2 : List Text }
 , objective :
     { linearCombination :
         List { w : Double, x : { sensorID : Text } }
