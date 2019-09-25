@@ -27,7 +27,7 @@ let
       pytest = super.pytest.overridePythonAttrs (o: { doCheck = false; });
       networkx = super.networkx.overridePythonAttrs (o: { doCheck = false; });
       importlab = pkgs.callPackage ./pkgs/importlab { pythonPackages = self; };
-      pyzmq = super.pyzmq.override { zeromq3 = pkgs.zeromq; };
+      pyzmq = super.pyzmq.override { zeromq = pkgs.zeromq; };
       pytype = pkgs.callPackage ./pkgs/pytype {
         src = fetched ./pkgs/pytype/pin.json;
         pythonPackages = self;
@@ -44,8 +44,7 @@ in rec {
     pythonPackages = nrmPythonPackages;
     src = ../pynrm;
   };
-  libnrm = pkgs.callPackage ./pkgs/pynrm {
-    pythonPackages = nrmPythonPackages;
+  libnrm = pkgs.callPackage ./pkgs/libnrm {
     src = ../libnrm;
   };
   hsnrm-hack = pkgs.haskellPackages.shellFor {
@@ -70,24 +69,16 @@ in rec {
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.astyle ]; });
 
-  hack = hsnrm-hack.overrideAttrs (o: {
-    buildInputs = o.buildInputs ++ [
-      (pkgs.python37.withPackages
-      (ps: [ ps.msgpack ps.pyzmq ps.tornado ps.jsonschema ps.pyyaml ps.warlock ]))
-    ] ++ libnrm-hack.buildInputs ++ [
-      nrmPythonPackages.flake8
-      nrmPythonPackages.autopep8
-      nrmPythonPackages.black
-      nrmPythonPackages.mypy
-      nrmPythonPackages.pytype
-      nrmPythonPackages.sphinx
-      pkgs.nodejs pkgs.yarn 
-    ];
+  hack = pkgs.mkShell {
+    inputsFrom = with pkgs; [ hsnrm-hack libnrm-hack ];
+
+    buildInputs = [ pkgs.hwloc ];
+
     shellHook = ''
       export PATH=$PATH:./dev/:./pynrm/bin:./hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm/
       export PYTHONPATH=$PYTHONPATH:./pynrm/
     '';
-  });
+  };
 }
 
 #GHC_GMP = "${pkgs.gmp6.override { withStatic = true; }}/lib";

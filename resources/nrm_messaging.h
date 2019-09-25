@@ -3,7 +3,7 @@
  * (c.f. AUTHORS, LICENSE)
  *
  * SPDX-License-Identifier: BSD-3-Clause
-*******************************************************************************/
+*******************************************************************************
  *
  *    this file is generated, modifications will be erased.
 */
