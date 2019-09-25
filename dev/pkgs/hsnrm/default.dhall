@@ -121,6 +121,8 @@ let deps =
           nobound "neat-interpolation"
       , generic-lens =
           nobound "generic-lens"
+      , record =
+          nobound "record"
       , yaml =
           nobound "yaml"
       , aeson =
@@ -304,6 +306,7 @@ let libdep =
       , deps.containers
       , deps.unordered-containers
       , deps.mtl
+      , deps.record
       , deps.aeson
       , deps.dhall
       , deps.conduit

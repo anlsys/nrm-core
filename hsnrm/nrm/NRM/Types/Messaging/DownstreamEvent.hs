@@ -93,20 +93,14 @@ data PhaseContext
 instance M.NRMMessage Event J.Event where
 
   toJ = \case
-    EventCmdStart CmdStart {..} ->
-      J.CmdStart $ Cmd.toText cmdStartCmdID
     EventCmdPerformance CmdPerformance {..} ->
       J.CmdPerformance
         { cmdID = Cmd.toText cmdPerformanceCmdID
         , perf = U.fromOps perf
         }
-    EventCmdExit CmdExit {..} ->
-      J.CmdExit $ Cmd.toText cmdExitCmdID
     _ -> panic "Non-Cmd downstream API not implemented yet."
 
   fromJ = \case
-    J.CmdStart {..} -> EventCmdStart (CmdStart $ fromJust $ Cmd.fromText cmdID)
-    J.CmdExit {..} -> EventCmdExit (CmdExit $ fromJust $ Cmd.fromText cmdID)
     J.CmdPerformance {..} ->
       EventCmdPerformance
         (CmdPerformance (fromJust $ Cmd.fromText cmdID) (U.Operations perf))

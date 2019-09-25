@@ -12,19 +12,12 @@ where
 
 import Codegen.CHeader
 import Protolude
+import Record
 
 data Event
-  = CmdStart {cmdID :: Text}
-  | CmdPerformance
+  = CmdPerformance
       { cmdID :: Text
       , perf :: Int
-      }
-  | CmdExit {cmdID :: Text}
-  | ThreadStart
-      { cmdID :: Text
-      , processID :: Text
-      , taskID :: Text
-      , threadID :: Text
       }
   | ThreadProgress
       { cmdID :: Text
@@ -44,10 +37,12 @@ data Event
       , startbarrier :: Int
       , endbarrier :: Int
       }
-  | ThreadExit
-      { cmdID :: Text
-      , processID :: Text
-      , taskID :: Text
-      , threadID :: Text
-      }
   deriving (Generic, CHeaderGen)
+
+newtype T = T 
+  [r| {host :: Text,
+       port :: Int} |]
+ deriving (Show, Generic)
+
+t :: T 
+t = T [r| { host = "o", port = 2} |]

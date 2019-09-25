@@ -1,7 +1,7 @@
-{ stdenv, src, autoreconfHook, fetchgit, zeromq, gfortran, pkgconfig, mpich2 }:
+{ stdenv, src, autoreconfHook, fetchgit, zeromq, gfortran, pkgconfig, mpich2}:
 stdenv.mkDerivation {
   inherit src;
   name = "libnrm";
   nativeBuildInputs = [ autoreconfHook pkgconfig ];
-  buildInputs = [ zeromq gfortran ] ;
+  buildInputs = [ zeromq gfortran mpich2 ] ;
 }
