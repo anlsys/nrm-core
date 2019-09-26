@@ -11,8 +11,8 @@ module NRM.Types.Messaging.DownstreamEvent.JSON
 where
 
 import Codegen.CHeader
+import Control.Lens
 import Protolude
-import Record
 
 data Event
   = CmdPerformance
@@ -38,11 +38,3 @@ data Event
       , endbarrier :: Int
       }
   deriving (Generic, CHeaderGen)
-
-newtype T = T 
-  [r| {host :: Text,
-       port :: Int} |]
- deriving (Show, Generic)
-
-t :: T 
-t = T [r| { host = "o", port = 2} |]
