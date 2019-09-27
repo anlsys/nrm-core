@@ -14,14 +14,13 @@ module NRM.Node.Sysfs.Internal
   , RAPLMeasurement (..)
   , RAPLConstraint (..)
   , RAPLCommand (..)
-  , RAPLCommands (..)
   , MaxPower (..)
   , MaxEnergy (..)
   , getRAPLDirs
   , measureRAPLDir
   , readRAPLConfiguration
-  , {-, applyRAPLPcap-}
-    -- * Hwmon
+  , applyRAPLPcap
+  , -- * Hwmon
     HwmonDirs
   , HwmonDir (..)
   , getHwmonDirs
@@ -38,6 +37,7 @@ import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
 import NRM.Classes.Topology
+import NRM.Types.LMap as LM
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
 import Protolude
@@ -45,15 +45,12 @@ import System.Directory
 import Text.RE.TDFA.Text
 
 -- | RAPL directory locations
-newtype RAPLDirs = RAPLDirs [RAPLDir]
+newtype RAPLDirs = RAPLDirs (LMap PackageID RAPLDir)
   deriving (Show, Generic, MessagePack)
 
 -- | Hwmon directory locations
 newtype HwmonDirs = HwmonDirs [HwmonDir]
   deriving (Show, Generic)
-
--- | RAPL Powercap command
-newtype RAPLCommands = RAPLCommands [RAPLCommand]
 
 -- | Maximum RAPL power constraint.
 newtype MaxPower = MaxPower Power
@@ -73,8 +70,7 @@ newtype HwmonDir = HwmonDir FilePath
 
 data RAPLCommand
   = RAPLCommand
-      { commandPkgid :: PackageID
-      , powercap :: Power
+      { powercap :: Power
       }
   deriving (Show)
 
@@ -82,7 +78,6 @@ data RAPLCommand
 data RAPLDir
   = RAPLDir
       { path :: FilePath
-      , pkgid :: PackageID
       , maxEnergy :: MaxEnergy
       }
   deriving (Show, Generic, MessagePack)
@@ -123,14 +118,31 @@ readRAPLConfiguration fp =
     constraint0 <- parseConstraint 0
     constraint1 <- parseConstraint 1
     case (name0, name1) of
-      ("short_term", "long_term") -> return $ RAPLConfig fp enabled constraint0 constraint1
-      ("long_term", "short_term") -> return $ RAPLConfig fp enabled constraint1 constraint0
+      ("short_term", "long_term") ->
+        return $
+          RAPLConfig fp enabled constraint0 constraint1
+      ("long_term", "short_term") ->
+        return $
+          RAPLConfig fp enabled constraint1 constraint0
       _ -> mzero
   where
     parseConstraint :: Int -> MaybeT IO RAPLConstraint
     parseConstraint i = do
-      maxpower <- maybeTReadLine (fp <> "/constraint_" <> show i <> "_max_power_uw") >>= (MaybeT . pure . readMaybe . toS)
-      tw <- maybeTReadLine (fp <> "/constraint_" <> show i <> "_time_window_us") >>= (MaybeT . pure . readMaybe . toS)
+      maxpower <-
+        maybeTReadLine
+          ( fp <>
+            "/constraint_" <>
+            show i <>
+            "_max_power_uw"
+          ) >>=
+          (MaybeT . pure . readMaybe . toS)
+      tw <-
+        maybeTReadLine
+          ( fp <> "/constraint_" <>
+            show i <>
+            "_time_window_us"
+          ) >>=
+          (MaybeT . pure . readMaybe . toS)
       return $ RAPLConstraint (uS tw) (MaxPower . uW $ maxpower)
 
 -- | Measures power from a RAPL directory.
@@ -142,26 +154,29 @@ measureRAPLDir fp =
     return $ RAPLMeasurement fp (uJ measured)
 
 -- | Checks if the hwmon directory has "coretemp" in its name file.
-processRAPLFolder :: (MonadIO m) => FilePath -> m (Maybe RAPLDir)
+processRAPLFolder :: (MonadIO m) => FilePath -> m (Maybe (PackageID, RAPLDir))
 processRAPLFolder fp =
   runMaybeT $ do
     namecontent <- maybeTReadLine $ fp <> "/name"
     maxRange <- maybeTReadLine (fp <> "/max_energy_range_uj") >>= (MaybeT . pure . readMaybe . toS)
     match <- MaybeT $ pure (matchedText (namecontent ?=~ rx) >>= idFromString . drop (T.length "package") . toS)
-    return $ RAPLDir fp match (MaxEnergy . uJ $ maxRange)
+    return (match, RAPLDir fp (MaxEnergy . uJ $ maxRange))
   where
     rx = [re|package-([0-9]+)(/\S+)?|]
 
 -- | Applies powercap commands.
-{-applyRAPLPcap :: RAPLDirs -> RAPLCommand -> IO ()-}
-{-applyRAPLPcap _ RAPLCommand {..} = return ()-}
+applyRAPLPcap :: FilePath -> RAPLCommand -> IO ()
+applyRAPLPcap filePath (RAPLCommand cap) =
+  writeFile (filePath <> "/constraint_0_power_limit_uw")
+    (show $ fromuW cap)
 
 -- | Lists available rapl directories.
 getRAPLDirs :: FilePath -> IO (Maybe RAPLDirs)
 getRAPLDirs d =
-  try (RAPLDirs <$> listDirFilter processRAPLFolder d) >>= \case
-    Left (SomeException _) -> return Nothing
-    Right dirs -> return $ Just dirs
+  try (RAPLDirs . LM.fromList <$> (listDirFilter processRAPLFolder d)) >>=
+    return . \case
+    Left (SomeException _) -> Nothing
+    Right dirs -> Just dirs
 
 -- | "Utility": filter directories with monadic predicate.
 listDirFilter :: (FilePath -> IO (Maybe a)) -> FilePath -> IO [a]

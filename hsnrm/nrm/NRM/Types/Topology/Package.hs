@@ -19,6 +19,7 @@ import Data.Generics.Product
 import Data.MessagePack
 import NRM.Classes.Actuators
 import NRM.Classes.Sensors
+import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Actuator
 import NRM.Types.LMap as LM
@@ -52,11 +53,11 @@ raplToSensor packageID (Rapl id path (MaxEnergy maxEnergy) freq) =
     textID = show packageID
 
 raplToActuator :: a -> Rapl -> (CPD.ActuatorID, Actuator)
-raplToActuator _packageID (Rapl id _path (MaxEnergy maxEnergy) _freq) =
+raplToActuator _packageID (Rapl id path (MaxEnergy _maxEnergy) _freq) =
   ( coerce id
   , Actuator
-    { actions = [fromuJ maxEnergy / 2, fromuJ maxEnergy]
-    , go = undefined
+    { actions = [200, 220]
+    , go = setRAPLPowercap path . RAPLCommand . uW
     }
   )
 

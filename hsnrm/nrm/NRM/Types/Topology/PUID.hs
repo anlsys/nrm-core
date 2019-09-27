@@ -20,7 +20,7 @@ import Protolude
 
 -- | A Processing Unit OS identifier.
 newtype PUID = PUID Int
-  deriving (Eq, Ord, Show, Generic,Data, ToJSONKey, FromJSONKey,MessagePack)
+  deriving (Eq, Ord, Show, Generic, Data, ToJSONKey, FromJSONKey, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON PUID
 
 instance ToHwlocType PUID where

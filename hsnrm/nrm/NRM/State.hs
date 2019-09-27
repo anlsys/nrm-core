@@ -57,7 +57,7 @@ initialState c = do
           selectPackageIDs hwl
   packages <-
     getDefaultRAPLDirs (toS $ Cfg.raplPath $ raplCfg c) >>= \case
-      Just (RAPLDirs rapldirs) -> foldM goRAPL packages' rapldirs
+      Just (RAPLDirs rapldirs) -> foldM goRAPL packages' (LM.toList rapldirs)
       Nothing -> return packages'
   let s = NRMState
         { cpd = CPD.emptyProblem
@@ -79,9 +79,9 @@ initialState c = do
   where
     goRAPL
       :: LMap PackageID Package
-      -> RAPLDir
+      -> (PackageID, RAPLDir)
       -> IO (LMap PackageID Package)
-    goRAPL m RAPLDir {..} =
+    goRAPL m (pkgid, RAPLDir {..}) =
       LM.lookup pkgid m & \case
         Nothing -> return m
         Just oldPackage -> do

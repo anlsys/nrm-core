@@ -97,22 +97,29 @@ mayRep c rep = case (upstreamClientID . cmdCore) c of
 -- management logic, the sensor callback logic, the control loop callback logic.
 behavior :: Cfg.Cfg -> NRMState -> NRMEvent -> IO (NRMState, Behavior)
 behavior _ st (DoOutput cmdID outputType content) =
-  return $ st ^. _cmdID cmdID & \case
-    Just c -> case content of
-      "" ->
-        let newPstate = case outputType of
-              URep.StdoutOutput -> (processState c) {stdoutFinished = True}
-              URep.StderrOutput -> (processState c) {stderrFinished = True}
-         in isDone newPstate & \case
-              Just exc -> case removeCmd (KCmdID cmdID) st of
-                Just (_, _, _, _, st') -> (st', mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc))
-                Nothing -> panic "Internal NRM state management error."
-              Nothing ->
-                ( st & _cmdID cmdID %~ (<&> field @"processState" .~ newPstate)
-                , NoBehavior
-                )
-      _ -> (st, respondContent content c cmdID outputType)
-    Nothing -> (st, Log "No such command was found in the NRM state.")
+  return . swap $ st &
+    _cmdID cmdID
+      \case
+        Nothing -> (Log "No such command was found in the NRM state.", Nothing)
+        Just c ->
+          case content of
+            _ -> (respondContent content c cmdID outputType, Nothing)
+            "" ->
+              let newPstate = case outputType of
+                    URep.StdoutOutput -> (processState c) {stdoutFinished = True}
+                    URep.StderrOutput -> (processState c) {stderrFinished = True}
+               in isDone newPstate & \case
+                    Just exc -> case removeCmd (KCmdID cmdID) st of
+                      Just (_, _, _, _, st') ->
+                        ( st'
+                        , mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc)
+                        )
+                      Nothing -> panic "Internal NRM state management error."
+                    Nothing ->
+                      ( NoBehavior
+                      , st & _cmdID cmdID %~
+                        (<&> field @"processState" .~ newPstate)
+                      )
 behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
   NotLaunched ->
     return $ fromMaybe (st, NoBehavior) $
@@ -161,7 +168,12 @@ behavior c st (Req clientid msg) = case msg of
             )
     return
       ( registerAwaiting cmdID
-          (mkCmd spec manifest (if detachCmd then Nothing else Just clientid))
+          ( mkCmd spec manifest
+            ( if detachCmd
+            then Nothing
+            else Just clientid
+            )
+          )
           runSliceID .
           createSlice runSliceID $
           st

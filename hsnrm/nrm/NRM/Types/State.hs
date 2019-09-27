@@ -190,11 +190,17 @@ _cmdID cmdID = lens getter setter
   where
     getter :: NRMState -> Maybe Cmd
     getter st = lookupCmd cmdID st <&> \(cmd, _, _) -> cmd
-    setter st cmd =
+    setter st (Just cmd) =
       lookupCmd cmdID st & \case
         Just (_, sliceID, slice) ->
-          st & _sliceID sliceID ?~ (slice & field @"cmds" . at cmdID .~ cmd)
+          st & _sliceID sliceID ?~ (slice & field @"cmds" . at cmdID .~ Just cmd)
         Nothing -> st
+    setter st Nothing = 
+      lookupCmd cmdID st & \case
+        Just (_, sliceID,_ ) ->
+          st & _sliceID sliceID %~ mayRemoveSlice cmdID
+        Nothing -> st
+    mayRemoveSlice = undefined
 
 _downstreamCmdID :: DC.DownstreamCmdID -> Lens' NRMState (Maybe Cmd)
 _downstreamCmdID = undefined

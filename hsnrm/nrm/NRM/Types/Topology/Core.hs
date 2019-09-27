@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
+
 {-|
 Module      : NRM.Types.Topology.Core
 Copyright   : (c) UChicago Argonne, 2019
@@ -13,8 +14,8 @@ where
 import Data.Aeson
 import Data.Data
 import Data.MessagePack
-import NRM.Classes.Sensors
 import NRM.Classes.Actuators
+import NRM.Classes.Sensors
 import NRM.Types.Topology.CoreID
 import Protolude
 

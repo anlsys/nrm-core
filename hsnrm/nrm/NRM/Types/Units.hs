@@ -42,28 +42,28 @@ import NRM.Orphans.Dhall ()
 import Protolude hiding ((%))
 
 newtype Operations = Operations {fromOps :: Int}
-  deriving (Eq, Ord, Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via Int
+  deriving (Eq, Ord, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (Show, JSONSchema, ToJSON, FromJSON) via Int
 
 newtype Progress = Progress Int
-  deriving (Show, Generic, Data, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via Int
+  deriving (Generic, Data, MessagePack)
+  deriving (Show, JSONSchema, ToJSON, FromJSON) via Int
 
 newtype Frequency = Frequency {fromHz :: Double}
-  deriving (Eq, Show, Generic, Data, Inject, Interpret, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via Double
+  deriving (Eq, Generic, Data, Inject, Interpret, MessagePack)
+  deriving (Show, JSONSchema, ToJSON, FromJSON) via Double
 
 newtype Power = Power {fromuW :: Double}
-  deriving (Eq, Show, Generic, Data, Inject, Interpret, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via Double
+  deriving (Eq, Generic, Data, Inject, Interpret, MessagePack)
+  deriving (Show, JSONSchema, ToJSON, FromJSON) via Double
 
 newtype Time = Time {fromuS :: Double}
-  deriving (Eq, Show, Generic, Data, Inject, Interpret, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via Double
+  deriving (Eq, Generic, Data, Inject, Interpret, MessagePack)
+  deriving (Show, JSONSchema, ToJSON, FromJSON) via Double
 
 newtype Energy = Energy {fromuJ :: Double}
-  deriving (Eq, Show, Generic, Data, Inject, Interpret, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via Double
+  deriving (Eq, Generic, Data, Inject, Interpret, MessagePack)
+  deriving (Show, JSONSchema, ToJSON, FromJSON) via Double
 
 -- | Microjoule value constructor.
 uJ :: Double -> Energy
