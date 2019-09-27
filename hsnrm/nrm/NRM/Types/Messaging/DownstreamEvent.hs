@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 {-|
 Module      : NRM.Types.Messaging.DownstreamEvent
 Copyright   : (c) UChicago Argonne, 2019
@@ -14,8 +16,11 @@ module NRM.Types.Messaging.DownstreamEvent
   )
 where
 
+import Data.JSON.Schema
+import Data.Aeson
 import Data.Maybe (fromJust)
 import Data.MessagePack
+import NRM.Classes.Messaging
 import qualified NRM.Classes.Messaging as M
 import qualified NRM.Types.Cmd as Cmd
 import qualified NRM.Types.DownstreamThread as D
@@ -52,13 +57,15 @@ newtype Progress
   = Progress
       { progress :: U.Progress
       }
-  deriving (Generic, MessagePack)
+  deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Progress
 
 newtype Performance
   = Performance
       { perf :: U.Operations
       }
-  deriving (Generic, MessagePack)
+  deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Progress
 
 data PhaseContext
   = PhaseContext

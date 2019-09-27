@@ -8,7 +8,6 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Types.Messaging.UpstreamPub
   ( Pub (..)
-  , Performance (..)
   , Progress (..)
   , Power (..)
   , SliceStart (..)
@@ -22,7 +21,8 @@ import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
-import NRM.Types.DownstreamThread as D
+import NRM.Types.Cmd
+import NRM.Types.Messaging.DownstreamEvent
 import NRM.Types.Slice as C
 import qualified NRM.Types.Units as U
 import Protolude
@@ -33,7 +33,7 @@ data Pub
   | PubPower Power
   | PubSliceStart SliceStart
   | PubSliceExit SliceExit
-  | PubPerformance Performance
+  | PubPerformance CmdID Performance
   | PubProgress Progress
   | PubControl Control
   deriving (Show, Generic, MessagePack)
@@ -63,22 +63,6 @@ data SliceExit
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceExit
-
-data Performance
-  = Performance
-      { perfSliceID :: C.SliceID
-      , perf :: U.Operations
-      }
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Performance
-
-data Progress
-  = Progress
-      { downstreamThreadID :: D.DownstreamThreadID
-      , payload :: U.Progress
-      }
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Progress
 
 data Control
   = Control

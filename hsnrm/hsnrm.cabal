@@ -116,11 +116,11 @@ library nrmlib
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -Wmissing-home-modules -Widentities -Wredundant-constraints
+                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
+                 -fwarn-missing-signatures -fwarn-name-shadowing
+                 -fprint-potential-instances -Wmissing-export-lists
+                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
                  -fwarn-incomplete-patterns -Wincomplete-record-updates
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
@@ -145,7 +145,6 @@ library nrmlib
         containers -any,
         unordered-containers -any,
         mtl -any,
-        record -any,
         aeson -any,
         dhall -any,
         conduit -any,
@@ -199,11 +198,11 @@ library banditlib
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -Wmissing-home-modules -Widentities -Wredundant-constraints
+                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
+                 -fwarn-missing-signatures -fwarn-name-shadowing
+                 -fprint-potential-instances -Wmissing-export-lists
+                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
                  -fwarn-incomplete-patterns -Wincomplete-record-updates
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
@@ -228,7 +227,6 @@ library banditlib
         containers -any,
         unordered-containers -any,
         mtl -any,
-        record -any,
         aeson -any,
         dhall -any,
         conduit -any,
@@ -357,11 +355,11 @@ executable nrm.so
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -Wmissing-home-modules -Widentities -Wredundant-constraints
+                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
+                 -fwarn-missing-signatures -fwarn-name-shadowing
+                 -fprint-potential-instances -Wmissing-export-lists
+                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
                  -fwarn-incomplete-patterns -Wincomplete-record-updates
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
@@ -387,7 +385,6 @@ executable nrm.so
         containers -any,
         unordered-containers -any,
         mtl -any,
-        record -any,
         aeson -any,
         dhall -any,
         conduit -any,
@@ -516,11 +513,11 @@ executable nrmstatic
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -Wmissing-home-modules -Widentities -Wredundant-constraints
+                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
+                 -fwarn-missing-signatures -fwarn-name-shadowing
+                 -fprint-potential-instances -Wmissing-export-lists
+                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
                  -fwarn-incomplete-patterns -Wincomplete-record-updates
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
@@ -545,7 +542,6 @@ executable nrmstatic
         containers -any,
         unordered-containers -any,
         mtl -any,
-        record -any,
         aeson -any,
         dhall -any,
         conduit -any,
@@ -674,11 +670,11 @@ executable nrmd
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -Wmissing-home-modules -Widentities -Wredundant-constraints
+                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
+                 -fwarn-missing-signatures -fwarn-name-shadowing
+                 -fprint-potential-instances -Wmissing-export-lists
+                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
                  -fwarn-incomplete-patterns -Wincomplete-record-updates
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
@@ -703,7 +699,6 @@ executable nrmd
         containers -any,
         unordered-containers -any,
         mtl -any,
-        record -any,
         aeson -any,
         dhall -any,
         conduit -any,
@@ -753,11 +748,11 @@ executable nrm
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -Wmissing-home-modules -Widentities -Wredundant-constraints
+                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
+                 -fwarn-missing-signatures -fwarn-name-shadowing
+                 -fprint-potential-instances -Wmissing-export-lists
+                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
                  -fwarn-incomplete-patterns -Wincomplete-record-updates
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
@@ -779,11 +774,11 @@ executable nrmddep
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -Wmissing-home-modules -Widentities -Wredundant-constraints
+                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
+                 -fwarn-missing-signatures -fwarn-name-shadowing
+                 -fprint-potential-instances -Wmissing-export-lists
+                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
                  -fwarn-incomplete-patterns -Wincomplete-record-updates
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
@@ -805,11 +800,11 @@ executable codegen
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
-                 -Wincomplete-record-updates -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -Wmissing-export-lists -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -Wmissing-home-modules -Widentities -Wredundant-constraints
+                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
+                 -fwarn-missing-signatures -fwarn-name-shadowing
+                 -fprint-potential-instances -Wmissing-export-lists
+                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
                  -fwarn-incomplete-patterns -Wincomplete-record-updates
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures

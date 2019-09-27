@@ -21,6 +21,7 @@ import NRM.Classes.Messaging
 import NRM.Optparse
 import qualified NRM.Optparse.Client as C
 import qualified NRM.Types.Cmd as Cmd
+import qualified NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.Protocols as Protocols
 import qualified NRM.Types.Messaging.UpstreamPub as UPub
 import qualified NRM.Types.Messaging.UpstreamRep as URep
@@ -75,7 +76,7 @@ subClient s _c =
     Nothing -> putText "Couldn't decode published message"
     Just msg ->
       msg & \case
-        (UPub.PubPerformance (UPub.Performance _ perf)) ->
+        (UPub.PubPerformance _ (DEvent.Performance perf)) ->
           liftIO $ putText $ show perf
         _ -> panic "pub message handler not implemented yet."
 

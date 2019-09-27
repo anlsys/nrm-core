@@ -102,24 +102,15 @@ behavior _ st (DoOutput cmdID outputType content) =
       \case
         Nothing -> (Log "No such command was found in the NRM state.", Nothing)
         Just c ->
-          case content of
-            _ -> (respondContent content c cmdID outputType, Nothing)
+          content & \case
             "" ->
               let newPstate = case outputType of
                     URep.StdoutOutput -> (processState c) {stdoutFinished = True}
                     URep.StderrOutput -> (processState c) {stderrFinished = True}
                in isDone newPstate & \case
-                    Just exc -> case removeCmd (KCmdID cmdID) st of
-                      Just (_, _, _, _, st') ->
-                        ( st'
-                        , mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc)
-                        )
-                      Nothing -> panic "Internal NRM state management error."
-                    Nothing ->
-                      ( NoBehavior
-                      , st & _cmdID cmdID %~
-                        (<&> field @"processState" .~ newPstate)
-                      )
+                    Just exc -> (mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc), Nothing)
+                    Nothing -> (NoBehavior, Just (c & field @"processState" .~ newPstate))
+            _ -> (respondContent content c cmdID outputType, Just c)
 behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
   NotLaunched ->
     return $ fromMaybe (st, NoBehavior) $
@@ -248,15 +239,11 @@ behavior cfg st (DownstreamEvent clientid msg) = case msg of
       Just x ->
         x & _2 %~ \toPublish ->
           Pub $ toPublish :
-            ( lookupCmd cmdID st & \case
-              Nothing -> []
-              Just (_cmd, sliceID, _slice) ->
-                [ UPub.PubPerformance $ UPub.Performance
-                    { UPub.perf = perf
-                    , UPub.perfSliceID = sliceID
-                    }
-                ]
-            )
+            [ UPub.PubPerformance cmdID
+                DEvent.Performance
+                  { DEvent.perf = perf
+                  }
+            ]
   DEvent.CmdPause DEvent.CmdHeader {..} ->
     return $ fromMaybe (st, Log "No corresponding command for this downstream cmd 'pause' request.") $
       unRegisterDownstreamCmdClient cmdID clientid st <&>

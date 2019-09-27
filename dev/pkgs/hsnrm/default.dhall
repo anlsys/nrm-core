@@ -47,7 +47,6 @@ let defcopts =
                   [ "-Wall"
                   , "-Wcompat"
                   , "-Wincomplete-uni-patterns"
-                  , "-Wincomplete-record-updates"
                   , "-Wmissing-home-modules"
                   , "-Widentities"
                   , "-Wredundant-constraints"
@@ -119,8 +118,6 @@ let deps =
           nobound "neat-interpolation"
       , generic-lens =
           nobound "generic-lens"
-      , record =
-          nobound "record"
       , yaml =
           nobound "yaml"
       , aeson =
@@ -304,7 +301,6 @@ let libdep =
       , deps.containers
       , deps.unordered-containers
       , deps.mtl
-      , deps.record
       , deps.aeson
       , deps.dhall
       , deps.conduit
