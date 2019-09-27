@@ -41,10 +41,10 @@ import qualified System.ZMQ4.Monadic as ZMQ
 import Text.Pretty.Simple
 
 pubAddress :: C.CommonOpts -> Text
-pubAddress c = "tcp:://" <> C.upstreamBindAddress c <> ":" <> (show $ C.pubPort c)
+pubAddress c = "tcp:://" <> C.upstreamBindAddress c <> ":" <> show (C.pubPort c)
 
 rpcAddress :: C.CommonOpts -> Text
-rpcAddress c = "tcp://" <> C.upstreamBindAddress c <> ":" <> (show $ C.rpcPort c)
+rpcAddress c = "tcp://" <> C.upstreamBindAddress c <> ":" <> show (C.rpcPort c)
 
 -- | The main user facing nrm client process
 main :: IO ()
@@ -61,7 +61,9 @@ main =
         uuid <-
           UC.nextUpstreamClientID <&> \case
             Nothing -> panic "couldn't generate next client ID"
-            Just c -> (restrict (toS $ UC.toText c) :: Restricted (N1, N254) SB.ByteString)
+            Just c ->
+              restrict (toS $ UC.toText c)
+                :: Restricted (N1, N254) SB.ByteString
         ZMQ.runZMQ $ do
           s <- ZMQ.socket ZMQ.Dealer
           connectWithOptions uuid common s

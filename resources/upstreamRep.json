@@ -809,7 +809,7 @@
             "properties": {
                 "repStdout": {
                     "required": [
-                        "stdoutSliceID",
+                        "stdoutCmdID",
                         "stdoutPayload"
                     ],
                     "type": "object",
@@ -817,31 +817,8 @@
                         "stdoutPayload": {
                             "type": "string"
                         },
-                        "stdoutSliceID": {
-                            "oneOf": [
-                                {
-                                    "required": [
-                                        "sliceID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "sliceID": {
-                                            "type": "string"
-                                        }
-                                    }
-                                },
-                                {
-                                    "required": [
-                                        "name"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
+                        "stdoutCmdID": {
+                            "type": "string"
                         }
                     }
                 }
@@ -855,7 +832,7 @@
             "properties": {
                 "repStderr": {
                     "required": [
-                        "stderrSliceID",
+                        "stderrCmdID",
                         "stderrPayload"
                     ],
                     "type": "object",
@@ -863,31 +840,8 @@
                         "stderrPayload": {
                             "type": "string"
                         },
-                        "stderrSliceID": {
-                            "oneOf": [
-                                {
-                                    "required": [
-                                        "sliceID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "sliceID": {
-                                            "type": "string"
-                                        }
-                                    }
-                                },
-                                {
-                                    "required": [
-                                        "name"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        }
-                                    }
-                                }
-                            ]
+                        "stderrCmdID": {
+                            "type": "string"
                         }
                     }
                 }

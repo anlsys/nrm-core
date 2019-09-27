@@ -2,25 +2,6 @@
     "oneOf": [
         {
             "required": [
-                "cmdStart"
-            ],
-            "type": "object",
-            "properties": {
-                "cmdStart": {
-                    "required": [
-                        "cmdID"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "cmdID": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "required": [
                 "cmdPerformance"
             ],
             "type": "object",
@@ -44,49 +25,22 @@
         },
         {
             "required": [
-                "cmdExit"
+                "cmdPause"
             ],
             "type": "object",
             "properties": {
-                "cmdExit": {
-                    "required": [
-                        "cmdID"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "cmdID": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "required": [
-                "threadStart"
-            ],
-            "type": "object",
-            "properties": {
-                "threadStart": {
+                "cmdPause": {
                     "required": [
                         "cmdID",
-                        "processID",
-                        "taskID",
-                        "threadID"
+                        "perf"
                     ],
                     "type": "object",
                     "properties": {
                         "cmdID": {
                             "type": "string"
                         },
-                        "taskID": {
-                            "type": "string"
-                        },
-                        "processID": {
-                            "type": "string"
-                        },
-                        "threadID": {
-                            "type": "string"
+                        "perf": {
+                            "type": "number"
                         }
                     }
                 }
@@ -119,6 +73,37 @@
                         },
                         "payload": {
                             "type": "number"
+                        },
+                        "threadID": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "threadPause"
+            ],
+            "type": "object",
+            "properties": {
+                "threadPause": {
+                    "required": [
+                        "cmdID",
+                        "processID",
+                        "taskID",
+                        "threadID"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "cmdID": {
+                            "type": "string"
+                        },
+                        "taskID": {
+                            "type": "string"
+                        },
+                        "processID": {
+                            "type": "string"
                         },
                         "threadID": {
                             "type": "string"
@@ -180,11 +165,11 @@
         },
         {
             "required": [
-                "threadExit"
+                "threadPhasePause"
             ],
             "type": "object",
             "properties": {
-                "threadExit": {
+                "threadPhasePause": {
                     "required": [
                         "cmdID",
                         "processID",

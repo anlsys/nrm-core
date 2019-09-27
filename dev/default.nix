@@ -35,18 +35,29 @@ let
     };
   };
 in rec {
+  hsnrm-static = import ./pkgs/hsnrm {
+    inherit pkgs;
+    inherit hslib;
+    src = ../hsnrm;
+    target = "hsnrm-static";
+  };
   hsnrm = import ./pkgs/hsnrm {
     inherit pkgs;
     inherit hslib;
     src = ../hsnrm;
+    target = "hsnrm";
   };
+  pynrm-static = pkgs.callPackage ./pkgs/pynrm {
+    pythonPackages = nrmPythonPackages;
+    src = ../pynrm;
+  }.overrideAttrs (o:{
+    buildInputs = o.buildInputs ++ [hsnrm-static];
+  });
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     pythonPackages = nrmPythonPackages;
     src = ../pynrm;
   };
-  libnrm = pkgs.callPackage ./pkgs/libnrm {
-    src = ../libnrm;
-  };
+  libnrm = pkgs.callPackage ./pkgs/libnrm { src = ../libnrm; };
   hsnrm-hack = pkgs.haskellPackages.shellFor {
     packages = p: [
       hsnrm
@@ -70,7 +81,7 @@ in rec {
     (o: { buildInputs = o.buildInputs ++ [ pkgs.astyle ]; });
 
   hack = pkgs.mkShell {
-    inputsFrom = with pkgs; [ hsnrm-hack libnrm-hack ];
+    inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
 
     buildInputs = [ pkgs.hwloc ];
 

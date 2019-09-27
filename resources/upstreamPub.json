@@ -308,42 +308,23 @@
             "type": "object",
             "properties": {
                 "pubPerformance": {
-                    "required": [
-                        "perfSliceID",
-                        "perf"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "perf": {
-                            "type": "number"
+                    "items": [
+                        {
+                            "type": "string"
                         },
-                        "perfSliceID": {
-                            "oneOf": [
-                                {
-                                    "required": [
-                                        "sliceID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "sliceID": {
-                                            "type": "string"
-                                        }
-                                    }
-                                },
-                                {
-                                    "required": [
-                                        "name"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        }
-                                    }
+                        {
+                            "required": [
+                                "progress"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "progress": {
+                                    "type": "number"
                                 }
-                            ]
+                            }
                         }
-                    }
+                    ],
+                    "type": "array"
                 }
             }
         },
@@ -355,36 +336,12 @@
             "properties": {
                 "pubProgress": {
                     "required": [
-                        "downstreamThreadID",
-                        "payload"
+                        "progress"
                     ],
                     "type": "object",
                     "properties": {
-                        "payload": {
+                        "progress": {
                             "type": "number"
-                        },
-                        "downstreamThreadID": {
-                            "required": [
-                                "libnrmcmdID",
-                                "libnrmprocessID",
-                                "libnrmtaskID",
-                                "libnrmthreadID"
-                            ],
-                            "type": "object",
-                            "properties": {
-                                "libnrmcmdID": {
-                                    "type": "number"
-                                },
-                                "libnrmthreadID": {
-                                    "type": "number"
-                                },
-                                "libnrmprocessID": {
-                                    "type": "number"
-                                },
-                                "libnrmtaskID": {
-                                    "type": "number"
-                                }
-                            }
                         }
                     }
                 }

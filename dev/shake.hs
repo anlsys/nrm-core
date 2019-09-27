@@ -67,6 +67,8 @@ main =
             (info (pure runbritt) (progDesc "inplace brittany.")) <>
           OA.command "cabal"
             (info (pure cabal) (progDesc "generate cabal file.")) <>
+          OA.command "cabalstatic"
+            (info (pure cabalstatic) (progDesc "generate cabal file for static build.")) <>
           OA.command "shake" (info (pure (runshake [])) (progDesc "run shake.")) <>
           OA.command
             "build"
@@ -108,7 +110,9 @@ runbritt =
     mapM_
       (\fn -> runProcess_ $ shell ("brittany --write-mode inplace " <> toS fn))
 
-cabal = runProcess_ $ shell "dhall-to-cabal ./dev/pkgs/hsnrm/default.dhall --output-dir-cwd hsnrm"
+cabal = runProcess_ $ shell "dhall-to-cabal ./dev/pkgs/hsnrm/dev.dhall --output-dir-cwd hsnrm"
+
+cabalstatic = runProcess_ $ shell "dhall-to-cabal ./dev/pkgs/hsnrm/static.dhall --output-dir-cwd hsnrm"
 
 runshake as =
   withArgs as $ shakeArgs shakeOptions $ do

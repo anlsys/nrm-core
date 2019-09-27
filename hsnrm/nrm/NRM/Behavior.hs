@@ -88,9 +88,10 @@ data Behavior
   deriving (Show, Generic)
 
 mayRep :: Cmd -> URep.Rep -> Behavior
-mayRep c rep = case (upstreamClientID . cmdCore) c of
-  Just ucID -> Rep ucID rep
-  Nothing -> Log "This command does not have a registered upstream client."
+mayRep c rep =
+  (upstreamClientID . cmdCore) c & \case
+    Just ucID -> Rep ucID rep
+    Nothing -> Log "This command does not have a registered upstream client."
 
 -- | The behavior function contains the main logic of the NRM daemon. It changes the state and
 -- produces an associated behavior to be executed by the runtime. This contains the slice
@@ -104,150 +105,146 @@ behavior _ st (DoOutput cmdID outputType content) =
         Just c ->
           content & \case
             "" ->
-              let newPstate = case outputType of
-                    URep.StdoutOutput -> (processState c) {stdoutFinished = True}
-                    URep.StderrOutput -> (processState c) {stderrFinished = True}
+              let newPstate =
+                    outputType & \case
+                      URep.StdoutOutput -> (processState c) {stdoutFinished = True}
+                      URep.StderrOutput -> (processState c) {stderrFinished = True}
                in isDone newPstate & \case
                     Just exc -> (mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc), Nothing)
                     Nothing -> (NoBehavior, Just (c & field @"processState" .~ newPstate))
             _ -> (respondContent content c cmdID outputType, Just c)
-behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
-  NotLaunched ->
-    return $ fromMaybe (st, NoBehavior) $
-      registerFailed cmdID st >>= \(st', _, _, cmdCore) ->
-      upstreamClientID cmdCore <&> \x ->
-        (st', Rep x (URep.RepStartFailure URep.StartFailure))
-  Launched pid ->
-    mayLog st $
-      registerLaunched cmdID pid st <&> \(st', sliceID, maybeClientID) ->
-      fromMaybe (st', NoBehavior) $
-        maybeClientID <&> \clientID ->
-        ( st'
-        , Rep clientID (URep.RepStart (URep.Start sliceID cmdID))
-        )
-behavior c st (Req clientid msg) = case msg of
-  UReq.ReqCPD _ ->
-    return
-      ( st
-      , Rep clientid
-        ( URep.RepCPD $
-          URep.CPD
-            (NRMCPD.toCPD st)
-        )
-      )
-  UReq.ReqSliceList _ ->
-    return
-      ( st
-      , Rep clientid
-        ( URep.RepList $
-          URep.SliceList
-            (LM.toList (slices st))
-        )
-      )
-  UReq.ReqGetState _ ->
-    return (st, Rep clientid (URep.RepGetState (URep.GetState st)))
-  UReq.ReqGetConfig _ ->
-    return (st, Rep clientid (URep.RepGetConfig (URep.GetConfig c)))
-  UReq.ReqRun UReq.Run {..} -> do
-    cmdID <- nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
-    let (runCmd, runArgs) =
-          (cmd spec, args spec) &
-            ( if Manifest.perfwrapper (Manifest.app manifest) /=
-              Manifest.PerfwrapperDisabled
-            then wrapCmd (Cfg.argo_perf_wrapper c)
-            else identity
-            )
-    return
-      ( registerAwaiting cmdID
-          ( mkCmd spec manifest
-            ( if detachCmd
-            then Nothing
-            else Just clientid
-            )
+behavior _ st (RegisterCmd cmdID cmdstatus) =
+  cmdstatus & \case
+    NotLaunched ->
+      registerFailed cmdID st & \case
+        Just (st', _, _, cmdCore) ->
+          upstreamClientID cmdCore & \case
+            Just ucid -> bhv st' $ Rep ucid $ URep.RepStartFailure URep.StartFailure
+            Nothing -> noBhv st
+        Nothing -> noBhv st
+    Launched pid ->
+      mayLog st $
+        registerLaunched cmdID pid st <&> \(st', sliceID, maybeClientID) ->
+        fromMaybe (st', NoBehavior) $
+          maybeClientID <&> \clientID ->
+          ( st'
+          , Rep clientID (URep.RepStart (URep.Start sliceID cmdID))
           )
-          runSliceID .
-          createSlice runSliceID $
-          st
-      , StartChild cmdID runCmd runArgs
-        (env spec <> Env [("NRM_cmdID", toText cmdID)])
-      )
-  UReq.ReqKillSlice UReq.KillSlice {..} -> do
-    let (maybeSlice, st') = removeSlice killSliceID st
-    return
-      ( st'
-      , fromMaybe (Rep clientid $ URep.RepNoSuchSlice URep.NoSuchSlice)
-        ( maybeSlice <&> \slice ->
-          KillChildren (LM.keys $ Ct.cmds slice) $
-            (clientid, URep.RepSliceKilled (URep.SliceKilled killSliceID)) :
-            catMaybes
-              ( (upstreamClientID . cmdCore <$> LM.elems (Ct.cmds slice)) <&>
-                fmap (,URep.RepThisCmdKilled URep.ThisCmdKilled)
+behavior c st (Req clientid msg) =
+  msg & \case
+    UReq.ReqCPD _ -> justReply st clientid . URep.RepCPD . URep.CPD $ NRMCPD.toCPD st
+    UReq.ReqSliceList _ -> bhv st . Rep clientid . URep.RepList . URep.SliceList . LM.toList $ slices st
+    UReq.ReqGetState _ -> bhv st . Rep clientid . URep.RepGetState $ URep.GetState st
+    UReq.ReqGetConfig _ -> bhv st . Rep clientid . URep.RepGetConfig $ URep.GetConfig c
+    UReq.ReqRun UReq.Run {..} -> do
+      cmdID <- nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
+      let (runCmd, runArgs) =
+            (cmd spec, args spec) &
+              ( if Manifest.perfwrapper (Manifest.app manifest) /=
+                Manifest.PerfwrapperDisabled
+              then wrapCmd (Cfg.argo_perf_wrapper c)
+              else identity
               )
+      return
+        ( registerAwaiting cmdID
+            ( mkCmd spec manifest
+              ( if detachCmd
+              then Nothing
+              else Just clientid
+              )
+            )
+            runSliceID .
+            createSlice runSliceID $
+            st
+        , StartChild cmdID runCmd runArgs
+          (env spec <> Env [("NRM_cmdID", toText cmdID)])
         )
-      )
-  UReq.ReqSetPower _ -> return (st, NoBehavior)
-  UReq.ReqKillCmd UReq.KillCmd {..} ->
-    return $ fromMaybe (st, Rep clientid (URep.RepNoSuchCmd URep.NoSuchCmd)) $
-      removeCmd (KCmdID killCmdID) st <&> \(info, _, cmd, sliceID, st') ->
-      ( st'
-      , KillChildren [killCmdID] $
-        ( clientid
-        , case info of
-          CmdRemoved -> URep.RepCmdKilled (URep.CmdKilled killCmdID)
-          SliceRemoved -> URep.RepSliceKilled (URep.SliceKilled sliceID)
-        ) :
-        maybe [] (\x -> [(x, URep.RepThisCmdKilled URep.ThisCmdKilled)]) (upstreamClientID . cmdCore $ cmd)
-      )
+    UReq.ReqKillSlice UReq.KillSlice {..} -> do
+      let (maybeSlice, st') = removeSlice killSliceID st
+      return
+        ( st'
+        , fromMaybe (Rep clientid $ URep.RepNoSuchSlice URep.NoSuchSlice)
+          ( maybeSlice <&> \slice ->
+            KillChildren (LM.keys $ Ct.cmds slice) $
+              (clientid, URep.RepSliceKilled (URep.SliceKilled killSliceID)) :
+              catMaybes
+                ( (upstreamClientID . cmdCore <$> LM.elems (Ct.cmds slice)) <&>
+                  fmap (,URep.RepThisCmdKilled URep.ThisCmdKilled)
+                )
+          )
+        )
+    UReq.ReqSetPower _ -> return (st, NoBehavior)
+    UReq.ReqKillCmd UReq.KillCmd {..} ->
+      removeCmd (KCmdID killCmdID) st & \case
+        Nothing -> bhv st $ Rep clientid (URep.RepNoSuchCmd URep.NoSuchCmd)
+        Just (info, _, cmd, sliceID, st') ->
+          bhv st' $
+            KillChildren [killCmdID] $
+            ( clientid
+            , info & \case
+              CmdRemoved -> URep.RepCmdKilled (URep.CmdKilled killCmdID)
+              SliceRemoved -> URep.RepSliceKilled (URep.SliceKilled sliceID)
+            ) :
+            maybe [] (\x -> [(x, URep.RepThisCmdKilled URep.ThisCmdKilled)])
+              (upstreamClientID . cmdCore $ cmd)
 behavior _ st (ChildDied pid exitcode) =
-  return $
-    lookupProcess pid st & \case
+  lookupProcess pid st & \case
+    Nothing -> bhv st $ Log "No such PID in NRM's state."
     Just (cmdID, cmd, sliceID, slice) ->
       let newPstate = (processState cmd) {ended = Just exitcode}
-       in case isDone newPstate of
-            Just _ -> case removeCmd (KProcessID pid) st of
-              Just (_, _, _, _, st') ->
-                ( st'
-                , ClearChild cmdID
-                  ( (,URep.RepCmdEnded (URep.CmdEnded exitcode)) <$>
-                    (upstreamClientID . cmdCore $ cmd)
-                  )
-                )
-              Nothing -> (st, panic "Error during command removal from NRM state")
+       in isDone newPstate & \case
+            Just _ ->
+              removeCmd (KProcessID pid) st & \case
+                Just (_, _, _, _, st') ->
+                  bhv st' $
+                    ClearChild cmdID
+                      ( (,URep.RepCmdEnded (URep.CmdEnded exitcode)) <$>
+                        (upstreamClientID . cmdCore $ cmd)
+                      )
+                Nothing -> bhv st $ panic "Error during command removal from NRM state"
             Nothing ->
-              ( insertSlice sliceID
+              noBhv $
+                insertSlice sliceID
                   (Ct.insertCmd cmdID cmd {processState = newPstate} slice)
                   st
-              , NoBehavior
-              )
-    Nothing -> (st, Log "No such PID in NRM's state.")
-behavior _ st DoSensor = return (st, NoBehavior)
-behavior _ st DoControl = return (st, NoBehavior)
-behavior _ st DoShutdown = return (st, NoBehavior)
-behavior cfg st (DownstreamEvent clientid msg) = case msg of
-  DEvent.ThreadProgress _ _ -> return (st, Log "unimplemented")
-  DEvent.ThreadPhaseContext _ _ -> return (st, Log "unimplemented")
-  DEvent.ThreadPause _ -> return (st, Log "unimplemented")
-  DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented")
-  DEvent.CmdPerformance DEvent.CmdHeader {..} DEvent.Performance {..} ->
-    return $
-      passiveSensorBehavior cfg st (DC.toSensorID clientid)
-        (U.fromOps perf & fromIntegral) & \case
-      Nothing ->
-        registerDownstreamCmdClient cmdID clientid st <&>
-          (,Log "downstream cmd client registered.") &
-          fromMaybe (st, Log "no such Cmd")
-      Just x ->
-        x & _2 %~ \toPublish ->
-          Pub $ toPublish :
-            [ UPub.PubPerformance cmdID
-                DEvent.Performance
-                  { DEvent.perf = perf
-                  }
-            ]
-  DEvent.CmdPause DEvent.CmdHeader {..} ->
-    return $ fromMaybe (st, Log "No corresponding command for this downstream cmd 'pause' request.") $
-      unRegisterDownstreamCmdClient cmdID clientid st <&>
-      (,Log "downstream cmd client un-registered.")
+behavior _ st DoSensor = bhv st NoBehavior
+behavior _ st DoControl = bhv st NoBehavior
+behavior _ st DoShutdown = bhv st NoBehavior
+behavior cfg st (DownstreamEvent clientid msg) =
+  msg & \case
+    DEvent.ThreadProgress _ _ -> return (st, Log "unimplemented")
+    DEvent.ThreadPhaseContext _ _ -> return (st, Log "unimplemented")
+    DEvent.ThreadPause _ -> return (st, Log "unimplemented")
+    DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented")
+    DEvent.CmdPerformance DEvent.CmdHeader {..} DEvent.Performance {..} ->
+      return $
+        passiveSensorBehavior cfg st (DC.toSensorID clientid)
+          (U.fromOps perf & fromIntegral) & \case
+        Nothing ->
+          registerDownstreamCmdClient cmdID clientid st <&>
+            (,Log "downstream cmd client registered.") &
+            fromMaybe (st, Log "no such Cmd")
+        Just x ->
+          x & _2 %~ \toPublish ->
+            Pub $ toPublish :
+              [ UPub.PubPerformance cmdID
+                  DEvent.Performance
+                    { DEvent.perf = perf
+                    }
+              ]
+    DEvent.CmdPause DEvent.CmdHeader {..} ->
+      unRegisterDownstreamCmdClient cmdID clientid st & \case
+        Just st' -> bhv st' $ Log "downstream cmd client un-registered."
+        Nothing -> bhv st $ Log "No corresponding command for this downstream cmd 'pause' request."
+
+noBhv :: a -> IO (a, Behavior)
+noBhv = flip bhv NoBehavior
+
+bhv :: Monad m => a -> b -> m (a, b)
+bhv st x = return (st, x)
+
+justReply :: Monad m => a -> UC.UpstreamClientID -> URep.Rep -> m (a, Behavior)
+justReply st clientID = bhv st . Rep clientID
 
 -- | The sensitive unpacking that has to be pattern-matched on the python side.
 -- These toObject/fromObject functions do not correspond to each other and the instance
@@ -289,20 +286,17 @@ passiveSensorBehavior
   -> Double
   -> Maybe (NRMState, UPub.Pub)
 passiveSensorBehavior _cfg st sensorID value =
-  lookupPassiveSensor sensorID st & \case
-    Nothing -> Nothing
-    Just Sensor.PassiveSensor {..} ->
-      CPD.measure (cpd st) value sensorID & \case
-        CPD.Measured m -> Just (st, UPub.PubMeasurements (CPD.Measurements [m]))
-        CPD.NoSuchSensor -> panic "NRM bug: Internal CPD/NRMState coherency error"
-        CPD.AdjustProblem r p ->
-          Just
-            ( adjustSensorRange
-                sensorID
-                r $
-                st {cpd = p}
-            , UPub.PubCPD p
-            )
+  lookupPassiveSensor sensorID st <&> \Sensor.PassiveSensor {..} ->
+    CPD.measure (cpd st) value sensorID & \case
+      CPD.Measured m -> (st, UPub.PubMeasurements (CPD.Measurements [m]))
+      CPD.NoSuchSensor -> panic "NRM bug: Internal CPD/NRMState coherency error"
+      CPD.AdjustProblem r p ->
+        ( adjustSensorRange
+            sensorID
+            r $
+            st {cpd = p}
+        , UPub.PubCPD p
+        )
 
 respondContent :: Text -> Cmd -> CmdID -> URep.OutputType -> Behavior
 respondContent content cmd cmdID outputType =

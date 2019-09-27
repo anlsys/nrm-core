@@ -43,7 +43,7 @@ import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
 import NRM.Types.Cmd as Cmd
-import qualified NRM.Types.DownstreamCmd as DC
+{-import qualified NRM.Types.DownstreamCmd as DC-}
 {-import qualified NRM.Types.DownstreamThread as DT-}
 import NRM.Types.LMap as LM
 import NRM.Types.Process as P
@@ -193,19 +193,19 @@ _cmdID cmdID = lens getter setter
     setter st (Just cmd) =
       lookupCmd cmdID st & \case
         Just (_, sliceID, slice) ->
-          st & _sliceID sliceID ?~ (slice & field @"cmds" . at cmdID .~ Just cmd)
+          st & _sliceID sliceID ?~ (slice & (field @"cmds" . at cmdID) ?~ cmd)
         Nothing -> st
     setter st Nothing =
       lookupCmd cmdID st & \case
         Just (_, sliceID, _) ->
-          st & _sliceID sliceID %~ mayRemoveSlice sliceID
+          st & _sliceID sliceID %~ mayRemoveSlice
         Nothing -> st
-    mayRemoveSlice :: SliceID -> Maybe Slice -> Maybe Slice
-    mayRemoveSlice sliceID  x = 
+    mayRemoveSlice :: Maybe Slice -> Maybe Slice
+    mayRemoveSlice x =
       x >>= \slice ->
         if length (cmds slice) == 1
         then Nothing
         else Just $ slice & field @"cmds" . at cmdID .~ Nothing
 
-_downstreamCmdID :: DC.DownstreamCmdID -> Lens' NRMState (Maybe Cmd)
-_downstreamCmdID = undefined
+{-_downstreamCmdID :: DC.DownstreamCmdID -> Lens' NRMState (Maybe Cmd)-}
+{-_downstreamCmdID = undefined-}
