@@ -38,12 +38,12 @@ import Data.String (IsString (..))
 import qualified Data.UUID as U
 import Data.UUID.V1 (nextUUID)
 import Dhall hiding (field)
+import NRM.Classes.Actuators
 import NRM.Classes.Messaging
 import NRM.Classes.Sensors
-import NRM.Classes.Actuators
 import NRM.Orphans.ExitCode ()
 import NRM.Orphans.UUID ()
-import qualified NRM.Types.DownstreamCmdClient as DCC
+import qualified NRM.Types.DownstreamCmd as DC
 import NRM.Types.LMap as LM
 import NRM.Types.Manifest as Manifest
 import NRM.Types.Process
@@ -76,7 +76,7 @@ data Cmd
       { cmdCore :: CmdCore
       , pid :: ProcessID
       , processState :: ProcessState
-      , downstreamCmds :: LMap DCC.DownstreamCmdClientID DCC.DownstreamCmdClient
+      , downstreamCmds :: LMap DC.DownstreamCmdID DC.DownstreamCmd
       }
   deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cmd
@@ -94,7 +94,7 @@ registerPID c pid = Cmd
 
 addDownstreamCmdClient
   :: Cmd
-  -> DCC.DownstreamCmdClientID
+  -> DC.DownstreamCmdID
   -> Maybe Cmd
 addDownstreamCmdClient Cmd {..} downstreamCmdClientID =
   cmdCore & manifest & Manifest.app & Manifest.perfwrapper & \case
@@ -102,15 +102,15 @@ addDownstreamCmdClient Cmd {..} downstreamCmdClientID =
     Perfwrapper pw ->
       Just $ Cmd
         { downstreamCmds = LM.insert downstreamCmdClientID
-            ( DCC.DownstreamCmdClient
-              (DCC.toSensorID downstreamCmdClientID)
+            ( DC.DownstreamCmd
+              (DC.toSensorID downstreamCmdClientID)
               (Manifest.perfLimit pw)
             )
             downstreamCmds
         , ..
         }
 
-removeDownstreamCmdClient :: Cmd -> DCC.DownstreamCmdClientID -> Cmd
+removeDownstreamCmdClient :: Cmd -> DC.DownstreamCmdID -> Cmd
 removeDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
   { downstreamCmds = LM.delete downstreamCmdClientID downstreamCmds
   , ..
@@ -175,7 +175,7 @@ instance Sensors (CmdID, Cmd) where
   activeSensors (cmdID, Cmd {..}) =
     LM.fromList
       ( LM.elems downstreamCmds <&> \dc ->
-        ( DCC.id dc
+        ( DC.id dc
         , ActiveSensor
           { activeTags = [Tag "perf"]
           , activeSource = Source $ show cmdID
@@ -192,7 +192,7 @@ instance AdjustSensors (CmdID, Cmd) where
     _2 . field @"downstreamCmds" %~
       LM.map
         ( \dc ->
-          if DCC.id dc == sensorID
+          if DC.id dc == sensorID
           then dc & field @"maxValue" .~ (Operations $ floor b)
           else dc
         )

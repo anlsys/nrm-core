@@ -35,8 +35,8 @@ import NRM.Slices.Nodeos as CN
 import NRM.Slices.Singularity as CS
 import NRM.Types.Cmd
 import NRM.Types.Configuration as Cfg
-import NRM.Types.DownstreamCmdClient
-import NRM.Types.DownstreamThreadClient
+import NRM.Types.DownstreamCmd
+import NRM.Types.DownstreamThread
 import NRM.Types.LMap as LM
 import NRM.Types.Process
 import NRM.Types.Slice
@@ -234,14 +234,14 @@ registerFailed cmdID st =
 -- | Registers a downstream Cmd client
 registerDownstreamCmdClient
   :: CmdID
-  -> DownstreamCmdClientID
+  -> DownstreamCmdID
   -> NRMState
   -> Maybe NRMState
 registerDownstreamCmdClient cmdID downstreamCmdID st =
   LM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
     insertSlice sliceID
       ( slice
-        { cmds = (addDownstreamCmdClient cmd downstreamCmdID) & \case
+        { cmds = addDownstreamCmdClient cmd downstreamCmdID & \case
             Just c -> LM.insert cmdID c (cmds slice)
             Nothing -> cmds slice
         }
@@ -251,7 +251,7 @@ registerDownstreamCmdClient cmdID downstreamCmdID st =
 -- | un-registers a downstream Cmd client
 unRegisterDownstreamCmdClient
   :: CmdID
-  -> DownstreamCmdClientID
+  -> DownstreamCmdID
   -> NRMState
   -> Maybe NRMState
 unRegisterDownstreamCmdClient cmdID downstreamCmdID st =

@@ -1,12 +1,12 @@
 {-# LANGUAGE DerivingVia #-}
 
 {-|
-Module      : NRM.Types.DownstreamClient
+Module      : NRM.Types.Downstream
 Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module NRM.Types.DownstreamThreadClient
+module NRM.Types.DownstreamThread
   ( DownstreamThreadID (..)
   , DownstreamThread (..)
   )

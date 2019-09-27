@@ -46,7 +46,7 @@ import qualified NRM.Types.Configuration as C
   , logfile
   , verbose
   )
-import qualified NRM.Types.DownstreamCmdClient as DC
+import qualified NRM.Types.DownstreamCmd as DC
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Process as Process
 import qualified NRM.Types.State as TS
@@ -110,7 +110,7 @@ downstreamReceive cfg s msg clientid =
 
 -- | Behave on upstream message
 upstreamReceive :: C.Cfg -> TS.NRMState -> Text -> Text -> IO (TS.NRMState, B.Behavior)
-upstreamReceive cfg s msg clientid = 
+upstreamReceive cfg s msg clientid =
   B.behavior cfg s $
     B.Req
       (fromMaybe (panic "couldn't parse upstream client ID") (UC.fromText clientid))

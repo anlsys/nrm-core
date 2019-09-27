@@ -23,13 +23,14 @@ module NRM.Types.LMap
   )
 where
 
+import Control.Lens
 import Data.Aeson
 import Data.Data
 import Data.JSON.Schema
 import qualified Data.Map as DM
 import Data.MessagePack
 import NRM.Classes.Messaging
-import Protolude
+import Protolude hiding (toList)
 
 -- | Sort of a hack around scaling limitations of generic-lens, This is
 -- Data.Map with a stupid internal representation.  Useful for generic
@@ -75,3 +76,22 @@ keys (LMap m) = DM.keys (DM.fromList m)
 
 map :: (Ord k) => (a -> b) -> LMap k a -> LMap k b
 map f (LMap m) = DM.map f (DM.fromList m) & DM.toList & fromList
+
+type instance Index (LMap k a) = k
+
+type instance IxValue (LMap k a) = a
+
+instance Ord k => Ixed (LMap k a) where
+
+  ix k f m = case lookup k m of
+    Just v -> f v <&> \v' -> insert k v' m
+    Nothing -> pure m
+
+instance Ord k => At (LMap k a) where
+
+  at k f m =
+    f mv <&> \case
+      Nothing -> maybe m (const (delete k m)) mv
+      Just v' -> insert k v' m
+    where
+      mv = lookup k m

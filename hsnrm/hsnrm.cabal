@@ -63,8 +63,8 @@ library nrmlib
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.Process
-        NRM.Types.DownstreamThreadClient
-        NRM.Types.DownstreamCmdClient
+        NRM.Types.DownstreamThread
+        NRM.Types.DownstreamCmd
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
@@ -125,8 +125,7 @@ library nrmlib
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations
+                 -Wredundant-constraints -Wpartial-fields
     build-depends:
         base -any,
         protolude -any,
@@ -209,8 +208,7 @@ library banditlib
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations
+                 -Wredundant-constraints -Wpartial-fields
     build-depends:
         base -any,
         protolude -any,
@@ -307,8 +305,8 @@ executable nrm.so
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.Process
-        NRM.Types.DownstreamThreadClient
-        NRM.Types.DownstreamCmdClient
+        NRM.Types.DownstreamThread
+        NRM.Types.DownstreamCmd
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
@@ -466,8 +464,8 @@ executable nrmstatic
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.Process
-        NRM.Types.DownstreamThreadClient
-        NRM.Types.DownstreamCmdClient
+        NRM.Types.DownstreamThread
+        NRM.Types.DownstreamCmd
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
@@ -527,8 +525,7 @@ executable nrmstatic
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations -main-is Hnrm
+                 -Wredundant-constraints -Wpartial-fields -main-is Hnrm
     build-depends:
         base -any,
         protolude -any,
@@ -625,8 +622,8 @@ executable nrmd
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.Process
-        NRM.Types.DownstreamThreadClient
-        NRM.Types.DownstreamCmdClient
+        NRM.Types.DownstreamThread
+        NRM.Types.DownstreamCmd
         NRM.Types.State
         NRM.Types.UpstreamClient
         NRM.Classes.Messaging
@@ -686,8 +683,7 @@ executable nrmd
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations -main-is Hnrmd
+                 -Wredundant-constraints -Wpartial-fields -main-is Hnrmd
     build-depends:
         base -any,
         protolude -any,
@@ -766,8 +762,7 @@ executable nrm
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations -main-is Hnrm
+                 -Wredundant-constraints -Wpartial-fields -main-is Hnrm
     build-depends:
         nrmlib -any
 
@@ -793,8 +788,7 @@ executable nrmddep
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations -main-is Hnrmd
+                 -Wredundant-constraints -Wpartial-fields -main-is Hnrmd
     build-depends:
         nrmlib -any
 
@@ -820,7 +814,6 @@ executable codegen
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations -main-is Codegen
+                 -Wredundant-constraints -Wpartial-fields -main-is Codegen
     build-depends:
         nrmlib -any

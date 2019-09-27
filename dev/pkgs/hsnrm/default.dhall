@@ -71,8 +71,6 @@ let defcopts =
                   , "-Widentities"
                   , "-Wredundant-constraints"
                   , "-Wpartial-fields"
-                  , "-Wmissed-specialisations"
-                  , "-Wall-missed-specialisations"
                   ]
                 # addcopts
               : List Text
@@ -240,8 +238,8 @@ let modules =
       , "NRM.Types.Slice"
       , "NRM.Types.Cmd"
       , "NRM.Types.Process"
-      , "NRM.Types.DownstreamThreadClient"
-      , "NRM.Types.DownstreamCmdClient"
+      , "NRM.Types.DownstreamThread"
+      , "NRM.Types.DownstreamCmd"
       , "NRM.Types.State"
       , "NRM.Types.UpstreamClient"
       , "NRM.Classes.Messaging"
@@ -402,7 +400,14 @@ in    prelude.defaults.Package
                     , other-modules =
                         allmodules
                     }
-                  ⫽ copts [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]
+                  ⫽ copts
+                    [ "-Wmissed-specialisations"
+                    , "-Wall-missed-specialisations"
+                    , "-fPIC"
+                    , "-shared"
+                    , "-no-hs-main"
+                    , "-dynamic"
+                    ]
             , name =
                 "nrm.so"
             }

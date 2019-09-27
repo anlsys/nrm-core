@@ -11,11 +11,14 @@ module NRM.Types.Messaging.DownstreamEvent.JSON
 where
 
 import Codegen.CHeader
-import Control.Lens
 import Protolude
 
-data Event
-  = CmdPerformance
+data Event =
+   CmdPerformance
+      { cmdID :: Text
+      , perf :: Int
+      }
+  | CmdPause
       { cmdID :: Text
       , perf :: Int
       }
@@ -25,6 +28,12 @@ data Event
       , taskID :: Text
       , threadID :: Text
       , payload :: Int
+      }
+  | ThreadPause
+      { cmdID :: Text
+      , processID :: Text
+      , taskID :: Text
+      , threadID :: Text
       }
   | ThreadPhaseContext
       { cmdID :: Text
@@ -36,5 +45,11 @@ data Event
       , endcompute :: Int
       , startbarrier :: Int
       , endbarrier :: Int
+      }
+  | ThreadPhasePause
+      { cmdID :: Text
+      , processID :: Text
+      , taskID :: Text
+      , threadID :: Text
       }
   deriving (Generic, CHeaderGen)

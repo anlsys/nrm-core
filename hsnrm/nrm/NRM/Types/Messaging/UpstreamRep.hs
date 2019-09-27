@@ -36,8 +36,8 @@ import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
 import NRM.Orphans.ExitCode ()
-import NRM.Types.Configuration as C
 import NRM.Types.Cmd
+import NRM.Types.Configuration as C
 import NRM.Types.Slice as C
 import NRM.Types.State as S
 import NRM.Types.Units as U
@@ -127,7 +127,7 @@ newtype SliceList
 
 data Stdout
   = Stdout
-      { stdoutSliceID :: C.SliceID
+      { stdoutCmdID :: CmdID
       , stdoutPayload :: Text
       }
   deriving (Show, Generic, MessagePack)
@@ -135,7 +135,7 @@ data Stdout
 
 data Stderr
   = Stderr
-      { stderrSliceID :: C.SliceID
+      { stderrCmdID :: CmdID
       , stderrPayload :: Text
       }
   deriving (Show, Generic, MessagePack)

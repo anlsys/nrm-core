@@ -1,3 +1,5 @@
+{-# LANGUAGE RankNTypes #-}
+
 {-|
 Module      : NRM.Types.State
 Copyright   : (c) UChicago Argonne, 2019
@@ -22,6 +24,9 @@ module NRM.Types.State
   , -- * Rendering views
     showSliceList
   , showSlices
+  , -- * Lenses
+    _cmdID
+  , _sliceID
   )
 where
 
@@ -29,6 +34,7 @@ import qualified CPD.Core as CPD
 import Control.Lens
 import Data.Aeson
 import Data.Data
+import Data.Generics.Product
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Actuators
@@ -37,6 +43,8 @@ import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
 import NRM.Types.Cmd as Cmd
+import qualified NRM.Types.DownstreamCmd as DC
+{-import qualified NRM.Types.DownstreamThread as DT-}
 import NRM.Types.LMap as LM
 import NRM.Types.Process as P
 import NRM.Types.Sensor as Sensor
@@ -172,3 +180,21 @@ awaitingCmdIDCmdMap = cmdsMap awaiting
 -- | List commands awaiting to be launched
 cmdsMap :: (Slice -> LMap CmdID a) -> NRMState -> LMap CmdID a
 cmdsMap accessor s = mconcat $ accessor <$> LM.elems (slices s)
+
+-- Lenses
+_sliceID :: SliceID -> Lens' NRMState (Maybe Slice)
+_sliceID sliceID = field @"slices" . at sliceID
+
+_cmdID :: CmdID -> Lens' NRMState (Maybe Cmd)
+_cmdID cmdID = lens getter setter
+  where
+    getter :: NRMState -> Maybe Cmd
+    getter st = lookupCmd cmdID st <&> \(cmd, _, _) -> cmd
+    setter st cmd =
+      lookupCmd cmdID st & \case
+        Just (_, sliceID, slice) ->
+          st & _sliceID sliceID ?~ (slice & field @"cmds" . at cmdID .~ cmd)
+        Nothing -> st
+
+_downstreamCmdID :: DC.DownstreamCmdID -> Lens' NRMState (Maybe Cmd)
+_downstreamCmdID = undefined

@@ -18,6 +18,8 @@ where
 import qualified CPD.Core as CPD
 import qualified CPD.Utils as CPD
 import qualified CPD.Values as CPD
+import Control.Lens hiding (to)
+import Data.Generics.Product
 import Data.MessagePack
 import qualified NRM.CPD as NRMCPD
 import qualified NRM.Classes.Messaging as M
@@ -25,7 +27,7 @@ import NRM.Sensors
 import NRM.State
 import NRM.Types.Cmd
 import qualified NRM.Types.Configuration as Cfg
-import qualified NRM.Types.DownstreamCmdClient as DCC
+import qualified NRM.Types.DownstreamCmd as DC
 import NRM.Types.LMap as LM
 import qualified NRM.Types.Manifest as Manifest
 import qualified NRM.Types.Messaging.DownstreamEvent as DEvent
@@ -47,7 +49,7 @@ data NRMEvent
   | -- | Registering a child process.
     RegisterCmd CmdID CmdStatus
   | -- | Event from the application side.
-    DownstreamEvent DCC.DownstreamCmdClientID DEvent.Event
+    DownstreamEvent DC.DownstreamCmdID DEvent.Event
   | -- | Stdin/stdout data from the app side.
     DoOutput CmdID URep.OutputType Text
   | -- | Child death event
@@ -95,37 +97,21 @@ mayRep c rep = case (upstreamClientID . cmdCore) c of
 -- management logic, the sensor callback logic, the control loop callback logic.
 behavior :: Cfg.Cfg -> NRMState -> NRMEvent -> IO (NRMState, Behavior)
 behavior _ st (DoOutput cmdID outputType content) =
-  return $ lookupCmd cmdID st & \case
-    Just (c, sliceID, slice) ->
-      if content == ""
-      then
+  return $ st ^. _cmdID cmdID & \case
+    Just c -> case content of
+      "" ->
         let newPstate = case outputType of
               URep.StdoutOutput -> (processState c) {stdoutFinished = True}
               URep.StderrOutput -> (processState c) {stderrFinished = True}
-         in case isDone newPstate of
+         in isDone newPstate & \case
               Just exc -> case removeCmd (KCmdID cmdID) st of
                 Just (_, _, _, _, st') -> (st', mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc))
                 Nothing -> panic "Internal NRM state management error."
               Nothing ->
-                ( insertSlice sliceID
-                    (Ct.insertCmd cmdID (c {processState = newPstate}) slice)
-                    st
+                ( st & _cmdID cmdID %~ (<&> field @"processState" .~ newPstate)
                 , NoBehavior
                 )
-      else
-        ( st
-        , mayRep c $ case outputType of
-          URep.StdoutOutput ->
-            URep.RepStdout $ URep.Stdout
-              { URep.stdoutSliceID = sliceID
-              , stdoutPayload = content
-              }
-          URep.StderrOutput ->
-            URep.RepStderr $ URep.Stderr
-              { URep.stderrSliceID = sliceID
-              , stderrPayload = content
-              }
-        )
+      _ -> (st, respondContent content c cmdID outputType)
     Nothing -> (st, Log "No such command was found in the NRM state.")
 behavior _ st (RegisterCmd cmdID cmdstatus) = case cmdstatus of
   NotLaunched ->
@@ -235,37 +221,33 @@ behavior _ st DoSensor = return (st, NoBehavior)
 behavior _ st DoControl = return (st, NoBehavior)
 behavior _ st DoShutdown = return (st, NoBehavior)
 behavior cfg st (DownstreamEvent clientid msg) = case msg of
-  DEvent.EventThreadStart _ -> return (st, Log "thread start event received")
-  DEvent.EventThreadProgress _ -> return (st, Log "downstream event received")
-  DEvent.EventThreadPhaseContext _ -> return (st, Log "downstream event received")
-  DEvent.EventThreadExit _ -> return (st, Log "downstream event received")
-  DEvent.EventCmdStart DEvent.CmdStart {..} ->
-    return $ fromMaybe (st, Log "No corresponding command for this downstream cmd registration request.") $
-      registerDownstreamCmdClient cmdStartCmdID clientid st <&>
-      (,Log "downstream cmd client registered.")
-  DEvent.EventCmdPerformance DEvent.CmdPerformance {..} ->
+  DEvent.ThreadProgress _ _ -> return (st, Log "unimplemented")
+  DEvent.ThreadPhaseContext _ _ -> return (st, Log "unimplemented")
+  DEvent.ThreadPause _ -> return (st, Log "unimplemented")
+  DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented")
+  DEvent.CmdPerformance DEvent.CmdHeader {..} DEvent.Performance {..} ->
     return $
-      passiveSensorBehavior
-        cfg
-        st
-        (DCC.toSensorID clientid)
-        (U.fromOps perf & fromIntegral) <&> \case
-      Left l -> Log l
-      Right toPublish ->
-        Pub $
-          toPublish :
-          ( lookupCmd cmdPerformanceCmdID st & \case
-            Nothing -> []
-            Just (_cmd, sliceID, _slice) ->
-              [ UPub.PubPerformance $ UPub.Performance
-                  { UPub.perf = perf
-                  , UPub.perfSliceID = sliceID
-                  }
-              ]
-          )
-  DEvent.EventCmdExit DEvent.CmdExit {..} ->
-    return $ fromMaybe (st, Log "No corresponding command for this downstream cmd registration request.") $
-      unRegisterDownstreamCmdClient cmdExitCmdID clientid st <&>
+      passiveSensorBehavior cfg st (DC.toSensorID clientid)
+        (U.fromOps perf & fromIntegral) & \case
+      Nothing ->
+        registerDownstreamCmdClient cmdID clientid st <&>
+          (,Log "downstream cmd client registered.") &
+          fromMaybe (st, Log "no such Cmd")
+      Just x ->
+        x & _2 %~ \toPublish ->
+          Pub $ toPublish :
+            ( lookupCmd cmdID st & \case
+              Nothing -> []
+              Just (_cmd, sliceID, _slice) ->
+                [ UPub.PubPerformance $ UPub.Performance
+                    { UPub.perf = perf
+                    , UPub.perfSliceID = sliceID
+                    }
+                ]
+            )
+  DEvent.CmdPause DEvent.CmdHeader {..} ->
+    return $ fromMaybe (st, Log "No corresponding command for this downstream cmd 'pause' request.") $
+      unRegisterDownstreamCmdClient cmdID clientid st <&>
       (,Log "downstream cmd client un-registered.")
 
 -- | The sensitive unpacking that has to be pattern-matched on the python side.
@@ -306,18 +288,34 @@ passiveSensorBehavior
   -> NRMState
   -> CPD.SensorID
   -> Double
-  -> (NRMState, Either Text UPub.Pub)
+  -> Maybe (NRMState, UPub.Pub)
 passiveSensorBehavior _cfg st sensorID value =
   lookupPassiveSensor sensorID st & \case
-    Nothing -> (st, Left $ "So SensorID found.")
-    Just (Sensor.PassiveSensor {..}) ->
+    Nothing -> Nothing
+    Just Sensor.PassiveSensor {..} ->
       CPD.measure (cpd st) value sensorID & \case
-        CPD.Measured m -> (st, Right $ UPub.PubMeasurements (CPD.Measurements [m]))
+        CPD.Measured m -> Just (st, UPub.PubMeasurements (CPD.Measurements [m]))
         CPD.NoSuchSensor -> panic "NRM bug: Internal CPD/NRMState coherency error"
         CPD.AdjustProblem r p ->
-          ( adjustSensorRange
-              sensorID
-              r $
-              st {cpd = p}
-          , Right $ UPub.PubCPD p
-          )
+          Just
+            ( adjustSensorRange
+                sensorID
+                r $
+                st {cpd = p}
+            , UPub.PubCPD p
+            )
+
+respondContent :: Text -> Cmd -> CmdID -> URep.OutputType -> Behavior
+respondContent content cmd cmdID outputType =
+  mayRep cmd $
+    outputType & \case
+    URep.StdoutOutput ->
+      URep.RepStdout $ URep.Stdout
+        { URep.stdoutCmdID = cmdID
+        , stdoutPayload = content
+        }
+    URep.StderrOutput ->
+      URep.RepStderr $ URep.Stderr
+        { URep.stderrCmdID = cmdID
+        , stderrPayload = content
+        }
