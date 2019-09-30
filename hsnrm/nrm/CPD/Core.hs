@@ -24,7 +24,6 @@ module CPD.Core
   , -- * Actuators
     -- ** Classes
     ActuatorID (..)
-  , nextActuatorID
   , CPDLActuator (..)
   , -- ** Definitions
     Actuator (..)
@@ -128,7 +127,7 @@ class CPDLActuator a where
 
   toActuator :: a -> Actuator
 
-newtype ActuatorID = ActuatorID {actuatorID :: U.UUID}
+newtype ActuatorID = ActuatorID {actuatorID :: Text}
   deriving
     ( Ord
     , Eq
@@ -146,9 +145,6 @@ newtype ActuatorID = ActuatorID {actuatorID :: U.UUID}
 instance IsString ActuatorID where
 
   fromString x = fromMaybe (panic "couldn't decode ActuatorID in FromString instance") (A.decode $ toS x)
-
-nextActuatorID :: IO ActuatorID
-nextActuatorID = UV4.nextRandom <&> ActuatorID
 
 newtype Actuator = Actuator {actuatorRange :: [Discrete]}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator

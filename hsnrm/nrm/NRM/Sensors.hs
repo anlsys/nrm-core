@@ -40,6 +40,6 @@ cpdSensors s =
 
 -- Recursive sensor instances
 -- Leaf NoSensor instances
-deriving via (NoSensors (CPD.Problem)) instance AdjustSensors CPD.Problem
+deriving via (NoSensors CPD.Problem) instance AdjustSensors CPD.Problem
 
-deriving via (NoSensors (CPD.Problem)) instance Sensors CPD.Problem
+deriving via (NoSensors CPD.Problem) instance Sensors CPD.Problem

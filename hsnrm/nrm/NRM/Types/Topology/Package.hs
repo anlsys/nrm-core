@@ -17,8 +17,8 @@ import Data.Coerce
 import Data.Data
 import Data.Generics.Product
 import Data.MessagePack
-import NRM.Classes.Actuators
-import NRM.Classes.Sensors
+import NRM.Classes.Actuators as AC
+import NRM.Classes.Sensors as SC
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Actuator
@@ -31,16 +31,15 @@ import Protolude hiding (max)
 -- | Record containing all information about a CPU Package.
 data Rapl
   = Rapl
-      { id :: SensorID
-      , raplPath :: FilePath
+      { raplPath :: FilePath
       , max :: MaxEnergy
       , frequency :: Frequency
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
-raplToSensor :: Show a => a -> Rapl -> (SensorID, PassiveSensor)
-raplToSensor packageID (Rapl id path (MaxEnergy maxEnergy) freq) =
-  ( id
+raplToSensor :: PackageID -> Rapl -> (PassiveSensorKey, PassiveSensor)
+raplToSensor packageID (Rapl path (MaxEnergy maxEnergy) freq) =
+  ( SC.RaplKey packageID
   , PassiveSensor
     { passiveTags = [Tag "power", Tag "RAPL"]
     , passiveSource = Source textID
@@ -52,9 +51,9 @@ raplToSensor packageID (Rapl id path (MaxEnergy maxEnergy) freq) =
   where
     textID = show packageID
 
-raplToActuator :: a -> Rapl -> (CPD.ActuatorID, Actuator)
-raplToActuator _packageID (Rapl id path (MaxEnergy _maxEnergy) _freq) =
-  ( coerce id
+raplToActuator :: PackageID -> Rapl -> (ActuatorKey, Actuator)
+raplToActuator packageID (Rapl path (MaxEnergy _maxEnergy) _freq) =
+  ( AC.RaplKey packageID
   , Actuator
     { actions = [200, 220]
     , go = setRAPLPowercap path . RAPLCommand . uW
@@ -86,11 +85,11 @@ instance Sensors (PackageID, Package) where
 
 instance AdjustSensors (PackageID, Package) where
 
-  adjust sensorID (CPD.Interval _ b) =
-    _2 . field @"rapl" %~
+  adjust (SC.PKey (SC.RaplKey k)) (CPD.Interval _ b) (packageID, package)=
+    package & field @"rapl" .~
       fmap
         ( \rapl@Rapl {..} ->
-          if id == sensorID
+          if k == packageID
           then rapl & field @"max" .~ MaxEnergy (uJ b)
           else rapl
         )

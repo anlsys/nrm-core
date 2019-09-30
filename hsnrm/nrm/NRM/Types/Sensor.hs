@@ -36,7 +36,7 @@ data PassiveSensor
       , frequency :: U.Frequency
       , passiveSource :: CPD.Source
       , passiveRange :: (Double, Double)
-      }
+      } deriving (Generic)
 
 data ActiveSensor
   = ActiveSensor
