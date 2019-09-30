@@ -36,7 +36,8 @@ data PassiveSensor
       , frequency :: U.Frequency
       , passiveSource :: CPD.Source
       , passiveRange :: (Double, Double)
-      } deriving (Generic)
+      }
+  deriving (Generic)
 
 data ActiveSensor
   = ActiveSensor
@@ -46,3 +47,13 @@ data ActiveSensor
       , activeSource :: CPD.Source
       , activeRange :: (Double, Double)
       }
+
+data ActiveSensorKey = DowstreamCmdKey DownstreamCmdID | Misc
+  deriving (Ord, Eq)
+
+data PassiveSensorKey = RaplKey PackageID | Misc'
+  deriving (Ord, Eq)
+
+data SensorKey = AKey ActiveSensorKey | PKey PassiveSensorKey
+  deriving (Ord, Eq)
+

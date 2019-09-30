@@ -16,7 +16,9 @@ import Data.Aeson
 import Data.Coerce
 import Data.Data
 import Data.Generics.Product
+import Data.Map as DM
 import Data.MessagePack
+import LensMap.Core
 import NRM.Classes.Actuators as AC
 import NRM.Classes.Sensors as SC
 import NRM.Node.Sysfs
@@ -34,62 +36,54 @@ data Rapl
       { raplPath :: FilePath
       , max :: MaxEnergy
       , frequency :: Frequency
+      , discreteChoices :: [Power]
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
-
-raplToSensor :: PackageID -> Rapl -> (PassiveSensorKey, PassiveSensor)
-raplToSensor packageID (Rapl path (MaxEnergy maxEnergy) freq) =
-  ( SC.RaplKey packageID
-  , PassiveSensor
-    { passiveTags = [Tag "power", Tag "RAPL"]
-    , passiveSource = Source textID
-    , passiveRange = (0, fromuJ maxEnergy)
-    , frequency = freq
-    , perform = measureRAPLDir path <&> fmap (fromuJ . energy)
-    }
-  )
-  where
-    textID = show packageID
-
-raplToActuator :: PackageID -> Rapl -> (ActuatorKey, Actuator)
-raplToActuator packageID (Rapl path (MaxEnergy _maxEnergy) _freq) =
-  ( AC.RaplKey packageID
-  , Actuator
-    { actions = [200, 220]
-    , go = setRAPLPowercap path . RAPLCommand . uW
-    }
-  )
 
 newtype Package = Package {rapl :: Maybe Rapl}
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
-instance Actuators (PackageID, Package) where
+instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
 
-  actuators (packageID, Package {..}) =
-    LM.fromList
-      ( Protolude.toList $
-        raplToActuator packageID <$>
-        rapl
-      )
-
-instance Sensors (PackageID, Package) where
-
-  activeSensors _ = LM.empty
-
-  passiveSensors (packageID, Package {..}) =
-    LM.fromList
-      ( Protolude.toList $
-        raplToSensor packageID <$>
-        rapl
-      )
-
-instance AdjustSensors (PackageID, Package) where
-
-  adjust (SC.PKey (SC.RaplKey k)) (CPD.Interval _ b) (packageID, package)=
-    package & field @"rapl" .~
-      fmap
-        ( \rapl@Rapl {..} ->
-          if k == packageID
-          then rapl & field @"max" .~ MaxEnergy (uJ b)
-          else rapl
+  lenses (packageID, package) =
+    DM.fromList
+      [ ( AC.RaplKey packageID
+        , ScopedLens (_2 . field @"rapl" . lens getter setter)
         )
+      | _ <- Protolude.toList (rapl package)
+      ]
+    where
+      getter (Just (Rapl path (MaxEnergy _maxEnergy) _freq discreteChoices)) =
+        Just $ Actuator
+          { actions = discreteChoices <&> fromuW
+          , go = setRAPLPowercap path . RAPLCommand . uW
+          }
+      getter Nothing = Nothing
+      setter (Just rapl) (Just (Actuator actions go)) =
+        Just $ rapl & field @"discreteChoices" .~ fmap uW actions
+      setter rapl Nothing = Nothing
+
+instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
+
+  lenses (packageID, package) =
+    DM.fromList
+      [ ( SC.RaplKey packageID
+        , ScopedLens (_2 . field @"rapl" . lens getter setter)
+        )
+      | _ <- Protolude.toList (rapl package)
+      ]
+    where
+      getter (Just (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices)) =
+        Just $ PassiveSensor
+          { passiveTags = [Tag "power", Tag "RAPL"]
+          , passiveSource = Source textID
+          , passiveRange = (0, fromuJ maxEnergy)
+          , frequency = freq
+          , perform = measureRAPLDir path <&> fmap (fromuJ . energy)
+          }
+        where
+          textID = show packageID
+      getter Nothing = Nothing
+      setter (Just rapl) (Just passiveSensor) =
+        Just $ rapl & field @"max" .~ MaxEnergy (uJ (snd $ passiveRange passiveSensor))
+      setter rapl Nothing = Nothing

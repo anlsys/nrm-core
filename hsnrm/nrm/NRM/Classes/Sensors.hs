@@ -8,9 +8,6 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Classes.Sensors
   ( ToCPDSensor (..)
-  , Sensors (..)
-  , AdjustSensors (..)
-  , NoSensors (..)
   , PassiveSensorKey (..)
   , ActiveSensorKey (..)
   , SensorKey (..)
@@ -30,10 +27,10 @@ class ToCPDSensor k a where
 
   toCPDSensor :: (k, a) -> (CPD.SensorID, CPD.Sensor)
 
-instance ToCPDSensor ActiveSensor where
+instance ToCPDSensor ActiveSensorKey ActiveSensor where
 
   toCPDSensor (id, ActiveSensor {..}) =
-    ( cpdID id
+    ( toKey id
     , CPD.Sensor
       { sensorMeta = CPD.Metadata (uncurry CPD.Interval activeRange)
           (CPD.MaxFrequency maxFrequency)
@@ -42,10 +39,10 @@ instance ToCPDSensor ActiveSensor where
       }
     )
 
-instance ToCPDSensor PassiveSensor where
+instance ToCPDSensor PassiveSensorKey PassiveSensor where
 
   toCPDSensor (id, PassiveSensor {..}) =
-    ( cpdID id
+    ( toKey id
     , CPD.Sensor
       { sensorMeta = CPD.Metadata (uncurry CPD.Interval passiveRange)
           (CPD.MaxFrequency frequency)
@@ -55,7 +52,7 @@ instance ToCPDSensor PassiveSensor where
     )
 
 -- Structural
-data ActiveSensorKey = DowstreamCmdSensor Text | Misc
+data ActiveSensorKey = DowstreamCmdKey DownstreamCmdID | Misc
   deriving (Ord, Eq)
 
 data PassiveSensorKey = RaplKey PackageID | Misc'

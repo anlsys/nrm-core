@@ -196,7 +196,7 @@ instance AdjustSensors (CmdID, Cmd) where
           then dc & field @"maxValue" .~ (Operations $ floor b)
           else dc
         )
+instance HasLensMap (CmdID, Cmd) ActiveSensorKey ActiveSensor where
 
-deriving via (NoSensors (CmdID, CmdCore)) instance Sensors (CmdID, CmdCore)
-
-deriving via (NoSensors (CmdID, CmdCore)) instance AdjustSensors (CmdID, CmdCore)
+  lenses (cmdID, cmd) =
+    addPath (field @"downstreamCmds") <$> lenses (downstreamCmds cmd)

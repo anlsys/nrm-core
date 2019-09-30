@@ -90,8 +90,3 @@ instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
       f (Unregistered appid) = appid == cmdID
 
   listApplications (Dummy runtime) sliceID = lookup sliceID runtime
-
-deriving via
-  (NoSensors (DummyRuntime))
-  instance
-    AdjustSensors DummyRuntime

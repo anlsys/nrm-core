@@ -6,8 +6,6 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Classes.Actuators
   ( toCPDActuator
-  , Actuators (..)
-  , NoActuators (..)
   , ActuatorKey (..)
   )
 where
@@ -26,25 +24,5 @@ toCPDActuator (key, Actuator {..}) =
     }
   )
 
--- Structural
-class Actuators a where
-
-  actuators :: a -> LMap ActuatorKey Actuator
-
-newtype NoActuators (a :: Type) = NoActuators {unNoActuators :: a}
-
-instance Actuators (NoActuators a) where
-
-  actuators = const LM.empty
-
--- Actuator maps
-instance (Actuators (k, v)) => Actuators (LMap k v) where
-
-  actuators (LM.toList -> m) = mconcat (m <&> actuators)
-
-instance (Actuators a) => Actuators (Maybe a) where
-
-  actuators (Just x) = actuators x
-  actuators Nothing = LM.empty
-
-data ActuatorKey = RaplKey PackageID | A deriving (Show)
+data ActuatorKey = RaplKey PackageID | A
+  deriving (Show, Eq, Ord)

@@ -6,7 +6,14 @@ Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-module LensMap.Core where
+module LensMap.Core
+  ( ScopedLens (..)
+  , LensMap
+  , HasLensMap (..)
+  , addPath
+  , addMaybePath
+  )
+where
 
 import Control.Lens
 import Data.Generics.Product
@@ -23,7 +30,7 @@ class HasLensMap s k a where
 
 instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (Map k v) key a where
 
-  lenses m = DM.fromList . mconcat $ DM.toList m <&> \(k, v) -> go k (lenses (k, v))
+  lenses s = DM.fromList . mconcat $ DM.toList s <&> \(k, v) -> go k (lenses (k, v))
     where
       go
         :: (Ord k)
@@ -42,6 +49,8 @@ instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (Map k v) key a
         where
           getter lmap = DM.lookup k lmap <&> (k,)
           setter lmap (Just (_, value)) = DM.insert k value lmap
+
+instance (Ord key, HasLensMap v key a) => HasLensMap (Maybe v) key a where
 
 addPath :: Lens'  s' s -> ScopedLens s a -> ScopedLens  s' a
 addPath l (ScopedLens sl) = ScopedLens (l . sl)

@@ -18,10 +18,13 @@ where
 import Data.Aeson
 import Data.Data
 import Data.JSON.Schema
+import Data.Map as DM
 import Data.MessagePack
 import Data.String (IsString (..))
 import qualified Data.UUID as U
+import LensMap.Core
 import NRM.Classes.Messaging
+import NRM.Classes.Sensors
 import NRM.Types.Sensor
 import NRM.Types.Units as Units
 import Protolude
@@ -76,3 +79,31 @@ instance MessagePack DownstreamCmdID where
       case DownstreamCmdID <$> U.fromText y of
         Nothing -> fail "Couldn't parse DownstreamCmdID"
         Just t -> return t
+
+instance HasLensMap (DownstreamCmdID, DownstreamCmd) ActiveSensorKey ActiveSensor where
+
+  {-LM.map-}
+  {-( \dc ->-}
+  {-if DC.id dc == sensorID-}
+  {-then dc & field @"maxValue" .~ (Operations $ floor b)-}
+  {-else dc-}
+  {-)-}
+  lenses (downstreamCmdID, downstreamCmd) =
+    DM.singleton
+      ( SC.DownstreamCmd downstreamCmdID
+      , ScopedLens (_2 . field @"rapl" . lens getter setter)
+      )
+    where
+      getter (DownstreamCmd id maxValue) =
+        Just $ ActiveSensor
+          { activeTags = [Tag "perf"]
+          , activeSource = Source $ show cmdID
+          , activeRange = (0, 1)
+          , maxFrequency = ratelimit $ monitoring $ app $ manifest cmdCore
+          , process = identity
+          }
+        where
+          textID = show packageID
+      setter rapl (Just passiveSensor) =
+        Just $ rapl & field @"max" .~ MaxEnergy (uJ (snd $ passiveRange passiveSensor))
+      setter _rapl Nothing = Nothing

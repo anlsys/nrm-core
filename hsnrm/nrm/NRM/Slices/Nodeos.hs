@@ -21,8 +21,3 @@ import Protolude
 
 data NodeosRuntime = NodeosRuntime
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
-
-deriving via
-  (NoSensors (NodeosRuntime))
-  instance
-    AdjustSensors NodeosRuntime
