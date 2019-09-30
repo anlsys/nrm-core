@@ -39,13 +39,13 @@ in rec {
     inherit pkgs;
     inherit hslib;
     src = ../hsnrm;
-    target = "hsnrm-static";
+    target = "hsnrm-static.cabal";
   };
   hsnrm = import ./pkgs/hsnrm {
     inherit pkgs;
     inherit hslib;
     src = ../hsnrm;
-    target = "hsnrm";
+    target = "hsnrm.cabal";
   };
   pynrm-static = pkgs.callPackage ./pkgs/pynrm {
     pythonPackages = nrmPythonPackages;

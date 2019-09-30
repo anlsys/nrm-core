@@ -1,3 +1,4 @@
+{-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 {-|
@@ -23,6 +24,7 @@ import Generics.Deriving.ConNames (ConNames)
 import Generics.Generic.Aeson
 import qualified Generics.Generic.Aeson as AG
 import Generics.Generic.IsEnum (GIsEnum)
+import LMap.Map as LM
 import Protolude
 
 class
@@ -85,3 +87,9 @@ instance
   => A.ToJSON (GenericJSON a) where
 
   toJSON = AG.gtoJson . unGenericJSON
+
+deriving via GenericJSON (LM.Map a b) instance (JSONSchema a, JSONSchema b) => JSONSchema (LM.Map a b)
+
+deriving via GenericJSON (LM.Map a b) instance (A.FromJSON a, A.FromJSON b) => A.FromJSON (LM.Map a b)
+
+deriving via GenericJSON (LM.Map a b) instance (A.ToJSON a, A.ToJSON b) => A.ToJSON (LM.Map a b)
