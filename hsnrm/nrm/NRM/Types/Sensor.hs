@@ -13,6 +13,10 @@ module NRM.Types.Sensor
   , Tag (..)
   , ActiveSensor (..)
   , PassiveSensor (..)
+  , -- * Keys for LensMap
+    ActiveSensorKey (..)
+  , PassiveSensorKey (..)
+  , SensorKey (..)
   , -- * Re-exports
     CPD.Source (..)
   , CPD.SensorID (..)
@@ -20,6 +24,9 @@ module NRM.Types.Sensor
 where
 
 import qualified CPD.Core as CPD
+import NRM.Classes.Sensors
+import NRM.Types.DownstreamCmdID
+import NRM.Types.Topology.PackageID
 import qualified NRM.Types.Units as U
 import Protolude
 
@@ -48,7 +55,7 @@ data ActiveSensor
       , activeRange :: (Double, Double)
       }
 
-data ActiveSensorKey = DowstreamCmdKey DownstreamCmdID | Misc
+data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | Misc
   deriving (Ord, Eq)
 
 data PassiveSensorKey = RaplKey PackageID | Misc'
@@ -57,3 +64,30 @@ data PassiveSensorKey = RaplKey PackageID | Misc'
 data SensorKey = AKey ActiveSensorKey | PKey PassiveSensorKey
   deriving (Ord, Eq)
 
+instance ToCPDSensor ActiveSensorKey ActiveSensor where
+
+  toCPDSensor (id, ActiveSensor {..}) =
+    ( toKey id
+    , CPD.Sensor
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval activeRange)
+          (CPD.MaxFrequency maxFrequency)
+      , source = activeSource
+      , ..
+      }
+    )
+
+instance ToCPDSensor PassiveSensorKey PassiveSensor where
+
+  toCPDSensor (id, PassiveSensor {..}) =
+    ( toKey id
+    , CPD.Sensor
+      { sensorMeta = CPD.Metadata (uncurry CPD.Interval passiveRange)
+          (CPD.MaxFrequency frequency)
+      , source = passiveSource
+      , ..
+      }
+    )
+
+instance ToCPDKey ActiveSensorKey
+
+instance ToCPDKey PassiveSensorKey

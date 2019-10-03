@@ -1,7 +1,5 @@
 --version
 
--Nrm+NRM
-
 -Container-> Slice
 
 only pass container list view in list reply

@@ -43,8 +43,6 @@ import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
 import NRM.Types.Cmd as Cmd
-{-import qualified NRM.Types.DownstreamCmd as DC-}
-{-import qualified NRM.Types.DownstreamThread as DT-}
 import NRM.Types.LMap as LM
 import NRM.Types.Process as P
 import NRM.Types.Sensor as Sensor
