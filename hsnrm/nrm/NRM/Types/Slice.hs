@@ -17,6 +17,7 @@ module NRM.Types.Slice
   )
 where
 
+import Control.Lens
 import Data.Aeson
 import Data.Data
 import Data.Generics.Product
@@ -24,20 +25,22 @@ import Data.JSON.Schema
 import Data.MessagePack
 import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
+import LMap.Map as LM
+import LensMap.Core
+import NRM.Classes.Actuators
 import NRM.Classes.Messaging
 import NRM.Classes.Sensors
-import NRM.Classes.Actuators
 import NRM.Types.Cmd (Cmd (..), CmdCore (..), CmdID (..))
-import NRM.Types.LMap as LM
+import NRM.Types.Sensor
 import Protolude
 
 -- | NRM's internal view of the state of a slice.
 data Slice
   = Slice
       { -- | map of running commands
-        cmds :: LMap CmdID Cmd
+        cmds :: LM.Map CmdID Cmd
       , -- | map of commands awaiting to be registered as running by the runtime
-        awaiting :: LMap CmdID CmdCore
+        awaiting :: LM.Map CmdID CmdCore
       }
   deriving (Show, Generic, Data, MessagePack)
   deriving (ToJSON, FromJSON, JSONSchema) via GenericJSON Slice
@@ -69,23 +72,7 @@ toText :: SliceID -> Text
 toText (SliceID u) = U.toText u
 toText (Name n) = n
 
-instance Sensors (SliceID, Slice) where
+instance HasLensMap (SliceID, Slice) ActiveSensorKey ActiveSensor where
 
-  passiveSensors (_, slice) = passiveSensors (cmds slice)
-
-  activeSensors (_, slice) = activeSensors (cmds slice)
-
-instance AdjustSensors (SliceID, Slice) where
-
-  adjust sensorID range (sid, s) =
-    ( sid
-    , runIdentity $
-      constraints'
-        @AdjustSensors
-        (pure . adjust sensorID range)
-        s
-    )
-
-instance Actuators (SliceID, Slice) where
-
-  actuators (_, slice) = actuators (cmds slice)
+  lenses (sliceID, slice) =
+    addPath (_2 . field @"cmds") <$> lenses (cmds slice)

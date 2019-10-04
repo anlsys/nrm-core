@@ -11,6 +11,7 @@ module NRM.Types.DownstreamCmd
   )
 where
 
+import Control.Lens
 import Data.Aeson
 import Data.Data
 import Data.Generics.Product
@@ -30,38 +31,33 @@ import Prelude (fail)
 
 data DownstreamCmd
   = DownstreamCmd
-      { id :: SensorID
-      , maxValue :: Units.Operations
+      {  maxValue :: Units.Operations
+      , ratelimit :: Units.Frequency
       }
-  deriving (Eq, Ord, Show, Generic, Data, MessagePack)
+  deriving (Show, Generic, Data, MessagePack)
   deriving
     (JSONSchema, ToJSON, FromJSON)
     via GenericJSON DownstreamCmd
 
-instance HasLensMap (DownstreamCmdID, DownstreamCmd) ActiveSensorKey ActiveSensor where
+instance
+  HasLensMap (DownstreamCmdID, DownstreamCmd)
+    ActiveSensorKey
+    ActiveSensor where
 
-  {-LM.map-}
-  {-( \dc ->-}
-  {-if DC.id dc == sensorID-}
-  {-then dc & field @"maxValue" .~ (Operations $ floor b)-}
-  {-else dc-}
-  {-)-}
   lenses (downstreamCmdID, downstreamCmd) =
     DM.singleton
-      ( DownstreamCmdKey downstreamCmdID
-      , ScopedLens (_2 . field @"rapl" . lens getter setter)
-      )
+      (DownstreamCmdKey downstreamCmdID)
+      (ScopedLens (_2 . lens getter setter))
     where
-      getter (DownstreamCmd id maxValue) =
+      getter (DownstreamCmd maxValue ratelimit) =
         Just $ ActiveSensor
           { activeTags = [Tag "perf"]
-          , activeSource = Source $ show cmdID
+          , activeSource = Source $ show downstreamCmdID
           , activeRange = (0, 1)
-          , maxFrequency = ratelimit $ monitoring $ app $ manifest cmdCore
+          , maxFrequency = ratelimit
           , process = identity
           }
-        where
-          textID = show packageID
-      setter rapl (Just passiveSensor) =
-        Just $ rapl & field @"max" .~ MaxEnergy (uJ (snd $ passiveRange passiveSensor))
-      setter _rapl Nothing = Nothing
+      setter dc (Just activeSensor) =
+        dc & field @"maxValue" .~
+          Operations (floor $ snd $ activeRange activeSensor)
+      setter dc Nothing = dc

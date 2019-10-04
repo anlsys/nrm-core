@@ -16,14 +16,14 @@ module NRM.Types.Messaging.DownstreamEvent
   )
 where
 
-import Data.JSON.Schema
 import Data.Aeson
+import Data.JSON.Schema
 import Data.Maybe (fromJust)
 import Data.MessagePack
 import NRM.Classes.Messaging
 import qualified NRM.Classes.Messaging as M
 import qualified NRM.Types.Cmd as Cmd
-import qualified NRM.Types.DownstreamThread as D
+import NRM.Types.DownstreamThreadID
 import qualified NRM.Types.Messaging.DownstreamEvent.JSON as J
 import qualified NRM.Types.Process as P
 import qualified NRM.Types.Units as U
@@ -49,7 +49,7 @@ data ThreadHeader
       { threadCmdID :: Cmd.CmdID
       , processID :: P.ProcessID
       , taskID :: Text
-      , threadID :: D.DownstreamThreadID
+      , threadID :: DownstreamThreadID
       }
   deriving (Generic, MessagePack)
 

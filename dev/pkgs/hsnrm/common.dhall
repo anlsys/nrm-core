@@ -259,7 +259,6 @@ let modules =
       , "NRM.Types.Configuration.Yaml"
       , "NRM.Configuration.Examples"
       , "NRM.Types.Manifest"
-      , "NRM.Types.LMap"
       , "NRM.Types.Manifest.Yaml"
       , "NRM.Manifest.Examples"
       , "NRM.Types.Manifest.Dhall"

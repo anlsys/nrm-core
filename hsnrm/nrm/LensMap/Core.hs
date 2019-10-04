@@ -18,6 +18,7 @@ where
 import Control.Lens
 import Data.Generics.Product
 import Data.Map as DM
+import qualified LMap.Map as LM
 import Protolude
 
 newtype ScopedLens s a = ScopedLens {getScopedLens :: Lens' s a}
@@ -50,7 +51,19 @@ instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (Map k v) key a
           getter lmap = DM.lookup k lmap <&> (k,)
           setter lmap (Just (_, value)) = DM.insert k value lmap
 
-instance (Ord key, HasLensMap v key a) => HasLensMap (Maybe v) key a where
+instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (LM.Map k v) key a where
+
+  lenses s = DM.fromList . mconcat $ LM.toList s <&> \(k, v) -> go k (lenses (k, v))
+    where
+      go k lensMap =
+        DM.toList lensMap <&> \(sensorKey, scopedLens) ->
+          (sensorKey, lensAugmenter k scopedLens)
+      lensAugmenter k = addMaybePath $ lens getter setter
+        where
+          getter lmap = LM.lookup k lmap <&> (k,)
+          setter lmap (Just (_, value)) = LM.insert k value lmap
+
+instance (Ord key, HasLensMap v key a) => HasLensMap (Maybe v) key a
 
 addPath :: Lens'  s' s -> ScopedLens s a -> ScopedLens  s' a
 addPath l (ScopedLens sl) = ScopedLens (l . sl)

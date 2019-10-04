@@ -18,14 +18,12 @@ import Data.Data
 import Data.Generics.Product
 import Data.Map as DM
 import Data.MessagePack
+import LMap.Map as LM
 import LensMap.Core
-import NRM.Classes.Actuators as AC
-import NRM.Classes.Sensors as SC
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
-import NRM.Types.Actuator
-import NRM.Types.LMap as LM
-import NRM.Types.Sensor
+import NRM.Types.Actuator as A
+import NRM.Types.Sensor as S
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
 import Protolude hiding (max)
@@ -47,7 +45,7 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
 
   lenses (packageID, package) =
     DM.fromList
-      [ ( AC.RaplKey packageID
+      [ ( A.RaplKey packageID
         , ScopedLens (_2 . field @"rapl" . lens getter setter)
         )
       | _ <- Protolude.toList (rapl package)
@@ -67,7 +65,7 @@ instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
 
   lenses (packageID, package) =
     DM.fromList
-      [ ( SC.RaplKey packageID
+      [ ( S.RaplKey packageID
         , ScopedLens (_2 . field @"rapl" . lens getter setter)
         )
       | _ <- Protolude.toList (rapl package)

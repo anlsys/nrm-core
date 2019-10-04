@@ -16,7 +16,7 @@ import qualified CPD.Core as CPD
 import Control.Lens
 import Data.Generics.Product
 import LensMap.Core
-import NRM.Types.LMap as LM
+import LMap.Map as LM
 import Protolude
 
 class ToCPDSensor k a where

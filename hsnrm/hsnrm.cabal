@@ -88,7 +88,6 @@ library nrmlib
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
-        NRM.Types.LMap
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
@@ -333,7 +332,6 @@ executable nrm.so
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
-        NRM.Types.LMap
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
@@ -496,7 +494,6 @@ executable nrmstatic
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
-        NRM.Types.LMap
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall
@@ -658,7 +655,6 @@ executable nrmd
         NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
-        NRM.Types.LMap
         NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
         NRM.Types.Manifest.Dhall

@@ -37,7 +37,7 @@ import NRM.Types.Cmd
 import NRM.Types.Configuration as Cfg
 import NRM.Types.DownstreamCmd
 import NRM.Types.DownstreamThread
-import NRM.Types.LMap as LM
+import LMap.Map as LM
 import NRM.Types.Process
 import NRM.Types.Slice
 import NRM.Types.State
@@ -78,9 +78,9 @@ initialState c = do
    in return $ s {cpd = NRM.CPD.toCPD s}
   where
     goRAPL
-      :: LMap PackageID Package
+      :: LM.Map PackageID Package
       -> (PackageID, RAPLDir)
-      -> IO (LMap PackageID Package)
+      -> IO (LM.Map PackageID Package)
     goRAPL m (pkgid, RAPLDir {..}) =
       LM.lookup pkgid m & \case
         Nothing -> return m

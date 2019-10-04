@@ -37,7 +37,7 @@ import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
 import NRM.Classes.Topology
-import NRM.Types.LMap as LM
+import LMap.Map as LM
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
 import Protolude
@@ -45,7 +45,7 @@ import System.Directory
 import Text.RE.TDFA.Text
 
 -- | RAPL directory locations
-newtype RAPLDirs = RAPLDirs (LMap PackageID RAPLDir)
+newtype RAPLDirs = RAPLDirs (LM.Map PackageID RAPLDir)
   deriving (Show, Generic, MessagePack)
 
 -- | Hwmon directory locations

@@ -13,7 +13,7 @@ import CPD.Core
 import qualified Data.Map as DM
 import NRM.Actuators
 import NRM.Sensors
-import qualified NRM.Types.LMap as LM
+import qualified LMap.Map as LM
 import NRM.Types.State
 import Protolude
 

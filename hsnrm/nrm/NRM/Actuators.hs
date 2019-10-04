@@ -11,9 +11,9 @@ where
 
 import CPD.Core as CPD
 import NRM.Classes.Actuators as CA
-import NRM.Types.LMap as LM
+import LMap.Map as LM
 import NRM.Types.State
 import Protolude
 
-cpdActuators :: NRMState -> LMap CPD.ActuatorID CPD.Actuator
+cpdActuators :: NRMState -> LM.Map CPD.ActuatorID CPD.Actuator
 cpdActuators s = (CA.actuators s) & LM.mapKV toCPDActuator

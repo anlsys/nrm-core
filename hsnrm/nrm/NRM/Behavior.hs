@@ -28,7 +28,7 @@ import NRM.State
 import NRM.Types.Cmd
 import qualified NRM.Types.Configuration as Cfg
 import qualified NRM.Types.DownstreamCmd as DC
-import NRM.Types.LMap as LM
+import LMap.Map as LM
 import qualified NRM.Types.Manifest as Manifest
 import qualified NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.UpstreamPub as UPub

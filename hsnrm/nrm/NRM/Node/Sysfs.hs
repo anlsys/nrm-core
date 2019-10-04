@@ -17,7 +17,7 @@ module NRM.Node.Sysfs
 where
 
 import NRM.Node.Sysfs.Internal
-import NRM.Types.LMap as LM
+import LMap.Map as LM
 import Protolude
 
 -- | Retreives package RAPL directories at the default location.

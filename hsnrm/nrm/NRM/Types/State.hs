@@ -19,8 +19,6 @@ module NRM.Types.State
   , -- * lookups
     lookupCmd
   , lookupProcess
-  , lookupPassiveSensor
-  , lookupActiveSensor
   , -- * Rendering views
     showSliceList
   , showSlices
@@ -36,14 +34,15 @@ import Data.Aeson
 import Data.Data
 import Data.Generics.Product
 import Data.JSON.Schema
+import Data.Map as DM
 import Data.MessagePack
+import LMap.Map as LM
 import NRM.Classes.Actuators
 import NRM.Classes.Sensors
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
 import NRM.Types.Cmd as Cmd
-import NRM.Types.LMap as LM
 import NRM.Types.Process as P
 import NRM.Types.Sensor as Sensor
 import NRM.Types.Slice as C
@@ -53,37 +52,15 @@ import Protolude
 data NRMState
   = NRMState
       { cpd :: CPD.Problem
-      , pus :: LMap PUID PU
-      , cores :: LMap CoreID Core
-      , packages :: LMap PackageID Package
-      , slices :: LMap SliceID Slice
+      , pus :: LM.Map PUID PU
+      , cores :: LM.Map CoreID Core
+      , packages :: LM.Map PackageID Package
+      , slices :: LM.Map SliceID Slice
       , dummyRuntime :: Maybe DummyRuntime
       , singularityRuntime :: Maybe SingularityRuntime
       , nodeosRuntime :: Maybe NodeosRuntime
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
-
-instance Actuators NRMState where
-
-  actuators NRMState {..} =
-    actuators pus <>
-      actuators cores <>
-      actuators packages <>
-      actuators slices
-
-instance Sensors NRMState where
-
-  passiveSensors NRMState {..} =
-    passiveSensors pus <>
-      passiveSensors cores <>
-      passiveSensors packages <>
-      passiveSensors slices
-
-  activeSensors NRMState {..} =
-    activeSensors pus <>
-      activeSensors cores <>
-      activeSensors packages <>
-      activeSensors slices
 
 instance JSONSchema NRMState where
 
@@ -120,15 +97,15 @@ insertSlice :: SliceID -> Slice -> NRMState -> NRMState
 insertSlice sliceID slice s = s {slices = LM.insert sliceID slice (slices s)}
 
 lookupProcess :: ProcessID -> NRMState -> Maybe (CmdID, Cmd, SliceID, Slice)
-lookupProcess cmdID st = LM.lookup cmdID (pidMap st)
+lookupProcess cmdID st = DM.lookup cmdID (pidMap st)
 
 -- | NRM state map view by ProcessID.
-pidMap :: NRMState -> LMap ProcessID (CmdID, Cmd, SliceID, Slice)
+pidMap :: NRMState -> DM.Map ProcessID (CmdID, Cmd, SliceID, Slice)
 pidMap s = mconcat $ LM.toList (slices s) <&> mkMap
   where
-    mkMap :: forall c. (c, Slice) -> LMap ProcessID (CmdID, Cmd, c, Slice)
+    mkMap :: forall c. (c, Slice) -> DM.Map ProcessID (CmdID, Cmd, c, Slice)
     mkMap x@(_, c) =
-      LM.fromList $
+      DM.fromList $
         zip (pid <$> LM.elems (cmds c))
           (LM.toList (cmds c) <&> mkTriple x)
 
@@ -136,31 +113,25 @@ mkTriple :: (c, d) -> (a, b) -> (a, b, c, d)
 mkTriple (cid, c) (cmid, cm) = (cmid, cm, cid, c)
 
 lookupCmd :: CmdID -> NRMState -> Maybe (Cmd, SliceID, Slice)
-lookupCmd cmdID st = LM.lookup cmdID (cmdIDMap st)
-
-lookupPassiveSensor :: CPD.SensorID -> NRMState -> Maybe PassiveSensor
-lookupPassiveSensor sensorID st = LM.lookup sensorID (passiveSensors st)
-
-lookupActiveSensor :: CPD.SensorID -> NRMState -> Maybe ActiveSensor
-lookupActiveSensor sensorID st = LM.lookup sensorID (activeSensors st)
+lookupCmd cmdID st = DM.lookup cmdID (cmdIDMap st)
 
 -- | NRM state map view by cmdID of "running" commands..
-cmdIDMap :: NRMState -> LMap CmdID (Cmd, SliceID, Slice)
+cmdIDMap :: NRMState -> DM.Map CmdID (Cmd, SliceID, Slice)
 cmdIDMap = mkCmdIDMap cmds
 
 -- | NRM state map view by cmdID of "awaiting" commands.
-awaitingCmdIDMap :: NRMState -> LMap CmdID (CmdCore, SliceID, Slice)
+awaitingCmdIDMap :: NRMState -> DM.Map CmdID (CmdCore, SliceID, Slice)
 awaitingCmdIDMap = mkCmdIDMap awaiting
 
 mkCmdIDMap
   :: Ord k
-  => (Slice -> LMap k a)
+  => (Slice -> LM.Map k a)
   -> NRMState
-  -> LMap k (a, SliceID, Slice)
+  -> DM.Map k (a, SliceID, Slice)
 mkCmdIDMap accessor s = mconcat $ LM.toList (slices s) <&> mkMap
   where
     mkMap x@(_, c) =
-      LM.fromList $
+      DM.fromList $
         zip (LM.keys $ accessor c)
           (LM.elems (accessor c) <&> mk x)
     mk :: (b, c) -> a -> (a, b, c)
@@ -168,16 +139,22 @@ mkCmdIDMap accessor s = mconcat $ LM.toList (slices s) <&> mkMap
 
 {-# WARNING runningCmdIDCmdMap "To remove" #-}
 -- | List commands currently registered as running
-runningCmdIDCmdMap :: NRMState -> LMap CmdID Cmd
+runningCmdIDCmdMap :: NRMState -> DM.Map CmdID Cmd
 runningCmdIDCmdMap = cmdsMap cmds
 
 -- | List commands awaiting to be launched
-awaitingCmdIDCmdMap :: NRMState -> LMap CmdID CmdCore
+awaitingCmdIDCmdMap :: NRMState -> DM.Map CmdID CmdCore
 awaitingCmdIDCmdMap = cmdsMap awaiting
 
 -- | List commands awaiting to be launched
-cmdsMap :: (Slice -> LMap CmdID a) -> NRMState -> LMap CmdID a
-cmdsMap accessor s = mconcat $ accessor <$> LM.elems (slices s)
+cmdsMap
+  :: (Slice -> LM.Map CmdID a)
+  -> NRMState
+  -> DM.Map CmdID a
+cmdsMap accessor s =
+  DM.fromList . LM.toList . mconcat $
+    accessor <$>
+    LM.elems (slices s)
 
 -- Lenses
 _sliceID :: SliceID -> Lens' NRMState (Maybe Slice)
@@ -204,6 +181,3 @@ _cmdID cmdID = lens getter setter
         if length (cmds slice) == 1
         then Nothing
         else Just $ slice & field @"cmds" . at cmdID .~ Nothing
-
-{-_downstreamCmdID :: DC.DownstreamCmdID -> Lens' NRMState (Maybe Cmd)-}
-{-_downstreamCmdID = undefined-}

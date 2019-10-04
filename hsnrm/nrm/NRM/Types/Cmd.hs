@@ -19,8 +19,8 @@ module NRM.Types.Cmd
   , Arg (..)
   , Env (..)
   , nextCmdID
-  , toText
-  , fromText
+  , NRM.Types.Cmd.toText
+  , NRM.Types.Cmd.fromText
   , wrapCmd
   , addDownstreamCmdClient
   , removeDownstreamCmdClient
@@ -38,13 +38,15 @@ import Data.String (IsString (..))
 import qualified Data.UUID as U
 import Data.UUID.V1 (nextUUID)
 import Dhall hiding (field)
+import LMap.Map as LM
+import LensMap.Core
 import NRM.Classes.Actuators
 import NRM.Classes.Messaging
 import NRM.Classes.Sensors
 import NRM.Orphans.ExitCode ()
 import NRM.Orphans.UUID ()
-import qualified NRM.Types.DownstreamCmd as DC
-import NRM.Types.LMap as LM
+import NRM.Types.DownstreamCmd
+import NRM.Types.DownstreamCmdID
 import NRM.Types.Manifest as Manifest
 import NRM.Types.Process
 import NRM.Types.Sensor
@@ -76,7 +78,7 @@ data Cmd
       { cmdCore :: CmdCore
       , pid :: ProcessID
       , processState :: ProcessState
-      , downstreamCmds :: LMap DC.DownstreamCmdID DC.DownstreamCmd
+      , downstreamCmds :: LM.Map DownstreamCmdID DownstreamCmd
       }
   deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cmd
@@ -94,7 +96,7 @@ registerPID c pid = Cmd
 
 addDownstreamCmdClient
   :: Cmd
-  -> DC.DownstreamCmdID
+  -> DownstreamCmdID
   -> Maybe Cmd
 addDownstreamCmdClient Cmd {..} downstreamCmdClientID =
   cmdCore & manifest & Manifest.app & Manifest.perfwrapper & \case
@@ -102,15 +104,15 @@ addDownstreamCmdClient Cmd {..} downstreamCmdClientID =
     Perfwrapper pw ->
       Just $ Cmd
         { downstreamCmds = LM.insert downstreamCmdClientID
-            ( DC.DownstreamCmd
-              (DC.toSensorID downstreamCmdClientID)
+            ( DownstreamCmd
               (Manifest.perfLimit pw)
+              (Manifest.perfFreq pw)
             )
             downstreamCmds
         , ..
         }
 
-removeDownstreamCmdClient :: Cmd -> DC.DownstreamCmdID -> Cmd
+removeDownstreamCmdClient :: Cmd -> DownstreamCmdID -> Cmd
 removeDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
   { downstreamCmds = LM.delete downstreamCmdClientID downstreamCmds
   , ..
@@ -166,37 +168,7 @@ fromText = fmap CmdID <$> U.fromText
 wrapCmd :: Command -> (Command, Arguments) -> (Command, Arguments)
 wrapCmd c (Command a, Arguments as) = (c, Arguments $ Arg a : as)
 
-deriving via (NoActuators (CmdID, Cmd)) instance Actuators (CmdID, Cmd)
-
-instance Sensors (CmdID, Cmd) where
-
-  passiveSensors _ = LM.empty
-
-  activeSensors (cmdID, Cmd {..}) =
-    LM.fromList
-      ( LM.elems downstreamCmds <&> \dc ->
-        ( DC.id dc
-        , ActiveSensor
-          { activeTags = [Tag "perf"]
-          , activeSource = Source $ show cmdID
-          , activeRange = (0, 1)
-          , maxFrequency = ratelimit $ monitoring $ app $ manifest cmdCore
-          , process = identity
-          }
-        )
-      )
-
-instance AdjustSensors (CmdID, Cmd) where
-
-  adjust sensorID (CPD.Interval _ b) =
-    _2 . field @"downstreamCmds" %~
-      LM.map
-        ( \dc ->
-          if DC.id dc == sensorID
-          then dc & field @"maxValue" .~ (Operations $ floor b)
-          else dc
-        )
 instance HasLensMap (CmdID, Cmd) ActiveSensorKey ActiveSensor where
 
   lenses (cmdID, cmd) =
-    addPath (field @"downstreamCmds") <$> lenses (downstreamCmds cmd)
+    addPath (_2 . field @"downstreamCmds") <$> lenses (downstreamCmds cmd)

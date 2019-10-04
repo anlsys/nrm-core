@@ -5,24 +5,21 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module NRM.Classes.Actuators
-  ( toCPDActuator
-  , ActuatorKey (..)
+  ( ToCPDActuator (..)
+  , ToCPDKey (..)
   )
 where
 
 import qualified CPD.Core as CPD
 import NRM.Types.Actuator
-import NRM.Types.LMap as LM
+import LMap.Map as LM
 import NRM.Types.Topology.PackageID
 import Protolude
 
-toCPDActuator :: (ActuatorKey, Actuator) -> (CPD.ActuatorID, CPD.Actuator)
-toCPDActuator (key, Actuator {..}) =
-  ( CPD.ActuatorID $ show key
-  , CPD.Actuator
-    { CPD.actuatorRange = [CPD.Discrete (show x) | x <- actions]
-    }
-  )
+class ToCPDActuator k a where
 
-data ActuatorKey = RaplKey PackageID | A
-  deriving (Show, Eq, Ord)
+  toCPDActuater :: (k, a) -> (CPD.ActuatorID, CPD.Actuator)
+
+class ToCPDKey k where
+
+  toKey :: k -> CPD.ActuatorID
