@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
 {-|
 Module      : NRM.Types.Topology.Package
 Copyright   : (c) UChicago Argonne, 2019
@@ -10,15 +11,12 @@ module NRM.Types.Topology.Package
   )
 where
 
-import qualified CPD.Core as CPD
 import Control.Lens
 import Data.Aeson
-import Data.Coerce
 import Data.Data
 import Data.Generics.Product
 import Data.Map as DM
 import Data.MessagePack
-import LMap.Map as LM
 import LensMap.Core
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
@@ -57,9 +55,9 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
           , go = setRAPLPowercap path . RAPLCommand . uW
           }
       getter Nothing = Nothing
-      setter (Just rapl) (Just (Actuator actions go)) =
+      setter (Just rapl) (Just (Actuator actions _go)) =
         Just $ rapl & field @"discreteChoices" .~ fmap uW actions
-      setter rapl Nothing = Nothing
+      setter _ _ = Nothing
 
 instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
 
@@ -84,4 +82,4 @@ instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
       getter Nothing = Nothing
       setter (Just rapl) (Just passiveSensor) =
         Just $ rapl & field @"max" .~ MaxEnergy (uJ (snd $ passiveRange passiveSensor))
-      setter rapl Nothing = Nothing
+      setter _ _ = Nothing

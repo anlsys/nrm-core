@@ -16,7 +16,6 @@ where
 import Data.Aeson
 import Data.Data
 import Data.MessagePack
-import NRM.Classes.Sensors
 import Protolude
 
 data NodeosRuntime = NodeosRuntime

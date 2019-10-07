@@ -56,18 +56,26 @@ data ActiveSensor
       }
 
 data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | Misc
-  deriving (Ord, Eq)
+  deriving (Ord, Eq, Show)
 
 data PassiveSensorKey = RaplKey PackageID | Misc'
-  deriving (Ord, Eq)
+  deriving (Ord, Eq, Show)
 
 data SensorKey = AKey ActiveSensorKey | PKey PassiveSensorKey
-  deriving (Ord, Eq)
+  deriving (Ord, Eq, Show)
+
+instance StringConv PassiveSensorKey CPD.SensorID where
+
+  strConv _  = CPD.SensorID . show
+
+instance StringConv ActiveSensorKey CPD.SensorID where
+
+  strConv _  = CPD.SensorID . show
 
 instance ToCPDSensor ActiveSensorKey ActiveSensor where
 
   toCPDSensor (id, ActiveSensor {..}) =
-    ( toKey id
+    ( toS id
     , CPD.Sensor
       { sensorMeta = CPD.Metadata (uncurry CPD.Interval activeRange)
           (CPD.MaxFrequency maxFrequency)
@@ -79,7 +87,7 @@ instance ToCPDSensor ActiveSensorKey ActiveSensor where
 instance ToCPDSensor PassiveSensorKey PassiveSensor where
 
   toCPDSensor (id, PassiveSensor {..}) =
-    ( toKey id
+    ( toS id
     , CPD.Sensor
       { sensorMeta = CPD.Metadata (uncurry CPD.Interval passiveRange)
           (CPD.MaxFrequency frequency)
@@ -87,7 +95,3 @@ instance ToCPDSensor PassiveSensorKey PassiveSensor where
       , ..
       }
     )
-
-instance ToCPDKey ActiveSensorKey
-
-instance ToCPDKey PassiveSensorKey

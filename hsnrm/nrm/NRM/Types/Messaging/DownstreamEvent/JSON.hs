@@ -13,13 +13,15 @@ where
 import Codegen.CHeader
 import Protolude
 
-data Event =
-   CmdPerformance
+data Event
+  = CmdPerformance
       { cmdID :: Text
+      , timestamp :: Double
       , perf :: Int
       }
   | CmdPause
       { cmdID :: Text
+      , timestamp :: Double
       , perf :: Int
       }
   | ThreadProgress

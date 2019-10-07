@@ -38,9 +38,10 @@ data Event
   | ThreadPhasePause ThreadHeader
   deriving (Generic, MessagePack)
 
-newtype CmdHeader
+data CmdHeader
   = CmdHeader
       { cmdID :: Cmd.CmdID
+      , timestamp :: U.Time
       }
   deriving (Generic, MessagePack)
 
@@ -80,49 +81,15 @@ data PhaseContext
 instance M.NRMMessage Event J.Event where
 
   toJ = \case
-    CmdPerformance (CmdHeader cmdID) Performance {..} ->
+    CmdPerformance (CmdHeader cmdID timestamp) Performance {..} ->
       J.CmdPerformance
         { cmdID = Cmd.toText cmdID
+        , timestamp = U.fromSeconds timestamp
         , perf = U.fromOps perf
         }
     _ -> panic "Non-Cmd downstream API not implemented yet."
 
   fromJ = \case
     J.CmdPerformance {..} ->
-      CmdPerformance (CmdHeader (fromJust $ Cmd.fromText cmdID)) (Performance $ U.Operations perf)
+      CmdPerformance (CmdHeader (fromJust $ Cmd.fromText cmdID) (timestamp & U.s)) (Performance $ U.Operations perf)
     _ -> panic "Non-Cmd downstream API not implemented yet."
-
-{-CmdPause-}
-{-{ cmdID :: Text-}
-{-, perf :: Int-}
-{-}-}
-{-| ThreadProgress-}
-{-{ cmdID :: Text-}
-{-, processID :: Text-}
-{-, taskID :: Text-}
-{-, threadID :: Text-}
-{-, payload :: Int-}
-{-}-}
-{-| ThreadPause-}
-{-{ cmdID :: Text-}
-{-, processID :: Text-}
-{-, taskID :: Text-}
-{-, threadID :: Text-}
-{-}-}
-{-| ThreadPhaseContext-}
-{-{ cmdID :: Text-}
-{-, processID :: Text-}
-{-, taskID :: Text-}
-{-, threadID :: Text-}
-{-, cpu :: Int-}
-{-, startcompute :: Int-}
-{-, endcompute :: Int-}
-{-, startbarrier :: Int-}
-{-, endbarrier :: Int-}
-{-}-}
-{-| ThreadPhasePause-}
-{-{ cmdID :: Text-}
-{-, processID :: Text-}
-{-, taskID :: Text-}
-{-, threadID :: Text-}
-{-}-}

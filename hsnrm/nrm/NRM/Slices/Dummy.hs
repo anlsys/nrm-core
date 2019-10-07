@@ -20,7 +20,6 @@ import Data.Aeson
 import Data.Data
 import Data.Map as DM
 import Data.MessagePack
-import NRM.Classes.Sensors
 import NRM.Processes
 import NRM.Slices.Class
 import NRM.Types.Slice

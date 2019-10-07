@@ -7,81 +7,30 @@ Maintainer  : fre@freux.fr
 module NRM.Behavior
   ( -- * NRM's core logic.
     behavior
-  , -- * The Event specification
-    NRMEvent (..)
-  , -- * The Behavior specification
-    Behavior (..)
-  , CmdStatus (..)
   )
 where
 
 import Control.Lens hiding (to)
 import Data.Generics.Product
-import Data.MessagePack
 import LMap.Map as LM
 import qualified NRM.CPD as NRMCPD
-import qualified NRM.Classes.Messaging as M
+import NRM.Sensors as Sensors
 import NRM.State
+import NRM.Types.Behavior
 import NRM.Types.Cmd
 import qualified NRM.Types.Configuration as Cfg
-import qualified NRM.Types.DownstreamCmdID as DC
 import qualified NRM.Types.Manifest as Manifest
 import qualified NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.UpstreamPub as UPub
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
 import NRM.Types.Process as Process
-import qualified NRM.Types.Sensor as Sensor
+import NRM.Types.Sensor as Sensor
 import qualified NRM.Types.Slice as Ct
 import NRM.Types.State
 import qualified NRM.Types.Units as U
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
-
--- | The Behavior datatype describes an event from the runtime on which to react.
-data NRMEvent
-  = -- | A Request was received on the Upstream API.
-    Req UC.UpstreamClientID UReq.Req
-  | -- | Registering a child process.
-    RegisterCmd CmdID CmdStatus
-  | -- | Event from the application side.
-    DownstreamEvent DC.DownstreamCmdID DEvent.Event
-  | -- | Stdin/stdout data from the app side.
-    DoOutput CmdID URep.OutputType Text
-  | -- | Child death event
-    ChildDied ProcessID ExitCode
-  | -- | Sensor callback
-    DoSensor
-  | -- | Control loop calback
-    DoControl
-  | -- | Shutting down the daemon
-    DoShutdown
-
--- | The Launch status of a command, for registration.
-data CmdStatus
-  = -- | In case the command to start a child succeeded, mark it as registered and provide its PID.
-    Launched ProcessID
-  | -- | In case the command to start a child failed.
-    NotLaunched
-  deriving (Generic, MessagePack)
-
--- | The Behavior datatype encodes a behavior to be executed by the NRM runtime.
-data Behavior
-  = -- | The No-Op
-    NoBehavior
-  | -- | Log a message
-    Log Text
-  | -- | Reply to an upstream client.
-    Rep UC.UpstreamClientID URep.Rep
-  | -- | Publish messages on upstream
-    Pub [UPub.Pub]
-  | -- | Start a child process
-    StartChild CmdID Command Arguments Env
-  | -- | Kill children processes and send some messages back upstream.
-    KillChildren [CmdID] [(UC.UpstreamClientID, URep.Rep)]
-  | -- | Pop one child process and may send a message back upstream.
-    ClearChild CmdID (Maybe (UC.UpstreamClientID, URep.Rep))
-  deriving (Show, Generic)
 
 mayRep :: Cmd -> URep.Rep -> Behavior
 mayRep c rep =
@@ -213,20 +162,22 @@ behavior cfg st (DownstreamEvent clientid msg) =
     DEvent.ThreadPause _ -> return (st, Log "unimplemented")
     DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented")
     DEvent.CmdPerformance DEvent.CmdHeader {..} DEvent.Performance {..} ->
-      return $
-        activeSensorBehavior cfg st (Sensor.DownstreamCmdKey clientid)
-          (U.fromOps perf & fromIntegral) & \case
-        Nothing ->
-          registerDownstreamCmdClient cmdID clientid st <&>
+      Sensors.process cfg timestamp st (Sensor.DownstreamCmdKey clientid)
+        (U.fromOps perf & fromIntegral) & \case
+        Sensors.NotFound ->
+          return $
+            registerDownstreamCmdClient cmdID clientid st <&>
             (,Log "downstream cmd client registered.") &
             fromMaybe (st, Log "no such Cmd")
-        Just x ->
-          x & _2 %~ \toPublish ->
-            Pub $ toPublish :
-              [ UPub.PubPerformance cmdID
-                  DEvent.Performance
-                    { DEvent.perf = perf
-                    }
+        Sensors.Adjusted st' -> bhv st' $ Log "Out-of-range value received, sensor adjusted"
+        Sensors.Ok st' measurement ->
+          bhv st' $
+            Pub
+              [ UPub.PubMeasurements [measurement]
+              , UPub.PubPerformance cmdID
+                DEvent.Performance
+                  { DEvent.perf = perf
+                  }
               ]
     DEvent.CmdPause DEvent.CmdHeader {..} ->
       unRegisterDownstreamCmdClient cmdID clientid st & \case
@@ -242,58 +193,12 @@ bhv st x = return (st, x)
 justReply :: Monad m => a -> UC.UpstreamClientID -> URep.Rep -> m (a, Behavior)
 justReply st clientID = bhv st . Rep clientID
 
--- | The sensitive unpacking that has to be pattern-matched on the python side.
--- These toObject/fromObject functions do not correspond to each other and the instance
--- just exists for passing the behavior to the python runtime.
-instance MessagePack Behavior where
-
-  toObject NoBehavior = toObject ("noop" :: Text)
-  toObject (Log msg) = toObject ("log" :: Text, msg)
-  toObject (Pub msgs) = toObject ("publish" :: Text, M.encodeT <$> msgs)
-  toObject (Rep clientid msg) =
-    toObject ("reply" :: Text, clientid, M.encodeT msg)
-  toObject (StartChild cmdID cmd args env) =
-    toObject ("cmd" :: Text, cmdID, cmd, args, env)
-  toObject (KillChildren cmdIDs reps) =
-    toObject
-      ( "kill" :: Text
-      , cmdIDs
-      , (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> reps
-      )
-  toObject (ClearChild cmdID maybeRep) =
-    toObject
-      ( "pop" :: Text
-      , cmdID
-      , (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> Protolude.toList maybeRep
-      )
-
-  fromObject x = to <$> gFromObject x
-
 mayLog :: NRMState -> Either Text (NRMState, Behavior) -> IO (NRMState, Behavior)
 mayLog st =
   return . \case
     Left e -> (st, Log e)
     Right x -> x
 
-activeSensorBehavior
-  :: Cfg.Cfg
-  -> NRMState
-  -> Sensor.ActiveSensorKey
-  -> Double
-  -> Maybe (NRMState, UPub.Pub)
-activeSensorBehavior _cfg _st _sensorID _value = undefined
-
---lookupPassiveSensor sensorID st <&> \Sensor.PassiveSensor {..} ->
---CPD.measure (cpd st) value sensorID & \case
---CPD.Measured m -> (st, UPub.PubMeasurements (CPD.Measurements [m]))
---CPD.NoSuchSensor -> panic "NRM bug: Internal CPD/NRMState coherency error"
---CPD.AdjustProblem r p ->
---( adjustSensorRange
---sensorID
---r $
---st {cpd = p}
---, UPub.PubCPD p
---)
 respondContent :: Text -> Cmd -> CmdID -> URep.OutputType -> Behavior
 respondContent content cmd cmdID outputType =
   mayRep cmd $

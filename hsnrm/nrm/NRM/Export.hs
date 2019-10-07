@@ -36,6 +36,7 @@ import qualified NRM.Behavior as B
 import qualified NRM.Classes.Messaging as M
 import qualified NRM.Optparse as O (parseArgDaemonCli)
 import qualified NRM.State as S
+import qualified NRM.Types.Behavior as B
 {-import qualified NRM.Types.Slice as Ct-}
 import qualified NRM.Types.Cmd as Cmd
 import qualified NRM.Types.Configuration as C

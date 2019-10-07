@@ -37,11 +37,14 @@ import Data.JSON.Schema
 import Data.Map as DM
 import Data.MessagePack
 import LMap.Map as LM
+import LensMap.Core
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
+import NRM.Types.Actuator
 import NRM.Types.Cmd as Cmd
 import NRM.Types.Process as P
+import NRM.Types.Sensor
 import NRM.Types.Slice as C
 import NRM.Types.Topology
 import Protolude
@@ -58,6 +61,27 @@ data NRMState
       , nodeosRuntime :: Maybe NodeosRuntime
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
+
+instance HasLensMap NRMState ActuatorKey Actuator where
+
+  lenses s =
+    mconcat
+      [ addPath (field @"packages") <$> lenses (view (field @"packages") s)
+      ]
+
+instance HasLensMap NRMState ActiveSensorKey ActiveSensor where
+
+  lenses s =
+    mconcat
+      [ addPath (field @"slices") <$> lenses (view (field @"slices") s)
+      ]
+
+instance HasLensMap NRMState PassiveSensorKey PassiveSensor where
+
+  lenses s =
+    mconcat
+      [ addPath (field @"packages") <$> lenses (view (field @"packages") s)
+      ]
 
 instance JSONSchema NRMState where
 

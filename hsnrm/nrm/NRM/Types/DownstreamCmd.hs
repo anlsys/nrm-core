@@ -1,5 +1,7 @@
 {-# LANGUAGE DerivingVia #-}
 
+{-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
+
 {-|
 Module      : NRM.Types.DownstreamCmd
 Copyright   : (c) UChicago Argonne, 2019
@@ -18,20 +20,16 @@ import Data.Generics.Product
 import Data.JSON.Schema
 import Data.Map as DM
 import Data.MessagePack
-import Data.String (IsString (..))
-import qualified Data.UUID as U
 import LensMap.Core
 import NRM.Classes.Messaging
-import NRM.Classes.Sensors
 import NRM.Types.DownstreamCmdID
 import NRM.Types.Sensor
 import NRM.Types.Units as Units
 import Protolude
-import Prelude (fail)
 
 data DownstreamCmd
   = DownstreamCmd
-      {  maxValue :: Units.Operations
+      { maxValue :: Units.Operations
       , ratelimit :: Units.Frequency
       }
   deriving (Show, Generic, Data, MessagePack)
@@ -44,12 +42,12 @@ instance
     ActiveSensorKey
     ActiveSensor where
 
-  lenses (downstreamCmdID, downstreamCmd) =
+  lenses (downstreamCmdID, _downstreamCmd) =
     DM.singleton
       (DownstreamCmdKey downstreamCmdID)
       (ScopedLens (_2 . lens getter setter))
     where
-      getter (DownstreamCmd maxValue ratelimit) =
+      getter (DownstreamCmd _maxValue ratelimit) =
         Just $ ActiveSensor
           { activeTags = [Tag "perf"]
           , activeSource = Source $ show downstreamCmdID

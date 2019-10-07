@@ -16,13 +16,9 @@ where
 import Data.Aeson
 import Data.Data
 import Data.JSON.Schema
-import Data.Map as DM
 import Data.MessagePack
 import Data.String (IsString (..))
 import qualified Data.UUID as U
-import LensMap.Core
-import NRM.Classes.Messaging
-import NRM.Types.Units as Units
 import Protolude
 import Prelude (fail)
 

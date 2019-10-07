@@ -60,6 +60,7 @@ library nrmlib
         NRM.Types.Units
         NRM.Types.Actuator
         NRM.Types.Sensor
+        NRM.Types.Behavior
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.Process
@@ -98,7 +99,6 @@ library nrmlib
         Codegen.Dhall
         Codegen.CHeader
         LensMap.Core
-        LensMap.Examples
         LMap.Map
         CPD.Core
         CPD.Integrated
@@ -304,6 +304,7 @@ executable nrm.so
         NRM.Types.Units
         NRM.Types.Actuator
         NRM.Types.Sensor
+        NRM.Types.Behavior
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.Process
@@ -342,7 +343,6 @@ executable nrm.so
         Codegen.Dhall
         Codegen.CHeader
         LensMap.Core
-        LensMap.Examples
         LMap.Map
         CPD.Core
         CPD.Integrated
@@ -466,6 +466,7 @@ executable nrmstatic
         NRM.Types.Units
         NRM.Types.Actuator
         NRM.Types.Sensor
+        NRM.Types.Behavior
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.Process
@@ -504,7 +505,6 @@ executable nrmstatic
         Codegen.Dhall
         Codegen.CHeader
         LensMap.Core
-        LensMap.Examples
         LMap.Map
         CPD.Core
         CPD.Integrated
@@ -627,6 +627,7 @@ executable nrmd
         NRM.Types.Units
         NRM.Types.Actuator
         NRM.Types.Sensor
+        NRM.Types.Behavior
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.Process
@@ -665,7 +666,6 @@ executable nrmd
         Codegen.Dhall
         Codegen.CHeader
         LensMap.Core
-        LensMap.Examples
         LMap.Map
         CPD.Core
         CPD.Integrated

@@ -8,8 +8,8 @@ Maintainer  : fre@freux.fr
 -}
 module CPD.Values
   ( Measurement (..)
+  , Measurements
   , Action (..)
-  , Measurements (..)
   , Actions (..)
   )
 where
@@ -24,6 +24,8 @@ import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import NRM.Types.Units
 import Protolude
+
+type Measurements = [Measurement]
 
 data Measurement
   = Measurement
@@ -41,10 +43,6 @@ data Action
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Action
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
-
-newtype Measurements = Measurements [Measurement]
-  deriving (JSONSchema, A.ToJSON, A.FromJSON, Interpret, Inject) via [Measurement]
-  deriving (Show, Generic, Data, MessagePack)
 
 newtype Actions = Actions [Action]
   deriving (JSONSchema, A.ToJSON, A.FromJSON, Interpret, Inject) via [Action]

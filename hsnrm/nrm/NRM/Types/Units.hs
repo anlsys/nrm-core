@@ -20,7 +20,9 @@ module NRM.Types.Units
   , -- * Time
     Time
   , uS
+  , s
   , fromuS
+  , fromSeconds
   , -- * Energy
     Energy
   , uJ
@@ -80,6 +82,13 @@ watts = Power . (* 1000.0)
 -- | Microsecond value constructor.
 uS :: Double -> Time
 uS = Time
+
+-- | Second value constructor.
+s :: Double -> Time
+s = Time . (* 1000000)
+
+fromSeconds :: Time -> Double
+fromSeconds (Time t) = t / 1000000
 
 -- | Hertz value constructor.
 hz :: Double -> Frequency

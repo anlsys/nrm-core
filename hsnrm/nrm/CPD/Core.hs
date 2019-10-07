@@ -18,7 +18,6 @@ module CPD.Core
   , -- * Sensors
     -- ** Definitions
     SensorID (..)
-  , nextSensorID
   , Sensor (..)
   , Source (..)
   , -- * Actuators
@@ -40,8 +39,6 @@ import Data.JSON.Schema
 import qualified Data.Map as DM
 import Data.MessagePack
 import Data.String (IsString (..))
-import qualified Data.UUID as U
-import qualified Data.UUID.V4 as UV4
 import Dhall
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
@@ -65,7 +62,7 @@ data Problem
 emptyProblem :: Problem
 emptyProblem = Problem DM.empty DM.empty emptyObjective
 
-data Frequency
+newtype Frequency
   = MaxFrequency {maxFrequency :: Units.Frequency}
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Frequency
@@ -79,12 +76,12 @@ data Interval
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Interval
 
-data Admissible = Admissible {admissibleValues :: [Discrete]}
+newtype Admissible = Admissible {admissibleValues :: [Discrete]}
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Admissible
 
 -------- SENSORS
-newtype SensorID = SensorID {sensorID :: U.UUID}
+newtype SensorID = SensorID {sensorID :: Text}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorID
   deriving
     ( Ord
@@ -98,16 +95,7 @@ newtype SensorID = SensorID {sensorID :: U.UUID}
     , Interpret
     , Inject
     )
-
-instance IsString SensorID where
-
-  fromString x =
-    SensorID $
-      fromMaybe (panic "couldn't decode SensorID")
-        (U.fromText $ toS x)
-
-nextSensorID :: IO SensorID
-nextSensorID = UV4.nextRandom <&> SensorID
+  deriving (IsString) via Text
 
 newtype Source = Source {sourceTag :: Text}
   deriving (Show, Generic, Data, MessagePack)
