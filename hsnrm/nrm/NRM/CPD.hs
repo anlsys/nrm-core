@@ -11,9 +11,9 @@ where
 
 import CPD.Core
 import qualified Data.Map as DM
+import qualified LMap.Map as LM
 import NRM.Actuators
 import NRM.Sensors
-import qualified LMap.Map as LM
 import NRM.Types.State
 import Protolude
 
@@ -25,4 +25,4 @@ toCPD = do
   return $ Problem {..}
 
 mkObjective :: NRMState -> Objective
-mkObjective _s = (Objective [] Minimize)
+mkObjective _s = Objective [] Minimize

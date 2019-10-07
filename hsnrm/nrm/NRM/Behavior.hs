@@ -15,20 +15,16 @@ module NRM.Behavior
   )
 where
 
-import qualified CPD.Core as CPD
-import qualified CPD.Utils as CPD
-import qualified CPD.Values as CPD
 import Control.Lens hiding (to)
 import Data.Generics.Product
 import Data.MessagePack
+import LMap.Map as LM
 import qualified NRM.CPD as NRMCPD
 import qualified NRM.Classes.Messaging as M
-import NRM.Sensors
 import NRM.State
 import NRM.Types.Cmd
 import qualified NRM.Types.Configuration as Cfg
-import qualified NRM.Types.DownstreamCmd as DC
-import LMap.Map as LM
+import qualified NRM.Types.DownstreamCmdID as DC
 import qualified NRM.Types.Manifest as Manifest
 import qualified NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.UpstreamPub as UPub
@@ -218,7 +214,7 @@ behavior cfg st (DownstreamEvent clientid msg) =
     DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented")
     DEvent.CmdPerformance DEvent.CmdHeader {..} DEvent.Performance {..} ->
       return $
-        passiveSensorBehavior cfg st (DC.toSensorID clientid)
+        activeSensorBehavior cfg st (Sensor.DownstreamCmdKey clientid)
           (U.fromOps perf & fromIntegral) & \case
         Nothing ->
           registerDownstreamCmdClient cmdID clientid st <&>
@@ -279,25 +275,25 @@ mayLog st =
     Left e -> (st, Log e)
     Right x -> x
 
-passiveSensorBehavior
+activeSensorBehavior
   :: Cfg.Cfg
   -> NRMState
-  -> CPD.SensorID
+  -> Sensor.ActiveSensorKey
   -> Double
   -> Maybe (NRMState, UPub.Pub)
-passiveSensorBehavior _cfg st sensorID value =
-  lookupPassiveSensor sensorID st <&> \Sensor.PassiveSensor {..} ->
-    CPD.measure (cpd st) value sensorID & \case
-      CPD.Measured m -> (st, UPub.PubMeasurements (CPD.Measurements [m]))
-      CPD.NoSuchSensor -> panic "NRM bug: Internal CPD/NRMState coherency error"
-      CPD.AdjustProblem r p ->
-        ( adjustSensorRange
-            sensorID
-            r $
-            st {cpd = p}
-        , UPub.PubCPD p
-        )
+activeSensorBehavior _cfg _st _sensorID _value = undefined
 
+--lookupPassiveSensor sensorID st <&> \Sensor.PassiveSensor {..} ->
+--CPD.measure (cpd st) value sensorID & \case
+--CPD.Measured m -> (st, UPub.PubMeasurements (CPD.Measurements [m]))
+--CPD.NoSuchSensor -> panic "NRM bug: Internal CPD/NRMState coherency error"
+--CPD.AdjustProblem r p ->
+--( adjustSensorRange
+--sensorID
+--r $
+--st {cpd = p}
+--, UPub.PubCPD p
+--)
 respondContent :: Text -> Cmd -> CmdID -> URep.OutputType -> Behavior
 respondContent content cmd cmdID outputType =
   mayRep cmd $

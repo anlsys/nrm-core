@@ -27,9 +27,7 @@ import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import LMap.Map as LM
 import LensMap.Core
-import NRM.Classes.Actuators
 import NRM.Classes.Messaging
-import NRM.Classes.Sensors
 import NRM.Types.Cmd (Cmd (..), CmdCore (..), CmdID (..))
 import NRM.Types.Sensor
 import Protolude
@@ -74,5 +72,5 @@ toText (Name n) = n
 
 instance HasLensMap (SliceID, Slice) ActiveSensorKey ActiveSensor where
 
-  lenses (sliceID, slice) =
+  lenses (_sliceID, slice) =
     addPath (_2 . field @"cmds") <$> lenses (cmds slice)

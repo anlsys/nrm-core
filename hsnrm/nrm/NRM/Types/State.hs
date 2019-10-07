@@ -37,14 +37,11 @@ import Data.JSON.Schema
 import Data.Map as DM
 import Data.MessagePack
 import LMap.Map as LM
-import NRM.Classes.Actuators
-import NRM.Classes.Sensors
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
 import NRM.Types.Cmd as Cmd
 import NRM.Types.Process as P
-import NRM.Types.Sensor as Sensor
 import NRM.Types.Slice as C
 import NRM.Types.Topology
 import Protolude

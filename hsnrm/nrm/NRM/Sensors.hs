@@ -8,7 +8,7 @@ License     : BSD3
 Maintainer  : fre@freux.fr
 -}
 module NRM.Sensors
-  ( 
+  ( cpdSensors
   )
 where
 
@@ -20,3 +20,4 @@ import NRM.Classes.Sensors
 import NRM.Types.State
 import Protolude
 
+cpdSensors = undefined

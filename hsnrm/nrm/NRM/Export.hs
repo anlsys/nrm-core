@@ -46,7 +46,7 @@ import qualified NRM.Types.Configuration as C
   , logfile
   , verbose
   )
-import qualified NRM.Types.DownstreamCmd as DC
+import qualified NRM.Types.DownstreamCmdID as DC
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Process as Process
 import qualified NRM.Types.State as TS

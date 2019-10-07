@@ -24,7 +24,6 @@ module LMap.Map
 where
 
 import Control.Lens
-import Data.Aeson
 import Data.Data
 import qualified Data.Map as DM hiding (Map)
 import Data.MessagePack

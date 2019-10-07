@@ -14,9 +14,6 @@ where
 import Data.Aeson
 import Data.Data
 import Data.MessagePack
-import NRM.Classes.Actuators
-import NRM.Classes.Sensors
-import NRM.Types.Topology.CoreID
 import Protolude
 
 -- | Record containing all information about a CPU Core.

@@ -16,4 +16,4 @@ import NRM.Types.State
 import Protolude
 
 cpdActuators :: NRMState -> LM.Map CPD.ActuatorID CPD.Actuator
-cpdActuators s = (CA.actuators s) & LM.mapKV toCPDActuator
+cpdActuators s = undefined

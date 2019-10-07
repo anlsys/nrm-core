@@ -14,9 +14,6 @@ where
 import Data.Aeson
 import Data.Data
 import Data.MessagePack
-import NRM.Classes.Actuators
-import NRM.Classes.Sensors
-import NRM.Types.Topology.PUID
 import Protolude
 
 -- | Record containing all information about a processing unit.

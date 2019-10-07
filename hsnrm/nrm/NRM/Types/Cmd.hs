@@ -27,7 +27,6 @@ module NRM.Types.Cmd
   )
 where
 
-import CPD.Core as CPD
 import Control.Lens
 import Data.Aeson as A
 import Data.Data
@@ -40,9 +39,7 @@ import Data.UUID.V1 (nextUUID)
 import Dhall hiding (field)
 import LMap.Map as LM
 import LensMap.Core
-import NRM.Classes.Actuators
 import NRM.Classes.Messaging
-import NRM.Classes.Sensors
 import NRM.Orphans.ExitCode ()
 import NRM.Orphans.UUID ()
 import NRM.Types.DownstreamCmd
@@ -50,7 +47,6 @@ import NRM.Types.DownstreamCmdID
 import NRM.Types.Manifest as Manifest
 import NRM.Types.Process
 import NRM.Types.Sensor
-import NRM.Types.Units as Units
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
 
@@ -170,5 +166,5 @@ wrapCmd c (Command a, Arguments as) = (c, Arguments $ Arg a : as)
 
 instance HasLensMap (CmdID, Cmd) ActiveSensorKey ActiveSensor where
 
-  lenses (cmdID, cmd) =
+  lenses (_cmdID, cmd) =
     addPath (_2 . field @"downstreamCmds") <$> lenses (downstreamCmds cmd)

@@ -11,10 +11,6 @@ module NRM.Classes.Actuators
 where
 
 import qualified CPD.Core as CPD
-import NRM.Types.Actuator
-import LMap.Map as LM
-import NRM.Types.Topology.PackageID
-import Protolude
 
 class ToCPDActuator k a where
 

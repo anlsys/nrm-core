@@ -1,3 +1,4 @@
+{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE RankNTypes #-}
 
 {-|
@@ -11,13 +12,12 @@ module LensMap.Core
   , LensMap
   , HasLensMap (..)
   , addPath
-  , addMaybePath
   )
 where
 
 import Control.Lens
-import Data.Generics.Product
 import Data.Map as DM
+import Data.Maybe (fromJust)
 import qualified LMap.Map as LM
 import Protolude
 
@@ -34,39 +34,44 @@ instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (Map k v) key a
   lenses s = DM.fromList . mconcat $ DM.toList s <&> \(k, v) -> go k (lenses (k, v))
     where
       go
-        :: (Ord k)
+        :: forall key k v a. (Ord k)
         => k
         -> Map key (ScopedLens (k, v) (Maybe a))
         -> [(key, ScopedLens (Map k v) (Maybe a))]
       go k lensMap =
         DM.toList lensMap <&> \(sensorKey, scopedLens) ->
-          (sensorKey, lensAugmenter k scopedLens)
-      lensAugmenter
-        :: (Ord k)
+          (sensorKey, augmentedLens k scopedLens)
+      augmentedLens
+        :: forall k v a. (Ord k)
         => k
-        -> ScopedLens (k, v) (Maybe b)
-        -> ScopedLens (Map k v) (Maybe b)
-      lensAugmenter k = addMaybePath $ lens getter setter
+        -> ScopedLens (k, v) (Maybe a)
+        -> ScopedLens (Map k v) (Maybe a)
+      augmentedLens k = addPath $ lens getter setter
         where
-          getter lmap = DM.lookup k lmap <&> (k,)
-          setter lmap (Just (_, value)) = DM.insert k value lmap
+          getter m = fromJust $ DM.lookup k m <&> (k,)
+          setter m (_, value) = DM.insert k value m
 
 instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (LM.Map k v) key a where
 
   lenses s = DM.fromList . mconcat $ LM.toList s <&> \(k, v) -> go k (lenses (k, v))
     where
+      go
+        :: forall key k v a. (Ord k)
+        => k
+        -> Map key (ScopedLens (k, v) (Maybe a))
+        -> [(key, ScopedLens (LM.Map k v) (Maybe a))]
       go k lensMap =
         DM.toList lensMap <&> \(sensorKey, scopedLens) ->
-          (sensorKey, lensAugmenter k scopedLens)
-      lensAugmenter k = addMaybePath $ lens getter setter
+          (sensorKey, augmentedLens k scopedLens)
+      augmentedLens
+        :: forall k v a. Ord k
+        => k
+        -> ScopedLens (k, v) a
+        -> ScopedLens (LM.Map k v) a
+      augmentedLens k = addPath $ lens getter setter
         where
-          getter lmap = LM.lookup k lmap <&> (k,)
-          setter lmap (Just (_, value)) = LM.insert k value lmap
-
-instance (Ord key, HasLensMap v key a) => HasLensMap (Maybe v) key a
+          getter m = fromJust $ LM.lookup k m <&> (k,)
+          setter m (_, value) = LM.insert k value m
 
 addPath :: Lens'  s' s -> ScopedLens s a -> ScopedLens  s' a
 addPath l (ScopedLens sl) = ScopedLens (l . sl)
-
-addMaybePath :: Lens'  s' (Maybe s) -> ScopedLens s a -> ScopedLens  s' a
-addMaybePath l (ScopedLens sl) = undefined

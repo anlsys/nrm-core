@@ -6,7 +6,6 @@ Copyright   : (c) UChicago Argonne, 2019
 License     : BSD3
 Maintainer  : fre@freux.fr
 -}
-
 module NRM.Types.DownstreamThread
   ( DownstreamThread (..)
   )
@@ -16,7 +15,6 @@ import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
-import NRM.Types.Process as P
 import Protolude
 
 data DownstreamThread = DownstreamThread
