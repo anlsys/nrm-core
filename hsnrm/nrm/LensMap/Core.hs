@@ -23,7 +23,7 @@ import Protolude
 
 newtype ScopedLens s a = ScopedLens {getScopedLens :: Lens' s a}
 
-type LensMap s k a = Map k (ScopedLens s (Maybe a))
+type LensMap s k a = Map k (ScopedLens s a)
 
 class HasLensMap s k a where
 
@@ -36,16 +36,16 @@ instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (Map k v) key a
       go
         :: forall key k v a. (Ord k)
         => k
-        -> Map key (ScopedLens (k, v) (Maybe a))
-        -> [(key, ScopedLens (Map k v) (Maybe a))]
+        -> Map key (ScopedLens (k, v) a)
+        -> [(key, ScopedLens (Map k v) a)]
       go k lensMap =
         DM.toList lensMap <&> \(sensorKey, scopedLens) ->
           (sensorKey, augmentedLens k scopedLens)
       augmentedLens
         :: forall k v a. (Ord k)
         => k
-        -> ScopedLens (k, v) (Maybe a)
-        -> ScopedLens (Map k v) (Maybe a)
+        -> ScopedLens (k, v) a
+        -> ScopedLens (Map k v) a
       augmentedLens k = addPath $ lens getter setter
         where
           getter m = fromJust $ DM.lookup k m <&> (k,)
@@ -58,8 +58,8 @@ instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (LM.Map k v) ke
       go
         :: forall key k v a. (Ord k)
         => k
-        -> Map key (ScopedLens (k, v) (Maybe a))
-        -> [(key, ScopedLens (LM.Map k v) (Maybe a))]
+        -> Map key (ScopedLens (k, v) a)
+        -> [(key, ScopedLens (LM.Map k v) a)]
       go k lensMap =
         DM.toList lensMap <&> \(sensorKey, scopedLens) ->
           (sensorKey, augmentedLens k scopedLens)

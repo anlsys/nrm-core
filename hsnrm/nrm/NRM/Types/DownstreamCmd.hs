@@ -48,14 +48,13 @@ instance
       (ScopedLens (_2 . lens getter setter))
     where
       getter (DownstreamCmd _maxValue ratelimit) =
-        Just $ ActiveSensor
+         ActiveSensor
           { activeTags = [Tag "perf"]
           , activeSource = Source $ show downstreamCmdID
           , activeRange = (0, 1)
           , maxFrequency = ratelimit
           , process = identity
           }
-      setter dc (Just activeSensor) =
+      setter dc activeSensor =
         dc & field @"maxValue" .~
           Operations (floor $ snd $ activeRange activeSensor)
-      setter dc Nothing = dc

@@ -27,7 +27,14 @@ import NRM.Types.State
 import NRM.Types.Units
 import Protolude
 
-cpdSensors = undefined
+cpdSensors :: NRMState -> Map SensorID CPD.Sensor
+cpdSensors st =
+  DM.fromList . mconcat $
+    [ DM.toList
+        (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor) <&> \(k, ScopedLens sl) -> toCPDSensor (k, view sl st)
+    , DM.toList
+      (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor) <&> \(k, ScopedLens sl) -> toCPDSensor (k, view sl st)
+    ]
 
 data Output = Adjusted NRMState | Ok NRMState Measurement | NotFound
 
@@ -38,14 +45,20 @@ process
   -> ActiveSensorKey
   -> Double
   -> Output
-process _cfg _time st sensorKey value =
+process _cfg time st sensorKey value =
   DM.lookup sensorKey (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor) & \case
     Nothing -> NotFound
     Just (ScopedLens sl) ->
-      view sl st & \case
-        Nothing -> NotFound
-        Just s@ActiveSensor {..} -> case CPD.validateMeasurement
+      view sl st & \s ->
+        CPD.validateMeasurement
           (range . sensorMeta . snd $ toCPDSensor (sensorKey, s))
-          value of
-          MeasurementOk -> Ok st (Measurement {})
-          AdjustInterval r -> Adjusted (st & sl %~ fmap (\sensor -> sensor)) -- TODO adjustment
+          value & \case
+          MeasurementOk ->
+            Ok st
+              ( Measurement
+                { sensorID = toS sensorKey
+                , sensorValue = value
+                , time = time
+                }
+              )
+          AdjustInterval _r -> Adjusted (st & sl %~ (\sensor -> sensor)) -- TODO adjustment

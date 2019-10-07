@@ -10,8 +10,6 @@ module NRM.CPD
 where
 
 import CPD.Core
-import qualified Data.Map as DM
-import qualified LMap.Map as LM
 import NRM.Actuators
 import NRM.Sensors
 import NRM.Types.State
@@ -19,8 +17,8 @@ import Protolude
 
 toCPD :: NRMState -> Problem
 toCPD = do
-  sensors <- DM.fromList . LM.toList . cpdSensors
-  actuators <- DM.fromList . LM.toList . cpdActuators
+  sensors <- cpdSensors
+  actuators <- cpdActuators
   objective <- mkObjective
   return $ Problem {..}
 

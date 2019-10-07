@@ -20,7 +20,7 @@ module NRM.Types.Units
   , -- * Time
     Time
   , uS
-  , s
+  , seconds
   , fromuS
   , fromSeconds
   , -- * Energy
@@ -84,8 +84,8 @@ uS :: Double -> Time
 uS = Time
 
 -- | Second value constructor.
-s :: Double -> Time
-s = Time . (* 1000000)
+seconds :: Double -> Time
+seconds = Time . (* 1000000)
 
 fromSeconds :: Time -> Double
 fromSeconds (Time t) = t / 1000000

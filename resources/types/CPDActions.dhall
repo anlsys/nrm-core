@@ -8,4 +8,9 @@
 --     this file is generated, modifications will be erased.
 --
 
-List { actuatorID : { actuatorID : Text }, actuatorValue : Text }
+List
+{ actuatorID :
+    { actuatorID : Text }
+, actuatorValue :
+    < DiscreteText : { _1 : Text } | DiscreteDouble : { _1 : Double } >
+}

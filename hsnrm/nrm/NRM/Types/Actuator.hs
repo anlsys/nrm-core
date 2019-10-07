@@ -12,8 +12,10 @@ module NRM.Types.Actuator
   )
 where
 
-import Protolude
+import qualified CPD.Core as CPD
+import NRM.Classes.Actuators
 import NRM.Types.Topology.PackageID
+import Protolude
 
 data Actuator
   = Actuator
@@ -23,3 +25,17 @@ data Actuator
 
 data ActuatorKey = RaplKey PackageID | A
   deriving (Show, Eq, Ord)
+
+instance StringConv ActuatorKey CPD.ActuatorID where
+
+  strConv _ = CPD.ActuatorID . show
+
+--class ToCPDActuator k a where
+instance ToCPDActuator ActuatorKey Actuator where
+
+  toCPDActuator (id, Actuator {..}) =
+    ( toS id
+    , CPD.Actuator
+      { actuatorRange = CPD.DiscreteDouble <$> actions
+      }
+    )

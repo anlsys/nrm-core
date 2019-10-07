@@ -11,7 +11,6 @@ module CPD.Utils
   , validateMeasurement
   , MeasurementValidation (..)
   , ActionValidation (..)
-  , measure
   , ValidatedMeasurement (..)
   , combine
   , requiredSensors
@@ -20,7 +19,6 @@ where
 
 import CPD.Core
 import CPD.Values
-import Data.Map as DM
 import Protolude
 
 data MeasurementValidation = AdjustInterval Interval | MeasurementOk
@@ -44,15 +42,6 @@ data ValidatedMeasurement
   = Measured Measurement
   | AdjustProblem Interval Problem
   | NoSuchSensor
-
--- | builds a measurement using a problem as context (with validation)
-measure :: Problem -> Double -> SensorID -> ValidatedMeasurement
-measure p@(Problem sl _ _) v sensorID =
-  case DM.lookup sensorID sl of
-    Nothing -> NoSuchSensor -- TODO
-    Just sensor -> case validateMeasurement (range . sensorMeta $ sensor) v of
-      MeasurementOk -> Measured $ Measurement {}
-      AdjustInterval r -> AdjustProblem r p --TODO : use lens to update problem
 
 -- | Combines problems by adding sensor lists and actuator lists
 combine :: Problem -> Problem -> Maybe Problem

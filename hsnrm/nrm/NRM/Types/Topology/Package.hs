@@ -1,4 +1,5 @@
 {-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
+{-# OPTIONS_GHC -fno-warn-incomplete-uni-patterns #-}
 {-|
 Module      : NRM.Types.Topology.Package
 Copyright   : (c) UChicago Argonne, 2019
@@ -16,6 +17,7 @@ import Data.Aeson
 import Data.Data
 import Data.Generics.Product
 import Data.Map as DM
+import Data.Maybe (fromJust)
 import Data.MessagePack
 import LensMap.Core
 import NRM.Node.Sysfs
@@ -42,35 +44,43 @@ newtype Package = Package {rapl :: Maybe Rapl}
 instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
 
   lenses (packageID, package) =
-    DM.fromList
-      [ ( A.RaplKey packageID
-        , ScopedLens (_2 . field @"rapl" . lens getter setter)
-        )
-      | _ <- Protolude.toList (rapl package)
-      ]
+    rapl package & \case
+      Nothing -> DM.empty
+      Just _ ->
+        DM.singleton
+          (A.RaplKey packageID)
+          ( ScopedLens
+            ( _2 . field @"rapl" .
+              (lens fromJust \(Just _) a -> Just a) . --TODO refactor for -fwarn-uni-patterns
+              lens getter setter
+            )
+          )
     where
-      getter (Just (Rapl path (MaxEnergy _maxEnergy) _freq discreteChoices)) =
-        Just $ Actuator
+      getter (Rapl path (MaxEnergy _maxEnergy) _freq discreteChoices) =
+        Actuator
           { actions = discreteChoices <&> fromuW
           , go = setRAPLPowercap path . RAPLCommand . uW
           }
-      getter Nothing = Nothing
-      setter (Just rapl) (Just (Actuator actions _go)) =
-        Just $ rapl & field @"discreteChoices" .~ fmap uW actions
-      setter _ _ = Nothing
+      setter rapl (Actuator actions _go) =
+        rapl & field @"discreteChoices" .~ fmap uW actions
 
 instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
 
   lenses (packageID, package) =
-    DM.fromList
-      [ ( S.RaplKey packageID
-        , ScopedLens (_2 . field @"rapl" . lens getter setter)
-        )
-      | _ <- Protolude.toList (rapl package)
-      ]
+    rapl package & \case
+      Nothing -> DM.empty
+      Just _ ->
+        DM.singleton
+          (S.RaplKey packageID)
+          ( ScopedLens
+            ( _2 . field @"rapl" .
+              (lens fromJust \(Just _) a -> Just a) .
+              lens getter setter
+            )
+          )
     where
-      getter (Just (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices)) =
-        Just $ PassiveSensor
+      getter (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices) =
+        PassiveSensor
           { passiveTags = [Tag "power", Tag "RAPL"]
           , passiveSource = Source textID
           , passiveRange = (0, fromuJ maxEnergy)
@@ -79,7 +89,5 @@ instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
           }
         where
           textID = show packageID
-      getter Nothing = Nothing
-      setter (Just rapl) (Just passiveSensor) =
-        Just $ rapl & field @"max" .~ MaxEnergy (uJ (snd $ passiveRange passiveSensor))
-      setter _ _ = Nothing
+      setter rapl passiveSensor =
+        rapl & field @"max" .~ MaxEnergy (uJ (snd $ passiveRange passiveSensor))

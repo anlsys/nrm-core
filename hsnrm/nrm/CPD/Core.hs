@@ -46,9 +46,17 @@ import qualified NRM.Types.Units as Units
 import Protolude
 
 -- METADATA
-newtype Discrete = Discrete Text
-  deriving (Show, Eq, Generic, Data, MessagePack)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON, Interpret, Inject) via Text
+data Discrete = DiscreteText Text | DiscreteDouble Double
+  deriving
+    ( Show
+    , Eq
+    , Generic
+    , Data
+    , MessagePack
+    , Interpret
+    , Inject
+    )
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Discrete
 
 data Problem
   = Problem

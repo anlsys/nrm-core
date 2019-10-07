@@ -24,7 +24,12 @@
         }
     }
 , actuators :
-    List { _1 : { actuatorID : Text }, _2 : List Text }
+    List
+    { _1 :
+        { actuatorID : Text }
+    , _2 :
+        List < DiscreteText : { _1 : Text } | DiscreteDouble : { _1 : Double } >
+    }
 , objective :
     { linearCombination :
         List { w : Double, x : { sensorID : Text } }

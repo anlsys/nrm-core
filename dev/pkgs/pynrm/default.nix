@@ -3,12 +3,11 @@ pythonPackages.buildPythonPackage {
   inherit src;
   name = "nrm";
   propagatedBuildInputs = [
-    pythonPackages.six
     pythonPackages.tornado
     pythonPackages.pyzmq
-    pythonPackages.docopt
-    pythonPackages.scipy
     pythonPackages.jsonschema
+    pythonPackages.msgpack
+    pythonPackages.warlock
   ];
   checkPhase = "true";
 }

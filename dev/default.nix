@@ -47,12 +47,6 @@ in rec {
     src = ../hsnrm;
     target = "hsnrm.cabal";
   };
-  pynrm-static = pkgs.callPackage ./pkgs/pynrm {
-    pythonPackages = nrmPythonPackages;
-    src = ../pynrm;
-  }.overrideAttrs (o:{
-    buildInputs = o.buildInputs ++ [hsnrm-static];
-  });
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     pythonPackages = nrmPythonPackages;
     src = ../pynrm;

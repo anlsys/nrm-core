@@ -13,6 +13,7 @@
 from __future__ import print_function
 
 import argparse
+import time
 import logging
 import os
 import tempfile
@@ -38,7 +39,7 @@ class PerfWrapper(object):
 
     def performance_report(self, performance):
         self.downstream_event.send(cmdPerformance={
-            "cmdID": self.cmdID, "perf": performance
+            "cmdID": self.cmdID, "timestamp": time.time(),"perf": performance
         })
 
     def setup(self):
@@ -53,7 +54,7 @@ class PerfWrapper(object):
             exit(1)
         self.app_uuid = str(uuid.uuid4())
         logger.info("client uuid: %r", self.app_uuid)
-        self.downstream_event.send(cmdStart={"cmdID": self.cmdID})
+        # self.downstream_event.send(cmdStart={"cmdID": self.cmdID})
 
     def main(self):
         parser = argparse.ArgumentParser()

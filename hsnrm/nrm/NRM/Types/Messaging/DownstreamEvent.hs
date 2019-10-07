@@ -91,5 +91,5 @@ instance M.NRMMessage Event J.Event where
 
   fromJ = \case
     J.CmdPerformance {..} ->
-      CmdPerformance (CmdHeader (fromJust $ Cmd.fromText cmdID) (timestamp & U.s)) (Performance $ U.Operations perf)
+      CmdPerformance (CmdHeader (fromJust $ Cmd.fromText cmdID) (timestamp & U.seconds)) (Performance $ U.Operations perf)
     _ -> panic "Non-Cmd downstream API not implemented yet."

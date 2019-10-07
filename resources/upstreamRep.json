@@ -302,24 +302,16 @@
                                                                             },
                                                                             {
                                                                                 "required": [
-                                                                                    "id",
-                                                                                    "maxValue"
+                                                                                    "maxValue",
+                                                                                    "ratelimit"
                                                                                 ],
                                                                                 "type": "object",
                                                                                 "properties": {
-                                                                                    "maxValue": {
+                                                                                    "ratelimit": {
                                                                                         "type": "number"
                                                                                     },
-                                                                                    "id": {
-                                                                                        "required": [
-                                                                                            "sensorID"
-                                                                                        ],
-                                                                                        "type": "object",
-                                                                                        "properties": {
-                                                                                            "sensorID": {
-                                                                                                "type": "string"
-                                                                                            }
-                                                                                        }
+                                                                                    "maxValue": {
+                                                                                        "type": "number"
                                                                                     }
                                                                                 }
                                                                             }
@@ -741,7 +733,30 @@
                                             "actuatorRange": {
                                                 "uniqueItems": false,
                                                 "items": {
-                                                    "type": "string"
+                                                    "oneOf": [
+                                                        {
+                                                            "required": [
+                                                                "discreteText"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "discreteText": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "discreteDouble"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "discreteDouble": {
+                                                                    "type": "number"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
                                                 },
                                                 "type": "array"
                                             }

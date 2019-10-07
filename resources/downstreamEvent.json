@@ -9,6 +9,7 @@
                 "cmdPerformance": {
                     "required": [
                         "cmdID",
+                        "timestamp",
                         "perf"
                     ],
                     "type": "object",
@@ -17,6 +18,9 @@
                             "type": "string"
                         },
                         "perf": {
+                            "type": "number"
+                        },
+                        "timestamp": {
                             "type": "number"
                         }
                     }
@@ -32,6 +36,7 @@
                 "cmdPause": {
                     "required": [
                         "cmdID",
+                        "timestamp",
                         "perf"
                     ],
                     "type": "object",
@@ -40,6 +45,9 @@
                             "type": "string"
                         },
                         "perf": {
+                            "type": "number"
+                        },
+                        "timestamp": {
                             "type": "number"
                         }
                     }

@@ -6,7 +6,6 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Classes.Actuators
   ( ToCPDActuator (..)
-  , ToCPDKey (..)
   )
 where
 
@@ -14,8 +13,4 @@ import qualified CPD.Core as CPD
 
 class ToCPDActuator k a where
 
-  toCPDActuater :: (k, a) -> (CPD.ActuatorID, CPD.Actuator)
-
-class ToCPDKey k where
-
-  toKey :: k -> CPD.ActuatorID
+  toCPDActuator :: (k, a) -> (CPD.ActuatorID, CPD.Actuator)
