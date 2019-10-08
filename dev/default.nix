@@ -20,6 +20,11 @@ let
   };
   nrmPythonPackages = pkgs.python37Packages.override {
     overrides = self: super: rec {
+      cffi = super.cffi.overridePythonAttrs (o: { doCheck = false; });
+      sqlalchemy = super.sqlalchemy.overridePythonAttrs (o: { doCheck = false; });
+      requests = super.requests.overridePythonAttrs (o: { doCheck = false; });
+      sphinx = super.sphinx.overridePythonAttrs (o: { doCheck = false; });
+      cryptography = super.cryptography.overridePythonAttrs (o: { doCheck = false; });
       cython = super.cython.overridePythonAttrs (o: { doCheck = false; });
       hypothesis =
         super.hypothesis.overridePythonAttrs (o: { doCheck = false; });
