@@ -58,22 +58,22 @@ parserCommon =
       True
       (long "json" <> short 'v' <> help "Enable json printing.") <*>
     Options.Applicative.option Options.Applicative.auto
-      ( long "pubPort" <>
+      ( long "pub_port" <>
         metavar "PORT" <>
         help ("upstream pub port (default " <> show pub <> ").") <>
         value pub
       ) <*>
     Options.Applicative.option
       Options.Applicative.auto
-      ( long "rpcPort" <>
+      ( long "rpc_port" <>
         metavar "PORT" <>
         help ("upstream rpc port (default " <> show rpc <> ").") <>
         value rpc
       ) <*>
     Options.Applicative.option
       Options.Applicative.auto
-      ( long "rpcPort" <>
-        metavar "PORT" <>
+      ( long "bind_address" <>
+        metavar "ADDRESS" <>
         help ("upstream bind address (default " <> toS addr <> ").") <>
         value addr
       )

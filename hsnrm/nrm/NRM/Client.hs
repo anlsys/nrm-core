@@ -74,7 +74,10 @@ subClient
   -> C.CommonOpts
   -> ZMQ.ZMQ z ()
 subClient s _c =
-  ZMQ.receive s <&> decode . toS >>= \case
+  forever $
+    (ZMQ.receive s >>= (\x -> print x >> return x)) <&>
+    decode .
+    toS >>= \case
     Nothing -> putText "Couldn't decode published message"
     Just msg ->
       msg & \case
@@ -255,8 +258,7 @@ connectWithOptions uuid c s = do
   ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
   ZMQ.connect s $ toS (rpcAddress c)
 
-subscribeWithOptions :: C.CommonOpts -> ZMQ.Socket z t -> ZMQ.ZMQ z ()
 subscribeWithOptions c s = do
   ZMQ.setSendHighWM (restrict (0 :: Int)) s
   ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
-  ZMQ.connect s $ toS (pubAddress c)
+  ZMQ.bind s $ toS (pubAddress c)

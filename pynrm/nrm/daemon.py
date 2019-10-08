@@ -41,6 +41,9 @@ class Daemon(object):
         upstream_rpc_a = self.lib.upstreamRpcAddress(self.cfg)
         downstream_event_a = self.lib.downstreamEventAddress(self.cfg)
 
+        _logger.info(upstream_pub_a)
+        _logger.info(upstream_rpc_a)
+        _logger.info(downstream_event_a)
         self.upstream_pub = UpstreamPubServer(upstream_pub_a)
         self.upstream_rpc = UpstreamRPCServer(upstream_rpc_a)
         self.downstream_event = DownstreamEventServer(downstream_event_a)
