@@ -10,7 +10,9 @@ Maintainer  : fre@freux.fr
 module NRM.Sensors
   ( cpdSensors
   , NRM.Sensors.process
+  , NRM.Sensors.perform
   , Output (..)
+  , OutputP (..)
   )
 where
 
@@ -62,3 +64,13 @@ process _cfg time st sensorKey value =
                 }
               )
           AdjustInterval _r -> Adjusted (st & sl %~ (\sensor -> sensor)) -- TODO adjustment
+
+data OutputP = AdjustedP NRMState | OkP NRMState Measurement
+
+perform
+  :: Cfg
+  -> Time
+  -> NRMState
+  -> ScopedLens NRMState PassiveSensor
+  -> IO Output
+perform _cfg time st sensorKey = undefined

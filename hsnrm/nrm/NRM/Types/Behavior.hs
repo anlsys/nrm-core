@@ -17,6 +17,7 @@ import qualified NRM.Classes.Messaging as M
 import NRM.Types.Cmd
 import NRM.Types.DownstreamCmdID
 import NRM.Types.Messaging.DownstreamEvent
+import NRM.Types.Units
 import NRM.Types.Messaging.UpstreamPub as UPub
 import NRM.Types.Messaging.UpstreamRep
 import NRM.Types.Messaging.UpstreamReq
@@ -37,9 +38,9 @@ data NRMEvent
   | -- | Child death event
     ChildDied ProcessID ExitCode
   | -- | Sensor callback
-    DoSensor
+    DoSensor Time
   | -- | Control loop calback
-    DoControl
+    DoControl Time
   | -- | Shutting down the daemon
     DoShutdown
 

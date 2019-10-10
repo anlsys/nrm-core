@@ -27,7 +27,7 @@ import NRM.Types.Messaging.UpstreamReq
 import NRM.Types.Slice
 import qualified NRM.Types.Units as U
 import Options.Applicative
-import Protolude
+import Protolude hiding (All)
 import System.Directory
 import System.Environment
 import System.FilePath.Posix
@@ -56,7 +56,7 @@ parserCommon =
       (long "verbose" <> short 'v' <> help "Enable verbose mode.") <*>
     flag False
       True
-      (long "json" <> short 'v' <> help "Enable json printing.") <*>
+      (long "json" <> short 'j' <> help "Enable json printing.") <*>
     Options.Applicative.option Options.Applicative.auto
       ( long "pub_port" <>
         metavar "PORT" <>
@@ -70,8 +70,7 @@ parserCommon =
         help ("upstream rpc port (default " <> show rpc <> ").") <>
         value rpc
       ) <*>
-    Options.Applicative.option
-      Options.Applicative.auto
+    Options.Applicative.strOption
       ( long "bind_address" <>
         metavar "ADDRESS" <>
         help ("upstream bind address (default " <> toS addr <> ").") <>
@@ -126,7 +125,7 @@ parserRun =
       ) <*>
     optional
       ( strOption
-        ( long "slice" <> short 'c' <>
+        ( long "slice" <> short 's' <>
           metavar "CONTAINER" <>
           help
             "Slice name/ID"
@@ -172,7 +171,7 @@ parserSetpower =
           "Power limit to set"
       )
 
-data Listen = Listen
+data Listen = All | CPDOnly | Raw
 
 data Opts = Opts {what :: Either Listen Req, commonOpts :: CommonOpts}
 
@@ -238,9 +237,19 @@ opts =
         progDesc "Show NRM configuration"
       ) <>
     command
-      "listen"
-      ( info (return <$> (Opts (Left Listen) <$> parserCommon)) $
-        progDesc "Listen to NRM upstream pub messages"
+      "listen-raw"
+      ( info (return <$> (Opts (Left Raw) <$> parserCommon)) $
+        progDesc "Listen to raw NRM upstream pub messages"
+      ) <>
+    command
+      "listen-cpd"
+      ( info (return <$> (Opts (Left CPDOnly) <$> parserCommon)) $
+        progDesc "Listen to CPD messages"
+      ) <>
+    command
+      "listen-all"
+      ( info (return <$> (Opts (Left All) <$> parserCommon)) $
+        progDesc "Listen to all upstream pub messages"
       ) <>
     help
       "Choice of operation."

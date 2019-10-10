@@ -7,34 +7,42 @@
             "type": "object",
             "properties": {
                 "pubMeasurements": {
-                    "uniqueItems": false,
-                    "items": {
-                        "required": [
-                            "sensorID",
-                            "sensorValue",
-                            "time"
-                        ],
-                        "type": "object",
-                        "properties": {
-                            "time": {
-                                "type": "number"
-                            },
-                            "sensorValue": {
-                                "type": "number"
-                            },
-                            "sensorID": {
+                    "items": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "uniqueItems": false,
+                            "items": {
                                 "required": [
-                                    "sensorID"
+                                    "sensorID",
+                                    "sensorValue",
+                                    "time"
                                 ],
                                 "type": "object",
                                 "properties": {
+                                    "time": {
+                                        "type": "number"
+                                    },
+                                    "sensorValue": {
+                                        "type": "number"
+                                    },
                                     "sensorID": {
-                                        "type": "string"
+                                        "required": [
+                                            "sensorID"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "sensorID": {
+                                                "type": "string"
+                                            }
+                                        }
                                     }
                                 }
-                            }
+                            },
+                            "type": "array"
                         }
-                    },
+                    ],
                     "type": "array"
                 }
             }
@@ -46,159 +54,167 @@
             "type": "object",
             "properties": {
                 "pubCPD": {
-                    "required": [
-                        "sensors",
-                        "actuators",
-                        "objective"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "objective": {
+                    "items": [
+                        {
+                            "type": "number"
+                        },
+                        {
                             "required": [
-                                "linearCombination",
-                                "direction"
+                                "sensors",
+                                "actuators",
+                                "objective"
                             ],
                             "type": "object",
                             "properties": {
-                                "direction": {
-                                    "oneOf": [
-                                        {
-                                            "const": "\"minimize\""
-                                        },
-                                        {
-                                            "const": "\"maximize\""
-                                        }
-                                    ]
-                                },
-                                "linearCombination": {
-                                    "uniqueItems": false,
-                                    "items": {
-                                        "required": [
-                                            "w",
-                                            "x"
-                                        ],
-                                        "type": "object",
-                                        "properties": {
-                                            "w": {
-                                                "type": "number"
-                                            },
-                                            "x": {
-                                                "required": [
-                                                    "sensorID"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "sensorID": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    "type": "array"
-                                }
-                            }
-                        },
-                        "sensors": {
-                            "additionalProperties": {
-                                "required": [
-                                    "source",
-                                    "sensorMeta"
-                                ],
-                                "type": "object",
-                                "properties": {
-                                    "source": {
-                                        "required": [
-                                            "sourceTag"
-                                        ],
-                                        "type": "object",
-                                        "properties": {
-                                            "sourceTag": {
-                                                "type": "string"
-                                            }
-                                        }
-                                    },
-                                    "sensorMeta": {
-                                        "required": [
-                                            "range",
-                                            "frequency"
-                                        ],
-                                        "type": "object",
-                                        "properties": {
-                                            "frequency": {
-                                                "required": [
-                                                    "maxFrequency"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "maxFrequency": {
-                                                        "type": "number"
-                                                    }
-                                                }
-                                            },
-                                            "range": {
-                                                "required": [
-                                                    "min",
-                                                    "max"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "max": {
-                                                        "type": "number"
-                                                    },
-                                                    "min": {
-                                                        "type": "number"
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "actuators": {
-                            "additionalProperties": {
-                                "required": [
-                                    "actuatorRange"
-                                ],
-                                "type": "object",
-                                "properties": {
-                                    "actuatorRange": {
-                                        "uniqueItems": false,
-                                        "items": {
+                                "objective": {
+                                    "required": [
+                                        "linearCombination",
+                                        "direction"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "direction": {
                                             "oneOf": [
                                                 {
-                                                    "required": [
-                                                        "discreteText"
-                                                    ],
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "discreteText": {
-                                                            "type": "string"
-                                                        }
-                                                    }
+                                                    "const": "\"minimize\""
                                                 },
                                                 {
-                                                    "required": [
-                                                        "discreteDouble"
-                                                    ],
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "discreteDouble": {
-                                                            "type": "number"
-                                                        }
-                                                    }
+                                                    "const": "\"maximize\""
                                                 }
                                             ]
                                         },
-                                        "type": "array"
+                                        "linearCombination": {
+                                            "uniqueItems": false,
+                                            "items": {
+                                                "required": [
+                                                    "w",
+                                                    "x"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "w": {
+                                                        "type": "number"
+                                                    },
+                                                    "x": {
+                                                        "required": [
+                                                            "sensorID"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "sensorID": {
+                                                                "type": "string"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            "type": "array"
+                                        }
                                     }
+                                },
+                                "sensors": {
+                                    "additionalProperties": {
+                                        "required": [
+                                            "source",
+                                            "sensorMeta"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "source": {
+                                                "required": [
+                                                    "sourceTag"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "sourceTag": {
+                                                        "type": "string"
+                                                    }
+                                                }
+                                            },
+                                            "sensorMeta": {
+                                                "required": [
+                                                    "range",
+                                                    "frequency"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "frequency": {
+                                                        "required": [
+                                                            "maxFrequency"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "maxFrequency": {
+                                                                "type": "number"
+                                                            }
+                                                        }
+                                                    },
+                                                    "range": {
+                                                        "required": [
+                                                            "min",
+                                                            "max"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "max": {
+                                                                "type": "number"
+                                                            },
+                                                            "min": {
+                                                                "type": "number"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "actuators": {
+                                    "additionalProperties": {
+                                        "required": [
+                                            "actuatorRange"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "actuatorRange": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "oneOf": [
+                                                        {
+                                                            "required": [
+                                                                "discreteText"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "discreteText": {
+                                                                    "type": "string"
+                                                                }
+                                                            }
+                                                        },
+                                                        {
+                                                            "required": [
+                                                                "discreteDouble"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "discreteDouble": {
+                                                                    "type": "number"
+                                                                }
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "type": "array"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
                                 }
-                            },
-                            "type": "object"
+                            }
                         }
-                    }
+                    ],
+                    "type": "array"
                 }
             }
         },
@@ -209,19 +225,27 @@
             "type": "object",
             "properties": {
                 "pubPower": {
-                    "required": [
-                        "total",
-                        "limit"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "total": {
+                    "items": [
+                        {
                             "type": "number"
                         },
-                        "limit": {
-                            "type": "number"
+                        {
+                            "required": [
+                                "total",
+                                "limit"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "total": {
+                                    "type": "number"
+                                },
+                                "limit": {
+                                    "type": "number"
+                                }
+                            }
                         }
-                    }
+                    ],
+                    "type": "array"
                 }
             }
         },
@@ -232,46 +256,54 @@
             "type": "object",
             "properties": {
                 "pubSliceStart": {
-                    "required": [
-                        "startSliceID",
-                        "errno",
-                        "power"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "startSliceID": {
-                            "oneOf": [
-                                {
-                                    "required": [
-                                        "sliceID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "sliceID": {
-                                            "type": "string"
+                    "items": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "required": [
+                                "startSliceID",
+                                "errno",
+                                "power"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "startSliceID": {
+                                    "oneOf": [
+                                        {
+                                            "required": [
+                                                "sliceID"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "sliceID": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "required": [
+                                                "name"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            }
                                         }
-                                    }
+                                    ]
                                 },
-                                {
-                                    "required": [
-                                        "name"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
-                                        }
-                                    }
+                                "errno": {
+                                    "type": "number"
+                                },
+                                "power": {
+                                    "type": "number"
                                 }
-                            ]
-                        },
-                        "errno": {
-                            "type": "number"
-                        },
-                        "power": {
-                            "type": "number"
+                            }
                         }
-                    }
+                    ],
+                    "type": "array"
                 }
             }
         },
@@ -282,45 +314,53 @@
             "type": "object",
             "properties": {
                 "pubSliceExit": {
-                    "required": [
-                        "exitSliceID",
-                        "profile_data"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "profile_data": {
-                            "additionalProperties": {
-                                "type": "string"
-                            },
-                            "type": "object"
+                    "items": [
+                        {
+                            "type": "number"
                         },
-                        "exitSliceID": {
-                            "oneOf": [
-                                {
-                                    "required": [
-                                        "sliceID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "sliceID": {
-                                            "type": "string"
-                                        }
-                                    }
+                        {
+                            "required": [
+                                "exitSliceID",
+                                "profile_data"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "profile_data": {
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    },
+                                    "type": "object"
                                 },
-                                {
-                                    "required": [
-                                        "name"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "name": {
-                                            "type": "string"
+                                "exitSliceID": {
+                                    "oneOf": [
+                                        {
+                                            "required": [
+                                                "sliceID"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "sliceID": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "required": [
+                                                "name"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            }
                                         }
-                                    }
+                                    ]
                                 }
-                            ]
+                            }
                         }
-                    }
+                    ],
+                    "type": "array"
                 }
             }
         },
@@ -331,9 +371,36 @@
             "type": "object",
             "properties": {
                 "pubPerformance": {
+                    "required": [
+                        "cmdID",
+                        "timestamp",
+                        "progress"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "cmdID": {
+                            "type": "string"
+                        },
+                        "progress": {
+                            "type": "number"
+                        },
+                        "timestamp": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "pubProgress"
+            ],
+            "type": "object",
+            "properties": {
+                "pubProgress": {
                     "items": [
                         {
-                            "type": "string"
+                            "type": "number"
                         },
                         {
                             "required": [
@@ -348,60 +415,6 @@
                         }
                     ],
                     "type": "array"
-                }
-            }
-        },
-        {
-            "required": [
-                "pubProgress"
-            ],
-            "type": "object",
-            "properties": {
-                "pubProgress": {
-                    "required": [
-                        "progress"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "progress": {
-                            "type": "number"
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "required": [
-                "pubControl"
-            ],
-            "type": "object",
-            "properties": {
-                "pubControl": {
-                    "required": [
-                        "powercap",
-                        "energy",
-                        "performance",
-                        "control_time",
-                        "feedback_time"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "energy": {
-                            "type": "number"
-                        },
-                        "control_time": {
-                            "type": "number"
-                        },
-                        "powercap": {
-                            "type": "number"
-                        },
-                        "performance": {
-                            "type": "number"
-                        },
-                        "feedback_time": {
-                            "type": "number"
-                        }
-                    }
                 }
             }
         }

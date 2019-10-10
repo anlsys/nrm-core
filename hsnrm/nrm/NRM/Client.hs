@@ -12,18 +12,17 @@ module NRM.Client
 where
 
 {-import qualified NRM.Types.Messaging.UpstreamReq as -}
-import qualified CPD.Core as CPDC
+import qualified CPD.Core as CPD
 import qualified CPD.Text as CPD
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
-import qualified Data.ByteString as SB
+import qualified Data.ByteString as BS
 import Data.Restricted
 import NRM.Classes.Messaging
 import NRM.Optparse
 import qualified NRM.Optparse.Client as C
 import qualified NRM.Types.Cmd as Cmd
-import qualified NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.Protocols as Protocols
-import qualified NRM.Types.Messaging.UpstreamPub as UPub
+import NRM.Types.Messaging.UpstreamPub as UPub
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
 import qualified NRM.Types.Slice as C
@@ -41,7 +40,7 @@ import qualified System.ZMQ4.Monadic as ZMQ
 import Text.Pretty.Simple
 
 pubAddress :: C.CommonOpts -> Text
-pubAddress c = "tcp:://" <> C.upstreamBindAddress c <> ":" <> show (C.pubPort c)
+pubAddress c = "tcp://" <> C.upstreamBindAddress c <> ":" <> show (C.pubPort c)
 
 rpcAddress :: C.CommonOpts -> Text
 rpcAddress c = "tcp://" <> C.upstreamBindAddress c <> ":" <> show (C.rpcPort c)
@@ -51,11 +50,13 @@ main :: IO ()
 main =
   parseClientCli >>= \(C.Opts what common) ->
     what & \case
-      Left C.Listen ->
+      Left l ->
         ZMQ.runZMQ $ do
           s <- ZMQ.socket ZMQ.Sub
-          subscribeWithOptions common s
-          subClient s common
+          ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
+          ZMQ.subscribe s BS.empty
+          ZMQ.connect s $ toS (pubAddress common)
+          subClient l s common
       Right req -> do
         when (C.verbose common == C.Verbose) (print $ encode req)
         uuid <-
@@ -63,27 +64,36 @@ main =
             Nothing -> panic "couldn't generate next client ID"
             Just c ->
               restrict (toS $ UC.toText c)
-                :: Restricted (N1, N254) SB.ByteString
+                :: Restricted (N1, N254) BS.ByteString
         ZMQ.runZMQ $ do
           s <- ZMQ.socket ZMQ.Dealer
           connectWithOptions uuid common s
           reqrepClient s req common
 
 subClient
-  :: ZMQ.Socket z ZMQ.Sub
+  :: C.Listen
+  -> ZMQ.Socket z ZMQ.Sub
   -> C.CommonOpts
   -> ZMQ.ZMQ z ()
-subClient s _c =
+subClient l s common =
   forever $
-    (ZMQ.receive s >>= (\x -> print x >> return x)) <&>
+    ZMQ.receive s <&>
     decode .
     toS >>= \case
     Nothing -> putText "Couldn't decode published message"
-    Just msg ->
-      msg & \case
-        (UPub.PubPerformance _ (DEvent.Performance perf)) ->
-          liftIO $ putText $ show perf
-        _ -> panic "pub message handler not implemented yet."
+    Just message ->
+      filterCPD l message & \case
+        Nothing -> return ()
+        Just filtered -> liftIO . putText . (if C.jsonPrint common then encodeT else toS . pShow) $ filtered
+
+filterCPD :: C.Listen -> UPub.Pub -> Maybe UPub.Pub
+filterCPD C.All p = Just p
+filterCPD C.CPDOnly p@(PubCPD _ _) = Just p
+filterCPD C.CPDOnly p@(PubMeasurements _ _) = Just p
+filterCPD C.CPDOnly _ = Nothing
+filterCPD C.Raw (PubMeasurements _ _) = Nothing
+filterCPD C.Raw (PubCPD _ _) = Nothing
+filterCPD C.Raw p = Just p
 
 reqrepClient
   :: ZMQ.Socket z ZMQ.Dealer
@@ -136,8 +146,8 @@ reqrep s opts = \case
           where
             cpdTD = CPD.showProblemDhall cpd
             cpdT = toS $ pShow cpd
-            actuatorcount = show $ length (CPDC.actuators cpd)
-            sensorcount = show $ length (CPDC.sensors cpd)
+            actuatorcount = show $ length (CPD.actuators cpd)
+            sensorcount = show $ length (CPD.sensors cpd)
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.SliceList ->
@@ -247,7 +257,7 @@ kill cmdID c =
     uuid <-
       liftIO $ UC.nextUpstreamClientID <&> \case
         Nothing -> panic "couldn't generate next client ID"
-        Just clientID -> (restrict (toS $ UC.toText clientID) :: Restricted (N1, N254) SB.ByteString)
+        Just clientID -> (restrict (toS $ UC.toText clientID) :: Restricted (N1, N254) BS.ByteString)
     connectWithOptions uuid c s
     ZMQ.send s [] (toS $ encode $ UReq.ReqKillCmd (UReq.KillCmd cmdID))
 
@@ -257,8 +267,3 @@ connectWithOptions uuid c s = do
   ZMQ.setSendHighWM (restrict (0 :: Int)) s
   ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
   ZMQ.connect s $ toS (rpcAddress c)
-
-subscribeWithOptions c s = do
-  ZMQ.setSendHighWM (restrict (0 :: Int)) s
-  ZMQ.setReceiveHighWM (restrict (0 :: Int)) s
-  ZMQ.bind s $ toS (pubAddress c)

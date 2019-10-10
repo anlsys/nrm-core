@@ -12,7 +12,9 @@ where
 
 import Control.Lens hiding (to)
 import Data.Generics.Product
+import Data.Map as DM
 import LMap.Map as LM
+import LensMap.Core as LensMap
 import qualified NRM.CPD as NRMCPD
 import NRM.Sensors as Sensors
 import NRM.State
@@ -152,8 +154,13 @@ behavior _ st (ChildDied pid exitcode) =
                 insertSlice sliceID
                   (Ct.insertCmd cmdID cmd {processState = newPstate} slice)
                   st
-behavior _ st DoSensor = bhv st NoBehavior
-behavior _ st DoControl = bhv st NoBehavior
+behavior _ st (DoControl time) = bhv st NoBehavior
+behavior cfg st (DoSensor time) =
+  let ll = lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor
+      in let (st', msgs) = foldM folder st (DM.values ll)
+ where folder passiveSensorLens = perform cfg >>= \case
+              AdjustedP st' -> undefined
+              OkP st' measurement -> undefined
 behavior _ st DoShutdown = bhv st NoBehavior
 behavior cfg st (DownstreamEvent clientid msg) =
   msg & \case
@@ -161,7 +168,7 @@ behavior cfg st (DownstreamEvent clientid msg) =
     DEvent.ThreadPhaseContext _ _ -> return (st, Log "unimplemented")
     DEvent.ThreadPause _ -> return (st, Log "unimplemented")
     DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented")
-    DEvent.CmdPerformance DEvent.CmdHeader {..} DEvent.Performance {..} ->
+    DEvent.CmdPerformance cmdHeader@DEvent.CmdHeader {..} DEvent.Performance {..} ->
       Sensors.process cfg timestamp st (Sensor.DownstreamCmdKey clientid)
         (U.fromOps perf & fromIntegral) & \case
         Sensors.NotFound ->
@@ -173,8 +180,8 @@ behavior cfg st (DownstreamEvent clientid msg) =
         Sensors.Ok st' measurement ->
           bhv st' $
             Pub
-              [ UPub.PubMeasurements [measurement]
-              , UPub.PubPerformance cmdID
+              [ UPub.PubMeasurements timestamp [measurement]
+              , UPub.PubPerformance cmdHeader
                 DEvent.Performance
                   { DEvent.perf = perf
                   }

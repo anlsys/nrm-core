@@ -21,21 +21,19 @@ import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
-import NRM.Types.Cmd
 import NRM.Types.Messaging.DownstreamEvent
 import NRM.Types.Slice as C
 import qualified NRM.Types.Units as U
 import Protolude
 
 data Pub
-  = PubMeasurements CPD.Measurements
-  | PubCPD CPD.Problem
-  | PubPower Power
-  | PubSliceStart SliceStart
-  | PubSliceExit SliceExit
-  | PubPerformance CmdID Performance
-  | PubProgress Progress
-  | PubControl Control
+  = PubMeasurements U.Time CPD.Measurements
+  | PubCPD U.Time CPD.Problem
+  | PubPower U.Time Power
+  | PubSliceStart U.Time SliceStart
+  | PubSliceExit U.Time SliceExit
+  | PubPerformance CmdHeader Performance
+  | PubProgress U.Time Progress
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Pub
 

@@ -1,4 +1,4 @@
-{ mkDerivation, stdenv, cabal-install, apply-refact, hdevtools, Glob, hindent, fswatch, hlint, protolude, shake, Cabal, fix-imports, ghcid, typed-process, optparse-applicative, unix, cabal-helper
+{ haskell, mkDerivation, stdenv, cabal-install, apply-refact, hdevtools, Glob, hindent, fswatch, hlint, protolude, shake, Cabal, fix-imports, ghcid, typed-process, optparse-applicative, unix, cabal-helper, lushtags
 }:
 let
   ghcide = (import (builtins.fetchTarball
@@ -12,11 +12,17 @@ in mkDerivation {
     cabal-install
     #apply-refact
     hdevtools
+    #zmcat
     #hindent
     #fswatch
     hlint
     #protolude
     #ghcide
+    (lushtags.overrideAttrs
+    (o: {
+      src = builtins.fetchTarball
+        "https://github.com/bitc/lushtags/archive/master.tar.gz";
+    }))
     fix-imports
     optparse-applicative
     shake

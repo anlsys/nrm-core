@@ -43,7 +43,8 @@ data CmdHeader
       { cmdID :: Cmd.CmdID
       , timestamp :: U.Time
       }
-  deriving (Generic, MessagePack)
+  deriving (Show ,Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdHeader
 
 data ThreadHeader
   = ThreadHeader
