@@ -155,12 +155,16 @@ behavior _ st (ChildDied pid exitcode) =
                   (Ct.insertCmd cmdID cmd {processState = newPstate} slice)
                   st
 behavior _ st (DoControl time) = bhv st NoBehavior
-behavior cfg st (DoSensor time) =
+behavior cfg st (DoSensor time) = do
   let ll = lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor
-      in let (st', msgs) = foldM folder st (DM.values ll)
- where folder passiveSensorLens = perform cfg >>= \case
-              AdjustedP st' -> undefined
-              OkP st' measurement -> undefined
+  (st', msgs) <- foldM folder (st,[]) (DM.elems ll)
+  return undefined
+  where
+    folder :: _
+    --folder passiveSensorLens =
+      --Sensors.perform cfg >>= \case
+        --AdjustedP st' -> undefined
+        --OkP st' measurement -> undefined
 behavior _ st DoShutdown = bhv st NoBehavior
 behavior cfg st (DownstreamEvent clientid msg) =
   msg & \case
