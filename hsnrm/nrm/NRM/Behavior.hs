@@ -10,6 +10,7 @@ module NRM.Behavior
   )
 where
 
+import CPD.Values as CPD
 import Control.Lens hiding (to)
 import Data.Generics.Product
 import Data.Map as DM
@@ -156,15 +157,24 @@ behavior _ st (ChildDied pid exitcode) =
                   st
 behavior _ st (DoControl time) = bhv st NoBehavior
 behavior cfg st (DoSensor time) = do
-  let ll = lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor
-  (st', msgs) <- foldM folder (st,[]) (DM.elems ll)
-  return undefined
+  (st', measurements) <-
+    foldM folder
+      (st, [])
+      (DM.elems (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor))
+  bhv st' $ Pub [UPub.PubMeasurements time measurements]
   where
-    folder :: _
-    --folder passiveSensorLens =
-      --Sensors.perform cfg >>= \case
-        --AdjustedP st' -> undefined
-        --OkP st' measurement -> undefined
+    folder
+      :: (NRMState, [CPD.Measurement])
+      -> ScopedLens NRMState PassiveSensor
+      -> IO (NRMState, [CPD.Measurement])
+    folder (s, ms) (ScopedLens l) =
+      let ps@PassiveSensor {..} = (view l s)
+       in perform <&> \case
+            Just value ->
+              checkPassiveSensor time ps value & \case
+                Just measurement -> undefined
+                Nothing -> undefined
+            Nothing -> (s, ms)
 behavior _ st DoShutdown = bhv st NoBehavior
 behavior cfg st (DownstreamEvent clientid msg) =
   msg & \case

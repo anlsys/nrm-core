@@ -51,6 +51,7 @@ import qualified NRM.Types.DownstreamCmdID as DC
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Process as Process
 import qualified NRM.Types.State as TS
+import NRM.Types.Units
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude hiding (stderr, stdout)
 import qualified System.Posix.Types as SPT
@@ -118,12 +119,12 @@ upstreamReceive cfg s msg clientid =
       (fromMaybe (panic "couldn't decode downstream rcv") (M.decodeT msg))
 
 -- | when it's time to activate a sensor
-doSensor :: C.Cfg -> TS.NRMState -> IO (TS.NRMState, B.Behavior)
-doSensor c s = B.behavior c s B.DoSensor
+doSensor :: C.Cfg -> TS.NRMState -> Double -> IO (TS.NRMState, B.Behavior)
+doSensor c s t = B.behavior c s (B.DoSensor $ t & seconds)
 
 -- | when it's time to run the control loop
-doControl :: C.Cfg -> TS.NRMState -> IO (TS.NRMState, B.Behavior)
-doControl c s = B.behavior c s B.DoControl
+doControl :: C.Cfg -> TS.NRMState -> Double -> IO (TS.NRMState, B.Behavior)
+doControl c s t = B.behavior c s (B.DoControl $ t & seconds)
 
 -- | when a child dies
 childDied :: C.Cfg -> TS.NRMState -> Int -> Int -> IO (TS.NRMState, B.Behavior)
