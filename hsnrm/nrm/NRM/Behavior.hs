@@ -155,26 +155,36 @@ behavior _ st (ChildDied pid exitcode) =
                 insertSlice sliceID
                   (Ct.insertCmd cmdID cmd {processState = newPstate} slice)
                   st
-behavior _ st (DoControl time) = bhv st NoBehavior
-behavior cfg st (DoSensor time) = do
-  (st', measurements) <-
-    foldM folder
-      (st, [])
-      (DM.elems (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor))
-  bhv st' $ Pub [UPub.PubMeasurements time measurements]
+behavior _ st (DoControl _time) = bhv st NoBehavior
+behavior _ st (DoSensor time) = do
+  (st', measurements) <- foldM folder (st, Just []) (DM.elems lMap)
+  measurements & \case
+    Just ms -> bhv st' $ Pub [UPub.PubMeasurements time ms]
+    Nothing -> bhv st' $ Pub [UPub.PubCPD time (NRMCPD.toCPD st')]
   where
+    lMap :: LensMap NRMState PassiveSensorKey PassiveSensor
+    lMap = lenses st
     folder
-      :: (NRMState, [CPD.Measurement])
+      :: (NRMState, Maybe [CPD.Measurement])
       -> ScopedLens NRMState PassiveSensor
-      -> IO (NRMState, [CPD.Measurement])
+      -> IO (NRMState, Maybe [CPD.Measurement])
     folder (s, ms) (ScopedLens l) =
-      let ps@PassiveSensor {..} = (view l s)
-       in perform <&> \case
+      let ps = (view l s)
+       in perform ps <&> \case
             Just value ->
               checkPassiveSensor time ps value & \case
-                Just measurement -> undefined
-                Nothing -> undefined
-            Nothing -> (s, ms)
+                (sensor', Just measurement) ->
+                  ms & \case
+                    Nothing -> (s & l .~ sensor', Nothing)
+                    Just msValues ->
+                      ( s & l .~ sensor'
+                      , Just $ measurement : msValues
+                      )
+                (sensor', Nothing) -> (s & l .~ sensor', Nothing)
+            Nothing ->
+              checkPassiveSensorFailure time ps & \case
+                Just sensor' -> (s & l .~ sensor', Nothing)
+                Nothing -> (s, ms)
 behavior _ st DoShutdown = bhv st NoBehavior
 behavior cfg st (DownstreamEvent clientid msg) =
   msg & \case

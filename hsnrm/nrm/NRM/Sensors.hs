@@ -12,6 +12,7 @@ module NRM.Sensors
   , NRM.Sensors.process
   , Output (..)
   , checkPassiveSensor
+  , checkPassiveSensorFailure
   )
 where
 
@@ -68,5 +69,11 @@ checkPassiveSensor
   :: Time
   -> PassiveSensor
   -> Double
-  -> Maybe Measurement
+  -> (PassiveSensor, Maybe Measurement)
 checkPassiveSensor = undefined
+
+checkPassiveSensorFailure
+  :: Time
+  -> PassiveSensor
+  -> Maybe PassiveSensor
+checkPassiveSensorFailure = undefined
