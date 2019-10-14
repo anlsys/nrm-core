@@ -43,7 +43,7 @@ import NRM.Types.Process
 import NRM.Types.Slice
 import NRM.Types.State
 import NRM.Types.Topology
-import NRM.Types.Topology.Package as TP
+import NRM.Types.Topology.Package
 import NRM.Types.Units
 import NRM.Types.UpstreamClient
 import Protolude
@@ -89,11 +89,12 @@ initialState c = do
           LM.insert pkgid
             ( oldPackage
               { rapl = Just
-                  ( TP.Rapl
+                  ( Rapl
                     { frequency = hz 3
-                    , TP.raplPath = path
-                    , TP.max = maxEnergy
+                    , raplPath = path
+                    , max = maxEnergy
                     , discreteChoices = [uW 180, uW 200]
+                    , lastTime = Nothing
                     }
                   )
               }

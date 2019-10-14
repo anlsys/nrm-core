@@ -43,6 +43,7 @@ data PassiveSensor
       , frequency :: U.Frequency
       , passiveSource :: CPD.Source
       , passiveRange :: (Double, Double)
+      , last :: Maybe (U.Time, Double)
       }
   deriving (Generic)
 
@@ -66,11 +67,11 @@ data SensorKey = AKey ActiveSensorKey | PKey PassiveSensorKey
 
 instance StringConv PassiveSensorKey CPD.SensorID where
 
-  strConv _  = CPD.SensorID . show
+  strConv _ = CPD.SensorID . show
 
 instance StringConv ActiveSensorKey CPD.SensorID where
 
-  strConv _  = CPD.SensorID . show
+  strConv _ = CPD.SensorID . show
 
 instance ToCPDSensor ActiveSensorKey ActiveSensor where
 

@@ -157,34 +157,14 @@ behavior _ st (ChildDied pid exitcode) =
                   st
 behavior _ st (DoControl _time) = bhv st NoBehavior
 behavior _ st (DoSensor time) = do
-  (st', measurements) <- foldM folder (st, Just []) (DM.elems lMap)
+  -- This function is complicated, needs custom types.
+  (st', measurements) <- foldM (folder time) (st, Just []) (DM.toList lMap)
   measurements & \case
     Just ms -> bhv st' $ Pub [UPub.PubMeasurements time ms]
     Nothing -> bhv st' $ Pub [UPub.PubCPD time (NRMCPD.toCPD st')]
   where
     lMap :: LensMap NRMState PassiveSensorKey PassiveSensor
     lMap = lenses st
-    folder
-      :: (NRMState, Maybe [CPD.Measurement])
-      -> ScopedLens NRMState PassiveSensor
-      -> IO (NRMState, Maybe [CPD.Measurement])
-    folder (s, ms) (ScopedLens l) =
-      let ps = (view l s)
-       in perform ps <&> \case
-            Just value ->
-              checkPassiveSensor time ps value & \case
-                (sensor', Just measurement) ->
-                  ms & \case
-                    Nothing -> (s & l .~ sensor', Nothing)
-                    Just msValues ->
-                      ( s & l .~ sensor'
-                      , Just $ measurement : msValues
-                      )
-                (sensor', Nothing) -> (s & l .~ sensor', Nothing)
-            Nothing ->
-              checkPassiveSensorFailure time ps & \case
-                Just sensor' -> (s & l .~ sensor', Nothing)
-                Nothing -> (s, ms)
 behavior _ st DoShutdown = bhv st NoBehavior
 behavior cfg st (DownstreamEvent clientid msg) =
   msg & \case
@@ -244,3 +224,26 @@ respondContent content cmd cmdID outputType =
         { URep.stderrCmdID = cmdID
         , stderrPayload = content
         }
+
+folder
+  :: U.Time
+  -> (NRMState, Maybe [CPD.Measurement]) -- if second value is Nothing, cpd changed.
+  -> (PassiveSensorKey, ScopedLens NRMState PassiveSensor)
+  -> IO (NRMState, Maybe [CPD.Measurement])
+folder time (s, ms) (k, ScopedLens l) =
+  let ps = (view l s)
+   in perform ps <&> \case
+        Just value ->
+          processPassiveSensor ps time (toS k) value & \case
+            LegalMeasurement sensor' measurement ->
+              ms & \case
+                Nothing -> (s & l .~ sensor', Nothing)
+                Just msValues ->
+                  ( s & l .~ sensor'
+                  , Just $ measurement : msValues
+                  )
+            IllegalValueRemediation sensor' -> (s & l .~ sensor', Nothing)
+        Nothing ->
+          processPassiveSensorFailure ps time & \case
+            LegalFailure -> (s, ms)
+            IllegalFailureRemediation sensor' -> (s & l .~ sensor', Nothing)

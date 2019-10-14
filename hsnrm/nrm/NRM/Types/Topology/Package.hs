@@ -35,6 +35,7 @@ data Rapl
       , max :: MaxEnergy
       , frequency :: Frequency
       , discreteChoices :: [Power]
+      , lastTime :: Maybe (Time, Energy)
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
@@ -56,7 +57,7 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
             )
           )
     where
-      getter (Rapl path (MaxEnergy _maxEnergy) _freq discreteChoices) =
+      getter (Rapl path (MaxEnergy _maxEnergy) _freq discreteChoices _last) =
         Actuator
           { actions = discreteChoices <&> fromuW
           , go = setRAPLPowercap path . RAPLCommand . uW
@@ -79,13 +80,14 @@ instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
             )
           )
     where
-      getter (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices) =
+      getter (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices last) =
         PassiveSensor
           { passiveTags = [Tag "power", Tag "RAPL"]
           , passiveSource = Source textID
           , passiveRange = (0, fromuJ maxEnergy)
           , frequency = freq
           , perform = measureRAPLDir path <&> fmap (fromuJ . energy)
+          , last = last <&> fmap fromuJ
           }
         where
           textID = show packageID
