@@ -14,6 +14,7 @@ from functools import partial
 import logging
 import os
 import signal
+import time
 import tornado.process as process
 
 # import tornado.ioloop
@@ -62,7 +63,9 @@ class Daemon(object):
         self.downstream_event.setup_recv_callback(self.wrap("downstreamReceive"))
 
         # setup periodic sensor updates
-        # ioloop.PeriodicCallback(self.wrap("doSensor"), 10000).start()
+        ioloop.PeriodicCallback(
+            (lambda: self.wrap("doSensor", time.time())), 1000
+        ).start()
         # ioloop.PeriodicCallback(self.wrap("doControl"), 10000).start()
 
         # take care of signals
@@ -133,7 +136,10 @@ class Daemon(object):
         registerFailed = self.wrap("registerCmdFailure", cmdID)
         environment = dict(environment)
         _logger.info(
-            "starting command " + str(cmd) + " with argument list " + str(list(arguments))
+            "starting command "
+            + str(cmd)
+            + " with argument list "
+            + str(list(arguments))
         )
         try:
             p = process.Subprocess(

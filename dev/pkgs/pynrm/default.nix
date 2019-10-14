@@ -5,6 +5,7 @@ pythonPackages.buildPythonPackage {
   propagatedBuildInputs = [
     pythonPackages.tornado
     pythonPackages.pyzmq
+    pythonPackages.pyyaml
     pythonPackages.jsonschema
     pythonPackages.msgpack
     pythonPackages.warlock
