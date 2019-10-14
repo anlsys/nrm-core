@@ -21,10 +21,12 @@ let
   nrmPythonPackages = pkgs.python37Packages.override {
     overrides = self: super: rec {
       cffi = super.cffi.overridePythonAttrs (o: { doCheck = false; });
-      sqlalchemy = super.sqlalchemy.overridePythonAttrs (o: { doCheck = false; });
+      sqlalchemy =
+        super.sqlalchemy.overridePythonAttrs (o: { doCheck = false; });
       requests = super.requests.overridePythonAttrs (o: { doCheck = false; });
       sphinx = super.sphinx.overridePythonAttrs (o: { doCheck = false; });
-      cryptography = super.cryptography.overridePythonAttrs (o: { doCheck = false; });
+      cryptography =
+        super.cryptography.overridePythonAttrs (o: { doCheck = false; });
       cython = super.cython.overridePythonAttrs (o: { doCheck = false; });
       hypothesis =
         super.hypothesis.overridePythonAttrs (o: { doCheck = false; });
@@ -39,32 +41,34 @@ let
       };
     };
   };
+  mkHsnrm = dhallFilename:
+    import ./pkgs/hsnrm {
+      inherit pkgs;
+      inherit hslib;
+      src = ../hsnrm;
+      target = dhallFilename;
+    };
 in rec {
-  hsnrm-static = import ./pkgs/hsnrm {
-    inherit pkgs;
-    inherit hslib;
-    src = ../hsnrm;
-    target = "hsnrm-static.cabal";
-  };
-  hsnrm = import ./pkgs/hsnrm {
-    inherit pkgs;
-    inherit hslib;
-    src = ../hsnrm;
-    target = "hsnrm.cabal";
-  };
+  hsnrm-dev = mkHsnrm "dev";
+  hsnrm-dynamic = mkHsnrm "dynamic";
+  hsnrm-static = mkHsnrm "static";
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     pythonPackages = nrmPythonPackages;
     src = ../pynrm;
+    hsnrm = hsnrm-dynamic;
   };
-  libnrm = pkgs.callPackage ./pkgs/libnrm { src = ../libnrm; };
+  libnrm = pkgs.callPackage ./pkgs/libnrm {
+    src = ../libnrm;
+    hsnrm = hsnrm-dynamic;
+  };
   hsnrm-hack = pkgs.haskellPackages.shellFor {
     packages = p: [
-      hsnrm
+      hsnrm-dev
       (pkgs.haskellPackages.callPackage ./pkgs/hs-tools { })
     ];
     withHoogle = true;
     buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq ]
-      ++ hsnrm.buildInputs;
+      ++ hsnrm-dev.buildInputs;
   };
   pynrm-hack = pynrm.overrideAttrs (o: {
     buildInputs = o.buildInputs ++ [

@@ -1,7 +1,7 @@
   --λ(ghcVersion : Text)
-let prelude = ../../dhall-to-cabal/prelude.dhall
+let prelude = ./dhall-to-cabal/prelude.dhall
 
-let types = ../../dhall-to-cabal/types.dhall
+let types = ./dhall-to-cabal/types.dhall
 
 let common = ./common.dhall
 

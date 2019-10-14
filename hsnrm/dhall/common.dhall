@@ -1,6 +1,6 @@
-let prelude = ../../dhall-to-cabal/prelude.dhall
+let prelude = ./dhall-to-cabal/prelude.dhall
 
-let types = ../../dhall-to-cabal/types.dhall
+let types = ./dhall-to-cabal/types.dhall
 
 let defexts =
       [ types.Extension.LambdaCase True
@@ -343,6 +343,7 @@ let libdep =
 
 in  { defexts =
         defexts
+    ,deps = deps
     , libdep =
         libdep
     , banditmodules =

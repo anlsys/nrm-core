@@ -1,4 +1,4 @@
-{ src, stdenv, pythonPackages, hwloc, linuxPackages }:
+{ src, stdenv, pythonPackages, hwloc, linuxPackages, hsnrm }:
 pythonPackages.buildPythonPackage {
   inherit src;
   name = "nrm";
@@ -11,4 +11,7 @@ pythonPackages.buildPythonPackage {
     pythonPackages.warlock
   ];
   checkPhase = "true";
+  preInstall = ''
+    ${hsnrm}/bin/generate downstream $out/nrm/schemas
+  '';
 }

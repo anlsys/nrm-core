@@ -1,4 +1,4 @@
-{ stdenv, src, autoreconfHook, fetchgit, zeromq, gfortran, pkgconfig, mpich2}:
+{ stdenv, src, autoreconfHook, fetchgit, zeromq, gfortran, pkgconfig, mpich2, hsnrm}:
 stdenv.mkDerivation {
   inherit src;
   name = "libnrm";
