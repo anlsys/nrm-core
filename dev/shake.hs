@@ -29,12 +29,12 @@ import qualified System.IO as SIO
 import System.Posix.Process
 import System.Process.Typed
 
-ghcidTarget :: Text -> Maybe Text -> [Text]
-ghcidTarget target test =
+ghcidTarget :: Text -> Text -> Maybe Text -> [Text]
+ghcidTarget cabalfile target test =
   [ "-C"
   , "hsnrm"
   , "--command"
-  , "cabal " <> "new-repl " <> target <> " --ghc-option=-fno-code"
+  , "cabal " <> "v2-repl " <> target <> " --ghc-option=-fno-code" <> " --cabal-file="<>cabalfile  <> " --builddir=../_build"
   , "--restart=hsnrm.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"
@@ -45,22 +45,23 @@ ghcidTarget target test =
         test
       )
 
-runGhcid :: Text -> Maybe Text -> IO ()
-runGhcid target test = do
+runGhcid :: Text ->Text -> Maybe Text -> IO ()
+runGhcid cabalfile target test = do
   runProcess_ "rm -f .ghc.*"
-  executeFile "ghcid" True (toS <$> ghcidTarget target test) Nothing
+  executeFile "ghcid" True (toS <$> ghcidTarget cabalfile target test) Nothing
 
 main :: IO ()
-main =
+main = do
+  cabalFile <- toS <$> getEnv "CABALFILE"
   SIO.hSetBuffering SIO.stdout SIO.NoBuffering <>
-    void (join (execParser (info (opts <**> helper) idm)))
+    void (join (execParser (info (opts cabalFile <**> helper) idm)))
   where
-    opts :: Parser (IO ())
-    opts =
+    opts ::  Text ->Parser (IO ())
+    opts cabalFile=
       hsubparser
         ( OA.command
           "ghcid"
-          ( info (runGhcid <$> targetParser <*> testParser)
+          ( info (runGhcid cabalFile<$> targetParser <*> testParser)
             (progDesc "Run an argo-compatible nix-build.")
           ) <>
           OA.command "britt"
@@ -127,6 +128,7 @@ runshake as =
             , "nrm.so"
             , "--ghc-option=-lHSrts-ghc" <> version
             , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
+            , "--builddir=../_build"
             , "--jobs=4"
             ]
         )
@@ -134,7 +136,7 @@ runshake as =
         ( runProcess_ $ setWorkingDir "hsnrm" $
           proc "cabal"
             [ "v2-run"
-            , "codegen"
+            , "codegen a resources"
             ]
         )
     phony "codegen" $
@@ -142,7 +144,7 @@ runshake as =
         ( runProcess_ $ setWorkingDir "hsnrm" $
           proc "cabal"
             [ "v2-run"
-            , "codegen"
+            , "codegen a resources"
             ]
         )
     phony "client" $
@@ -151,6 +153,7 @@ runshake as =
           proc "cabal"
             [ "v2-build"
             , "nrm"
+            , "--builddir=../_build"
             ]
         )
     phony "doc" $do
@@ -160,6 +163,7 @@ runshake as =
             [ "v2-haddock"
             , "nrm.so"
             , "--haddock-hyperlink-source"
+            , "--builddir=../_build"
             ]
         )
       putText $ toS out

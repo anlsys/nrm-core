@@ -50,22 +50,23 @@ import Prelude (String)
 -- | The main code generation binary.
 main :: IO ()
 main = do
+  _ : [(toS -> prefix)] <- getArgs
   putText "Codegen: LibNRM C headers."
-  putText $ "  Writing libnrm header to " <> toS headerFile
-  writeFile (toS headerFile) $ toS (licenseC <> libnrmHeader)
+  putText $ "  Writing libnrm header to " <> prefix <> "/nrm_messaging.h"
+  writeFile (toS $ prefix <> "/nrm_messaging.h") $ toS (licenseC <> libnrmHeader)
   putText "Codegen: JSON schemas"
-  verboseWriteSchema "upstreamPub" upstreamPubSchema
-  verboseWriteSchema "upstreamRep" upstreamRepSchema
-  verboseWriteSchema "upstreamReq" upstreamReqSchema
-  verboseWriteSchema "downstreamEvent" downstreamEventSchema
-  generateDefaultConfigurations
+  verboseWriteSchema prefix "upstreamPub" upstreamPubSchema
+  verboseWriteSchema prefix "upstreamRep" upstreamRepSchema
+  verboseWriteSchema prefix "upstreamReq" upstreamReqSchema
+  verboseWriteSchema prefix "downstreamEvent" downstreamEventSchema
+  generateDefaultConfigurations prefix
   where
-    headerFile = prefix <> "/nrm_messaging.h"
-    verboseWriteSchema desc sch = do
+    verboseWriteSchema :: Text -> Text -> Text -> IO ()
+    verboseWriteSchema prefix desc sch = do
       putText $ toS ("  Writing schema for " <> toS desc <> " to " <> fp)
       writeFile (toS fp) sch
       where
-        fp = prefix <> desc <> ".json"
+        fp = prefix <>"/"<> desc <> ".json"
 
 -- | The upstream Request schema.
 upstreamReqSchema :: Text
@@ -153,9 +154,6 @@ yamlType Manifest = MI.encodeManifest (def :: MI.Manifest)
 sandwich :: Semigroup a => a -> a -> a -> a
 sandwich a b x = a <> x <> b
 
-prefix :: FilePath
-prefix = "../resources/"
-
 yamlFile :: KnownType -> FilePath
 yamlFile = sandwich "yaml/" ".yaml" . show
 
@@ -171,20 +169,20 @@ getDefault x =
     Cfg -> embed (injectWith defaultInterpretOptions) (def :: C.Cfg)
     Manifest -> embed (injectWith defaultInterpretOptions) (def :: MI.Manifest)
 
-generateDefaultConfigurations :: IO ()
-generateDefaultConfigurations = do
+generateDefaultConfigurations :: Text -> IO ()
+generateDefaultConfigurations prefix = do
   putText "Codegen: Dhall types."
-  typeToFile (Proxy :: Proxy CPD.Values.Measurements) "../resources/types/CPDMeasurements.dhall"
-  typeToFile (Proxy :: Proxy CPD.Values.Actions) "../resources/types/CPDActions.dhall"
-  typeToFile (Proxy :: Proxy CPD.Core.Problem) "../resources/types/CPDProblem.dhall"
+  typeToFile (Proxy :: Proxy CPD.Values.Measurements) $ toS prefix <> "/types/CPDMeasurements.dhall"
+  typeToFile (Proxy :: Proxy CPD.Values.Actions) $ toS prefix <> "/types/CPDActions.dhall"
+  typeToFile (Proxy :: Proxy CPD.Core.Problem) $ toS prefix <> "/types/CPDProblem.dhall"
   for_ [minBound .. maxBound] $ \t -> do
-    let dest = prefix <> typeFile t
+    let dest = toS prefix <> typeFile t
     putText $ "  Writing type for " <> show t <> " to " <> toS dest
     createDirectoryIfMissing True (takeDirectory dest)
     writeOutput licenseDhall dest (dhallType t)
   putText "Codegen: Dhall defaults."
   for_ [minBound .. maxBound] $ \defaultType -> do
-    let dest = prefix <> defaultFile defaultType
+    let dest = toS prefix <> defaultFile defaultType
     putStrLn $ "  Writing default for " <> show defaultType <> " to " <> dest <> "."
     createDirectoryIfMissing True (takeDirectory dest)
     writeOutput licenseDhall dest (Lint.lint $ getDefault defaultType)
@@ -198,7 +196,7 @@ generateDefaultConfigurations = do
   putText "Codegen: YAMl example files."
   for_ [minBound .. maxBound] $ \t -> do
     let yaml = yamlType t
-        dest = prefix <> yamlFile t
+        dest = toS prefix <> yamlFile t
     putText $ "  Writing yaml for " <> show t <> " to " <> toS dest
     createDirectoryIfMissing True (takeDirectory dest)
     writeFile dest $ licenseYaml <> toS yaml

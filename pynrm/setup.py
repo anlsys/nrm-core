@@ -20,5 +20,6 @@ setup(
 
     packages=find_packages(),
     install_requires=[],
+    package_data={'nrm': ['schemas/*.json', 'schemas/*.yml']},
     scripts=['bin/nrmd', 'bin/nrm-perfwrapper']
 )

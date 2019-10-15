@@ -41,34 +41,78 @@ let
       };
     };
   };
-  mkHsnrm = dhallFilename:
-    import ./pkgs/hsnrm {
-      inherit pkgs;
-      inherit hslib;
-      src = ../hsnrm;
-      target = dhallFilename;
-    };
+  unbreak = x:
+    x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
 in rec {
-  hsnrm-dev = mkHsnrm "dev";
-  hsnrm-dynamic = mkHsnrm "dynamic";
-  hsnrm-static = mkHsnrm "static";
-  pynrm = pkgs.callPackage ./pkgs/pynrm {
-    pythonPackages = nrmPythonPackages;
-    src = ../pynrm;
-    hsnrm = hsnrm-dynamic;
+  dhall-to-cabal = (haskellPackages.callCabal2nix "dhall-to-cabal"
+    (builtins.fetchTarball
+    "https://github.com/dhall-lang/dhall-to-cabal/archive/1.3.4.0.tar.gz")) { };
+
+  cabalFile = dhallSpec:
+    pkgs.runCommand "cabalFile" { } ''
+      export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
+      export LANG=en_US.UTF-8
+      cp ${dhallSpec} cabal.dhall
+      substituteInPlace cabal.dhall --replace "= ./dhall" "= ${./cabal/dhall}"
+      GHCVERSION=$(${haskellPackages.ghc}/bin/ghc --numeric-version)
+      ${dhall-to-cabal}/bin/dhall-to-cabal <<< "./cabal.dhall \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
+    '';
+
+  patchedSrc = source: rename: dhallFile:
+    pkgs.runCommand "patchedSrc" { } ''
+      mkdir -p $out
+      cp -r ${source}/ $out/${rename}
+      chmod -R +rw $out
+      cp ${cabalFile dhallFile} $out/hsnrm.cabal
+    '';
+
+  patchedSrcLib = patchedSrc ../hsnrm/nrm "nrm" cabal/lib.dhall;
+
+  patchedSrcBin = patchedSrc ../hsnrm/bin "bin" cabal/bin.dhall;
+
+  haskellPackages = pkgs.haskellPackages.override {
+    overrides = self: super:
+      with pkgs.haskell.lib; rec {
+        regex = doJailbreak super.regex;
+        json-schema = unbreak (doJailbreak super.json-schema);
+        zeromq4-conduit = unbreak (dontCheck super.zeromq4-conduit);
+        nrmlib = self.callCabal2nix "hsnrm.cabal" patchedSrcLib { };
+        nrmbin =
+          self.callCabal2nix "hsnrm.cabal" patchedSrcBin { inherit nrmlib; };
+        dhall = super.dhall_1_24_0;
+      };
   };
+
+  resources = pkgs.runCommand "patchedSrc" { } ''
+    mkdir -p $out
+    ${haskellPackages.nrmbin}/bin/codegen a $out
+  '';
+
   libnrm = pkgs.callPackage ./pkgs/libnrm {
     src = ../libnrm;
-    hsnrm = hsnrm-dynamic;
+    resources = haskellPackages.resources;
   };
+
+  pynrm = pkgs.callPackage ./pkgs/pynrm {
+    inherit resources;
+    pythonPackages = nrmPythonPackages;
+    src = ../pynrm;
+    hsnrm = haskellPackages.nrmbin;
+  };
+
+  nrm = pkgs.symlinkJoin {
+    name = "nrmFull";
+    paths = [ haskellPackages.nrmbin pynrm ];
+  };
+
   hsnrm-hack = pkgs.haskellPackages.shellFor {
     packages = p: [
-      hsnrm-dev
+      haskellPackages.nrmlib
       (pkgs.haskellPackages.callPackage ./pkgs/hs-tools { })
     ];
     withHoogle = true;
     buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq ]
-      ++ hsnrm-dev.buildInputs;
+      ++ haskellPackages.nrmlib.buildInputs;
   };
   pynrm-hack = pynrm.overrideAttrs (o: {
     buildInputs = o.buildInputs ++ [
@@ -84,6 +128,9 @@ in rec {
     (o: { buildInputs = o.buildInputs ++ [ pkgs.astyle ]; });
 
   hack = pkgs.mkShell {
+
+    CABALFILE = cabalFile cabal/dev.dhall; # for easy manual vendoring
+
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
 
     buildInputs = [ pkgs.hwloc ];
