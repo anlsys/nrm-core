@@ -4,7 +4,7 @@ let types = ./dhall/dhall-to-cabal/types.dhall
 
 let common = ./dhall/common.dhall
 
-in    prelude.defaults.Package
+in  \(ghcPath:Text)  -> \(ghcNumericVersion:Text) ->   prelude.defaults.Package
     ⫽ { name =
           "hsnrm"
       , version =

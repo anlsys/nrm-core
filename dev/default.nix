@@ -14,7 +14,7 @@ let
     filter = path:
       builtins.filterSource (path: _:
       (baseNameOf path != ".hdevtools.sock")
-      && (baseNameOf path != ".ghc.environment.x86_64-linux-8.4.4")
+      && (baseNameOf path != ".ghc.*")
       && (baseNameOf path != "result") && (baseNameOf path != "README")
       && (baseNameOf path != "dist")) path;
   };
@@ -84,13 +84,14 @@ in rec {
   };
 
   resources = pkgs.runCommand "patchedSrc" { } ''
-    mkdir -p $out
-    ${haskellPackages.nrmbin}/bin/codegen a $out
+    mkdir -p $out/share/
+    ${haskellPackages.nrmbin}/bin/codegen a $out/share/
   '';
 
   libnrm = pkgs.callPackage ./pkgs/libnrm {
     src = ../libnrm;
-    resources = haskellPackages.resources;
+    #resources = haskellPackages.resources;
+    hsnrm = haskellPackages.nrmbin;
   };
 
   pynrm = pkgs.callPackage ./pkgs/pynrm {
@@ -102,7 +103,7 @@ in rec {
 
   nrm = pkgs.symlinkJoin {
     name = "nrmFull";
-    paths = [ haskellPackages.nrmbin pynrm ];
+    paths = [ haskellPackages.nrmbin pynrm resources pkgs.linuxPackages.perf];
   };
 
   hsnrm-hack = pkgs.haskellPackages.shellFor {
