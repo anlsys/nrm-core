@@ -14,8 +14,7 @@ let
   hslib = rec {
     filter = path:
       builtins.filterSource (path: _:
-      (baseNameOf path != ".hdevtools.sock")
-      && (baseNameOf path != ".ghc.*")
+      (baseNameOf path != ".hdevtools.sock") && (baseNameOf path != ".ghc.*")
       && (baseNameOf path != "result") && (baseNameOf path != "README")
       && (baseNameOf path != "dist")) path;
   };
@@ -104,7 +103,7 @@ in rec {
 
   nrm = pkgs.symlinkJoin {
     name = "nrmFull";
-    paths = [ haskellPackages.nrmbin pynrm resources pkgs.linuxPackages.perf];
+    paths = [ haskellPackages.nrmbin pynrm resources pkgs.linuxPackages.perf ];
   };
 
   hsnrm-hack = pkgs.haskellPackages.shellFor {
@@ -117,7 +116,8 @@ in rec {
   };
 
   pynrm-hack = pynrm.overrideAttrs (o: {
-    propagatedBuildInputs =  (lists.remove haskellPackages.nrmbin  o.propagatedBuildInputs);
+    propagatedBuildInputs =
+      (lists.remove haskellPackages.nrmbin o.propagatedBuildInputs);
     buildInputs = (lists.remove haskellPackages.nrmbin o.buildInputs) ++ [
       nrmPythonPackages.flake8
       nrmPythonPackages.autopep8
