@@ -9,6 +9,7 @@
   { }
 
 }:
+with pkgs.lib;
 let
   hslib = rec {
     filter = path:
@@ -112,11 +113,12 @@ in rec {
       (pkgs.haskellPackages.callPackage ./pkgs/hs-tools { })
     ];
     withHoogle = true;
-    buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq ]
-      ++ haskellPackages.nrmlib.buildInputs;
+    buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq ];
   };
+
   pynrm-hack = pynrm.overrideAttrs (o: {
-    buildInputs = o.buildInputs ++ [
+    propagatedBuildInputs =  (lists.remove haskellPackages.nrmbin  o.propagatedBuildInputs);
+    buildInputs = (lists.remove haskellPackages.nrmbin o.buildInputs) ++ [
       nrmPythonPackages.flake8
       nrmPythonPackages.autopep8
       nrmPythonPackages.black
@@ -125,6 +127,7 @@ in rec {
       nrmPythonPackages.sphinx
     ];
   });
+
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.astyle ]; });
 
