@@ -34,7 +34,7 @@ ghcidTarget cabalfile target test =
   [ "-C"
   , "hsnrm"
   , "--command"
-  , "cabal " <> "v2-repl " <> target <> " --ghc-option=-fno-code" <> " --cabal-file="<>cabalfile  <> " --builddir=../_build"
+  , "cabal " <> "v2-repl " <> target <> " --ghc-option=-fno-code" <> " --builddir=../_build"
   , "--restart=hsnrm.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"
@@ -48,6 +48,7 @@ ghcidTarget cabalfile target test =
 runGhcid :: Text ->Text -> Maybe Text -> IO ()
 runGhcid cabalfile target test = do
   runProcess_ "rm -f .ghc.*"
+  runProcess_ $ setWorkingDir "hsnrm" $ shell "cp -f $CABALFILE hsnrm.cabal"
   executeFile "ghcid" True (toS <$> ghcidTarget cabalfile target test) Nothing
 
 main :: IO ()
@@ -121,6 +122,7 @@ runshake as =
       version <- liftIO $ toS . strip . toS <$> readProcessStdout_ "ghc --numeric-version"
       ghcPathRaw <- liftIO $ strip . toS <$> readProcessStdout_ "which ghc"
       let ghcPath = dropEnd 8 ghcPathRaw
+      liftIO ( runProcess_ $ setWorkingDir "hsnrm" $ shell "cp -f $CABALFILE hsnrm.cabal")
       liftIO
         ( runProcess_ $ setWorkingDir "hsnrm" $
           proc "cabal"

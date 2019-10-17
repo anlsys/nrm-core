@@ -62,10 +62,14 @@ class Daemon(object):
         self.upstream_rpc.setup_recv_callback(self.wrap("upstreamReceive"))
         self.downstream_event.setup_recv_callback(self.wrap("downstreamReceive"))
 
+        def my_partial():
+            self.wrap("doSensor", time.time())()
+
         # setup periodic sensor updates
-        ioloop.PeriodicCallback(
-            (lambda: self.wrap("doSensor", time.time())), 1000
-        ).start()
+
+        self.sensor_cb = ioloop.PeriodicCallback(my_partial, 1000)
+        self.sensor_cb.start()
+
         # ioloop.PeriodicCallback(self.wrap("doControl"), 10000).start()
 
         # take care of signals

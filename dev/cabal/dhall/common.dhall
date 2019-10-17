@@ -107,6 +107,8 @@ let deps =
           nobound "hxt"
       , hxt-xpath =
           nobound "hxt-xpath"
+      , recursion-schemes =
+          nobound "recursion-schemes"
       , refined =
           nobound "refined"
       , generic-data =
@@ -315,6 +317,7 @@ let libdep =
       , deps.pretty-simple
       , deps.typed-process
       , deps.hxt
+      , deps.recursion-schemes
       , deps.hxt-xpath
       , deps.json-schema
       , deps.yaml

@@ -30,6 +30,7 @@ module CPD.Core
     Objective (..)
   , X (..)
   , Direction (..)
+  , OExpr(..)
   )
 where
 
@@ -166,3 +167,13 @@ data Objective
 
 emptyObjective :: Objective
 emptyObjective = Objective [] Minimize
+
+data OExpr
+  = OValue SensorID
+  | OScalarMult Double OExpr
+  | OAdd OExpr OExpr
+  | OSub OExpr OExpr
+  | OMul OExpr OExpr
+  | ODiv OExpr OExpr
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON OExpr
+  deriving (Show, Eq, Generic, Data, MessagePack, Interpret, Inject)
