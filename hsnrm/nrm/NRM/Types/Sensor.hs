@@ -28,6 +28,7 @@ import NRM.Classes.Sensors
 import NRM.Types.DownstreamCmdID
 import NRM.Types.Topology.PackageID
 import qualified NRM.Types.Units as U
+import Numeric.Interval
 import Protolude
 
 newtype Tag = Tag Text
@@ -42,7 +43,7 @@ data PassiveSensor
       , passiveTags :: [Tag]
       , frequency :: U.Frequency
       , passiveSource :: CPD.Source
-      , passiveRange :: (Double, Double)
+      , passiveRange :: Interval Double
       , last :: Maybe (U.Time, Double)
       }
   deriving (Generic)
@@ -53,7 +54,7 @@ data ActiveSensor
       , activeTags :: [Tag]
       , process :: Double -> Double
       , activeSource :: CPD.Source
-      , activeRange :: (Double, Double)
+      , activeRange :: Interval Double
       }
 
 data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | Misc
@@ -78,7 +79,7 @@ instance ToCPDSensor ActiveSensorKey ActiveSensor where
   toCPDSensor (id, ActiveSensor {..}) =
     ( toS id
     , CPD.Sensor
-      { sensorMeta = CPD.Metadata (uncurry CPD.Interval activeRange)
+      { sensorMeta = CPD.Metadata activeRange
           (CPD.MaxFrequency maxFrequency)
       , source = activeSource
       , ..
@@ -90,8 +91,7 @@ instance ToCPDSensor PassiveSensorKey PassiveSensor where
   toCPDSensor (id, PassiveSensor {..}) =
     ( toS id
     , CPD.Sensor
-      { sensorMeta = CPD.Metadata (uncurry CPD.Interval passiveRange)
-          (CPD.MaxFrequency frequency)
+      { sensorMeta = CPD.Metadata passiveRange (CPD.MaxFrequency frequency)
       , source = passiveSource
       , ..
       }

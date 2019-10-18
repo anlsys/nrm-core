@@ -12,7 +12,7 @@ module NRM.Types.Topology.Package
   )
 where
 
-import Control.Lens
+import Control.Lens hiding ((...))
 import Data.Aeson
 import Data.Data
 import Data.Generics.Product
@@ -21,6 +21,7 @@ import Data.Maybe (fromJust)
 import Data.MessagePack
 import LensMap.Core
 import NRM.Node.Sysfs
+import Numeric.Interval
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Actuator as A
 import NRM.Types.Sensor as S
@@ -84,7 +85,7 @@ instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
         PassiveSensor
           { passiveTags = [Tag "power", Tag "RAPL"]
           , passiveSource = Source textID
-          , passiveRange = (0, fromuJ maxEnergy)
+          , passiveRange = 0 ... fromuJ maxEnergy
           , frequency = freq
           , perform = measureRAPLDir path <&> fmap (fromuJ . energy)
           , last = last <&> fmap fromuJ
@@ -92,4 +93,4 @@ instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
         where
           textID = show packageID
       setter rapl passiveSensor =
-        rapl & field @"max" .~ MaxEnergy (uJ (snd $ passiveRange passiveSensor))
+        rapl & field @"max" .~ MaxEnergy (uJ (sup $ passiveRange passiveSensor))

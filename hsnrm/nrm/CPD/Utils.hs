@@ -13,31 +13,31 @@ module CPD.Utils
   , ActionValidation (..)
   , combine
   , requiredSensors
-  , evalObjective
+  , eval
   )
 where
 
-import CPD.Core
-import CPD.Values
+import CPD.Core as CPD
+import CPD.Values as CPD
 import qualified Data.Map as DM
+import Numeric.Interval as I hiding (elem)
 import Protolude
 
-data MeasurementValidation = AdjustInterval Interval | MeasurementOk
+data MeasurementValidation = AdjustInterval (Interval Double) | MeasurementOk
 
 data ActionValidation = ActionOk | InvalidAction
 
 -- | validates a single sensor's range
-validateMeasurement :: Interval -> Double -> MeasurementValidation
-validateMeasurement (Interval a b) d
-  | a <= d && d <= b = MeasurementOk
-  | d < a = AdjustInterval $ Interval (2 * a - b) b
-  | otherwise = AdjustInterval $ Interval a (2 * b - a)
+validateMeasurement :: Interval Double -> Double -> MeasurementValidation
+validateMeasurement i x
+  | x `member` i = MeasurementOk
+  | x <= inf i = AdjustInterval $ (inf i - width i) ... sup i
+  | otherwise = AdjustInterval $ inf i ... (sup i + width i)
 
 validateAction :: Admissible -> Action -> ActionValidation
-validateAction (Admissible ds) (Action _actuator d) =
-  if d `elem` ds
-  then ActionOk
-  else InvalidAction
+validateAction (Admissible ds) (Action _actuator d)
+  | d `elem` ds = ActionOk
+  | otherwise = InvalidAction
 
 -- | Combines problems by adding sensor lists and actuator lists
 combine :: Problem -> Problem -> Maybe Problem
@@ -52,28 +52,19 @@ requiredSensors = fmap x . linearCombination . objective
 {-availableDiscreteActions :: Problem -> [Actions]-}
 {-availableDiscreteActions (Problem _ as _) = mconcat $ as <&> \aKv ->
   [Actions (aKv ^. field @"actuatorKey") a | a <- listDiscreteActuatorActions]-}
+data V = V Double (I.Interval Double)
 
-{-listDiscreteActuatorActions :: Actuator -> Actions-}
-{-listDiscreteActuatorActions = undefined-}
-evalObjective :: Map SensorID Double -> OExpr -> Maybe Double
-evalObjective m = \case
+eval :: Map SensorID V -> OExpr -> Maybe V
+eval m = \case
   (OValue sensorID) -> DM.lookup sensorID m
-  OScalarMult x a -> fmap (* x) (ev a)
-  OAdd a b -> do
-    x <- ev a
-    y <- ev b
-    return $ x + y
-  OSub a b -> do
-    x <- ev a
-    y <- ev b
-    return $ x - y
-  OMul a b -> do
-    x <- ev a
-    y <- ev b
-    return $ x * y
-  ODiv a b -> do
-    x <- ev a
-    y <- ev b
-    return $ x / y
+  OScalarMult s a -> ev a <&> \(V x i) -> V (s * x) $ singleton s * i
+  OAdd a b -> ev2 a b \(V x1 i1) (V x2 i2) -> V (x1 + x2) (i1 + i2)
+  OSub a b -> ev2 a b \(V x1 i1) (V x2 i2) -> V (x1 - x2) (i1 - i2)
+  OMul a b -> ev2 a b \(V x1 i1) (V x2 i2) -> V (x1 * x2) (i1 * i2)
+  ODiv a b -> ev2 a b \(V x1 i1) (V x2 i2) -> V (x1 / x2) (i1 / i2)
   where
-    ev = evalObjective m
+    ev = eval m
+    ev2 a b f = do
+      v1 <- ev a
+      v2 <- ev b
+      return $ f v1 v2

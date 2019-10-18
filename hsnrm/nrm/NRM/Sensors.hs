@@ -21,7 +21,7 @@ where
 import CPD.Core as CPD
 import CPD.Utils as CPD
 import CPD.Values as CPD
-import Control.Lens
+import Control.Lens hiding ((...))
 import Data.Generics.Product
 import Data.Map as DM
 import LensMap.Core
@@ -30,6 +30,7 @@ import NRM.Types.Configuration
 import NRM.Types.Sensor as S
 import NRM.Types.State
 import NRM.Types.Units
+import Numeric.Interval
 import Protolude
 
 cpdSensors :: NRMState -> Map SensorID CPD.Sensor
@@ -79,13 +80,13 @@ processPassiveSensor
   -> SensorID
   -> Double
   -> ProcessPassiveSensorOutput
-processPassiveSensor ps@(passiveRange -> (a, b)) time sensorID value
-  | value < a =
+processPassiveSensor ps@(passiveRange -> i) time sensorID value
+  | value < inf i =
     IllegalValueRemediation $
-      ps {last = Nothing, passiveRange = (Protolude.max 0 (b -2 * a), b)}
-  | b < value =
+      ps {last = Nothing, passiveRange = Protolude.max 0 (inf i) - width i ... sup i}
+  | sup i < value =
     IllegalValueRemediation $
-      ps {last = Nothing, passiveRange = (a, 2 * b - a)}
+      ps {last = Nothing, passiveRange = inf i ... sup i + width i}
   | otherwise =
     LegalMeasurement
       (ps & field @"last" ?~ (time, value))

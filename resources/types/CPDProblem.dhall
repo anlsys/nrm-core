@@ -17,7 +17,7 @@
             Text
         , sensorMeta :
             { range :
-                { min : Double, max : Double }
+                < I : { _1 : Double, _2 : Double } | Empty >
             , frequency :
                 { maxFrequency : { fromHz : Double } }
             }

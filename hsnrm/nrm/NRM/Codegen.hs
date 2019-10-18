@@ -50,7 +50,7 @@ import Prelude (String)
 -- | The main code generation binary.
 main :: IO ()
 main = do
-  _ : [(toS -> prefix)] <- getArgs
+  (toS -> prefix) : _ <- getArgs
   putText "Codegen: LibNRM C headers."
   putText $ "  Writing libnrm header to " <> prefix <> "/nrm_messaging.h"
   writeFile (toS $ prefix <> "/nrm_messaging.h") $ toS (licenseC <> libnrmHeader)

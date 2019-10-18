@@ -103,6 +103,8 @@ let deps =
           nobound "random"
       , random-fu =
           nobound "random-fu"
+      , intervals =
+          nobound "intervals"
       , hxt =
           nobound "hxt"
       , hxt-xpath =
@@ -311,6 +313,7 @@ let libdep =
       , deps.conduit
       , deps.conduit-extra
       , deps.resourcet
+      , deps.intervals
       , deps.neat-interpolation
       , deps.generic-aeson
       , deps.aeson-pretty

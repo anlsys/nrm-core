@@ -13,7 +13,7 @@ module NRM.Types.DownstreamCmd
   )
 where
 
-import Control.Lens
+import Control.Lens hiding ((...))
 import Data.Aeson
 import Data.Data
 import Data.Generics.Product
@@ -25,6 +25,7 @@ import NRM.Classes.Messaging
 import NRM.Types.DownstreamCmdID
 import NRM.Types.Sensor
 import NRM.Types.Units as Units
+import Numeric.Interval
 import Protolude
 
 data DownstreamCmd
@@ -48,13 +49,13 @@ instance
       (ScopedLens (_2 . lens getter setter))
     where
       getter (DownstreamCmd _maxValue ratelimit) =
-         ActiveSensor
+        ActiveSensor
           { activeTags = [Tag "perf"]
           , activeSource = Source $ show downstreamCmdID
-          , activeRange = (0, 1)
+          , activeRange = 0 ... 1
           , maxFrequency = ratelimit
           , process = identity
           }
       setter dc activeSensor =
         dc & field @"maxValue" .~
-          Operations (floor $ snd $ activeRange activeSensor)
+          Operations (floor . sup $ activeRange activeSensor)

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE DerivingVia #-}
 
 {-|
@@ -11,7 +12,7 @@ module CPD.Core
     Problem (..)
   , emptyProblem
   , Metadata (..)
-  , Interval (..)
+  , Interval
   , Admissible (..)
   , Discrete (..)
   , Frequency (..)
@@ -30,7 +31,7 @@ module CPD.Core
     Objective (..)
   , X (..)
   , Direction (..)
-  , OExpr(..)
+  , OExpr (..)
   )
 where
 
@@ -44,6 +45,7 @@ import Dhall
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import qualified NRM.Types.Units as Units
+import Numeric.Interval as I hiding (elem)
 import Protolude
 
 -- METADATA
@@ -76,14 +78,21 @@ newtype Frequency
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Frequency
 
-data Metadata = Metadata {range :: Interval, frequency :: Frequency}
+data Metadata = Metadata {range :: Interval Double, frequency :: Frequency}
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Metadata
 
-data Interval
-  = Interval {min :: Double, max :: Double}
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Interval
+deriving instance MessagePack (Interval Double)
+
+deriving instance Interpret (Interval Double)
+
+deriving instance Inject (Interval Double)
+
+deriving via GenericJSON (Interval Double) instance JSONSchema (Interval Double)
+
+deriving via GenericJSON (Interval Double) instance A.ToJSON (Interval Double)
+
+deriving via GenericJSON (Interval Double) instance A.FromJSON (Interval Double)
 
 newtype Admissible = Admissible {admissibleValues :: [Discrete]}
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)

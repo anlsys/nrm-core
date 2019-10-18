@@ -150,19 +150,39 @@
                                                         }
                                                     },
                                                     "range": {
-                                                        "required": [
-                                                            "min",
-                                                            "max"
-                                                        ],
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "max": {
-                                                                "type": "number"
+                                                        "oneOf": [
+                                                            {
+                                                                "required": [
+                                                                    "i"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "i": {
+                                                                        "items": [
+                                                                            {
+                                                                                "type": "number"
+                                                                            },
+                                                                            {
+                                                                                "type": "number"
+                                                                            }
+                                                                        ],
+                                                                        "type": "array"
+                                                                    }
+                                                                }
                                                             },
-                                                            "min": {
-                                                                "type": "number"
+                                                            {
+                                                                "required": [
+                                                                    "empty"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "empty": {
+                                                                        "type": "object",
+                                                                        "properties": {}
+                                                                    }
+                                                                }
                                                             }
-                                                        }
+                                                        ]
                                                     }
                                                 }
                                             }

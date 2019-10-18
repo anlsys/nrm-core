@@ -138,7 +138,7 @@ runshake as =
         ( runProcess_ $ setWorkingDir "hsnrm" $
           proc "cabal"
             [ "v2-run"
-            , "codegen a resources"
+            , "codegen ../resources/"
             ]
         )
     phony "codegen" $
@@ -146,7 +146,7 @@ runshake as =
         ( runProcess_ $ setWorkingDir "hsnrm" $
           proc "cabal"
             [ "v2-run"
-            , "codegen a resources"
+            , "codegen  ../resources/"
             ]
         )
     phony "client" $
