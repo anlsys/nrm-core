@@ -19,7 +19,7 @@ module NRM.Codegen
   )
 where
 
-import qualified CPD.Core
+--import qualified CPD.Core
 import qualified CPD.Values
 import Codegen.CHeader
 import Codegen.Dhall

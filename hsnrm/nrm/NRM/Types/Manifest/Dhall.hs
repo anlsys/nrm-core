@@ -14,7 +14,7 @@ module NRM.Types.Manifest.Dhall
   , I.Scheduler (..)
   , I.PowerPolicy (..)
   , I.Power (..)
-  , I.Monitoring (..)
+  , I.Instrumentation (..)
   , I.ImageType (..)
   , I.Image (..)
   )

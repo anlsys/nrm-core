@@ -37,8 +37,8 @@
         , slowdown =
             +1
         }
-    , monitoring =
-        { ratelimit = { fromHz = 1.0 } }
+    , instrumentation =
+        None { ratelimit : { fromHz : Double }, libnrmPath : Text }
     }
 , hwbind =
     False

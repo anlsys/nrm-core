@@ -38,7 +38,7 @@ data App
       , scheduler :: Maybe I.Scheduler
       , perfwrapper :: Maybe I.Perfwrapper
       , power :: Maybe I.Power
-      , monitoring :: Maybe I.Monitoring
+      , instrumentation :: Maybe I.Instrumentation
       }
   deriving (Generic)
 
@@ -77,7 +77,7 @@ toInternalApp app = D.App
   , scheduler = fromDefault scheduler D.scheduler
   , perfwrapper = fromDefault perfwrapper D.perfwrapper
   , power = fromDefault power D.power
-  , monitoring = fromDefault monitoring D.monitoring
+  , instrumentation = instrumentation app
   }
   where
     fromDefault :: Default a => (App -> Maybe c) -> (a -> c) -> c
@@ -102,7 +102,7 @@ fromInternalApp a = App
   , scheduler = toJust D.scheduler
   , perfwrapper = toJust D.perfwrapper
   , power = toJust D.power
-  , monitoring = toJust D.monitoring
+  , instrumentation = D.instrumentation a
   }
   where
     toJust :: (Eq a) => (D.App -> a) -> Maybe a

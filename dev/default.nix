@@ -43,7 +43,8 @@ let
   };
   unbreak = x:
     x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
-in rec {
+in pkgs // rec {
+
   cabalFile = dhallSpec:
     pkgs.runCommand "cabalFile" { } ''
       export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
@@ -136,7 +137,8 @@ in rec {
     buildInputs = [ pkgs.hwloc ];
 
     shellHook = ''
-      export PATH=$PATH:./dev/:./pynrm/bin:./hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm/
+      export NRMSO=./_build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
+      export PATH=$PATH:./dev/:./pynrm/bin:./_build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm
       export PYTHONPATH=$PYTHONPATH:./pynrm/
     '';
   };

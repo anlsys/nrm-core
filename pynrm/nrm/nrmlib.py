@@ -27,6 +27,13 @@ class HSO(CDLL):
             self.free(ptr)
             return res
 
+        def catched(*args):
+            try:
+                res = wrapped_fun(args)
+                return res
+            except e:
+                return e
+
         return wrapped_fun
 
     def __getattr__(self, name):

@@ -31,4 +31,14 @@ instance Examples Manifest where
               }
           }
         )
+      , ( "libnrm"
+        , def
+          { app = def
+              { instrumentation = Just $ Instrumentation
+                  { ratelimit = U.hz 1000000
+                  , libnrmPath = "~/lib/libnrm.so"
+                  }
+              }
+          }
+        )
       ]

@@ -15,6 +15,7 @@ module LMap.Map
   , LMap.Map.null
   , lookup
   , insert
+  , alter
   , delete
   , update
   , elems
@@ -56,6 +57,9 @@ lookup k (Map m) = DM.lookup k (DM.fromList m)
 
 insert :: Ord k => k -> a -> Map k a -> Map k a
 insert k x (Map m) = DM.insert k x (DM.fromList m) & DM.toList & fromList
+
+alter :: Ord k => (Maybe a -> Maybe a) -> k -> Map k a -> Map k a
+alter f k m = m & toList & DM.fromList & DM.alter f k & DM.toList & fromList
 
 delete :: Ord k => k -> Map k a -> Map k a
 delete k (Map m) = DM.delete k (DM.fromList m) & DM.toList & fromList

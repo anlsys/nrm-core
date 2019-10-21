@@ -104,9 +104,18 @@ behavior c st (Req clientid msg) =
             runSliceID .
             createSlice runSliceID $
             st
-        , StartChild cmdID runCmd runArgs
-          (env spec <> Env [("NRM_cmdID", toText cmdID)])
+        , StartChild cmdID runCmd runArgs . Env $ env spec & fromEnv &
+          LM.insert "NRM_CMDID"
+            (toText cmdID) &
+          LM.alter
+            ( let maybePath = (Manifest.instrumentation . Manifest.app) manifest <&> Manifest.libnrmPath
+             in \case
+                  Nothing -> maybePath
+                  Just preload -> maybePath <&> \x -> preload <> " " <> x
+            )
+            "LD_PRELOAD"
         )
+    -- <> Env [ ("LD_PRELOAD"=  ) | instrum <- instrumentation manifest ]
     UReq.ReqKillSlice UReq.KillSlice {..} -> do
       let (maybeSlice, st') = removeSlice killSliceID st
       return

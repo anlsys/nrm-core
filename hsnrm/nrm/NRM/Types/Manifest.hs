@@ -15,7 +15,7 @@ module NRM.Types.Manifest
   , Scheduler (..)
   , PowerPolicy (..)
   , Power (..)
-  , Monitoring (..)
+  , Instrumentation (..)
   , ImageType (..)
   , Perfwrapper (..)
   , Pw (..)
@@ -25,8 +25,8 @@ module NRM.Types.Manifest
 where
 
 import Data.Aeson
-import Data.Default
 import Data.Data
+import Data.Default
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
@@ -43,11 +43,11 @@ data Manifest
       , hwbind :: Bool
       , image :: Maybe Image
       }
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Manifest
 
 data SliceRuntime = Singularity | Nodeos | Dummy
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceRuntime
 
 data App
@@ -56,9 +56,9 @@ data App
       , scheduler :: Scheduler
       , perfwrapper :: Perfwrapper
       , power :: Power
-      , monitoring :: Monitoring
+      , instrumentation :: Maybe Instrumentation
       }
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON App
 
 data Slice
@@ -66,15 +66,15 @@ data Slice
       { cpus :: Integer
       , mems :: Integer
       }
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Slice
 
 data Scheduler = FIFO | HPC | Other Integer
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Scheduler
 
 data PowerPolicy = NoPowerPolicy | DDCM | DVFS | Combined
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON PowerPolicy
 
 data Power
@@ -83,11 +83,11 @@ data Power
       , profile :: Bool
       , slowdown :: Integer
       }
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Power
 
 data Perfwrapper = PerfwrapperDisabled | Perfwrapper Pw
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Perfwrapper
 
 data Pw
@@ -95,18 +95,19 @@ data Pw
       { perfFreq :: U.Frequency
       , perfLimit :: U.Operations
       }
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Pw
 
-newtype Monitoring
-  = Monitoring
+data Instrumentation
+  = Instrumentation
       { ratelimit :: U.Frequency
+      , libnrmPath :: Text
       }
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Monitoring
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Instrumentation
 
 data ImageType = Sif | Docker
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ImageType
 
 data Image
@@ -115,7 +116,7 @@ data Image
       , magetype :: ImageType
       , binds :: Maybe [Text]
       }
-  deriving (Eq, Show, Generic,Data, MessagePack, Interpret, Inject)
+  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Image
 
 instance Default Manifest where
@@ -142,16 +143,19 @@ instance Default App where
     , scheduler = FIFO
     , perfwrapper = def
     , power = def
-    , monitoring = def
+    , instrumentation = Nothing
     }
 
 instance Default Perfwrapper where
 
   def = PerfwrapperDisabled
 
-instance Default Monitoring where
+instance Default Instrumentation where
 
-  def = Monitoring {ratelimit = U.hz 1}
+  def = Instrumentation
+    { ratelimit = U.hz 1
+    , libnrmPath = "/usr/lib/libnrm.so"
+    }
 
 instance Default Slice where
 

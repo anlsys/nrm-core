@@ -16,6 +16,7 @@ where
 import qualified Data.ByteString as B
   ( getContents
   )
+import LMap.Map as LM
 import Data.Default
 import Dhall
 import qualified NRM.Types.Cmd as Cmd
@@ -313,7 +314,7 @@ run rc common = do
         , spec = Cmd.CmdSpec
           { cmd = Cmd.Command $ cmd rc
           , args = Cmd.Arguments $ Cmd.Arg <$> runargs rc
-          , env = Cmd.Env env
+          , env = Cmd.Env $ LM.fromList env
           }
         , detachCmd = detach rc
         , runSliceID = cn
