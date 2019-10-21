@@ -55,9 +55,9 @@ main = do
   putText $ "  Writing libnrm header to " <> prefix <> "/nrm_messaging.h"
   writeFile (toS $ prefix <> "/nrm_messaging.h") $ toS (licenseC <> libnrmHeader)
   putText "Codegen: JSON schemas"
-  verboseWriteSchema prefix "upstreamPub" upstreamPubSchema
-  verboseWriteSchema prefix "upstreamRep" upstreamRepSchema
-  verboseWriteSchema prefix "upstreamReq" upstreamReqSchema
+  --verboseWriteSchema prefix "upstreamPub" upstreamPubSchema
+  --verboseWriteSchema prefix "upstreamRep" upstreamRepSchema
+  --verboseWriteSchema prefix "upstreamReq" upstreamReqSchema
   verboseWriteSchema prefix "downstreamEvent" downstreamEventSchema
   generateDefaultConfigurations prefix
   where
@@ -174,7 +174,7 @@ generateDefaultConfigurations prefix = do
   putText "Codegen: Dhall types."
   typeToFile (Proxy :: Proxy CPD.Values.Measurements) $ toS prefix <> "/types/CPDMeasurements.dhall"
   typeToFile (Proxy :: Proxy CPD.Values.Actions) $ toS prefix <> "/types/CPDActions.dhall"
-  typeToFile (Proxy :: Proxy CPD.Core.Problem) $ toS prefix <> "/types/CPDProblem.dhall"
+  --typeToFile (Proxy :: Proxy CPD.Core.Problem) $ toS prefix <> "/types/CPDProblem.dhall"
   for_ [minBound .. maxBound] $ \t -> do
     let dest = toS prefix <> typeFile t
     putText $ "  Writing type for " <> show t <> " to " <> toS dest

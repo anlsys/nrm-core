@@ -12,7 +12,6 @@ module CPD.Utils
   , MeasurementValidation (..)
   , ActionValidation (..)
   , combine
-  , requiredSensors
   , eval
   )
 where
@@ -44,10 +43,6 @@ combine :: Problem -> Problem -> Maybe Problem
 combine (Problem a b goal) (Problem c d goal')
   | goal == goal' = Just $ Problem (a <> c) (b <> d) goal
   | otherwise = Nothing
-
--- | computes the list of sensors required for the goal to be computed entirely.
-requiredSensors :: Problem -> [SensorID]
-requiredSensors = fmap x . linearCombination . objective
 
 {-availableDiscreteActions :: Problem -> [Actions]-}
 {-availableDiscreteActions (Problem _ as _) = mconcat $ as <&> \aKv ->

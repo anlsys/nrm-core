@@ -1,5 +1,6 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE DerivingVia #-}
+
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 {-|
 Module      : CPD.Core
@@ -28,9 +29,7 @@ module CPD.Core
   , -- ** Definitions
     Actuator (..)
   , -- * Objective
-    Objective (..)
-  , X (..)
-  , Direction (..)
+    Objective
   , OExpr (..)
   )
 where
@@ -158,24 +157,12 @@ newtype Actuator = Actuator {actuatorRange :: [Discrete]}
   deriving (Interpret, Inject) via [Discrete]
 
 ------- OBJECTIVE
-data Direction = Minimize | Maximize
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Direction
-  deriving (Show, Eq, Generic, Data, MessagePack, Interpret, Inject)
+type Objective = Maybe OExpr
 
-data X = X {w :: Double, x :: SensorID}
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON X
-  deriving (Show, Eq, Generic, Data, MessagePack, Interpret, Inject)
-
-data Objective
-  = Objective
-      { linearCombination :: [X]
-      , direction :: Direction
-      }
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Objective
-  deriving (Show, Eq, Generic, Data, MessagePack, Interpret, Inject)
-
+--deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Objective
+--deriving (Show, Eq, Generic, Data, MessagePack, Interpret, Inject)
 emptyObjective :: Objective
-emptyObjective = Objective [] Minimize
+emptyObjective = Nothing
 
 data OExpr
   = OValue SensorID
