@@ -14,9 +14,9 @@ let
   hslib = rec {
     filter = path:
       builtins.filterSource (path: _:
-      (baseNameOf path != ".hdevtools.sock") && (baseNameOf path != ".ghc.*")
-      && (baseNameOf path != "result") && (baseNameOf path != "README")
-      && (baseNameOf path != "dist")) path;
+        (baseNameOf path != ".hdevtools.sock") && (baseNameOf path != ".ghc.*")
+        && (baseNameOf path != "result") && (baseNameOf path != "README")
+        && (baseNameOf path != "dist")) path;
   };
   nrmPythonPackages = pkgs.python37Packages.override {
     overrides = self: super: rec {
@@ -44,10 +44,6 @@ let
   unbreak = x:
     x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
 in rec {
-  dhall-to-cabal = (haskellPackages.callCabal2nix "dhall-to-cabal"
-    (builtins.fetchTarball
-    "https://github.com/dhall-lang/dhall-to-cabal/archive/1.3.4.0.tar.gz")) { };
-
   cabalFile = dhallSpec:
     pkgs.runCommand "cabalFile" { } ''
       export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
@@ -55,7 +51,7 @@ in rec {
       cp ${dhallSpec} cabal.dhall
       substituteInPlace cabal.dhall --replace "= ./dhall" "= ${./cabal/dhall}"
       GHCVERSION=$(${haskellPackages.ghc}/bin/ghc --numeric-version)
-      ${dhall-to-cabal}/bin/dhall-to-cabal <<< "./cabal.dhall \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
+      ${haskellPackages.dhall-to-cabal}/bin/dhall-to-cabal <<< "./cabal.dhall \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
     '';
 
   patchedSrc = source: rename: dhallFile:
