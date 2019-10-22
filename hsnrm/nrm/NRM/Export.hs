@@ -32,6 +32,7 @@ module NRM.Export
   )
 where
 
+import Control.Lens
 import qualified NRM.Behavior as B
 import qualified NRM.Classes.Messaging as M
 import qualified NRM.Optparse as O (parseArgDaemonCli)
@@ -99,24 +100,16 @@ showState = toS . pShow
 -- | Behave on downstream message
 downstreamReceive :: C.Cfg -> TS.NRMState -> Text -> Text -> IO (TS.NRMState, B.Behavior)
 downstreamReceive cfg s msg clientid =
-  B.behavior cfg s $
-    B.DownstreamEvent
-      ( fromMaybe
-        (panic "couldn't parse downstream client ID")
-        (DC.fromText clientid)
-      )
-      ( fromMaybe
-        (panic "couldn't decode downstream rcv")
-        (M.decodeT $ toS msg)
-      )
+  B.DownstreamEvent <$> (DC.fromText clientid) <*> (M.decodeT $ toS msg) & \case
+    Nothing -> return (s, B.Log "couldn't decode downstream receive")
+    Just ev -> B.behavior cfg s ev
 
 -- | Behave on upstream message
 upstreamReceive :: C.Cfg -> TS.NRMState -> Text -> Text -> IO (TS.NRMState, B.Behavior)
 upstreamReceive cfg s msg clientid =
-  B.behavior cfg s $
-    B.Req
-      (fromMaybe (panic "couldn't parse upstream client ID") (UC.fromText clientid))
-      (fromMaybe (panic "couldn't decode downstream rcv") (M.decodeT msg))
+  B.Req <$> (UC.fromText clientid) <*> (M.decodeT msg) & \case
+    Nothing -> return (s, B.Log "couldn't decode upstream receive")
+    Just ev -> B.behavior cfg s ev
 
 -- | when it's time to activate a sensor
 doSensor :: C.Cfg -> TS.NRMState -> Double -> IO (TS.NRMState, B.Behavior)
@@ -149,13 +142,9 @@ doStderr = handleTag URep.StderrOutput
 -- | when a command was properly started.
 registerCmdSuccess :: C.Cfg -> TS.NRMState -> Text -> Int -> IO (TS.NRMState, B.Behavior)
 registerCmdSuccess cfg s cmdIDT pid =
-  B.behavior
-    cfg
-    s
-    ( B.RegisterCmd
-      (fromMaybe (panic "couldn't decode cmdID") (Cmd.fromText cmdIDT))
-      (B.Launched (Process.ProcessID $ SPT.CPid $ fromIntegral pid))
-    )
+  B.RegisterCmd <$> (Cmd.fromText cmdIDT) ?? B.Launched (Process.ProcessID $ SPT.CPid $ fromIntegral pid) & \case
+    Nothing -> return (s, B.Log "couldn't decode cmdID in registerCmdSuccess nrm.so call")
+    Just ev -> B.behavior cfg s ev
 
 -- | when a command failed even starting.
 registerCmdFailure :: C.Cfg -> TS.NRMState -> Text -> IO (TS.NRMState, B.Behavior)

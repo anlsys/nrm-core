@@ -13,7 +13,7 @@ where
 
 {-import qualified NRM.Types.Messaging.UpstreamReq as -}
 import qualified CPD.Core as CPD
-import qualified CPD.Text as CPD
+--import qualified CPD.Text as CPD
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import qualified Data.ByteString as BS
 import Data.Restricted
@@ -140,11 +140,9 @@ reqrep s opts = \case
               $sensorcount sensor(s) currently registered.
               CPD Internal view
                $cpdT
-              CPD Dhall view
-               $cpdTD
              |]
           where
-            cpdTD = CPD.showProblemDhall cpd
+            --cpdTD = CPD.showProblemDhall cpd
             cpdT = toS $ pShow cpd
             actuatorcount = show $ length (CPD.actuators cpd)
             sensorcount = show $ length (CPD.sensors cpd)

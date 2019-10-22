@@ -148,7 +148,7 @@ runshake as =
           proc "cabal"
             [ "v2-run"
             , "--builddir=../_build"
-            , "codegen"," ../resources/"
+            , "codegen","../resources/"
             ]
         )
     phony "client" $

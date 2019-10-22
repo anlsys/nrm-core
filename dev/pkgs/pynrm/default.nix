@@ -17,6 +17,7 @@ pythonPackages.buildPythonPackage {
   preBuild = ''
     rm nrm/schemas/downstreamEvent.json
     cp ${resources}/share/downstreamEvent.json nrm/schemas/
-    substituteInPlace bin/nrmd --replace os.environ['NRMSO'] ${hsnrm}/bin/nrm.so
+    substituteInPlace bin/nrmd \
+      --replace "os.environ['NRMSO']" \"${hsnrm}/bin/nrm.so\"
   '';
 }

@@ -34,8 +34,8 @@ data Event
   | CmdPause CmdHeader
   | ThreadProgress ThreadHeader Progress
   | ThreadPause ThreadHeader
-  | ThreadPhaseContext ThreadHeader PhaseContext
-  | ThreadPhasePause ThreadHeader
+--  | ThreadPhaseContext ThreadHeader PhaseContext
+--  | ThreadPhasePause ThreadHeader
   deriving (Generic, MessagePack)
 
 data CmdHeader
@@ -43,15 +43,15 @@ data CmdHeader
       { cmdID :: Cmd.CmdID
       , timestamp :: U.Time
       }
-  deriving (Show ,Generic, MessagePack)
+  deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdHeader
 
 data ThreadHeader
   = ThreadHeader
       { threadCmdID :: Cmd.CmdID
       , processID :: P.ProcessID
-      , taskID :: Text
-      , threadID :: DownstreamThreadID
+      , taskID :: TaskID
+      , threadID :: ThreadID
       }
   deriving (Generic, MessagePack)
 
@@ -67,7 +67,7 @@ newtype Performance
       { perf :: U.Operations
       }
   deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Progress
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Performance
 
 data PhaseContext
   = PhaseContext
@@ -88,9 +88,69 @@ instance M.NRMMessage Event J.Event where
         , timestamp = U.fromSeconds timestamp
         , perf = U.fromOps perf
         }
-    _ -> panic "Non-Cmd downstream API not implemented yet."
+    CmdPause (CmdHeader cmdID timestamp) ->
+      J.CmdPause
+        { cmdID = Cmd.toText cmdID
+        , timestamp = U.fromSeconds timestamp
+        }
+    ThreadProgress
+      (ThreadHeader threadCmdID processID taskID threadID)
+      (Progress progress) ->
+        J.ThreadProgress
+          { cmdID = Cmd.toText threadCmdID
+          , processID = fromIntegral $ P.rawPid processID
+          , taskID = fromIntegral taskID
+          , threadID = fromIntegral threadID
+          , payload = U.fromProgress progress
+          }
+    ThreadPause (ThreadHeader threadCmdID processID taskID threadID) ->
+      J.ThreadPause
+        { cmdID = Cmd.toText threadCmdID
+        , processID = fromIntegral processID
+        , taskID = fromIntegral taskID
+        , threadID = fromIntegral threadID
+        }
+--    ThreadPhaseContext
+--      (ThreadHeader threadCmdID processID taskID threadID)
+--      (PhaseContext cpu startcompute endcompute startbarrier endbarrier) ->
+--        J.ThreadPhaseContext
+--          { cmdID = Cmd.toText threadCmdID
+--          , processID = fromIntegral processID
+--          , taskID = fromIntegral taskID
+--          , threadID = fromIntegral threadID
+--          , cpu = cpu
+--          , startcompute = startcompute
+--          , endcompute = endcompute
+--          , startbarrier = startbarrier
+--          , endbarrier = endbarrier
+--          }
+--    ThreadPhasePause (ThreadHeader threadCmdID processID taskID threadID) ->
+--      J.ThreadPhasePause
+--        { cmdID = Cmd.toText threadCmdID
+--        , processID = fromIntegral processID
+--        , taskID = fromIntegral taskID
+--        , threadID = fromIntegral threadID
+--        }
 
   fromJ = \case
     J.CmdPerformance {..} ->
       CmdPerformance (CmdHeader (fromJust $ Cmd.fromText cmdID) (timestamp & U.seconds)) (Performance $ U.Operations perf)
-    _ -> panic "Non-Cmd downstream API not implemented yet."
+    J.CmdPause {..} ->
+      CmdPause (CmdHeader (fromJust $ Cmd.fromText cmdID) (timestamp & U.seconds))
+    J.ThreadProgress {..} ->
+      ThreadProgress
+        ( ThreadHeader
+          (fromJust $ Cmd.fromText cmdID)
+          (fromInteger $ toInteger processID)
+          (fromInteger $ toInteger taskID)
+          (fromInteger $ toInteger threadID)
+        )
+        (Progress (payload & U.progress))
+    J.ThreadPause {..} ->
+      ThreadPause
+        ( ThreadHeader
+          (fromJust $ Cmd.fromText cmdID)
+          (fromInteger $ toInteger processID)
+          (fromInteger $ toInteger taskID)
+          (fromInteger $ toInteger threadID)
+        )

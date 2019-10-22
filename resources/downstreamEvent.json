@@ -36,16 +36,12 @@
                 "cmdPause": {
                     "required": [
                         "cmdID",
-                        "timestamp",
-                        "perf"
+                        "timestamp"
                     ],
                     "type": "object",
                     "properties": {
                         "cmdID": {
                             "type": "string"
-                        },
-                        "perf": {
-                            "type": "number"
                         },
                         "timestamp": {
                             "type": "number"
@@ -74,16 +70,16 @@
                             "type": "string"
                         },
                         "taskID": {
-                            "type": "string"
+                            "type": "number"
                         },
                         "processID": {
-                            "type": "string"
+                            "type": "number"
                         },
                         "payload": {
                             "type": "number"
                         },
                         "threadID": {
-                            "type": "string"
+                            "type": "number"
                         }
                     }
                 }
@@ -108,95 +104,13 @@
                             "type": "string"
                         },
                         "taskID": {
-                            "type": "string"
+                            "type": "number"
                         },
                         "processID": {
-                            "type": "string"
+                            "type": "number"
                         },
                         "threadID": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "required": [
-                "threadPhaseContext"
-            ],
-            "type": "object",
-            "properties": {
-                "threadPhaseContext": {
-                    "required": [
-                        "cmdID",
-                        "processID",
-                        "taskID",
-                        "threadID",
-                        "cpu",
-                        "startcompute",
-                        "endcompute",
-                        "startbarrier",
-                        "endbarrier"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "cmdID": {
-                            "type": "string"
-                        },
-                        "endcompute": {
                             "type": "number"
-                        },
-                        "endbarrier": {
-                            "type": "number"
-                        },
-                        "startbarrier": {
-                            "type": "number"
-                        },
-                        "startcompute": {
-                            "type": "number"
-                        },
-                        "taskID": {
-                            "type": "string"
-                        },
-                        "processID": {
-                            "type": "string"
-                        },
-                        "threadID": {
-                            "type": "string"
-                        },
-                        "cpu": {
-                            "type": "number"
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "required": [
-                "threadPhasePause"
-            ],
-            "type": "object",
-            "properties": {
-                "threadPhasePause": {
-                    "required": [
-                        "cmdID",
-                        "processID",
-                        "taskID",
-                        "threadID"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "cmdID": {
-                            "type": "string"
-                        },
-                        "taskID": {
-                            "type": "string"
-                        },
-                        "processID": {
-                            "type": "string"
-                        },
-                        "threadID": {
-                            "type": "string"
                         }
                     }
                 }

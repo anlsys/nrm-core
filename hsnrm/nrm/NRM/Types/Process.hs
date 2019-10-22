@@ -46,8 +46,9 @@ isDone ProcessState {..} = case ended of
   Just exc | stdoutFinished && stderrFinished -> Just exc
   _ -> Nothing
 
-newtype ProcessID = ProcessID P.CPid
+newtype ProcessID = ProcessID {rawPid :: P.CPid}
   deriving (Eq, Ord, Show, Read, Generic, Data)
+  deriving (Num,Real,Enum,Integral) via P.CPid
 
 instance MessagePack ProcessID where
 

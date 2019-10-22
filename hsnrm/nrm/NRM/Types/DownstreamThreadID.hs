@@ -8,6 +8,8 @@ Maintainer  : fre@freux.fr
 -}
 module NRM.Types.DownstreamThreadID
   ( DownstreamThreadID (..)
+  , TaskID (..)
+  , ThreadID (..)
   )
 where
 
@@ -31,7 +33,9 @@ data DownstreamThreadID
 newtype TaskID = TaskID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON TaskID
+  deriving (Num, Real, Enum, Integral) via Int
 
 newtype ThreadID = ThreadID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ThreadID
+  deriving (Num, Real, Enum, Integral) via Int

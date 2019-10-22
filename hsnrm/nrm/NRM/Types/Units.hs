@@ -12,7 +12,9 @@ module NRM.Types.Units
   ( -- * Operations
     Operations (..)
   , -- * Application Progress
-    Progress (..)
+    Progress
+  , fromProgress
+  , progress
   , -- * Frequency
     Frequency
   , hz
@@ -47,7 +49,7 @@ newtype Operations = Operations {fromOps :: Int}
   deriving (Eq, Ord, Generic, Data, MessagePack, Interpret, Inject)
   deriving (Show, JSONSchema, ToJSON, FromJSON) via Int
 
-newtype Progress = Progress Int
+newtype Progress = Progress {fromProgress :: Int}
   deriving (Generic, Data, MessagePack)
   deriving (Show, JSONSchema, ToJSON, FromJSON) via Int
 
@@ -66,6 +68,10 @@ newtype Time = Time {fromuS :: Double}
 newtype Energy = Energy {fromuJ :: Double}
   deriving (Eq, Generic, Data, Inject, Interpret, MessagePack)
   deriving (Show, JSONSchema, ToJSON, FromJSON) via Double
+
+-- | Microjoule value constructor.
+progress :: Int -> Progress
+progress = Progress
 
 -- | Microjoule value constructor.
 uJ :: Double -> Energy

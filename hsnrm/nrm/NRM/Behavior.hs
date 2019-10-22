@@ -178,9 +178,9 @@ behavior _ st DoShutdown = bhv st NoBehavior
 behavior cfg st (DownstreamEvent clientid msg) =
   msg & \case
     DEvent.ThreadProgress _ _ -> return (st, Log "unimplemented")
-    DEvent.ThreadPhaseContext _ _ -> return (st, Log "unimplemented")
+    --DEvent.ThreadPhaseContext _ _ -> return (st, Log "unimplemented")
     DEvent.ThreadPause _ -> return (st, Log "unimplemented")
-    DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented")
+    --DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented")
     DEvent.CmdPerformance cmdHeader@DEvent.CmdHeader {..} DEvent.Performance {..} ->
       Sensors.process cfg timestamp st (Sensor.DownstreamCmdKey clientid)
         (U.fromOps perf & fromIntegral) & \case

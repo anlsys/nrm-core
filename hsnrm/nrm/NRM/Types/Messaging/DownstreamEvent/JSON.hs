@@ -22,36 +22,35 @@ data Event
   | CmdPause
       { cmdID :: Text
       , timestamp :: Double
-      , perf :: Int
       }
   | ThreadProgress
       { cmdID :: Text
-      , processID :: Text
-      , taskID :: Text
-      , threadID :: Text
+      , processID :: Int
+      , taskID :: Int
+      , threadID :: Int
       , payload :: Int
       }
   | ThreadPause
       { cmdID :: Text
-      , processID :: Text
-      , taskID :: Text
-      , threadID :: Text
+      , processID :: Int
+      , taskID :: Int
+      , threadID :: Int
       }
-  | ThreadPhaseContext
-      { cmdID :: Text
-      , processID :: Text
-      , taskID :: Text
-      , threadID :: Text
-      , cpu :: Int
-      , startcompute :: Int
-      , endcompute :: Int
-      , startbarrier :: Int
-      , endbarrier :: Int
-      }
-  | ThreadPhasePause
-      { cmdID :: Text
-      , processID :: Text
-      , taskID :: Text
-      , threadID :: Text
-      }
+--  | ThreadPhaseContext
+--      { cmdID :: Text
+--      , processID :: Int
+--      , taskID :: Int
+--      , threadID :: Int
+--      , cpu :: Int
+--      , startcompute :: Int
+--      , endcompute :: Int
+--      , startbarrier :: Int
+--      , endbarrier :: Int
+--      }
+--  | ThreadPhasePause
+--      { cmdID :: Text
+--      , processID :: Int
+--      , taskID :: Int
+--      , threadID :: Int
+--      }
   deriving (Generic, CHeaderGen)

@@ -21,7 +21,7 @@ import subprocess
 import uuid
 from nrm import messaging
 
-logger = logging.getLogger('perf-wrapper')
+logger = logging.getLogger("perf-wrapper")
 
 
 class PerfWrapper(object):
@@ -35,12 +35,18 @@ class PerfWrapper(object):
         pass
 
     def shutdown(self):
-        self.downstream_event.send(cmdExit={"cmdID": self.cmdID})
+        self.downstream_event.send(
+            cmdPause={"cmdID": self.cmdID, "timestamp": time.time()}
+        )
 
     def performance_report(self, performance):
-        self.downstream_event.send(cmdPerformance={
-            "cmdID": self.cmdID, "timestamp": time.time(),"perf": performance
-        })
+        self.downstream_event.send(
+            cmdPerformance={
+                "cmdID": self.cmdID,
+                "timestamp": time.time(),
+                "perf": performance,
+            }
+        )
 
     def setup(self):
         downstream_url = "ipc:///tmp/nrm-downstream-event"
@@ -48,7 +54,7 @@ class PerfWrapper(object):
         logger.info("connecting downstream pub")
         self.downstream_event.connect()
         logger.info("downstream pub socket connected to: %s", downstream_url)
-        self.cmdID = os.environ.get('NRM_cmdID')
+        self.cmdID = os.environ.get("NRM_CMDID")
         if self.cmdID is None:
             logger.error("missing cmdID from environment.")
             exit(1)
@@ -58,14 +64,15 @@ class PerfWrapper(object):
 
     def main(self):
         parser = argparse.ArgumentParser()
-        parser.add_argument("-v", "--verbose",
-                            help="verbose logging information",
-                            action='store_true')
-        parser.add_argument("-f", "--frequency",
-                            help="sampling frequency in ms",
-                            type=int, default=1000)
-        parser.add_argument("cmd", help="command and arguments",
-                            nargs=argparse.REMAINDER)
+        parser.add_argument(
+            "-v", "--verbose", help="verbose logging information", action="store_true"
+        )
+        parser.add_argument(
+            "-f", "--frequency", help="sampling frequency in ms", type=int, default=1000
+        )
+        parser.add_argument(
+            "cmd", help="command and arguments", nargs=argparse.REMAINDER
+        )
         args = parser.parse_args()
 
         if args.verbose:
@@ -79,13 +86,24 @@ class PerfWrapper(object):
         # There is no mkstemp for FIFOs but we can securely create a temporary
         # directory and then create a FIFO inside of it.
         tmpdir = tempfile.mkdtemp()
-        fifoname = os.path.join(tmpdir, 'perf-fifo')
+        fifoname = os.path.join(tmpdir, "perf-fifo")
         logger.info("fifoname: %r", fifoname)
         os.mkfifo(fifoname, 0o600)
 
-        perf_tool_path = os.environ.get('PERF', 'perf')
-        argv = [perf_tool_path, 'stat', '-e', 'instructions', '-x', ',',
-                '-I', str(args.frequency), '-o', fifoname, '--']
+        perf_tool_path = os.environ.get("PERF", "perf")
+        argv = [
+            perf_tool_path,
+            "stat",
+            "-e",
+            "instructions",
+            "-x",
+            ",",
+            "-I",
+            str(args.frequency),
+            "-o",
+            fifoname,
+            "--",
+        ]
         argv.extend(args.cmd)
         logger.info("argv: %r", argv)
 
@@ -94,7 +112,7 @@ class PerfWrapper(object):
         # This blocks until the other end opens as well so we need to invoke
         # it after Popen.
         # FIXME: will deadlock if Popen fails (say, no perf).
-        fifo = open(fifoname, 'r')
+        fifo = open(fifoname, "r")
 
         last_time = 0.0
         # "for line in fifo" idiom didn't work for me here -- Python was
@@ -105,14 +123,14 @@ class PerfWrapper(object):
                 break
 
             line = line.strip()
-            if len(line) == 0 or line[0] == '#':
+            if len(line) == 0 or line[0] == "#":
                 continue
-            tokens = line.split(',')
+            tokens = line.split(",")
 
             logger.info("tokens: %r", tokens)
 
             time = float(tokens[0])
-            if tokens[1] == '<not counted>':
+            if tokens[1] == "<not counted>":
                 instructions = 0
             else:
                 instructions = int(tokens[1])
