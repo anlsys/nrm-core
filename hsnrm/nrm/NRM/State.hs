@@ -25,10 +25,8 @@ module NRM.State
   )
 where
 
-import CPD.Core as CPD
 import Data.Map as DM
 import LMap.Map as LM
-import qualified NRM.CPD
 import NRM.Node.Hwloc
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
@@ -60,23 +58,22 @@ initialState c = do
     getDefaultRAPLDirs (toS $ Cfg.raplPath $ raplCfg c) <&> \case
       Just (RAPLDirs rapldirs) -> Protolude.foldl goRAPL packages' (LM.toList rapldirs)
       Nothing -> packages'
-  let s = NRMState
-        { cpd = CPD.emptyProblem
-        , slices = LM.fromList []
-        , pus = LM.fromList $ (,PU) <$> selectPUIDs hwl
-        , cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl
-        , dummyRuntime = if dummy c
-        then Just CD.emptyRuntime
-        else Nothing
-        , singularityRuntime = if singularity c
-        then Just SingularityRuntime
-        else Nothing
-        , nodeosRuntime = if nodeos c
-        then Just NodeosRuntime
-        else Nothing
-        , ..
-        }
-   in return $ s {cpd = NRM.CPD.toCPD s}
+  return
+    NRMState
+      { slices = LM.fromList []
+      , pus = LM.fromList $ (,PU) <$> selectPUIDs hwl
+      , cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl
+      , dummyRuntime = if dummy c
+      then Just CD.emptyRuntime
+      else Nothing
+      , singularityRuntime = if singularity c
+      then Just SingularityRuntime
+      else Nothing
+      , nodeosRuntime = if nodeos c
+      then Just NodeosRuntime
+      else Nothing
+      , ..
+      }
   where
     goRAPL
       :: LM.Map PackageID Package

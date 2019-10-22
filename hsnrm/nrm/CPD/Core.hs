@@ -151,7 +151,7 @@ instance IsString ActuatorID where
 
   fromString x = fromMaybe (panic "couldn't decode ActuatorID in FromString instance") (A.decode $ toS x)
 
-newtype Actuator = Actuator {actuatorRange :: [Discrete]}
+newtype Actuator = Actuator {actions :: [Discrete]}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator
   deriving (Show, Generic, Data, MessagePack)
   deriving (Interpret, Inject) via [Discrete]

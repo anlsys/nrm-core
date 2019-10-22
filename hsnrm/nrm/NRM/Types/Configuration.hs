@@ -47,6 +47,7 @@ data Cfg
       , perf :: Text
       , argo_perf_wrapper :: Cmd.Command
       , argo_nodeos_config :: Cmd.Command
+      , libnrmPath :: Maybe Text
       , pmpi_lib :: Text
       , singularity :: Bool
       , dummy :: Bool
@@ -120,6 +121,7 @@ instance Default Cfg where
     , perf = "perf"
     , argo_perf_wrapper = "nrm-perfwrapper"
     , argo_nodeos_config = "argo_nodeos_config"
+    , libnrmPath = Nothing
     , pmpi_lib = "pmpi_lib"
     , singularity = False
     , dummy = True

@@ -36,7 +36,6 @@ instance Examples Manifest where
           { app = def
               { instrumentation = Just $ Instrumentation
                   { ratelimit = U.hz 1000000
-                  , libnrmPath = "~/lib/libnrm.so"
                   }
               }
           }

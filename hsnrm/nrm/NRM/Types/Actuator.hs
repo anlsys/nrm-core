@@ -30,12 +30,11 @@ instance StringConv ActuatorKey CPD.ActuatorID where
 
   strConv _ = CPD.ActuatorID . show
 
---class ToCPDActuator k a where
 instance ToCPDActuator ActuatorKey Actuator where
 
   toCPDActuator (id, Actuator {..}) =
     ( toS id
     , CPD.Actuator
-      { actuatorRange = CPD.DiscreteDouble <$> actions
+      { actions = CPD.DiscreteDouble <$> actions
       }
     )

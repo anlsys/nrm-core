@@ -108,7 +108,7 @@ behavior c st (Req clientid msg) =
           LM.insert "NRM_CMDID"
             (toText cmdID) &
           LM.alter
-            ( let maybePath = (Manifest.instrumentation . Manifest.app) manifest <&> Manifest.libnrmPath
+            ( let maybePath = (Manifest.instrumentation . Manifest.app) manifest <&> Cfg.libnrmPath
              in \case
                   Nothing -> maybePath
                   Just preload -> maybePath <&> \x -> preload <> " " <> x

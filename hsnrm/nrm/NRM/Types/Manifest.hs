@@ -101,7 +101,6 @@ data Pw
 data Instrumentation
   = Instrumentation
       { ratelimit :: U.Frequency
-      , libnrmPath :: Text
       }
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Instrumentation
@@ -154,7 +153,6 @@ instance Default Instrumentation where
 
   def = Instrumentation
     { ratelimit = U.hz 1
-    , libnrmPath = "/usr/lib/libnrm.so"
     }
 
 instance Default Slice where

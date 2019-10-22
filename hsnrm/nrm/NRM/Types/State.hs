@@ -28,7 +28,6 @@ module NRM.Types.State
   )
 where
 
-import qualified CPD.Core as CPD
 import Control.Lens
 import Data.Aeson
 import Data.Data
@@ -51,8 +50,7 @@ import Protolude
 
 data NRMState
   = NRMState
-      { cpd :: CPD.Problem
-      , pus :: LM.Map PUID PU
+      { pus :: LM.Map PUID PU
       , cores :: LM.Map CoreID Core
       , packages :: LM.Map PackageID Package
       , slices :: LM.Map SliceID Slice
