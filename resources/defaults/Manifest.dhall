@@ -35,7 +35,7 @@
             +1
         }
     , instrumentation =
-        None { ratelimit : { fromHz : Double }, libnrmPath : Text }
+        None { ratelimit : { fromHz : Double } }
     }
 , hwbind =
     False

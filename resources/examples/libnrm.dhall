@@ -35,8 +35,7 @@
             +1
         }
     , instrumentation =
-        Some
-        { ratelimit = { fromHz = 1000000.0 }, libnrmPath = "~/lib/libnrm.so" }
+        Some { ratelimit = { fromHz = 1000000.0 } }
     }
 , hwbind =
     False

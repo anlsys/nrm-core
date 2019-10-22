@@ -35,7 +35,7 @@
             Integer
         }
     , instrumentation :
-        Optional { ratelimit : { fromHz : Double }, libnrmPath : Text }
+        Optional { ratelimit : { fromHz : Double } }
     }
 , hwbind :
     Bool

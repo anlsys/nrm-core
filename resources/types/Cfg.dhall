@@ -20,6 +20,8 @@
     Text
 , argo_nodeos_config :
     Text
+, libnrmPath :
+    Optional Text
 , pmpi_lib :
     Text
 , singularity :

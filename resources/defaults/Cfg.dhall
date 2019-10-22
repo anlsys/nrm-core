@@ -20,6 +20,8 @@
     "nrm-perfwrapper"
 , argo_nodeos_config =
     "argo_nodeos_config"
+, libnrmPath =
+    None Text
 , pmpi_lib =
     "pmpi_lib"
 , singularity =

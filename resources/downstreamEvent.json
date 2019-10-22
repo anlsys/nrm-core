@@ -115,6 +115,88 @@
                     }
                 }
             }
+        },
+        {
+            "required": [
+                "threadPhaseContext"
+            ],
+            "type": "object",
+            "properties": {
+                "threadPhaseContext": {
+                    "required": [
+                        "cmdID",
+                        "processID",
+                        "taskID",
+                        "threadID",
+                        "cpu",
+                        "startcompute",
+                        "endcompute",
+                        "startbarrier",
+                        "endbarrier"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "cmdID": {
+                            "type": "string"
+                        },
+                        "endcompute": {
+                            "type": "number"
+                        },
+                        "endbarrier": {
+                            "type": "number"
+                        },
+                        "startbarrier": {
+                            "type": "number"
+                        },
+                        "startcompute": {
+                            "type": "number"
+                        },
+                        "taskID": {
+                            "type": "number"
+                        },
+                        "processID": {
+                            "type": "number"
+                        },
+                        "threadID": {
+                            "type": "number"
+                        },
+                        "cpu": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "threadPhasePause"
+            ],
+            "type": "object",
+            "properties": {
+                "threadPhasePause": {
+                    "required": [
+                        "cmdID",
+                        "processID",
+                        "taskID",
+                        "threadID"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "cmdID": {
+                            "type": "string"
+                        },
+                        "taskID": {
+                            "type": "number"
+                        },
+                        "processID": {
+                            "type": "number"
+                        },
+                        "threadID": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
         }
     ]
 }

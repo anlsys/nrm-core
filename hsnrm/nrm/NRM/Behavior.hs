@@ -21,8 +21,8 @@ import NRM.Sensors as Sensors
 import NRM.State
 import NRM.Types.Behavior
 import NRM.Types.Cmd
-import qualified NRM.Types.Configuration as Cfg
-import qualified NRM.Types.Manifest as Manifest
+import NRM.Types.Configuration as Cfg
+import NRM.Types.Manifest as Manifest
 import qualified NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.UpstreamPub as UPub
 import qualified NRM.Types.Messaging.UpstreamRep as URep
@@ -104,17 +104,15 @@ behavior c st (Req clientid msg) =
             runSliceID .
             createSlice runSliceID $
             st
-        , StartChild cmdID runCmd runArgs . Env $ env spec & fromEnv &
-          LM.insert "NRM_CMDID"
-            (toText cmdID) &
-          LM.alter
-            ( let maybePath = (Manifest.instrumentation . Manifest.app) manifest <&> Cfg.libnrmPath
-             in \case
-                  Nothing -> maybePath
-                  Just preload -> maybePath <&> \x -> preload <> " " <> x
-            )
-            "LD_PRELOAD"
+        , StartChild cmdID runCmd runArgs $
+          ( Env $ env spec & fromEnv &
+            LM.insert "NRM_CMDID" (toText cmdID)
+          ) &
+          mayInjectLibnrmPreload c manifest
         )
+    --Just preload -> maybePath <&> \x -> preload <> " " <> x
+    --"LD_PRELOAD"
+
     -- <> Env [ ("LD_PRELOAD"=  ) | instrum <- instrumentation manifest ]
     UReq.ReqKillSlice UReq.KillSlice {..} -> do
       let (maybeSlice, st') = removeSlice killSliceID st
@@ -256,3 +254,21 @@ folder time (s, ms) (k, ScopedLens l) =
           processPassiveSensorFailure ps time & \case
             LegalFailure -> (s, ms)
             IllegalFailureRemediation sensor' -> (s & l .~ sensor', Nothing)
+
+mayInjectLibnrmPreload :: Cfg -> Manifest -> Env -> Env
+mayInjectLibnrmPreload c manifest (Env env) =
+  Env $
+    let maybePath = do
+          ratelimit <- (Manifest.instrumentation . Manifest.app) manifest <&> Manifest.ratelimit
+          libnrmPath <- Cfg.libnrmPath c
+          return (ratelimit, libnrmPath)
+     in maybePath & \case
+          Nothing -> env
+          Just (ratelimit, path) ->
+            env & LM.insert "NRM_RATELIMIT" (show $ U.fromHz ratelimit) &
+              LM.alter
+                ( \case
+                  Nothing -> Just path
+                  Just x -> Just $ x <> " " <> path
+                )
+                "LD_PRELOAD"

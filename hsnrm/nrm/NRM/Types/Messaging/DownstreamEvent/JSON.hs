@@ -36,21 +36,21 @@ data Event
       , taskID :: Int
       , threadID :: Int
       }
---  | ThreadPhaseContext
---      { cmdID :: Text
---      , processID :: Int
---      , taskID :: Int
---      , threadID :: Int
---      , cpu :: Int
---      , startcompute :: Int
---      , endcompute :: Int
---      , startbarrier :: Int
---      , endbarrier :: Int
---      }
---  | ThreadPhasePause
---      { cmdID :: Text
---      , processID :: Int
---      , taskID :: Int
---      , threadID :: Int
---      }
+  | ThreadPhaseContext
+      { cmdID :: Text
+      , processID :: Int
+      , taskID :: Int
+      , threadID :: Int
+      , cpu :: Int
+      , startcompute :: Int
+      , endcompute :: Int
+      , startbarrier :: Int
+      , endbarrier :: Int
+      }
+  | ThreadPhasePause
+      { cmdID :: Text
+      , processID :: Int
+      , taskID :: Int
+      , threadID :: Int
+      }
   deriving (Generic, CHeaderGen)
