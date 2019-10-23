@@ -29,6 +29,7 @@ data Cfg
       , argo_perf_wrapper :: Maybe Cmd.Command
       , argo_nodeos_config :: Maybe Cmd.Command
       , pmpi_lib :: Maybe Text
+      , libnrmPath :: Maybe Text
       , singularity :: Maybe Bool
       , dummy :: Maybe Bool
       , nodeos :: Maybe Bool
@@ -59,6 +60,7 @@ toInternal d = I.Cfg
   , argo_perf_wrapper = fromDefault argo_perf_wrapper I.argo_perf_wrapper
   , argo_nodeos_config = fromDefault argo_nodeos_config I.argo_nodeos_config
   , pmpi_lib = fromDefault pmpi_lib I.pmpi_lib
+  , libnrmPath = libnrmPath d
   , singularity = fromDefault singularity I.singularity
   , dummy = fromDefault dummy I.dummy
   , nodeos = fromDefault nodeos I.nodeos
@@ -81,6 +83,7 @@ fromInternal d = Cfg
   , argo_perf_wrapper = toJust I.argo_perf_wrapper
   , argo_nodeos_config = toJust I.argo_nodeos_config
   , pmpi_lib = toJust I.pmpi_lib
+  , libnrmPath = I.libnrmPath d
   , singularity = toJust I.singularity
   , dummy = toJust I.dummy
   , nodeos = toJust I.nodeos
