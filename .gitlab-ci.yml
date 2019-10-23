@@ -9,7 +9,7 @@ clang-format:
   stage: source
   script:
     - |
-      nix-shell -A libnrm ./. --run bash << EOF
+      nix-shell default.nix -A libnrm --run bash << EOF
       for FILE in libnrm/src/*.c; do
         clang-format < $FILE | cmp -s $FILE -
         if [ $? -ne 0 ]; then
