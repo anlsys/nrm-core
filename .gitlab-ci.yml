@@ -5,11 +5,22 @@ stages:
   - codegen
   - linked
 
+black:
+  stage: source
+  script:
+    - |
+      nix-shell default.nix -A pynrm-hack --run bash << EOF
+      black pynrm/bin/*.py --check
+      black pynrm/nrm/* --check
+      EOF
+  tags:
+    - integration
+
 clang-format:
   stage: source
   script:
     - |
-      nix-shell default.nix -A libnrm --run bash << EOF
+      nix-shell default.nix -A libnrm-hack --run bash << EOF
       pwd
       for F in libnrm/src/*.c; do
         clang-format < \$F | cmp -s \$F -
