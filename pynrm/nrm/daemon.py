@@ -62,15 +62,9 @@ class Daemon(object):
         self.upstream_rpc.setup_recv_callback(self.wrap("upstreamReceive"))
         self.downstream_event.setup_recv_callback(self.wrap("downstreamReceive"))
 
-        def my_partial():
-            self.wrap("doSensor", time.time())()
-
         # setup periodic sensor updates
-
-        self.sensor_cb = ioloop.PeriodicCallback(my_partial, 1000)
+        self.sensor_cb = ioloop.PeriodicCallback(self.wrap("doSensor"), 1000)
         self.sensor_cb.start()
-
-        # ioloop.PeriodicCallback(self.wrap("doControl"), 10000).start()
 
         # take care of signals
         signal.signal(signal.SIGINT, self.do_signal)
@@ -123,7 +117,9 @@ class Daemon(object):
                 "calling into nrm.so with symbol %s and arguments %s", name, str(args)
             )
             kwargs = dict(kwargsConfig, **kwargsCallback)
-            st, bh = self.lib.__getattr__(name)(self.cfg, self.state, *args, **kwargs)
+            st, bh = self.lib.__getattr__(name)(
+                self.cfg, self.state, time.time(), *args, **kwargs
+            )
             self.state = st
             _logger.debug("received behavior from nrm.so: %s", str(bh))
             if bh != "noop":

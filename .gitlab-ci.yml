@@ -1,5 +1,29 @@
+stages:
+  - sharedlib
+  - bins
+  - linked
+
 nrm.so:
+  stage: sharedlib
   script: nix-build -A haskellPackages.nrmlib
+  tags:
+  - integration
+
+binaries:
+  stage: bins
+  script: nix-build -A haskellPackages.nrmbin
+  tags:
+  - integration
+
+libnrm:
+  stage: linked
+  script: nix-build -A libnrm
+  tags:
+  - integration
+
+pynrm:
+  stage: linked
+  script: nix-build -A pynrm
   tags:
   - integration
 
