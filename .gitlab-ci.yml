@@ -5,11 +5,11 @@ stages:
   - codegen
   - linked
 
-astyle:
+clang-format:
   stage: source
   script:
     - |
-      nix-shell -A aml-dist ./. --run bash << EOF
+      nix-shell -A libnrm ./. --run bash << EOF
       for FILE in libnrm/src/*.c; do
         clang-format < $FILE | cmp -s $FILE -
         if [ $? -ne 0 ]; then
