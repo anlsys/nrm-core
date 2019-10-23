@@ -10,6 +10,7 @@ clang-format:
   script:
     - |
       nix-shell default.nix -A libnrm --run bash << EOF
+      pwd
       for FILE in libnrm/src/*.c; do
         clang-format < $FILE | cmp -s $FILE -
         if [ $? -ne 0 ]; then
