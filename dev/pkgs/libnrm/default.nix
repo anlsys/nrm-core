@@ -10,6 +10,6 @@ stdenv.mkDerivation {
   CFLAGS = "-fopenmp";
   configureFlags = [ "--enable-pmpi" ];
   preBuild = ''
-    cp ${resources}/share/nrm_messaging.h src/
+    cp ${resources}/share/nrm/nrm_messaging.h src/
   '';
 }

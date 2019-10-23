@@ -82,7 +82,7 @@ in pkgs // rec {
 
   resources = pkgs.runCommand "patchedSrc" { } ''
     mkdir -p $out/share/
-    ${haskellPackages.nrmbin}/bin/codegen $out/share/
+    ${haskellPackages.nrmbin}/bin/codegen $out/share/nrm
   '';
 
   libnrm = pkgs.callPackage ./pkgs/libnrm {
