@@ -44,13 +44,3 @@ pynrm:
   script: nix-build -A pynrm
   tags:
   - integration
-
-#doc:
-  #script: ./shake doc
-  #artifacts:
-    #paths:
-    #- ./html/
-    #expire_in: 1 month
-  #tags:
-  #- integration
-  #- notknl
