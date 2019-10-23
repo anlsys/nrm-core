@@ -1,17 +1,28 @@
 stages:
-  - sharedlib
-  - bins
+  - lib
+  - afterlib
   - codegen
   - linked
 
 nrm.so:
-  stage: sharedlib
+  stage: lib
   script: nix-build -A haskellPackages.nrmlib
   tags:
   - integration
 
+doc:
+  stage: afterlib
+  script: nix-build -A haskellPackages.nrmlib.doc
+  artifacts:
+    paths:
+      - result/*
+    expire_in: 1 week
+    when: always
+  tags:
+  - integration
+
 binaries:
-  stage: bins
+  stage: afterlib
   script: nix-build -A haskellPackages.nrmbin
   tags:
   - integration
