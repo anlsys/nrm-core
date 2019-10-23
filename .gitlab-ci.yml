@@ -15,7 +15,7 @@ doc:
   script: nix-build -A haskellPackages.nrmlib.doc
   artifacts:
     paths:
-      - result/*
+      - result-doc/*
     expire_in: 1 week
     when: always
   tags:
