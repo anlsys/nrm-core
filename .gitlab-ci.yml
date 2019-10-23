@@ -1,6 +1,7 @@
 stages:
   - sharedlib
   - bins
+  - codegen
   - linked
 
 nrm.so:
@@ -12,6 +13,12 @@ nrm.so:
 binaries:
   stage: bins
   script: nix-build -A haskellPackages.nrmbin
+  tags:
+  - integration
+
+resources:
+  stage: codegen
+  script: nix-build -A resources
   tags:
   - integration
 
