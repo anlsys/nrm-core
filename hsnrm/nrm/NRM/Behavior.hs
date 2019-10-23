@@ -21,7 +21,9 @@ import NRM.Sensors as Sensors
 import NRM.State
 import NRM.Types.Behavior
 import NRM.Types.Cmd
+import NRM.Types.CmdID as CmdID
 import NRM.Types.Configuration as Cfg
+import qualified NRM.Types.DownstreamThreadID as DTID
 import NRM.Types.Manifest as Manifest
 import qualified NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.UpstreamPub as UPub
@@ -44,8 +46,8 @@ mayRep c rep =
 -- | The behavior function contains the main logic of the NRM daemon. It changes the state and
 -- produces an associated behavior to be executed by the runtime. This contains the slice
 -- management logic, the sensor callback logic, the control loop callback logic.
-behavior :: Cfg.Cfg -> NRMState -> NRMEvent -> IO (NRMState, Behavior)
-behavior _ st (DoOutput cmdID outputType content) =
+behavior :: Cfg.Cfg -> NRMState -> U.Time -> NRMEvent -> IO (NRMState, Behavior)
+behavior _ st _callTime (DoOutput cmdID outputType content) =
   return . swap $ st &
     _cmdID cmdID
       \case
@@ -61,7 +63,7 @@ behavior _ st (DoOutput cmdID outputType content) =
                     Just exc -> (mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc), Nothing)
                     Nothing -> (NoBehavior, Just (c & field @"processState" .~ newPstate))
             _ -> (respondContent content c cmdID outputType, Just c)
-behavior _ st (RegisterCmd cmdID cmdstatus) =
+behavior _ st _callTime (RegisterCmd cmdID cmdstatus) =
   cmdstatus & \case
     NotLaunched ->
       registerFailed cmdID st & \case
@@ -78,14 +80,14 @@ behavior _ st (RegisterCmd cmdID cmdstatus) =
           ( st'
           , Rep clientID (URep.RepStart (URep.Start sliceID cmdID))
           )
-behavior c st (Req clientid msg) =
+behavior c st _callTime (Req clientid msg) =
   msg & \case
     UReq.ReqCPD _ -> justReply st clientid . URep.RepCPD . URep.CPD $ NRMCPD.toCPD st
     UReq.ReqSliceList _ -> bhv st . Rep clientid . URep.RepList . URep.SliceList . LM.toList $ slices st
     UReq.ReqGetState _ -> bhv st . Rep clientid . URep.RepGetState $ URep.GetState st
     UReq.ReqGetConfig _ -> bhv st . Rep clientid . URep.RepGetConfig $ URep.GetConfig c
     UReq.ReqRun UReq.Run {..} -> do
-      cmdID <- nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
+      cmdID <- CmdID.nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
       let (runCmd, runArgs) =
             (cmd spec, args spec) &
               ( if Manifest.perfwrapper (Manifest.app manifest) /=
@@ -142,7 +144,7 @@ behavior c st (Req clientid msg) =
             ) :
             maybe [] (\x -> [(x, URep.RepThisCmdKilled URep.ThisCmdKilled)])
               (upstreamClientID . cmdCore $ cmd)
-behavior _ st (ChildDied pid exitcode) =
+behavior _ st _callTime (ChildDied pid exitcode) =
   lookupProcess pid st & \case
     Nothing -> bhv st $ Log "No such PID in NRM's state."
     Just (cmdID, cmd, sliceID, slice) ->
@@ -162,8 +164,8 @@ behavior _ st (ChildDied pid exitcode) =
                 insertSlice sliceID
                   (Ct.insertCmd cmdID cmd {processState = newPstate} slice)
                   st
-behavior _ st (DoControl _time) = bhv st NoBehavior
-behavior _ st (DoSensor time) = do
+behavior _ st _callTime (DoControl _time) = bhv st NoBehavior
+behavior _ st _callTime (DoSensor time) = do
   -- This function is complicated, needs custom types.
   (st', measurements) <- foldM (folder time) (st, Just []) (DM.toList lMap)
   measurements & \case
@@ -172,15 +174,33 @@ behavior _ st (DoSensor time) = do
   where
     lMap :: LensMap NRMState PassiveSensorKey PassiveSensor
     lMap = lenses st
-behavior _ st DoShutdown = bhv st NoBehavior
-behavior cfg st (DownstreamEvent clientid msg) =
+behavior _ st _callTime DoShutdown = bhv st NoBehavior
+behavior cfg st callTime (DownstreamEvent clientid msg) =
   msg & \case
     DEvent.ThreadProgress _ _ -> return (st, Log "unimplemented")
-    --DEvent.ThreadPhaseContext _ _ -> return (st, Log "unimplemented")
-    DEvent.ThreadPause _ -> return (st, Log "unimplemented")
-    --DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented")
-    DEvent.CmdPerformance cmdHeader@DEvent.CmdHeader {..} DEvent.Performance {..} ->
-      Sensors.process cfg timestamp st (Sensor.DownstreamCmdKey clientid)
+    DEvent.ThreadPhaseContext downstreamThreadID phaseContext ->
+      Sensors.process
+        cfg
+        callTime
+        st
+        (Sensor.DownstreamThreadKey downstreamThreadID)
+        (DEvent.computetime phaseContext & fromIntegral) & \case
+        Sensors.NotFound ->
+          return $
+            registerDownstreamCmdClient (DTID.cmdID downstreamThreadID) clientid st <&>
+            (,Log "downstream cmd client registered.") &
+            fromMaybe (st, Log "no such Cmd")
+        Sensors.Adjusted st' -> bhv st' $ Log "Out-of-range value received, sensor adjusted"
+        Sensors.Ok st' measurement ->
+          bhv st' $
+            Pub
+              [ UPub.PubMeasurements callTime [measurement]
+              , UPub.PubPhaseContext callTime downstreamThreadID phaseContext
+              ]
+    DEvent.ThreadPause _ -> return (st, Log "unimplemented ThreadPause handler")
+    DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented ThreadPhasePause handler")
+    DEvent.CmdPerformance cmdID perf ->
+      Sensors.process cfg callTime st (Sensor.DownstreamCmdKey clientid)
         (U.fromOps perf & fromIntegral) & \case
         Sensors.NotFound ->
           return $
@@ -191,13 +211,10 @@ behavior cfg st (DownstreamEvent clientid msg) =
         Sensors.Ok st' measurement ->
           bhv st' $
             Pub
-              [ UPub.PubMeasurements timestamp [measurement]
-              , UPub.PubPerformance cmdHeader
-                DEvent.Performance
-                  { DEvent.perf = perf
-                  }
+              [ UPub.PubMeasurements callTime [measurement]
+              , UPub.PubPerformance callTime cmdID perf
               ]
-    DEvent.CmdPause DEvent.CmdHeader {..} ->
+    DEvent.CmdPause cmdID ->
       unRegisterDownstreamCmdClient cmdID clientid st & \case
         Just st' -> bhv st' $ Log "downstream cmd client un-registered."
         Nothing -> bhv st $ Log "No corresponding command for this downstream cmd 'pause' request."

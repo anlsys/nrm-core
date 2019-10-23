@@ -15,6 +15,7 @@ where
 import Data.MessagePack
 import qualified NRM.Classes.Messaging as M
 import NRM.Types.Cmd
+import NRM.Types.CmdID
 import NRM.Types.DownstreamCmdID
 import NRM.Types.Messaging.DownstreamEvent
 import NRM.Types.Units

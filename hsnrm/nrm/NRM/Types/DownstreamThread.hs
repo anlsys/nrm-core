@@ -15,8 +15,9 @@ import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
+import Data.Data
 import Protolude
 
 data DownstreamThread = DownstreamThread
-  deriving (Eq, Ord, Show, Generic, MessagePack)
+  deriving (Eq, Ord, Show, Generic, Data,MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamThread

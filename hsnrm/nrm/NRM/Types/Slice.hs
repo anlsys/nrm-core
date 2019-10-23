@@ -28,7 +28,8 @@ import Data.UUID.V1
 import LMap.Map as LM
 import LensMap.Core
 import NRM.Classes.Messaging
-import NRM.Types.Cmd (Cmd (..), CmdCore (..), CmdID (..))
+import NRM.Types.Cmd (Cmd (..), CmdCore (..))
+import NRM.Types.CmdID (CmdID (..))
 import NRM.Types.Sensor
 import Protolude
 

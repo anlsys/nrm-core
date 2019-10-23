@@ -23,8 +23,9 @@ import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
-import NRM.Types.Manifest
 import qualified NRM.Types.Cmd as Cmd
+import NRM.Types.CmdID
+import NRM.Types.Manifest
 import qualified NRM.Types.Slice as C
 import qualified NRM.Types.Units as U
 import Protolude
@@ -60,7 +61,7 @@ newtype KillSlice
 
 newtype KillCmd
   = KillCmd
-      { killCmdID :: Cmd.CmdID
+      { killCmdID :: CmdID
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON KillCmd

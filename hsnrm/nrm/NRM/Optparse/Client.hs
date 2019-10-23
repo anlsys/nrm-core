@@ -20,6 +20,7 @@ import LMap.Map as LM
 import Data.Default
 import Dhall
 import qualified NRM.Types.Cmd as Cmd
+import NRM.Types.CmdID
 import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Manifest
 import qualified NRM.Types.Manifest.Dhall as D
@@ -145,9 +146,9 @@ parserRun =
         )
       )
 
-parserKillCmd :: Parser Cmd.CmdID
+parserKillCmd :: Parser CmdID
 parserKillCmd =
-  fromMaybe (panic "Couldn't parse CmdID") . Cmd.fromText <$>
+  fromMaybe (panic "Couldn't parse CmdID") . fromText <$>
     strArgument
       ( metavar "COMMAND" <>
         help

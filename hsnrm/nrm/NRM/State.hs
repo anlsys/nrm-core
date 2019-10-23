@@ -34,6 +34,7 @@ import NRM.Slices.Dummy as CD
 import NRM.Slices.Nodeos as CN
 import NRM.Slices.Singularity as CS
 import NRM.Types.Cmd
+import NRM.Types.CmdID
 import NRM.Types.Configuration as Cfg
 import NRM.Types.DownstreamCmdID
 import NRM.Types.DownstreamThreadID

@@ -13,14 +13,10 @@ module NRM.Types.Cmd
   , mkCmd
   , registerPID
   , TaskID (..)
-  , CmdID (..)
   , Command (..)
   , Arguments (..)
   , Arg (..)
   , Env (..)
-  , nextCmdID
-  , NRM.Types.Cmd.toText
-  , NRM.Types.Cmd.fromText
   , wrapCmd
   , addDownstreamCmdClient
   , removeDownstreamCmdClient
@@ -34,8 +30,6 @@ import Data.Generics.Product
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.String (IsString (..))
-import qualified Data.UUID as U
-import Data.UUID.V1 (nextUUID)
 import Dhall hiding (field)
 import LMap.Map as LM
 import LensMap.Core
@@ -44,9 +38,12 @@ import NRM.Orphans.ExitCode ()
 import NRM.Orphans.UUID ()
 import NRM.Types.DownstreamCmd
 import NRM.Types.DownstreamCmdID
+import NRM.Types.DownstreamThread
+import NRM.Types.DownstreamThreadID
 import NRM.Types.Manifest as Manifest
 import NRM.Types.Process
 import NRM.Types.Sensor
+import NRM.Types.CmdID
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
 
@@ -75,6 +72,7 @@ data Cmd
       , pid :: ProcessID
       , processState :: ProcessState
       , downstreamCmds :: LM.Map DownstreamCmdID DownstreamCmd
+      , downstreamThreads :: LM.Map DownstreamThreadID DownstreamThread
       }
   deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cmd
@@ -87,6 +85,7 @@ registerPID c pid = Cmd
   { cmdCore = c
   , processState = blankState
   , downstreamCmds = LM.empty
+  , downstreamThreads = LM.empty
   , ..
   }
 
@@ -114,9 +113,9 @@ removeDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
   , ..
   }
 
-newtype TaskID = TaskID Int
-  deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON TaskID
+--newtype TaskID = TaskID Int
+  --deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
+  --deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON TaskID
 
 newtype Arg = Arg Text
   deriving (Show, Generic, Data, MessagePack)
@@ -143,23 +142,6 @@ newtype Env = Env {fromEnv :: (LM.Map Text Text)}
   deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Env
   deriving (Semigroup, Monoid) via LM.Map Text Text
-
-newtype CmdID = CmdID U.UUID
-  deriving (Show, Eq, Ord, Generic, Data, ToJSONKey, FromJSONKey, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdID
-
-instance IsString CmdID where
-
-  fromString x = fromMaybe (panic "couldn't decode cmdID in FromString instance") (A.decode $ toS x)
-
-nextCmdID :: IO (Maybe CmdID)
-nextCmdID = fmap CmdID <$> nextUUID
-
-toText :: CmdID -> Text
-toText (CmdID u) = U.toText u
-
-fromText :: Text -> Maybe CmdID
-fromText = fmap CmdID <$> U.fromText
 
 wrapCmd :: Command -> (Command, Arguments) -> (Command, Arguments)
 wrapCmd c (Command a, Arguments as) = (c, Arguments $ Arg a : as)

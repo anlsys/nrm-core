@@ -41,7 +41,8 @@ import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
 import NRM.Types.Actuator
-import NRM.Types.Cmd as Cmd
+import NRM.Types.Cmd 
+import NRM.Types.CmdID as CmdID
 import NRM.Types.Process as P
 import NRM.Types.Sensor
 import NRM.Types.Slice as C
@@ -91,7 +92,7 @@ showSliceList l =
     "slice: ID " <> C.toText sliceID <> "\n" <> mconcat (descCmd <$> LM.toList cmds)
   where
     descCmd (cmdID, cmdCore -> CmdCore {..}) =
-      " command: ID " <> Cmd.toText cmdID <>
+      " command: ID " <> CmdID.toText cmdID <>
         descSpec cmdPath arguments <>
         "\n"
     descSpec

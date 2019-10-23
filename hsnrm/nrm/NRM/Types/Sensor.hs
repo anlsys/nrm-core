@@ -26,6 +26,7 @@ where
 import qualified CPD.Core as CPD
 import NRM.Classes.Sensors
 import NRM.Types.DownstreamCmdID
+import NRM.Types.DownstreamThreadID
 import NRM.Types.Topology.PackageID
 import qualified NRM.Types.Units as U
 import Numeric.Interval
@@ -57,7 +58,7 @@ data ActiveSensor
       , activeRange :: Interval Double
       }
 
-data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | Misc
+data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | DownstreamThreadKey DownstreamThreadID
   deriving (Ord, Eq, Show)
 
 data PassiveSensorKey = RaplKey PackageID | Misc'

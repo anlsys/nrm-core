@@ -16,12 +16,10 @@ import Protolude
 data Event
   = CmdPerformance
       { cmdID :: Text
-      , timestamp :: Double
       , perf :: Int
       }
   | CmdPause
       { cmdID :: Text
-      , timestamp :: Double
       }
   | ThreadProgress
       { cmdID :: Text

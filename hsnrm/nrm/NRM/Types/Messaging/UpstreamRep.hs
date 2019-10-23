@@ -36,7 +36,7 @@ import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
 import NRM.Orphans.ExitCode ()
-import NRM.Types.Cmd
+import NRM.Types.CmdID
 import NRM.Types.Configuration as C
 import NRM.Types.Slice as C
 import NRM.Types.State as S

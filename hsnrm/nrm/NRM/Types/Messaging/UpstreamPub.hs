@@ -23,33 +23,36 @@ import Data.MessagePack
 import NRM.Classes.Messaging
 import NRM.Types.Messaging.DownstreamEvent
 import NRM.Types.Slice as C
-import qualified NRM.Types.Units as U
+import NRM.Types.CmdID
+import NRM.Types.DownstreamThreadID
+import NRM.Types.Units
 import Protolude
 
 data Pub
-  = PubMeasurements U.Time CPD.Measurements
-  | PubCPD U.Time CPD.Problem
-  | PubPower U.Time Power
-  | PubSliceStart U.Time SliceStart
-  | PubSliceExit U.Time SliceExit
-  | PubPerformance CmdHeader Performance
-  | PubProgress U.Time Progress
+  = PubMeasurements Time CPD.Measurements
+  | PubCPD Time CPD.Problem
+  | PubPower Time PowerState
+  | PubSliceStart Time SliceStart
+  | PubSliceExit Time SliceExit
+  | PubPerformance Time CmdID Operations
+  | PubPhaseContext Time DownstreamThreadID PhaseContext
+  | PubProgress Time Progress
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Pub
 
-data Power
-  = Power
-      { total :: U.Power
-      , limit :: U.Power
+data PowerState
+  = PowerState
+      { total :: Power
+      , limit :: Power
       }
   deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Power
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON PowerState
 
 data SliceStart
   = SliceStart
       { startSliceID :: C.SliceID
       , errno :: Int
-      , power :: U.Power
+      , power :: Power
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceStart
@@ -64,11 +67,11 @@ data SliceExit
 
 data Control
   = Control
-      { powercap :: U.Power
-      , energy :: U.Energy
-      , performance :: U.Operations
-      , control_time :: U.Time
-      , feedback_time :: U.Time
+      { powercap :: Power
+      , energy :: Energy
+      , performance :: Operations
+      , control_time :: Time
+      , feedback_time :: Time
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Control

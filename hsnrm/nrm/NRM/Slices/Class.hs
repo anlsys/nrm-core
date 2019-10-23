@@ -18,6 +18,7 @@ import Data.MessagePack
 import NRM.Types.Slice
 import NRM.Types.Process as Process
 import NRM.Types.Cmd as Cmd
+import NRM.Types.CmdID as Cmd
 import Protolude
 
 data ApplicationProcess

@@ -63,6 +63,7 @@ library nrmlib
         NRM.Types.Behavior
         NRM.Types.Slice
         NRM.Types.Cmd
+        NRM.Types.CmdID
         NRM.Types.Process
         NRM.Types.DownstreamThread
         NRM.Types.DownstreamThreadID
@@ -311,6 +312,7 @@ executable nrm.so
         NRM.Types.Behavior
         NRM.Types.Slice
         NRM.Types.Cmd
+        NRM.Types.CmdID
         NRM.Types.Process
         NRM.Types.DownstreamThread
         NRM.Types.DownstreamThreadID
@@ -475,6 +477,7 @@ executable nrmstatic
         NRM.Types.Behavior
         NRM.Types.Slice
         NRM.Types.Cmd
+        NRM.Types.CmdID
         NRM.Types.Process
         NRM.Types.DownstreamThread
         NRM.Types.DownstreamThreadID

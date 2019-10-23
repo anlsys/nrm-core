@@ -238,6 +238,7 @@ let modules =
       , "NRM.Types.Behavior"
       , "NRM.Types.Slice"
       , "NRM.Types.Cmd"
+      , "NRM.Types.CmdID"
       , "NRM.Types.Process"
       , "NRM.Types.DownstreamThread"
       , "NRM.Types.DownstreamThreadID"
