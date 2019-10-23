@@ -26,31 +26,30 @@ data Event
   | ThreadProgress
       { cmdID :: Text
       , processID :: Int
-      , taskID :: Int
+      , taskID :: Text
       , threadID :: Int
       , payload :: Int
       }
   | ThreadPause
       { cmdID :: Text
       , processID :: Int
-      , taskID :: Int
+      , taskID :: Text
       , threadID :: Int
       }
   | ThreadPhaseContext
       { cmdID :: Text
       , processID :: Int
-      , taskID :: Int
+      , taskID :: Text
       , threadID :: Int
       , cpu :: Int
-      , startcompute :: Int
-      , endcompute :: Int
-      , startbarrier :: Int
-      , endbarrier :: Int
+      , aggregation :: Int
+      , computetime :: Int
+      , totaltime :: Int
       }
   | ThreadPhasePause
       { cmdID :: Text
       , processID :: Int
-      , taskID :: Int
+      , taskID :: Text
       , threadID :: Int
       }
   deriving (Generic, CHeaderGen)

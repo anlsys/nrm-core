@@ -72,10 +72,9 @@ newtype Performance
 data PhaseContext
   = PhaseContext
       { cpu :: Int
-      , startcompute :: Int
-      , endcompute :: Int
-      , startbarrier :: Int
-      , endbarrier :: Int
+      , aggregation :: Int
+      , computetime :: Int
+      , totaltime :: Int
       }
   deriving (Generic, MessagePack)
 
@@ -99,7 +98,7 @@ instance M.NRMMessage Event J.Event where
         J.ThreadProgress
           { cmdID = Cmd.toText threadCmdID
           , processID = fromIntegral $ P.rawPid processID
-          , taskID = fromIntegral taskID
+          , taskID = fromTaskID taskID
           , threadID = fromIntegral threadID
           , payload = U.fromProgress progress
           }
@@ -107,28 +106,27 @@ instance M.NRMMessage Event J.Event where
       J.ThreadPause
         { cmdID = Cmd.toText threadCmdID
         , processID = fromIntegral processID
-        , taskID = fromIntegral taskID
+        , taskID = fromTaskID taskID
         , threadID = fromIntegral threadID
         }
     ThreadPhaseContext
       (ThreadHeader threadCmdID processID taskID threadID)
-      (PhaseContext cpu startcompute endcompute startbarrier endbarrier) ->
+      (PhaseContext cpu aggregation computetime totaltime) ->
         J.ThreadPhaseContext
           { cmdID = Cmd.toText threadCmdID
           , processID = fromIntegral processID
-          , taskID = fromIntegral taskID
+          , taskID = fromTaskID taskID
           , threadID = fromIntegral threadID
           , cpu = cpu
-          , startcompute = startcompute
-          , endcompute = endcompute
-          , startbarrier = startbarrier
-          , endbarrier = endbarrier
+          , aggregation = aggregation
+          , computetime = computetime
+          , totaltime = totaltime
           }
     ThreadPhasePause (ThreadHeader threadCmdID processID taskID threadID) ->
       J.ThreadPhasePause
         { cmdID = Cmd.toText threadCmdID
         , processID = fromIntegral processID
-        , taskID = fromIntegral taskID
+        , taskID = fromTaskID taskID
         , threadID = fromIntegral threadID
         }
 
@@ -142,7 +140,7 @@ instance M.NRMMessage Event J.Event where
         ( ThreadHeader
           (fromJust $ Cmd.fromText cmdID)
           (fromInteger $ toInteger processID)
-          (fromInteger $ toInteger taskID)
+          (TaskID taskID)
           (fromInteger $ toInteger threadID)
         )
         (Progress (payload & U.progress))
@@ -151,7 +149,7 @@ instance M.NRMMessage Event J.Event where
         ( ThreadHeader
           (fromJust $ Cmd.fromText cmdID)
           (fromInteger $ toInteger processID)
-          (fromInteger $ toInteger taskID)
+          (TaskID taskID)
           (fromInteger $ toInteger threadID)
         )
     J.ThreadPhaseContext {..} ->
@@ -159,15 +157,15 @@ instance M.NRMMessage Event J.Event where
         ( ThreadHeader
           (fromJust $ Cmd.fromText cmdID)
           (fromInteger $ toInteger processID)
-          (fromInteger $ toInteger taskID)
+          (TaskID taskID)
           (fromInteger $ toInteger threadID)
         )
-        (PhaseContext cpu startcompute endcompute startbarrier endbarrier)
+        (PhaseContext cpu aggregation computetime totaltime)
     J.ThreadPhasePause {..} ->
       ThreadPhasePause
         ( ThreadHeader
           (fromJust $ Cmd.fromText cmdID)
           (fromInteger $ toInteger processID)
-          (fromInteger $ toInteger taskID)
+          (TaskID taskID)
           (fromInteger $ toInteger threadID)
         )

@@ -30,10 +30,9 @@ data DownstreamThreadID
   deriving (Eq, Ord, Show, Generic, MessagePack, ToJSONKey, FromJSONKey)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamThreadID
 
-newtype TaskID = TaskID Int
+newtype TaskID = TaskID {fromTaskID :: Text}
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON TaskID
-  deriving (Num, Real, Enum, Integral) via Int
 
 newtype ThreadID = ThreadID Int
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)
