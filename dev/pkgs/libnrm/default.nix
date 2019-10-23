@@ -1,4 +1,4 @@
-{ stdenv, src, autoreconfHook, fetchgit, zeromq, gfortran, pkgconfig, openmpi
+{ stdenv, src, resources, autoreconfHook, fetchgit, zeromq, gfortran, pkgconfig, openmpi
 , llvmPackages, hsnrm }:
 stdenv.mkDerivation {
   inherit src;
@@ -9,4 +9,7 @@ stdenv.mkDerivation {
   FC = "mpifort";
   CFLAGS = "-fopenmp";
   configureFlags = [ "--enable-pmpi" ];
+  preBuild = ''
+    cp ${resources}/share/nrm_messaging.h src/
+  '';
 }

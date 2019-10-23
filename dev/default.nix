@@ -86,8 +86,8 @@ in pkgs // rec {
   '';
 
   libnrm = pkgs.callPackage ./pkgs/libnrm {
+    inherit resources;
     src = ../libnrm;
-    #resources = haskellPackages.resources;
     hsnrm = haskellPackages.nrmbin;
   };
 
