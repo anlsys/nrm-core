@@ -1,8 +1,25 @@
 stages:
+  - source
   - lib
   - afterlib
   - codegen
   - linked
+
+astyle:
+  stage: source
+  script:
+    - |
+      nix-shell -A aml-dist ./. --run bash << EOF
+      for FILE in libnrm/src/*.c; do
+        clang-format < $FILE | cmp -s $FILE -
+        if [ $? -ne 0 ]; then
+          echo "[!] $FILE does not respect the agreed coding style." >&2
+          RETURN=1
+        fi
+      done
+      EOF
+  tags:
+  - integration
 
 nrm.so:
   stage: lib
@@ -12,10 +29,14 @@ nrm.so:
 
 doc:
   stage: afterlib
-  script: nix-build -A haskellPackages.nrmlib.doc
+  script:
+    - nix-build -A haskellPackages.nrmlib.doc -o result-doc
+    - cp -r result-doc/* result-doc-cp
+    - rm -f result-doc
+    - chmod -R +r result-doc-cp
   artifacts:
     paths:
-      - result-doc/*
+      - result-doc-cp/*
     expire_in: 1 week
     when: always
   tags:

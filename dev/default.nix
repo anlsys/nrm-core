@@ -126,7 +126,7 @@ in pkgs // rec {
   });
 
   libnrm-hack = libnrm.overrideAttrs
-    (o: { buildInputs = o.buildInputs ++ [ pkgs.astyle ]; });
+    (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
   hack = pkgs.mkShell {
 
