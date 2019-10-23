@@ -12,7 +12,7 @@ clang-format:
       nix-shell default.nix -A libnrm --run bash << EOF
       pwd
       for F in libnrm/src/*.c; do
-        clang-format < $F | cmp -s $F -
+        clang-format < \$F | cmp -s \$F -
         if [ $? -ne 0 ]; then
           echo "[!] $FILE does not respect the agreed coding style." >&2
           RETURN=1
