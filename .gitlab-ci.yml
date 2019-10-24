@@ -22,8 +22,6 @@ ormolu:
       ' --run bash <<< '
         RETURN=0
         cd hsnrm
-        echo $LOCALE_ARCHIVE
-        echo $LANG
         for F in $(fd -e hs); do
           ormolu -o -XTypeApplications -m check $F
           if [ $? -ne 0 ]; then
@@ -75,7 +73,7 @@ nix-build-nrm.so:
   stage: lib
   tags:
     - integration
-  script: nix-build -A haskellPackages.nrmso --no-build-output
+  script: nix-build -A haskellPackages.nrmlib --no-build-output
 
 nix-build-binaries:
   stage: afterlib
