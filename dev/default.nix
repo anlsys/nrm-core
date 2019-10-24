@@ -68,6 +68,9 @@ in pkgs // rec {
 
   patchedSrcBin = patchedSrc ../hsnrm/bin "bin" cabal/bin.dhall;
 
+  ormolu = (import (builtins.fetchTarball
+    "https://github.com/tweag/ormolu/archive/0.0.1.0.tar.gz") { }).ormolu;
+
   haskellPackages = pkgs.haskellPackages.override {
     overrides = self: super:
       with pkgs.haskell.lib; rec {
@@ -78,6 +81,7 @@ in pkgs // rec {
         nrmbin =
           self.callCabal2nix "hsnrm.cabal" patchedSrcBin { inherit nrmlib; };
         dhall = super.dhall_1_24_0;
+
       };
   };
 

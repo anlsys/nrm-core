@@ -5,6 +5,32 @@ stages:
   - codegen
   - linked
 
+ormolu:
+  stage: source
+  script:
+    - |
+      nix-shell -p '
+        (import ./default.nix).hlint
+      ' --run bash << EOF
+      cd hsnrm
+      hlint .
+      EOF
+  tags:
+    - integration
+
+hlint:
+  stage: source
+  script:
+    - |
+      nix-shell -p '
+        (import ./default.nix).hlint
+      ' --run bash << EOF
+      cd hsnrm
+      hlint .
+      EOF
+  tags:
+    - integration
+
 black:
   stage: source
   script:
@@ -28,7 +54,7 @@ clang-format:
       for F in libnrm/src/*.c; do
         clang-format < \$F | cmp -s \$F -
         if [ $? -ne 0 ]; then
-          echo "[!] $F does not respect the agreed coding style." >&2
+          echo "[!] $F does not respect default clang-format." >&2
           RETURN=1
         fi
       done
@@ -46,7 +72,7 @@ doc:
   stage: afterlib
   script:
     - |
-      nix-build -A haskellPackages.nrmlib.doc -o result-doc
+      nix-build -A haskellPackages.nrmlib.doc
       cp -r result-doc/* result-doc-cp
       rm -f result-doc
       chmod -R +r result-doc-cp
