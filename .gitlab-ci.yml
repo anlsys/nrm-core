@@ -14,12 +14,18 @@ ormolu:
       ' '
       (import ./default.nix).ormolu
       ' --run bash <<< '
-      echo $LC_ALL
-      echo $LOCALE_ARCHIVE
+      RETURN=0
       cd hsnrm
       for F in $(fd -e hs); do
-        ormolu -o -XTypeApplications < $F | cmp -s $F -; echo $?;
+        ormolu -o -XTypeApplications -m check $F
+        if [ $? -ne 0 ]; then
+          echo "[!] $F does not pass ormolu haskell format check."  >&2
+          RETURN=1
+        fi
       done
+      if [ $RETURN -ne 0 ]; then
+        exit 1
+      fi
       '
   tags:
   - integration
@@ -55,17 +61,22 @@ clang-format:
   script:
     - |
       nix-shell -p '
-        (import ./default.nix).clang-tools
-      ' --run bash << EOF
-      for F in libnrm/src/*.c; do
-        echo "checking format for \$F"
-        clang-format < \$F | cmp -s \$F -
-        if [ \$? -ne 0 ]; then
-          echo "[!] $F does not respect default clang-format." >&2
+      (import ./default.nix).fd
+      ' '
+      (import ./default.nix).clang-tools
+      ' --run bash <<< '
+      RETURN=0
+      cd libnrm
+      for F in $(fd -e c); do
+        clang-format < $F | cmp -s $F -
+        if [ $? -ne 0 ]; then
+          echo "[!] $F does not pass clang-format format check."  >&2
           RETURN=1
         fi
       done
-      EOF
+      if [ $RETURN -ne 0 ]; then
+        exit 1
+      fi'
   tags:
   - integration
 
