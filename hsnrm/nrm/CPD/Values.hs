@@ -1,16 +1,15 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : CPD.Values
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : CPD.Values
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module CPD.Values
-  ( Measurement (..)
-  , Measurements
-  , Action (..)
-  , Actions (..)
+  ( Measurement (..),
+    Measurements,
+    Action (..),
+    Actions (..),
   )
 where
 
@@ -29,17 +28,17 @@ type Measurements = [Measurement]
 
 data Measurement
   = Measurement
-      { sensorID :: SensorID
-      , sensorValue :: Double
-      , time :: Time
+      { sensorID :: SensorID,
+        sensorValue :: Double,
+        time :: Time
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Measurement
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
 
 data Action
   = Action
-      { actuatorID :: ActuatorID
-      , actuatorValue :: Discrete
+      { actuatorID :: ActuatorID,
+        actuatorValue :: Discrete
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Action
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)

@@ -1,36 +1,40 @@
 {-# LANGUAGE DerivingVia #-}
-
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-{-|
-Module      : CPD.Core
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : CPD.Core
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module CPD.Core
   ( -- * Metadata
-    Problem (..)
-  , emptyProblem
-  , Metadata (..)
-  , Interval
-  , Admissible (..)
-  , Discrete (..)
-  , Frequency (..)
-  , -- * Sensors
+    Problem (..),
+    emptyProblem,
+    Metadata (..),
+    Interval,
+    Admissible (..),
+    Discrete (..),
+    Frequency (..),
+
+    -- * Sensors
+
     -- ** Definitions
-    SensorID (..)
-  , Sensor (..)
-  , Source (..)
-  , -- * Actuators
+    SensorID (..),
+    Sensor (..),
+    Source (..),
+
+    -- * Actuators
+
     -- ** Classes
-    ActuatorID (..)
-  , CPDLActuator (..)
-  , -- ** Definitions
-    Actuator (..)
-  , -- * Objective
-    Objective
-  , OExpr (..)
+    ActuatorID (..),
+    CPDLActuator (..),
+
+    -- ** Definitions
+    Actuator (..),
+
+    -- * Objective
+    Objective,
+    OExpr (..),
   )
 where
 
@@ -50,21 +54,21 @@ import Protolude
 -- METADATA
 data Discrete = DiscreteText Text | DiscreteDouble Double
   deriving
-    ( Show
-    , Eq
-    , Generic
-    , Data
-    , MessagePack
-    , Interpret
-    , Inject
+    ( Show,
+      Eq,
+      Generic,
+      Data,
+      MessagePack,
+      Interpret,
+      Inject
     )
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Discrete
 
 data Problem
   = Problem
-      { sensors :: Map SensorID Sensor
-      , actuators :: Map ActuatorID Actuator
-      , objective :: Objective
+      { sensors :: Map SensorID Sensor,
+        actuators :: Map ActuatorID Actuator,
+        objective :: Objective
       }
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
@@ -101,16 +105,16 @@ newtype Admissible = Admissible {admissibleValues :: [Discrete]}
 newtype SensorID = SensorID {sensorID :: Text}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorID
   deriving
-    ( Ord
-    , Eq
-    , Show
-    , Generic
-    , Data
-    , MessagePack
-    , A.ToJSONKey
-    , A.FromJSONKey
-    , Interpret
-    , Inject
+    ( Ord,
+      Eq,
+      Show,
+      Generic,
+      Data,
+      MessagePack,
+      A.ToJSONKey,
+      A.FromJSONKey,
+      Interpret,
+      Inject
     )
   deriving (IsString) via Text
 
@@ -121,34 +125,32 @@ newtype Source = Source {sourceTag :: Text}
 
 data Sensor
   = Sensor
-      { source :: Source
-      , sensorMeta :: Metadata
+      { source :: Source,
+        sensorMeta :: Metadata
       }
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Sensor
 
 ------- ACTUATORS
 class CPDLActuator a where
-
   toActuator :: a -> Actuator
 
 newtype ActuatorID = ActuatorID {actuatorID :: Text}
   deriving
-    ( Ord
-    , Eq
-    , Show
-    , Generic
-    , Data
-    , MessagePack
-    , A.ToJSONKey
-    , A.FromJSONKey
-    , Interpret
-    , Inject
+    ( Ord,
+      Eq,
+      Show,
+      Generic,
+      Data,
+      MessagePack,
+      A.ToJSONKey,
+      A.FromJSONKey,
+      Interpret,
+      Inject
     )
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorID
 
 instance IsString ActuatorID where
-
   fromString x = fromMaybe (panic "couldn't decode ActuatorID in FromString instance") (A.decode $ toS x)
 
 newtype Actuator = Actuator {actions :: [Discrete]}

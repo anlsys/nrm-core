@@ -1,21 +1,20 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-{-|
-Module      : NRM.Codegen
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Codegen
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Codegen
-  ( main
-  , upstreamPubSchema
-  , upstreamReqSchema
-  , upstreamRepSchema
-  , downstreamEventSchema
-  , libnrmHeader
-  , licenseC
-  , licenseDhall
-  , licenseYaml
+  ( main,
+    upstreamPubSchema,
+    upstreamReqSchema,
+    upstreamRepSchema,
+    downstreamEventSchema,
+    libnrmHeader,
+    licenseC,
+    licenseDhall,
+    licenseYaml,
   )
 where
 
@@ -66,7 +65,7 @@ main = do
       putText $ toS ("  Writing schema for " <> toS desc <> " to " <> fp)
       writeFile (toS fp) sch
       where
-        fp = prefix <>"/"<> desc <> ".json"
+        fp = prefix <> "/" <> desc <> ".json"
 
 -- | The upstream Request schema.
 upstreamReqSchema :: Text
@@ -191,7 +190,9 @@ generateDefaultConfigurations prefix = do
     let dest = toS prefix <> "examples/" <> defName <> ".dhall"
     putText $ "  Writing default for " <> defName <> " to " <> dest <> "."
     createDirectoryIfMissing True (takeDirectory $ toS dest)
-    writeOutput licenseDhall (toS dest)
+    writeOutput
+      licenseDhall
+      (toS dest)
       (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
   putText "Codegen: YAMl example files."
   for_ [minBound .. maxBound] $ \t -> do
@@ -206,8 +207,11 @@ typeToFile (Proxy :: Proxy x) fp = do
   let destCPD = fp
   putText $ "  Writing types for CPD format. " <> " to " <> toS destCPD
   createDirectoryIfMissing True (takeDirectory destCPD)
-  writeOutput licenseDhall destCPD
-    ( fmap Dhall.absurd
-      ( Dhall.expected (Dhall.auto :: Dhall.Type x)
-      )
+  writeOutput
+    licenseDhall
+    destCPD
+    ( fmap
+        Dhall.absurd
+        ( Dhall.expected (Dhall.auto :: Dhall.Type x)
+        )
     )

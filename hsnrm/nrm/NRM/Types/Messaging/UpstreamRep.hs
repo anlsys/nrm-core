@@ -1,32 +1,30 @@
 {-# LANGUAGE DerivingVia #-}
-
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-{-|
-Module      : NRM.Types.Messaging.UpstreamRep
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Messaging.UpstreamRep
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Messaging.UpstreamRep
-  ( Rep (..)
-  , OutputType (..)
-  , EndStream (..)
-  , SliceList (..)
-  , CPD (..)
-  , Stdout (..)
-  , Stderr (..)
-  , Start (..)
-  , SliceKilled (..)
-  , CmdEnded (..)
-  , NoSuchCmd (..)
-  , StartFailure (..)
-  , NoSuchSlice (..)
-  , CmdKilled (..)
-  , ThisCmdKilled (..)
-  , GetPower (..)
-  , GetConfig (..)
-  , GetState (..)
+  ( Rep (..),
+    OutputType (..),
+    EndStream (..),
+    SliceList (..),
+    CPD (..),
+    Stdout (..),
+    Stderr (..),
+    Start (..),
+    SliceKilled (..),
+    CmdEnded (..),
+    NoSuchCmd (..),
+    StartFailure (..),
+    NoSuchSlice (..),
+    CmdKilled (..),
+    ThisCmdKilled (..),
+    GetPower (..),
+    GetConfig (..),
+    GetState (..),
   )
 where
 
@@ -127,24 +125,24 @@ newtype SliceList
 
 data Stdout
   = Stdout
-      { stdoutCmdID :: CmdID
-      , stdoutPayload :: Text
+      { stdoutCmdID :: CmdID,
+        stdoutPayload :: Text
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Stdout
 
 data Stderr
   = Stderr
-      { stderrCmdID :: CmdID
-      , stderrPayload :: Text
+      { stderrCmdID :: CmdID,
+        stderrPayload :: Text
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Stderr
 
 data Start
   = Start
-      { startSliceID :: C.SliceID
-      , startCmdID :: CmdID
+      { startSliceID :: C.SliceID,
+        startCmdID :: CmdID
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Start

@@ -1,16 +1,15 @@
-{-|
-Module      : NRM.Optparse.Daemon
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Optparse.Daemon
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Optparse.Daemon
-  ( opts
+  ( opts,
   )
 where
 
 import qualified Data.ByteString as B
-  ( getContents
+  ( getContents,
   )
 import Dhall
 import NRM.Types.Configuration
@@ -22,38 +21,39 @@ import System.Directory
 import System.FilePath.Posix
 import Text.Editor
 import qualified Prelude
-  ( print
+  ( print,
   )
 
 data MainCfg
   = MainCfg
-      { inputfile :: Maybe Text
-      , stdinType :: SourceType
-      , verbosity :: DaemonVerbosity
-      , edit :: Bool
+      { inputfile :: Maybe Text,
+        stdinType :: SourceType,
+        verbosity :: DaemonVerbosity,
+        edit :: Bool
       }
 
 commonParser :: Parser MainCfg
 commonParser =
-  MainCfg <$>
-    optional
+  MainCfg
+    <$> optional
       ( strArgument
-        ( metavar "CONFIG" <>
-          help
-            "Input configuration with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
-        )
-      ) <*>
-    flag
+          ( metavar "CONFIG"
+              <> help
+                "Input configuration with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
+          )
+      )
+    <*> flag
       Dhall
       Yaml
-      ( long "yaml" <> short 'y' <>
-        help
-          "Assume stdin to be yaml instead of dhall."
-      ) <*>
-    flag Normal
+      ( long "yaml" <> short 'y'
+          <> help
+            "Assume stdin to be yaml instead of dhall."
+      )
+    <*> flag
+      Normal
       Verbose
-      (long "verbose" <> short 'v' <> help "Enable verbose mode.") <*>
-    flag
+      (long "verbose" <> short 'v' <> help "Enable verbose mode.")
+    <*> flag
       False
       True
       (long "edit" <> short 'e' <> help "Edit yaml in $EDITOR before running the NRM daemon.")
@@ -80,9 +80,9 @@ load MainCfg {..} =
   (if edit then editing else return) =<< case ext stdinType inputfile of
     (FinallyFile Dhall filename) ->
       (if v then detailed else identity) $
-        C.inputCfg =<<
-        toS <$>
-        makeAbsolute (toS filename)
+        C.inputCfg
+          =<< toS
+          <$> makeAbsolute (toS filename)
     (FinallyFile Yaml filename) ->
       Y.decodeCfgFile =<< toS <$> makeAbsolute (toS filename)
     (FinallyStdin Yaml) ->
@@ -92,8 +92,8 @@ load MainCfg {..} =
     (FinallyStdin Dhall) -> B.getContents >>= C.inputCfg . toS
     NoExt ->
       die
-        ( "couldn't figure out extension for input file. " <>
-          "Please use something in {.yml,.yaml,.dh,.dhall} ."
+        ( "couldn't figure out extension for input file. "
+            <> "Please use something in {.yml,.yaml,.dh,.dhall} ."
         )
   where
     v = verbosity == Verbose

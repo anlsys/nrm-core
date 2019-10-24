@@ -1,27 +1,30 @@
-{-|
-Module      : NRM.State
-Copyright   : (c) 2019, UChicago Argonne, LL
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.State
+-- Copyright   : (c) 2019, UChicago Argonne, LL
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.State
   ( -- * Initial state
-    initialState
-  , -- * Creation/Registration
-    createSlice
-  , registerLibnrmDownstreamClient
-  , registerAwaiting
-  , registerFailed
-  , registerLaunched
-  , registerDownstreamCmdClient
-  , unRegisterDownstreamCmdClient
-  , -- * Removal
+    initialState,
+
+    -- * Creation/Registration
+    createSlice,
+    registerLibnrmDownstreamClient,
+    registerAwaiting,
+    registerFailed,
+    registerLaunched,
+    registerDownstreamCmdClient,
+    unRegisterDownstreamCmdClient,
+
+    -- * Removal
+
     -- ** Slice removal
-    removeSlice
-  , -- ** Command removal
-    CmdKey (..)
-  , DeletionInfo (..)
-  , removeCmd
+    removeSlice,
+
+    -- ** Command removal
+    CmdKey (..),
+    DeletionInfo (..),
+    removeCmd,
   )
 where
 
@@ -53,64 +56,68 @@ initialState c = do
   hwl <- getHwlocData
   let packages' =
         LM.fromList $
-          (,Package {rapl = Nothing}) <$>
-          selectPackageIDs hwl
+          (,Package {rapl = Nothing})
+            <$> selectPackageIDs hwl
   packages <-
     getDefaultRAPLDirs (toS $ Cfg.raplPath $ raplCfg c) <&> \case
       Just (RAPLDirs rapldirs) -> Protolude.foldl goRAPL packages' (LM.toList rapldirs)
       Nothing -> packages'
-  return
-    NRMState
-      { slices = LM.fromList []
-      , pus = LM.fromList $ (,PU) <$> selectPUIDs hwl
-      , cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl
-      , dummyRuntime = if dummy c
-      then Just CD.emptyRuntime
-      else Nothing
-      , singularityRuntime = if singularity c
-      then Just SingularityRuntime
-      else Nothing
-      , nodeosRuntime = if nodeos c
-      then Just NodeosRuntime
-      else Nothing
-      , ..
-      }
+  return NRMState
+    { slices = LM.fromList [],
+      pus = LM.fromList $ (,PU) <$> selectPUIDs hwl,
+      cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl,
+      dummyRuntime =
+        if dummy c
+          then Just CD.emptyRuntime
+          else Nothing,
+      singularityRuntime =
+        if singularity c
+          then Just SingularityRuntime
+          else Nothing,
+      nodeosRuntime =
+        if nodeos c
+          then Just NodeosRuntime
+          else Nothing,
+      ..
+    }
   where
-    goRAPL
-      :: LM.Map PackageID Package
-      -> (PackageID, RAPLDir)
-      -> LM.Map PackageID Package
+    goRAPL ::
+      LM.Map PackageID Package ->
+      (PackageID, RAPLDir) ->
+      LM.Map PackageID Package
     goRAPL m (pkgid, RAPLDir {..}) =
       LM.lookup pkgid m & \case
         Nothing -> m
         Just oldPackage ->
-          LM.insert pkgid
+          LM.insert
+            pkgid
             ( oldPackage
-              { rapl = Just
-                  ( Rapl
-                    { frequency = hz 3
-                    , raplPath = path
-                    , max = maxEnergy
-                    , discreteChoices = [uW 180, uW 200]
-                    , lastTime = Nothing
-                    }
-                  )
-              }
+                { rapl =
+                    Just
+                      ( Rapl
+                          { frequency = hz 3,
+                            raplPath = path,
+                            max = maxEnergy,
+                            discreteChoices = [uW 180, uW 200],
+                            lastTime = Nothing
+                          }
+                      )
+                }
             )
             m
 
 -- | TODO
-registerLibnrmDownstreamClient
-  :: NRMState
-  -> DownstreamThreadID
-  -> NRMState
+registerLibnrmDownstreamClient ::
+  NRMState ->
+  DownstreamThreadID ->
+  NRMState
 registerLibnrmDownstreamClient s _ = s
 
 -- | Removes a slice from the state
 removeSlice :: SliceID -> NRMState -> (Maybe Slice, NRMState)
 removeSlice sliceID st =
-  ( LM.lookup sliceID (slices st)
-  , st {slices = LM.delete sliceID (slices st)}
+  ( LM.lookup sliceID (slices st),
+    st {slices = LM.delete sliceID (slices st)}
   )
 
 -- | Result annotation for command removal from the state.
@@ -127,10 +134,10 @@ data CmdKey
 
 -- | Removes a command from the state, and also removes the slice if it's
 -- empty as a result.
-removeCmd
-  :: CmdKey
-  -> NRMState
-  -> Maybe (DeletionInfo, CmdID, Cmd, SliceID, NRMState)
+removeCmd ::
+  CmdKey ->
+  NRMState ->
+  Maybe (DeletionInfo, CmdID, Cmd, SliceID, NRMState)
 removeCmd key st = case key of
   KCmdID cmdID ->
     DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
@@ -141,22 +148,23 @@ removeCmd key st = case key of
   where
     go cmdID cmd sliceID slice =
       if length (cmds slice) == 1
-      then (SliceRemoved, cmdID, cmd, sliceID, snd $ removeSlice sliceID st)
-      else
-        ( CmdRemoved
-        , cmdID
-        , cmd
-        , sliceID
-        , insertSlice sliceID
-          (slice {cmds = LM.delete cmdID (cmds slice)})
-          st
-        )
+        then (SliceRemoved, cmdID, cmd, sliceID, snd $ removeSlice sliceID st)
+        else
+          ( CmdRemoved,
+            cmdID,
+            cmd,
+            sliceID,
+            insertSlice
+              sliceID
+              (slice {cmds = LM.delete cmdID (cmds slice)})
+              st
+          )
 
 -- | Registers a slice if not already tracked in the state, and returns the new state.
-createSlice
-  :: SliceID
-  -> NRMState
-  -> NRMState
+createSlice ::
+  SliceID ->
+  NRMState ->
+  NRMState
 createSlice sliceID st =
   case LM.lookup sliceID (slices st) of
     Nothing -> st {slices = slices'}
@@ -165,12 +173,12 @@ createSlice sliceID st =
     Just _ -> st
 
 -- | Registers an awaiting command in an existing slice
-registerAwaiting
-  :: CmdID
-  -> CmdCore
-  -> SliceID
-  -> NRMState
-  -> NRMState
+registerAwaiting ::
+  CmdID ->
+  CmdCore ->
+  SliceID ->
+  NRMState ->
+  NRMState
 registerAwaiting cmdID cmdValue sliceID st =
   st {slices = LM.update f sliceID (slices st)}
   where
@@ -180,80 +188,87 @@ registerAwaiting cmdID cmdValue sliceID st =
 {-, cmds = LM.insert cmdID c (cmds slice)-}
 
 -- | Turns an awaiting command to a launched one.
-registerLaunched
-  :: CmdID
-  -> ProcessID
-  -> NRMState
-  -> Either Text (NRMState, SliceID, Maybe UpstreamClientID)
+registerLaunched ::
+  CmdID ->
+  ProcessID ->
+  NRMState ->
+  Either Text (NRMState, SliceID, Maybe UpstreamClientID)
 registerLaunched cmdID pid st =
   case DM.lookup cmdID (awaitingCmdIDMap st) of
     Nothing -> Left "No such awaiting command."
     Just (cmdCore, sliceID, slice) ->
       Right
         ( st
-            { slices = LM.insert sliceID
-                ( slice
-                  { cmds = LM.insert cmdID
-                      (registerPID cmdCore pid)
-                      (cmds slice)
-                  , awaiting = LM.delete cmdID (awaiting slice)
-                  }
-                )
-                (slices st)
-            }
-        , sliceID
-        , upstreamClientID cmdCore
+            { slices =
+                LM.insert
+                  sliceID
+                  ( slice
+                      { cmds =
+                          LM.insert
+                            cmdID
+                            (registerPID cmdCore pid)
+                            (cmds slice),
+                        awaiting = LM.delete cmdID (awaiting slice)
+                      }
+                  )
+                  (slices st)
+            },
+          sliceID,
+          upstreamClientID cmdCore
         )
 
 -- | Fails an awaiting command.
-registerFailed
-  :: CmdID
-  -> NRMState
-  -> Maybe (NRMState, SliceID, Slice, CmdCore)
+registerFailed ::
+  CmdID ->
+  NRMState ->
+  Maybe (NRMState, SliceID, Slice, CmdCore)
 registerFailed cmdID st =
   DM.lookup cmdID (awaitingCmdIDMap st) <&> \(cmdCore, sliceID, slice) ->
-    ( st {slices = LM.update f sliceID (slices st)}
-    , sliceID
-    , slice
-    , cmdCore
+    ( st {slices = LM.update f sliceID (slices st)},
+      sliceID,
+      slice,
+      cmdCore
     )
   where
     f c =
       if LM.null (cmds c)
-      then Nothing
-      else Just $ c {awaiting = LM.delete cmdID (awaiting c)}
+        then Nothing
+        else Just $ c {awaiting = LM.delete cmdID (awaiting c)}
 
 -- | Registers a downstream Cmd client
-registerDownstreamCmdClient
-  :: CmdID
-  -> DownstreamCmdID
-  -> NRMState
-  -> Maybe NRMState
+registerDownstreamCmdClient ::
+  CmdID ->
+  DownstreamCmdID ->
+  NRMState ->
+  Maybe NRMState
 registerDownstreamCmdClient cmdID downstreamCmdID st =
   DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
-    insertSlice sliceID
+    insertSlice
+      sliceID
       ( slice
-        { cmds = addDownstreamCmdClient cmd downstreamCmdID & \case
-            Just c -> LM.insert cmdID c (cmds slice)
-            Nothing -> cmds slice
-        }
+          { cmds = addDownstreamCmdClient cmd downstreamCmdID & \case
+              Just c -> LM.insert cmdID c (cmds slice)
+              Nothing -> cmds slice
+          }
       )
       st
 
 -- | un-registers a downstream Cmd client
-unRegisterDownstreamCmdClient
-  :: CmdID
-  -> DownstreamCmdID
-  -> NRMState
-  -> Maybe NRMState
+unRegisterDownstreamCmdClient ::
+  CmdID ->
+  DownstreamCmdID ->
+  NRMState ->
+  Maybe NRMState
 unRegisterDownstreamCmdClient cmdID downstreamCmdID st =
   DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
-    insertSlice sliceID
+    insertSlice
+      sliceID
       ( slice
-        { cmds = LM.insert
-            cmdID
-            (removeDownstreamCmdClient cmd downstreamCmdID)
-            (cmds slice)
-        }
+          { cmds =
+              LM.insert
+                cmdID
+                (removeDownstreamCmdClient cmd downstreamCmdID)
+                (cmds slice)
+          }
       )
       st

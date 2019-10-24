@@ -1,18 +1,16 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Slices.Dummy
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
-
-Information management for an exec-based dummy slice runtime.
-
--}
+-- |
+-- Module      : NRM.Slices.Dummy
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
+--
+-- Information management for an exec-based dummy slice runtime.
 module NRM.Slices.Dummy
-  ( Dummy (..)
-  , DummyRuntime
-  , emptyRuntime
+  ( Dummy (..),
+    DummyRuntime,
+    emptyRuntime,
   )
 where
 
@@ -47,16 +45,17 @@ instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
       killIfRegistered (Unregistered _) = return ()
 
   doCreateSlice runtime () =
-    liftIO $ nextSliceID <&> \case
-      Just uuid -> Right (insert uuid [] <$> runtime, uuid)
-      Nothing -> Left "Failure to generate next Slice ID"
+    liftIO $
+      nextSliceID <&> \case
+        Just uuid -> Right (insert uuid [] <$> runtime, uuid)
+        Nothing -> Left "Failure to generate next Slice ID"
 
   doPrepareStartApp runtime sliceID AppStartConfig {..} =
     return $
       Right
-        ( DM.adjust (Unregistered cmdID :) sliceID <$> runtime
-        , command
-        , arguments
+        ( DM.adjust (Unregistered cmdID :) sliceID <$> runtime,
+          command,
+          arguments
         )
 
   doStopSlice (Dummy x) sliceID =

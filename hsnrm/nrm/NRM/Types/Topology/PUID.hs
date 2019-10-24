@@ -1,13 +1,12 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Types.Topology.PUID
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Topology.PUID
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Topology.PUID
-  ( PUID (..)
+  ( PUID (..),
   )
 where
 
@@ -24,9 +23,7 @@ newtype PUID = PUID Int
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON PUID
 
 instance ToHwlocType PUID where
-
   getType _ = "PU"
 
 instance IdFromString PUID where
-
   idFromString s = PUID <$> readMaybe s

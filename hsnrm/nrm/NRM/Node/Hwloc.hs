@@ -1,32 +1,32 @@
-{-|
-Module      : NRM.Node.Hwloc
-Description : Hwloc tree queries
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
-
-This module offers a minimalistic interface to @hwloc@.
--}
+-- |
+-- Module      : NRM.Node.Hwloc
+-- Description : Hwloc tree queries
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
+--
+-- This module offers a minimalistic interface to @hwloc@.
 module NRM.Node.Hwloc
   ( -- * Retrieving Hwloc XML data
-    HwlocData(..)
-  , getHwlocData
-  , -- * Running queries
-    selectCoreIDs
-  , selectPUIDs
-  , selectPackageIDs
+    HwlocData (..),
+    getHwlocData,
+
+    -- * Running queries
+    selectCoreIDs,
+    selectPUIDs,
+    selectPackageIDs,
   )
 where
 
 import Control.Arrow.ArrowTree (deep)
 import Control.Arrow.ListArrow (runLA)
+import NRM.Classes.Topology
 import NRM.Types.Topology
 import Protolude
 import System.Process.Typed
 import Text.XML.HXT.Arrow.XmlArrow
 import Text.XML.HXT.DOM.TypeDefs (XmlTrees)
 import Text.XML.HXT.Parser.XmlParsec
-import NRM.Classes.Topology
 import Text.XML.HXT.XPath.XPathEval
 
 -- | Full Hwloc data
@@ -49,15 +49,15 @@ getHwlocData :: IO HwlocData
 getHwlocData =
   HwlocData <$> (readProcessStdout_ "hwloc-ls -p --whole-system --of xml" <&> xreadDoc . toS)
 
-extractOSindexes
-  :: (ToHwlocType a, IdFromString a) => Proxy a -> HwlocData -> [a]
+extractOSindexes ::
+  (ToHwlocType a, IdFromString a) => Proxy a -> HwlocData -> [a]
 extractOSindexes typeAttr xml =
   catMaybes $
-    idFromString <$>
-    concat
-      ( runLA (deep (getAttrValue "os_index")) <$>
-        selectSubtreesOfType (getType typeAttr) xml
-      )
+    idFromString
+      <$> concat
+        ( runLA (deep (getAttrValue "os_index"))
+            <$> selectSubtreesOfType (getType typeAttr) xml
+        )
 
 selectSubtreesOfType :: Text -> HwlocData -> XmlTrees
 selectSubtreesOfType typeAttr (HwlocData hwld) =

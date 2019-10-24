@@ -1,28 +1,27 @@
-{-|
-Module      : NRM.Types.UpstreamClient
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.UpstreamClient
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.UpstreamClient
-  ( UpstreamClientID (..)
-  , nextUpstreamClientID
-  , toText
-  , fromText
+  ( UpstreamClientID (..),
+    nextUpstreamClientID,
+    toText,
+    fromText,
   )
 where
 
 import Data.Aeson
+import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import qualified Data.UUID as U
 import Data.UUID.V1
 import Protolude
 import Prelude (fail)
-import Data.Data
 
 newtype UpstreamClientID = UpstreamClientID U.UUID
-  deriving (Show, Eq, Ord, Generic, Data,Read)
+  deriving (Show, Eq, Ord, Generic, Data, Read)
 
 nextUpstreamClientID :: IO (Maybe UpstreamClientID)
 nextUpstreamClientID = fmap UpstreamClientID <$> nextUUID
@@ -34,15 +33,12 @@ fromText :: Text -> Maybe UpstreamClientID
 fromText = fmap UpstreamClientID <$> U.fromText
 
 instance ToJSON UpstreamClientID where
-
   toJSON (UpstreamClientID x) = toJSON x
 
 instance FromJSON UpstreamClientID where
-
   parseJSON = fmap UpstreamClientID <$> parseJSON
 
 instance JSONSchema UpstreamClientID where
-
   schema Proxy = schema (Proxy :: Proxy Text)
 
 instance MessagePack UpstreamClientID where

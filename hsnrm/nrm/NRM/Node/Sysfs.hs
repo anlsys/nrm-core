@@ -1,23 +1,23 @@
-{-|
-Module      : NRM.Node.Sysfs
-Description : Sysfs tree queries
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Node.Sysfs
+-- Description : Sysfs tree queries
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Node.Sysfs
   ( -- * RAPL
-    RAPLDirs
-  , getDefaultRAPLDirs
-  , measureRAPLDirs
-  , setRAPLPowercap
-  , -- * Hwmon
-    getDefaultHwmonDirs
+    RAPLDirs,
+    getDefaultRAPLDirs,
+    measureRAPLDirs,
+    setRAPLPowercap,
+
+    -- * Hwmon
+    getDefaultHwmonDirs,
   )
 where
 
-import NRM.Node.Sysfs.Internal
 import LMap.Map as LM
+import NRM.Node.Sysfs.Internal
 import Protolude
 
 -- | Retreives package RAPL directories at the default location.

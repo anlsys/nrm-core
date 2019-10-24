@@ -1,12 +1,11 @@
-{-|
-Module      : NRM.Types.Messaging.Protocols
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Messaging.Protocols
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Messaging.Protocols
-  ( ReqRep (..)
-  , ReqStream (..)
+  ( ReqRep (..),
+    ReqStream (..),
   )
 where
 

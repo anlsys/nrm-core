@@ -1,21 +1,20 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Types.Messaging.UpstreamReq
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Messaging.UpstreamReq
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Messaging.UpstreamReq
-  ( Req (..)
-  , Run (..)
-  , SliceList (..)
-  , CPD (..)
-  , KillSlice (..)
-  , KillCmd (..)
-  , SetPower (..)
-  , GetConfig (..)
-  , GetState (..)
+  ( Req (..),
+    Run (..),
+    SliceList (..),
+    CPD (..),
+    KillSlice (..),
+    KillCmd (..),
+    SetPower (..),
+    GetConfig (..),
+    GetState (..),
   )
 where
 
@@ -44,10 +43,10 @@ data Req
 
 data Run
   = Run
-      { manifest :: Manifest
-      , spec :: Cmd.CmdSpec
-      , runSliceID :: C.SliceID
-      , detachCmd :: Bool
+      { manifest :: Manifest,
+        spec :: Cmd.CmdSpec,
+        runSliceID :: C.SliceID,
+        detachCmd :: Bool
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON Run

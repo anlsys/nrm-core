@@ -1,10 +1,10 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-{-|
-Module      : NRM.Manifest.Examples
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+
+-- |
+-- Module      : NRM.Manifest.Examples
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Manifest.Examples
   (
   )
@@ -18,26 +18,27 @@ import NRM.Types.Units as U
 import Protolude
 
 instance Examples Manifest where
-
   examples =
     fromList
-      [ ( "perfwrap"
-        , def
-          { app = def
-              { perfwrapper = Perfwrapper $ MkPw
-                  { perfFreq = U.hz 1
-                  , perfLimit = U.Operations 100000
+      [ ( "perfwrap",
+          def
+            { app =
+                def
+                  { perfwrapper = Perfwrapper $ MkPw
+                      { perfFreq = U.hz 1,
+                        perfLimit = U.Operations 100000
+                      }
                   }
-              }
-          }
-        )
-      , ( "libnrm"
-        , def
-          { app = def
-              { instrumentation = Just $ Instrumentation
-                  { ratelimit = U.hz 1000000
+            }
+        ),
+        ( "libnrm",
+          def
+            { app =
+                def
+                  { instrumentation = Just $ Instrumentation
+                      { ratelimit = U.hz 1000000
+                      }
                   }
-              }
-          }
+            }
         )
       ]

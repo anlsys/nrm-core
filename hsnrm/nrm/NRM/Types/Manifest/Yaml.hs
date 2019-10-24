@@ -1,14 +1,12 @@
-{-|
-Module      : NRM.Types.Manifest.Yaml
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Manifest.Yaml
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Manifest.Yaml
-  (
-  decodeManifestFile
-  , decodeManifest
-  , encodeManifest
+  ( decodeManifestFile,
+    decodeManifest,
+    encodeManifest,
   )
 where
 
@@ -25,47 +23,47 @@ data SliceRuntime = Singularity | Nodeos | Dummy
 
 data Manifest
   = Manifest
-      { name :: Text
-      , app :: App
-      , hwbind :: Maybe Bool
-      , image :: Maybe I.Image
+      { name :: Text,
+        app :: App,
+        hwbind :: Maybe Bool,
+        image :: Maybe I.Image
       }
   deriving (Generic)
 
 data App
   = App
-      { slice :: I.Slice
-      , scheduler :: Maybe I.Scheduler
-      , perfwrapper :: Maybe I.Perfwrapper
-      , power :: Maybe I.Power
-      , instrumentation :: Maybe I.Instrumentation
+      { slice :: I.Slice,
+        scheduler :: Maybe I.Scheduler,
+        perfwrapper :: Maybe I.Perfwrapper,
+        power :: Maybe I.Power,
+        instrumentation :: Maybe I.Instrumentation
       }
   deriving (Generic)
 
 instance FromJSON Manifest where
-
   parseJSON = genericParseJSON I.jsonOptions
 
 instance FromJSON App where
-
   parseJSON = genericParseJSON I.jsonOptions
 
 instance ToJSON Manifest where
 
   toJSON = genericToJSON I.jsonOptions
+
   toEncoding = genericToEncoding I.jsonOptions
 
 instance ToJSON App where
 
   toJSON = genericToJSON I.jsonOptions
+
   toEncoding = genericToEncoding I.jsonOptions
 
 toInternal :: Manifest -> D.Manifest
 toInternal d = D.Manifest
-  { name = name d
-  , app = toInternalApp $ app d
-  , hwbind = fromDefault hwbind D.hwbind
-  , image = Nothing
+  { name = name d,
+    app = toInternalApp $ app d,
+    hwbind = fromDefault hwbind D.hwbind,
+    image = Nothing
   }
   where
     fromDefault :: Default a => (Manifest -> Maybe c) -> (a -> c) -> c
@@ -73,11 +71,11 @@ toInternal d = D.Manifest
 
 toInternalApp :: App -> D.App
 toInternalApp app = D.App
-  { slice = slice app
-  , scheduler = fromDefault scheduler D.scheduler
-  , perfwrapper = fromDefault perfwrapper D.perfwrapper
-  , power = fromDefault power D.power
-  , instrumentation = instrumentation app
+  { slice = slice app,
+    scheduler = fromDefault scheduler D.scheduler,
+    perfwrapper = fromDefault perfwrapper D.perfwrapper,
+    power = fromDefault power D.power,
+    instrumentation = instrumentation app
   }
   where
     fromDefault :: Default a => (App -> Maybe c) -> (a -> c) -> c
@@ -85,10 +83,10 @@ toInternalApp app = D.App
 
 fromInternal :: D.Manifest -> Manifest
 fromInternal m = Manifest
-  { name = D.name m
-  , app = fromInternalApp $ D.app m
-  , hwbind = toJust D.hwbind
-  , image = D.image m
+  { name = D.name m,
+    app = fromInternalApp $ D.app m,
+    hwbind = toJust D.hwbind,
+    image = D.image m
   }
   where
     toJust :: (Eq a) => (D.Manifest -> a) -> Maybe a
@@ -98,11 +96,11 @@ fromInternal m = Manifest
 
 fromInternalApp :: D.App -> App
 fromInternalApp a = App
-  { slice = D.slice a
-  , scheduler = toJust D.scheduler
-  , perfwrapper = toJust D.perfwrapper
-  , power = toJust D.power
-  , instrumentation = D.instrumentation a
+  { slice = D.slice a,
+    scheduler = toJust D.scheduler,
+    perfwrapper = toJust D.perfwrapper,
+    power = toJust D.power,
+    instrumentation = D.instrumentation a
   }
   where
     toJust :: (Eq a) => (D.App -> a) -> Maybe a
@@ -112,10 +110,11 @@ fromInternalApp a = App
 
 decodeManifestFile :: (MonadIO m) => Text -> m I.Manifest
 decodeManifestFile fn =
-  liftIO $ try (Data.Yaml.decodeFileEither (toS fn)) >>= \case
-    Left e -> throwError e
-    Right (Left pa) -> throwError $ userError $ "parse fail:" <> show pa
-    Right (Right a) -> return $ D.toInternal $ toInternal a
+  liftIO $
+    try (Data.Yaml.decodeFileEither (toS fn)) >>= \case
+      Left e -> throwError e
+      Right (Left pa) -> throwError $ userError $ "parse fail:" <> show pa
+      Right (Right a) -> return $ D.toInternal $ toInternal a
 
 decodeManifest :: ByteString -> Either Data.Yaml.ParseException I.Manifest
 decodeManifest fn = D.toInternal . toInternal <$> Data.Yaml.decodeEither' fn

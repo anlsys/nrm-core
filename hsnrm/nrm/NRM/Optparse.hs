@@ -1,13 +1,12 @@
-{-|
-Module      : NRM.Optparse
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Optparse
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Optparse
-  ( parseDaemonCli
-  , parseArgDaemonCli
-  , parseClientCli
+  ( parseDaemonCli,
+    parseArgDaemonCli,
+    parseClientCli,
   )
 where
 
@@ -34,12 +33,12 @@ parseClientCli = fmap toS <$> getArgs >>= parseCli "nrm" "NRM Client" C.opts
 
 parseCli :: Text -> Text -> Parser (IO a) -> [Text] -> IO a
 parseCli h d x args =
-  GHC.IO.Encoding.setLocaleEncoding SIO.utf8 >>
-    ( join .
-      customExecParserArgs args (prefs showHelpOnError) $
-      info
-        (helper <*> x)
-        ( fullDesc <> header (toS h) <>
-          progDesc (toS d)
-        )
-    )
+  GHC.IO.Encoding.setLocaleEncoding SIO.utf8
+    >> ( join
+           . customExecParserArgs args (prefs showHelpOnError)
+           $ info
+             (helper <*> x)
+             ( fullDesc <> header (toS h)
+                 <> progDesc (toS d)
+             )
+       )

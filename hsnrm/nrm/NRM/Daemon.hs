@@ -1,14 +1,13 @@
-{-|
-Module      : NRM.Daemon
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Daemon
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Daemon
-  ( main
-  , server
-  , dummyReply
-  , dummy
+  ( main,
+    server,
+    dummyReply,
+    dummy,
   )
 where
 
@@ -43,16 +42,16 @@ server :: Socket z Router -> ZMQ z v
 server s =
   forever $
     receiveMulti s >>= \case
-    [clientID, msg] -> do
-      putText "Received raw message:"
-      liftIO $ hFlush stdout
-      case decode $ toS msg of
-        Nothing -> putText $ "couldn't decode message: " <> toS msg
-        Just req -> do
-          liftIO $ print req
-          liftIO $ hFlush stdout
-          dummyReply req s clientID
-    _ -> panic "received a message with more than two parts:"
+      [clientID, msg] -> do
+        putText "Received raw message:"
+        liftIO $ hFlush stdout
+        case decode $ toS msg of
+          Nothing -> putText $ "couldn't decode message: " <> toS msg
+          Just req -> do
+            liftIO $ print req
+            liftIO $ hFlush stdout
+            dummyReply req s clientID
+      _ -> panic "received a message with more than two parts:"
 
 dummyReply :: Req.Req -> Socket z Router -> ByteString -> ZMQ z ()
 dummyReply = \case

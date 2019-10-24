@@ -1,14 +1,13 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Types.Actuator
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Actuator
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Actuator
-  ( Actuator (..)
-  , ActuatorKey (..)
+  ( Actuator (..),
+    ActuatorKey (..),
   )
 where
 
@@ -19,22 +18,20 @@ import Protolude
 
 data Actuator
   = Actuator
-      { actions :: [Double]
-      , go :: Double -> IO ()
+      { actions :: [Double],
+        go :: Double -> IO ()
       }
 
 data ActuatorKey = RaplKey PackageID | A
   deriving (Show, Eq, Ord)
 
 instance StringConv ActuatorKey CPD.ActuatorID where
-
   strConv _ = CPD.ActuatorID . show
 
 instance ToCPDActuator ActuatorKey Actuator where
-
   toCPDActuator (id, Actuator {..}) =
-    ( toS id
-    , CPD.Actuator
-      { actions = CPD.DiscreteDouble <$> actions
-      }
+    ( toS id,
+      CPD.Actuator
+        { actions = CPD.DiscreteDouble <$> actions
+        }
     )

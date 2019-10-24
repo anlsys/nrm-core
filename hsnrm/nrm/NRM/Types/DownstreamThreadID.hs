@@ -1,15 +1,14 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Types.DownstreamThreadID
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.DownstreamThreadID
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.DownstreamThreadID
-  ( DownstreamThreadID (..)
-  , TaskID (..)
-  , ThreadID (..)
+  ( DownstreamThreadID (..),
+    TaskID (..),
+    ThreadID (..),
   )
 where
 
@@ -18,16 +17,16 @@ import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
-import NRM.Types.Process as P
 import NRM.Types.CmdID
+import NRM.Types.Process as P
 import Protolude
 
 data DownstreamThreadID
   = DownstreamThreadID
-      { cmdID :: CmdID
-      , processID :: P.ProcessID
-      , taskID :: TaskID
-      , threadID :: ThreadID
+      { cmdID :: CmdID,
+        processID :: P.ProcessID,
+        taskID :: TaskID,
+        threadID :: ThreadID
       }
   deriving (Eq, Ord, Show, Generic, Data, MessagePack, ToJSONKey, FromJSONKey)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamThreadID

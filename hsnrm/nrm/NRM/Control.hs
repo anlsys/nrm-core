@@ -1,20 +1,18 @@
 {-# LANGUAGE DerivingVia #-}
-
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-{-|
-Module      : NRM.Control
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Control
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Control
-  ( Input (..)
-  , Decision (..)
-  , Controller (..)
-  , BanditActions (..)
-  , control
-  , initialController
+  ( Input (..),
+    Decision (..),
+    Controller (..),
+    BanditActions (..),
+    control,
+    initialController,
   )
 where
 
@@ -48,9 +46,9 @@ newtype BanditActions = BanditActions [V.Actions]
 
 data Controller
   = Controller
-      { cpd :: C.Problem
-      , integrator :: C.Integrator
-      , bandit :: Maybe (Exp3 SensorID)
+      { cpd :: C.Problem,
+        integrator :: C.Integrator,
+        bandit :: Maybe (Exp3 SensorID)
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)

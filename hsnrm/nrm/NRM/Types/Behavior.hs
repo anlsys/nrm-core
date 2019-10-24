@@ -1,14 +1,14 @@
-{-|
-Module      : NRM.Types.Behavior
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Behavior
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Behavior
-  ( NRMEvent (..)
-  , -- * The Behavior specification
-    Behavior (..)
-  , CmdStatus (..)
+  ( NRMEvent (..),
+
+    -- * The Behavior specification
+    Behavior (..),
+    CmdStatus (..),
   )
 where
 
@@ -18,11 +18,11 @@ import NRM.Types.Cmd
 import NRM.Types.CmdID
 import NRM.Types.DownstreamCmdID
 import NRM.Types.Messaging.DownstreamEvent
-import NRM.Types.Units
 import NRM.Types.Messaging.UpstreamPub as UPub
 import NRM.Types.Messaging.UpstreamRep
 import NRM.Types.Messaging.UpstreamReq
 import NRM.Types.Process
+import NRM.Types.Units
 import NRM.Types.UpstreamClient
 import Protolude hiding (Rep)
 
@@ -85,15 +85,15 @@ instance MessagePack Behavior where
     toObject ("cmd" :: Text, cmdID, cmd, args, env)
   toObject (KillChildren cmdIDs reps) =
     toObject
-      ( "kill" :: Text
-      , cmdIDs
-      , (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> reps
+      ( "kill" :: Text,
+        cmdIDs,
+        (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> reps
       )
   toObject (ClearChild cmdID maybeRep) =
     toObject
-      ( "pop" :: Text
-      , cmdID
-      , (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> Protolude.toList maybeRep
+      ( "pop" :: Text,
+        cmdID,
+        (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> Protolude.toList maybeRep
       )
 
   fromObject x = to <$> gFromObject x

@@ -1,14 +1,13 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Types.Messaging.DownstreamEvent
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Messaging.DownstreamEvent
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Messaging.DownstreamEvent
-  ( Event (..)
-  , PhaseContext (..)
+  ( Event (..),
+    PhaseContext (..),
   )
 where
 
@@ -36,10 +35,10 @@ data Event
 
 data PhaseContext
   = PhaseContext
-      { cpu :: Int
-      , aggregation :: Int
-      , computetime :: Int
-      , totaltime :: Int
+      { cpu :: Int,
+        aggregation :: Int,
+        computetime :: Int,
+        totaltime :: Int
       }
   deriving (Generic, Show, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON PhaseContext
@@ -49,8 +48,8 @@ instance M.NRMMessage Event J.Event where
   toJ = \case
     CmdPerformance cmdID perf ->
       J.CmdPerformance
-        { cmdID = CmdID.toText cmdID
-        , perf = fromOps perf
+        { cmdID = CmdID.toText cmdID,
+          perf = fromOps perf
         }
     CmdPause cmdID ->
       J.CmdPause
@@ -60,38 +59,38 @@ instance M.NRMMessage Event J.Event where
       (DownstreamThreadID threadCmdID processID taskID threadID)
       threadProgress ->
         J.ThreadProgress
-          { cmdID = CmdID.toText threadCmdID
-          , processID = fromIntegral $ P.rawPid processID
-          , taskID = fromTaskID taskID
-          , threadID = fromIntegral threadID
-          , payload = fromProgress threadProgress
+          { cmdID = CmdID.toText threadCmdID,
+            processID = fromIntegral $ P.rawPid processID,
+            taskID = fromTaskID taskID,
+            threadID = fromIntegral threadID,
+            payload = fromProgress threadProgress
           }
     ThreadPause (DownstreamThreadID threadCmdID processID taskID threadID) ->
       J.ThreadPause
-        { cmdID = CmdID.toText threadCmdID
-        , processID = fromIntegral processID
-        , taskID = fromTaskID taskID
-        , threadID = fromIntegral threadID
+        { cmdID = CmdID.toText threadCmdID,
+          processID = fromIntegral processID,
+          taskID = fromTaskID taskID,
+          threadID = fromIntegral threadID
         }
     ThreadPhaseContext
       (DownstreamThreadID threadCmdID processID taskID threadID)
       (PhaseContext cpu aggregation computetime totaltime) ->
         J.ThreadPhaseContext
-          { cmdID = CmdID.toText threadCmdID
-          , processID = fromIntegral processID
-          , taskID = fromTaskID taskID
-          , threadID = fromIntegral threadID
-          , cpu = cpu
-          , aggregation = aggregation
-          , computetime = computetime
-          , totaltime = totaltime
+          { cmdID = CmdID.toText threadCmdID,
+            processID = fromIntegral processID,
+            taskID = fromTaskID taskID,
+            threadID = fromIntegral threadID,
+            cpu = cpu,
+            aggregation = aggregation,
+            computetime = computetime,
+            totaltime = totaltime
           }
     ThreadPhasePause (DownstreamThreadID threadCmdID processID taskID threadID) ->
       J.ThreadPhasePause
-        { cmdID = CmdID.toText threadCmdID
-        , processID = fromIntegral processID
-        , taskID = fromTaskID taskID
-        , threadID = fromIntegral threadID
+        { cmdID = CmdID.toText threadCmdID,
+          processID = fromIntegral processID,
+          taskID = fromTaskID taskID,
+          threadID = fromIntegral threadID
         }
 
   fromJ = \case
@@ -102,34 +101,34 @@ instance M.NRMMessage Event J.Event where
     J.ThreadProgress {..} ->
       ThreadProgress
         ( DownstreamThreadID
-          (fromJust $ CmdID.fromText cmdID)
-          (fromInteger $ toInteger processID)
-          (TaskID taskID)
-          (fromInteger $ toInteger threadID)
+            (fromJust $ CmdID.fromText cmdID)
+            (fromInteger $ toInteger processID)
+            (TaskID taskID)
+            (fromInteger $ toInteger threadID)
         )
         (payload & progress)
     J.ThreadPause {..} ->
       ThreadPause
         ( DownstreamThreadID
-          (fromJust $ CmdID.fromText cmdID)
-          (fromInteger $ toInteger processID)
-          (TaskID taskID)
-          (fromInteger $ toInteger threadID)
+            (fromJust $ CmdID.fromText cmdID)
+            (fromInteger $ toInteger processID)
+            (TaskID taskID)
+            (fromInteger $ toInteger threadID)
         )
     J.ThreadPhaseContext {..} ->
       ThreadPhaseContext
         ( DownstreamThreadID
-          (fromJust $ CmdID.fromText cmdID)
-          (fromInteger $ toInteger processID)
-          (TaskID taskID)
-          (fromInteger $ toInteger threadID)
+            (fromJust $ CmdID.fromText cmdID)
+            (fromInteger $ toInteger processID)
+            (TaskID taskID)
+            (fromInteger $ toInteger threadID)
         )
         (PhaseContext cpu aggregation computetime totaltime)
     J.ThreadPhasePause {..} ->
       ThreadPhasePause
         ( DownstreamThreadID
-          (fromJust $ CmdID.fromText cmdID)
-          (fromInteger $ toInteger processID)
-          (TaskID taskID)
-          (fromInteger $ toInteger threadID)
+            (fromJust $ CmdID.fromText cmdID)
+            (fromInteger $ toInteger processID)
+            (TaskID taskID)
+            (fromInteger $ toInteger threadID)
         )

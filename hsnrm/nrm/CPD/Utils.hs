@@ -1,18 +1,17 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : CPD.Utils
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : CPD.Utils
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module CPD.Utils
-  ( validateAction
-  , validateMeasurement
-  , MeasurementValidation (..)
-  , ActionValidation (..)
-  , combine
-  , eval
+  ( validateAction,
+    validateMeasurement,
+    MeasurementValidation (..),
+    ActionValidation (..),
+    combine,
+    eval,
   )
 where
 

@@ -1,16 +1,15 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Types.CmdID
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.CmdID
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.CmdID
-  ( CmdID (..)
-  , NRM.Types.CmdID.toText
-  , NRM.Types.CmdID.fromText
-  , nextCmdID
+  ( CmdID (..),
+    NRM.Types.CmdID.toText,
+    NRM.Types.CmdID.fromText,
+    nextCmdID,
   )
 where
 
@@ -32,7 +31,6 @@ newtype CmdID = CmdID U.UUID
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdID
 
 instance IsString CmdID where
-
   fromString x = fromMaybe (panic "couldn't decode cmdID in FromString instance") (A.decode $ toS x)
 
 nextCmdID :: IO (Maybe CmdID)
@@ -43,4 +41,3 @@ toText (CmdID u) = U.toText u
 
 fromText :: Text -> Maybe CmdID
 fromText = fmap CmdID <$> U.fromText
-

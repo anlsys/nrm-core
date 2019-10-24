@@ -1,11 +1,10 @@
-{-|
-Module      : Codegen
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : Codegen
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module Codegen
-  ( main
+  ( main,
   )
 where
 

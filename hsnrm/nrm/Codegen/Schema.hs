@@ -1,12 +1,11 @@
-{-|
-Module      : Codegen.Schema
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : MIT
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : Codegen.Schema
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : MIT
+-- Maintainer  : fre@freux.fr
 module Codegen.Schema
-  ( NSchema (..)
-  , generatePretty
+  ( NSchema (..),
+    generatePretty,
   )
 where
 
@@ -14,11 +13,11 @@ import qualified Data.Aeson as A
 import Data.Aeson.Encode.Pretty as AP
 import qualified Data.Aeson.Types as AT
 import Data.HashMap.Strict as H
-  ( fromList
+  ( fromList,
   )
 import qualified Data.JSON.Schema as S
 import Data.Vector as V
-  ( fromList
+  ( fromList,
   )
 import NRM.Classes.Messaging as M
 import Protolude
@@ -44,9 +43,9 @@ toOP :: IsString a => S.Schema -> [(a, AT.Value)]
 toOP (S.Choice schs) = [("oneOf", ss)] where ss = mkArray (toAeson <$> schs)
 toOP (S.Object fields) =
   catMaybes
-    [ Just ("type", mkString "object")
-    , mqRequired objectnames
-    , Just ("properties", (AT.Object . H.fromList) objectdescs)
+    [ Just ("type", mkString "object"),
+      mqRequired objectnames,
+      Just ("properties", (AT.Object . H.fromList) objectdescs)
     ]
   where
     objectnames = mkString . toS . S.key <$> filter S.required fields
@@ -59,26 +58,26 @@ toOP (S.Map sch) =
   [("type", AT.String "object"), ("additionalProperties", toAeson sch)]
 toOP (S.Array S.LengthBound {..} uniqueitems sch) =
   catMaybes
-    [ Just ("type", mkString "array")
-    , Just ("uniqueItems", mkBool uniqueitems)
-    , Just ("items", toAeson sch)
-    , ("minLength",) . mkSci <$> lowerLength
-    , ("maxLength",) . mkSci <$> upperLength
+    [ Just ("type", mkString "array"),
+      Just ("uniqueItems", mkBool uniqueitems),
+      Just ("items", toAeson sch),
+      ("minLength",) . mkSci <$> lowerLength,
+      ("maxLength",) . mkSci <$> upperLength
     ]
 toOP (S.Tuple schs) =
   [("type", mkString "array"), ("items", mkArray (toAeson <$> schs))]
 toOP (S.Value S.LengthBound {..}) =
   catMaybes
-    [ Just ("type", mkString "string")
-    , ("minLength",) . mkSci <$> lowerLength
-    , ("maxLength",) . mkSci <$> upperLength
+    [ Just ("type", mkString "string"),
+      ("minLength",) . mkSci <$> lowerLength,
+      ("maxLength",) . mkSci <$> upperLength
     ]
 toOP S.Boolean = [("type", mkString "boolean")]
 toOP (S.Number S.Bound {..}) =
   catMaybes
-    [ Just ("type", mkString "number")
-    , ("minimum",) . mkSci <$> lower
-    , ("maximum",) . mkSci <$> upper
+    [ Just ("type", mkString "number"),
+      ("minimum",) . mkSci <$> lower,
+      ("maximum",) . mkSci <$> upper
     ]
 toOP (S.Constant aesonValue) =
   [("const", mkString $ toS (A.encode aesonValue))]

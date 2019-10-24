@@ -68,8 +68,16 @@ in pkgs // rec {
 
   patchedSrcBin = patchedSrc ../hsnrm/bin "bin" cabal/bin.dhall;
 
-  ormolu = (import (builtins.fetchTarball
-    "https://github.com/tweag/ormolu/archive/0.0.1.0.tar.gz") { }).ormolu;
+  ormolu = let
+    source = pkgs.fetchFromGitHub {
+      owner = "tweag";
+      repo = "ormolu";
+      rev = "f83f6fd1dab5ccbbdf55ee1653b24595c1d653c2";
+      sha256 = "1hs7ayq5d15m9kxwfmdac3p2i3s6b0cn58cm4rrqc4d447yl426y";
+    };
+  in (import source { }).ormolu;
+  #ormolu = (import (builtins.fetchTarball
+  #"https://github.com/tweag/ormolu/archive/0.0.1.0.tar.gz") { }).ormolu;
 
   haskellPackages = pkgs.haskellPackages.override {
     overrides = self: super:
@@ -150,7 +158,7 @@ in pkgs // rec {
 
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
 
-    buildInputs = [ pkgs.hwloc ];
+    buildInputs = [ pkgs.hwloc ormolu ];
 
     shellHook = ''
       export NRMSO=./_build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so

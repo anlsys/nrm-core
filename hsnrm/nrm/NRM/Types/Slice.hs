@@ -1,19 +1,18 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Types.Slice
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Slice
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Slice
-  ( Slice (..)
-  , emptySlice
-  , insertCmd
-  , SliceID (..)
-  , nextSliceID
-  , parseSliceID
-  , toText
+  ( Slice (..),
+    emptySlice,
+    insertCmd,
+    SliceID (..),
+    nextSliceID,
+    parseSliceID,
+    toText,
   )
 where
 
@@ -37,8 +36,8 @@ import Protolude
 data Slice
   = Slice
       { -- | map of running commands
-        cmds :: LM.Map CmdID Cmd
-      , -- | map of commands awaiting to be registered as running by the runtime
+        cmds :: LM.Map CmdID Cmd,
+        -- | map of commands awaiting to be registered as running by the runtime
         awaiting :: LM.Map CmdID CmdCore
       }
   deriving (Show, Generic, Data, MessagePack)
@@ -47,8 +46,8 @@ data Slice
 -- | Constructor for an empty slice.
 emptySlice :: Slice
 emptySlice = Slice
-  { cmds = LM.fromList []
-  , awaiting = LM.fromList []
+  { cmds = LM.fromList [],
+    awaiting = LM.fromList []
   }
 
 -- | Insert a running command in a slice (with replace)
@@ -72,6 +71,5 @@ toText (SliceID u) = U.toText u
 toText (Name n) = n
 
 instance HasLensMap (SliceID, Slice) ActiveSensorKey ActiveSensor where
-
   lenses (_sliceID, slice) =
     addPath (_2 . field @"cmds") <$> lenses (cmds slice)

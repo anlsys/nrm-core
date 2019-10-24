@@ -1,15 +1,14 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Slices.Singularity
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
-
-This module offers an interface to singularity slices.
--}
+-- |
+-- Module      : NRM.Slices.Singularity
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
+--
+-- This module offers an interface to singularity slices.
 module NRM.Slices.Singularity
-  ( SingularityRuntime (..)
+  ( SingularityRuntime (..),
   )
 where
 

@@ -1,22 +1,21 @@
-{-|
-Module      : NRM.Types.Manifest.Dhall
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Manifest.Dhall
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Manifest.Dhall
-  ( inputManifest
-  , toInternal
-  , fromInternal
-  , I.Manifest (..)
-  , I.App (..)
-  , I.Slice (..)
-  , I.Scheduler (..)
-  , I.PowerPolicy (..)
-  , I.Power (..)
-  , I.Instrumentation (..)
-  , I.ImageType (..)
-  , I.Image (..)
+  ( inputManifest,
+    toInternal,
+    fromInternal,
+    I.Manifest (..),
+    I.App (..),
+    I.Slice (..),
+    I.Scheduler (..),
+    I.PowerPolicy (..),
+    I.Power (..),
+    I.Instrumentation (..),
+    I.ImageType (..),
+    I.Image (..),
   )
 where
 
@@ -30,9 +29,10 @@ import Protolude
 
 inputDManifest :: (MonadIO m) => Text -> m I.Manifest
 inputDManifest fn =
-  liftIO $ try (input dt fn) >>= \case
-    Right d -> return d
-    Left e -> throwError e
+  liftIO $
+    try (input dt fn) >>= \case
+      Right d -> return d
+      Left e -> throwError e
   where
     dt :: Dhall.Type I.Manifest
     dt = Dhall.auto

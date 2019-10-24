@@ -18,7 +18,7 @@ import Options.Applicative as OA
 import Protolude
 import System.Directory
 import System.Environment (getEnv, withArgs)
-import "Glob" System.FilePath.Glob
+import System.FilePath.Glob
 import qualified System.IO as SIO
   ( BufferMode (..)
   , hSetBuffering

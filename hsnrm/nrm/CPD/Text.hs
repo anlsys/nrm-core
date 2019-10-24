@@ -1,13 +1,12 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : CPD.Text
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : CPD.Text
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module CPD.Text
-  ( showProblemDhall
+  ( showProblemDhall,
   )
 where
 

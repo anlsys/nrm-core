@@ -1,17 +1,16 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
-{-|
-Module      : NRM.Classes.Messaging
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Classes.Messaging
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Classes.Messaging
-  ( NRMMessage (..)
-  , GenericJSON (..)
-  , JSONSchema (..)
+  ( NRMMessage (..),
+    GenericJSON (..),
+    JSONSchema (..),
   )
 where
 
@@ -29,8 +28,8 @@ import LMap.Map as LM
 import Protolude
 
 class
-  (Generic b, SG.GJSONSchema (Rep b), AG.GfromJson (Rep b), AG.GtoJson (Rep b), GIsEnum (Rep b), ConNames (Rep b))
-  => NRMMessage a b
+  (Generic b, SG.GJSONSchema (Rep b), AG.GfromJson (Rep b), AG.GtoJson (Rep b), GIsEnum (Rep b), ConNames (Rep b)) =>
+  NRMMessage a b
     | a -> b where
 
   {-# MINIMAL fromJ, toJ #-}
@@ -60,33 +59,33 @@ class
 newtype GenericJSON (a :: Type) = GenericJSON {unGenericJSON :: a}
 
 instance
-  ( GIsEnum (Rep a)
-  , ConNames (Rep a)
-  , GJSONSchema (Rep a)
-  , Generic a
-  )
-  => S.JSONSchema (GenericJSON a) where
-
+  ( GIsEnum (Rep a),
+    ConNames (Rep a),
+    GJSONSchema (Rep a),
+    Generic a
+  ) =>
+  S.JSONSchema (GenericJSON a)
+  where
   schema _ = gSchema (Proxy :: Proxy a)
 
 instance
-  ( GIsEnum (Rep a)
-  , ConNames (Rep a)
-  , GfromJson (Rep a)
-  , Generic a
-  )
-  => A.FromJSON (GenericJSON a) where
-
+  ( GIsEnum (Rep a),
+    ConNames (Rep a),
+    GfromJson (Rep a),
+    Generic a
+  ) =>
+  A.FromJSON (GenericJSON a)
+  where
   parseJSON x = GenericJSON <$> AG.gparseJson x
 
 instance
-  ( GIsEnum (Rep a)
-  , ConNames (Rep a)
-  , GtoJson (Rep a)
-  , Generic a
-  )
-  => A.ToJSON (GenericJSON a) where
-
+  ( GIsEnum (Rep a),
+    ConNames (Rep a),
+    GtoJson (Rep a),
+    Generic a
+  ) =>
+  A.ToJSON (GenericJSON a)
+  where
   toJSON = AG.gtoJson . unGenericJSON
 
 deriving via GenericJSON (LM.Map a b) instance (JSONSchema a, JSONSchema b) => JSONSchema (LM.Map a b)

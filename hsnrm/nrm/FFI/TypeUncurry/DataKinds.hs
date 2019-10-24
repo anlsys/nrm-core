@@ -1,17 +1,15 @@
-{-|
-Module      : FFI.TypeUncurry.DataKinds
-Copyright   : Copyright (c) 2018  Niklas Hambüchen.
-License     : MIT License.
-
-MessagePack FFI code adapted from call-haskell-from-anything
--}
-
 {-# LANGUAGE ScopedTypeVariables #-}
 
+-- |
+-- Module      : FFI.TypeUncurry.DataKinds
+-- Copyright   : Copyright (c) 2018  Niklas Hambüchen.
+-- License     : MIT License.
+--
+-- MessagePack FFI code adapted from call-haskell-from-anything
 module FFI.TypeUncurry.DataKinds
-  ( TypeList (..)
-  , ParamLength (..)
-  , ToTypeList (..)
+  ( TypeList (..),
+    ParamLength (..),
+    ToTypeList (..),
   )
 where
 
@@ -64,7 +62,6 @@ type family Result f :: * where
 
 -- | Function f can be translated to 'TypeList' l with result type r.
 class (Param f ~ l, Result f ~ r) => ToTypeList f l r where
-
   -- | Translates a function taking multiple arguments to a function
   -- taking a single 'TypeList' containing the types of all arguments.
   --
@@ -74,12 +71,10 @@ class (Param f ~ l, Result f ~ r) => ToTypeList f l r where
 -- | Base case: A "pure" function without arguments
 -- can be translated to @TypeList Nil -> r@.
 instance (ToTypeList f l r) => ToTypeList (a -> f) (a ': l) r where
-
   translate f (a ::: l) = translate (f a) l
 
 -- | Base case: A value @r@ can be translated to @TypeList Nil -> r@.
 instance (Param f ~ '[], Result f ~ r, f ~ r) => ToTypeList f '[] r where
-
   -- Could also be written as
   --   (Param r ~ '[], Result r ~ r) => ToTypeList r '[] r
   -- but I find the other way clearer.
@@ -100,16 +95,13 @@ instance (Param f ~ '[], Result f ~ r, f ~ r) => ToTypeList f '[] r where
 --
 -- We need to use a 'Proxy' for this.
 class ParamLength (l :: [*]) where
-
   -- | Calculates the length of a type list, put into a proxy. Usage:
   --
   -- >paramLength (Proxy :: Proxy l)
   paramLength :: Proxy l -> Int
 
 instance ParamLength '[] where
-
   paramLength _ = 0
 
 instance (ParamLength l) => ParamLength (a ': l) where
-
   paramLength _ = succ $ paramLength (Proxy :: Proxy l)

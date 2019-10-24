@@ -1,19 +1,18 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : CPD.Integrated
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : CPD.Integrated
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module CPD.Integrated
-  ( Integrator (..)
-  , IntegratedProblem (..)
-  , IntegratorAction (..)
-  , Integrated (..)
-  , integrateProblem
-  , initIntegrator
-  , stepIntegrator
+  ( Integrator (..),
+    IntegratedProblem (..),
+    IntegratorAction (..),
+    Integrated (..),
+    integrateProblem,
+    initIntegrator,
+    stepIntegrator,
   )
 where
 
@@ -26,9 +25,9 @@ data IntegratedProblem = IntegratedProblem {}
 
 data Integrator
   = Integrator
-      { tLast :: Time
-      , minPeriod :: Time
-      , measured :: Map SensorID [(Time, Double)]
+      { tLast :: Time,
+        minPeriod :: Time,
+        measured :: Map SensorID [(Time, Double)]
       }
   deriving (Generic)
 

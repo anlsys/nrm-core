@@ -1,11 +1,10 @@
-{-|
-Module      : NRM.CPD
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.CPD
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.CPD
-  ( toCPD
+  ( toCPD,
   )
 where
 
@@ -39,5 +38,4 @@ mkObjective st =
     filterActive _ = True
     filterPassive :: PassiveSensorKey -> Bool
     filterPassive _ = True
-
 --filterWithKey :: (k -> a -> Bool) -> Map k a -> Map k a

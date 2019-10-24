@@ -1,13 +1,12 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Types.Topology.CoreID
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Topology.CoreID
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Topology.CoreID
-  ( CoreID (..)
+  ( CoreID (..),
   )
 where
 
@@ -25,9 +24,7 @@ newtype CoreID = CoreID Int
   deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON CoreID
 
 instance IdFromString CoreID where
-
   idFromString s = CoreID <$> readMaybe s
 
 instance ToHwlocType CoreID where
-
   getType _ = "Core"

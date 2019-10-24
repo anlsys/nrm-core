@@ -1,13 +1,11 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-{-|
-Module      : NRM.Orphans.ExitCode
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Orphans.ExitCode
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Orphans.Dhall
   (
   )
@@ -19,21 +17,21 @@ import Dhall
 import Protolude
 
 instance Interpret Int where
-
   autoWith _ = fmap fromInteger integer
 
 instance
-  (Ord a, Interpret a, Interpret b)
-  => Interpret (Map a b) where
-
+  (Ord a, Interpret a, Interpret b) =>
+  Interpret (Map a b)
+  where
   autoWith _ =
-    fmap DM.fromList
+    fmap
+      DM.fromList
       ( Dhall.list
-        (pair (auto :: Dhall.Type a) (auto :: Dhall.Type b))
+          (pair (auto :: Dhall.Type a) (auto :: Dhall.Type b))
       )
 
 instance
-  (Inject a, Inject b)
-  => Dhall.Inject (Map a b) where
-
+  (Inject a, Inject b) =>
+  Dhall.Inject (Map a b)
+  where
   injectWith = fmap (contramap DM.toList) Dhall.injectWith

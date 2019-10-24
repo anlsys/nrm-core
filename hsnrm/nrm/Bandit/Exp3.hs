@@ -1,23 +1,24 @@
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE TypeApplications #-}
 
-{-|
-Module      : Bandit.Exp3
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : MIT
-Maintainer  : fre@freux.fr
-
-The exponential-weight algorithm for Exploration and Exploitation (EXP3). See [1]
-
-- [1] Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems,
-  Sebastien Bubeck and Nicolo Cesa-Bianchi. http://arxiv.org/abs/1204.5721
--}
+-- |
+-- Module      : Bandit.Exp3
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : MIT
+-- Maintainer  : fre@freux.fr
+--
+-- The exponential-weight algorithm for Exploration and Exploitation (EXP3). See [1]
+--
+-- - [1] Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems,
+--   Sebastien Bubeck and Nicolo Cesa-Bianchi. http://arxiv.org/abs/1204.5721
 module Bandit.Exp3
   ( -- * State
-    Exp3 (..)
-  , -- * Internal
-    Weight (..)
-  , Probability (..)
-  , CumulativeLoss (..)
+    Exp3 (..),
+
+    -- * Internal
+    Weight (..),
+    Probability (..),
+    CumulativeLoss (..),
   )
 where
 
@@ -33,10 +34,10 @@ import qualified Refined as R
 -- | The EXP3 state
 data Exp3 a
   = Exp3
-      { t :: Int
-      , lastAction :: a
-      , k :: Int
-      , weights :: NonEmpty (Weight a)
+      { t :: Int,
+        lastAction :: a,
+        k :: Int,
+        weights :: NonEmpty (Weight a)
       }
   deriving (Generic)
 
@@ -51,9 +52,9 @@ newtype CumulativeLoss = CumulativeLoss {getCumulativeLoss :: Double}
 -- | Exp3 weight for one action
 data Weight a
   = Weight
-      { probability :: Probability
-      , cumulativeLoss :: CumulativeLoss
-      , action :: a
+      { probability :: Probability,
+        cumulativeLoss :: CumulativeLoss,
+        action :: a
       }
   deriving (Generic)
 
@@ -66,26 +67,27 @@ _weights :: Data.Generics.Product.HasField "weights" s t a b => Lens s t a b
 _weights = field @"weights"
 
 instance
-  (Eq a)
-  => Bandit (Exp3 a) (Arms a) a (ZeroOneInterval Double) where
+  (Eq a) =>
+  Bandit (Exp3 a) (Arms a) a (ZeroOneInterval Double)
+  where
 
   init (Arms as) = do
     a <- RS.sample . DC.fromWeightedList $ toList as <&> (1 :: Double,)
     let ws = as <&> Weight (Probability 1) (CumulativeLoss 0)
     return
       ( Exp3
-          { t = 1
-          , lastAction = a
-          , k = length as
-          , weights = ws
-          }
-      , a
+          { t = 1,
+            lastAction = a,
+            k = length as,
+            weights = ws
+          },
+        a
       )
 
   step (unrefineLoss -> l) =
     get <&> lastAction >>= \oldAction -> do
-      _weights %=
-        fmap (\w -> if action w == oldAction then updateCumLoss l w else w)
+      _weights
+        %= fmap (\w -> if action w == oldAction then updateCumLoss l w else w)
       t <- use $ field @"t"
       k <- use $ field @"k"
       _weights %= recompute t k
@@ -108,9 +110,9 @@ recompute :: Int -> Int -> NonEmpty (Weight a) -> NonEmpty (Weight a)
 recompute t k weights = updatep <$> weights
   where
     updatep w@(Weight _ (CumulativeLoss cL) _) =
-      w & field @"probability" . field @"getProbability" .~
-        expw cL /
-        denom
+      w & field @"probability" . field @"getProbability"
+        .~ expw cL
+        / denom
     expw cL =
       exp (- sqrt (2.0 * log (fromIntegral k) / fromIntegral (t * k)) * cL)
     denom = getSum $ foldMap denomF weights

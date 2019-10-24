@@ -1,34 +1,36 @@
-{-|
-Module      : export
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : export
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Export
   ( -- * CLI interfaces
-    parseDaemon
-  , -- * Configuration queries
-    isDebug
-  , isVerbose
-  , showConfiguration
-  , C.logfile
-  , upstreamPubAddress
-  , upstreamRpcAddress
-  , downstreamEventAddress
-  , -- * State
-    S.initialState
-  , showState
-  , -- * Event to behavior entry points
-    downstreamReceive
-  , upstreamReceive
-  , doStdout
-  , doStderr
-  , doSensor
-  , doControl
-  , childDied
-  , doShutdown
-  , registerCmdSuccess
-  , registerCmdFailure
+    parseDaemon,
+
+    -- * Configuration queries
+    isDebug,
+    isVerbose,
+    showConfiguration,
+    C.logfile,
+    upstreamPubAddress,
+    upstreamRpcAddress,
+    downstreamEventAddress,
+
+    -- * State
+    S.initialState,
+    showState,
+
+    -- * Event to behavior entry points
+    downstreamReceive,
+    upstreamReceive,
+    doStdout,
+    doStderr,
+    doSensor,
+    doControl,
+    childDied,
+    doShutdown,
+    registerCmdSuccess,
+    registerCmdFailure,
   )
 where
 
@@ -40,12 +42,12 @@ import qualified NRM.State as S
 import qualified NRM.Types.Behavior as B
 import qualified NRM.Types.CmdID as CmdID
 import qualified NRM.Types.Configuration as C
-  ( Cfg (..)
-  , DaemonVerbosity (..)
-  , DownstreamCfg (..)
-  , UpstreamCfg (..)
-  , logfile
-  , verbose
+  ( Cfg (..),
+    DaemonVerbosity (..),
+    DownstreamCfg (..),
+    UpstreamCfg (..),
+    logfile,
+    verbose,
   )
 import qualified NRM.Types.DownstreamCmdID as DC
 import qualified NRM.Types.Messaging.UpstreamRep as URep
@@ -121,9 +123,13 @@ doControl c s t = B.behavior c s (t & seconds) (B.DoControl $ t & seconds)
 -- | when a child dies
 childDied :: C.Cfg -> TS.NRMState -> Double -> Int -> Int -> IO (TS.NRMState, B.Behavior)
 childDied c s t pid status =
-  B.behavior c s (t & seconds)
-    ( B.ChildDied (Process.ProcessID . SPT.CPid $ fromIntegral pid)
-      (if status == 0 then ExitSuccess else ExitFailure status)
+  B.behavior
+    c
+    s
+    (t & seconds)
+    ( B.ChildDied
+        (Process.ProcessID . SPT.CPid $ fromIntegral pid)
+        (if status == 0 then ExitSuccess else ExitFailure status)
     )
 
 -- | when the runtime is shutdown
@@ -153,16 +159,19 @@ registerCmdFailure cfg s t cmdIDT =
     s
     (t & seconds)
     ( B.RegisterCmd
-      (fromMaybe (panic "couldn't decode cmdID") (CmdID.fromText cmdIDT))
-      B.NotLaunched
+        (fromMaybe (panic "couldn't decode cmdID") (CmdID.fromText cmdIDT))
+        B.NotLaunched
     )
 
 -- Utilities
 handleTag :: URep.OutputType -> C.Cfg -> TS.NRMState -> Double -> Text -> Text -> IO (TS.NRMState, B.Behavior)
 handleTag tag c s t cmdIDT msg =
-  B.behavior c s (t & seconds)
+  B.behavior
+    c
+    s
+    (t & seconds)
     ( B.DoOutput
-      (fromMaybe (panic "couldn't decode cmdID") (CmdID.fromText cmdIDT))
-      tag
-      msg
+        (fromMaybe (panic "couldn't decode cmdID") (CmdID.fromText cmdIDT))
+        tag
+        msg
     )

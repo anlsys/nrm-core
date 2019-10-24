@@ -1,32 +1,33 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-{-|
-Module      : NRM.Node.Sysfs
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Node.Sysfs
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Node.Sysfs.Internal
   ( -- * RAPL
-    RAPLDir (..)
-  , RAPLDirs (..)
-  , RAPLConfig (..)
-  , RAPLMeasurement (..)
-  , RAPLConstraint (..)
-  , RAPLCommand (..)
-  , MaxPower (..)
-  , MaxEnergy (..)
-  , getRAPLDirs
-  , measureRAPLDir
-  , readRAPLConfiguration
-  , applyRAPLPcap
-  , -- * Hwmon
-    HwmonDirs
-  , HwmonDir (..)
-  , getHwmonDirs
-  , hasCoretempInNameFile
-  , -- * Utilities
-    listDirFilter
+    RAPLDir (..),
+    RAPLDirs (..),
+    RAPLConfig (..),
+    RAPLMeasurement (..),
+    RAPLConstraint (..),
+    RAPLCommand (..),
+    MaxPower (..),
+    MaxEnergy (..),
+    getRAPLDirs,
+    measureRAPLDir,
+    readRAPLConfiguration,
+    applyRAPLPcap,
+
+    -- * Hwmon
+    HwmonDirs,
+    HwmonDir (..),
+    getHwmonDirs,
+    hasCoretempInNameFile,
+
+    -- * Utilities
+    listDirFilter,
   )
 where
 
@@ -77,34 +78,34 @@ newtype RAPLCommand
 -- | RAPL directory
 data RAPLDir
   = RAPLDir
-      { path :: FilePath
-      , maxEnergy :: MaxEnergy
+      { path :: FilePath,
+        maxEnergy :: MaxEnergy
       }
   deriving (Show, Generic, MessagePack)
 
 -- | RAPL Configuration
 data RAPLConfig
   = RAPLConfig
-      { configPath :: FilePath
-      , enabled :: Bool
-      , constraintShortTerm :: RAPLConstraint
-      , constraintLongTerm :: RAPLConstraint
+      { configPath :: FilePath,
+        enabled :: Bool,
+        constraintShortTerm :: RAPLConstraint,
+        constraintLongTerm :: RAPLConstraint
       }
   deriving (Show)
 
 -- | RAPL power constraint
 data RAPLConstraint
   = RAPLConstraint
-      { timeWindow :: Time
-      , maxPower :: MaxPower
+      { timeWindow :: Time,
+        maxPower :: MaxPower
       }
   deriving (Show)
 
 -- | RAPL power measurement
 data RAPLMeasurement
   = RAPLMeasurement
-      { measurementPath :: FilePath
-      , energy :: Energy
+      { measurementPath :: FilePath,
+        energy :: Energy
       }
   deriving (Show)
 
@@ -130,19 +131,19 @@ readRAPLConfiguration fp =
     parseConstraint i = do
       maxpower <-
         maybeTReadLine
-          ( fp <>
-            "/constraint_" <>
-            show i <>
-            "_max_power_uw"
-          ) >>=
-          (MaybeT . pure . readMaybe . toS)
+          ( fp
+              <> "/constraint_"
+              <> show i
+              <> "_max_power_uw"
+          )
+          >>= (MaybeT . pure . readMaybe . toS)
       tw <-
         maybeTReadLine
-          ( fp <> "/constraint_" <>
-            show i <>
-            "_time_window_us"
-          ) >>=
-          (MaybeT . pure . readMaybe . toS)
+          ( fp <> "/constraint_"
+              <> show i
+              <> "_time_window_us"
+          )
+          >>= (MaybeT . pure . readMaybe . toS)
       return $ RAPLConstraint (uS tw) (MaxPower . uW $ maxpower)
 
 -- | Measures power from a RAPL directory.
@@ -167,7 +168,8 @@ processRAPLFolder fp =
 -- | Applies powercap commands.
 applyRAPLPcap :: FilePath -> RAPLCommand -> IO ()
 applyRAPLPcap filePath (RAPLCommand cap) =
-  writeFile (filePath <> "/constraint_0_power_limit_uw")
+  writeFile
+    (filePath <> "/constraint_0_power_limit_uw")
     (show $ fromuW cap)
 
 -- | Lists available rapl directories.
@@ -186,8 +188,8 @@ hasCoretempInNameFile :: FilePath -> IO (Maybe HwmonDir)
 hasCoretempInNameFile fp =
   runMaybeT $
     maybeTReadLine (fp <> "/name") >>= \case
-    "coretemp" -> MaybeT $ pure $ Just $ HwmonDir fp
-    _ -> mzero
+      "coretemp" -> MaybeT $ pure $ Just $ HwmonDir fp
+      _ -> mzero
 
 {-where-}
 {-f :: Either SomeException Text -> IO (Maybe HwmonDir)-}

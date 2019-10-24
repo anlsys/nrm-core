@@ -1,15 +1,14 @@
-{-|
-Module      : Bandit.EpsGreedy
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : MIT
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : Bandit.EpsGreedy
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : MIT
+-- Maintainer  : fre@freux.fr
 module Bandit.EpsGreedy
-  ( EpsGreedy (..)
-  , Weight (..)
-  , EpsGreedyHyper (..)
-  , ScreeningGreedy (..)
-  , ExploreExploitGreedy (..)
+  ( EpsGreedy (..),
+    Weight (..),
+    EpsGreedyHyper (..),
+    ScreeningGreedy (..),
+    ExploreExploitGreedy (..),
   )
 where
 
@@ -26,35 +25,35 @@ data EpsGreedy a
 
 data ScreeningGreedy a
   = ScreeningGreedy
-      { tScreening :: Int
-      , epsScreening :: Double
-      , screening :: a
-      , screened :: [(Double, a)]
-      , screenQueue :: [a]
+      { tScreening :: Int,
+        epsScreening :: Double,
+        screening :: a,
+        screened :: [(Double, a)],
+        screenQueue :: [a]
       }
 
 data ExploreExploitGreedy a
   = ExploreExploitGreedy
-      { t :: Int
-      , eps :: Double
-      , lastAction :: a
-      , k :: Int
-      , weights :: NonEmpty (Weight a)
+      { t :: Int,
+        eps :: Double,
+        lastAction :: a,
+        k :: Int,
+        weights :: NonEmpty (Weight a)
       }
 
 -- | EpsGreedy data structure for one action
 data Weight a
   = Weight
-      { averageLoss :: Double
-      , hits :: Int
-      , action :: a
+      { averageLoss :: Double,
+        hits :: Int,
+        action :: a
       }
   deriving (Generic)
 
 data EpsGreedyHyper a
   = EpsGreedyHyper
-      { epsilon :: Double
-      , arms :: Arms a
+      { epsilon :: Double,
+        arms :: Arms a
       }
 
 instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
@@ -62,13 +61,13 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
   init (EpsGreedyHyper e (Arms (a :| as))) =
     return
       ( Screening $ ScreeningGreedy
-          { tScreening = 1
-          , epsScreening = e
-          , screening = a
-          , screened = []
-          , screenQueue = as
-          }
-      , a
+          { tScreening = 1,
+            epsScreening = e,
+            screening = a,
+            screened = [],
+            screenQueue = as
+          },
+        a
       )
 
   step l =
@@ -78,19 +77,19 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
           (a : as) -> do
             put $ Screening $
               sg
-                { tScreening = tScreening sg + 1
-                , screening = a
-                , screened = (l, screening sg) : screened sg
-                , screenQueue = as
+                { tScreening = tScreening sg + 1,
+                  screening = a,
+                  screened = (l, screening sg) : screened sg,
+                  screenQueue = as
                 }
             return a
           [] -> do
             let eeg = ExploreExploitGreedy
-                  { t = tScreening sg + 1
-                  , eps = epsScreening sg
-                  , lastAction = screening sg
-                  , k = length (screened sg) + 1
-                  , weights = toW <$> ((l, screening sg) :| screened sg)
+                  { t = tScreening sg + 1,
+                    eps = epsScreening sg,
+                    lastAction = screening sg,
+                    k = length (screened sg) + 1,
+                    weights = toW <$> ((l, screening sg) :| screened sg)
                   }
             pickreturn eeg
             where
@@ -99,18 +98,18 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
       ExploreExploit s -> do
         let eeg =
               s
-                { t = t s + 1
-                , weights = weights s <&> \w ->
-                  if action w == lastAction s
-                  then updateAvgLoss l w
-                  else w
+                { t = t s + 1,
+                  weights = weights s <&> \w ->
+                    if action w == lastAction s
+                      then updateAvgLoss l w
+                      else w
                 }
         pickreturn eeg
 
-pickreturn
-  :: (MonadRandom m, MonadState (EpsGreedy b) m)
-  => ExploreExploitGreedy b
-  -> m b
+pickreturn ::
+  (MonadRandom m, MonadState (EpsGreedy b) m) =>
+  ExploreExploitGreedy b ->
+  m b
 pickreturn eeg = do
   a <- pickAction eeg
   put $ ExploreExploit $ eeg {lastAction = a}

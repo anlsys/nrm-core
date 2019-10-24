@@ -1,13 +1,12 @@
-{-|
-Module      : NRM.Client
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Client
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Client
-  ( main
-  , reqrep
-  , dispatchProtocol
+  ( main,
+    reqrep,
+    dispatchProtocol,
   )
 where
 
@@ -32,9 +31,9 @@ import NeatInterpolation
 import Protolude hiding (Rep)
 import System.IO (hFlush)
 import qualified System.Posix.Signals as SPS
-  ( Handler (..)
-  , installHandler
-  , keyboardSignal
+  ( Handler (..),
+    installHandler,
+    keyboardSignal,
   )
 import qualified System.ZMQ4.Monadic as ZMQ
 import Text.Pretty.Simple
@@ -63,28 +62,28 @@ main =
           UC.nextUpstreamClientID <&> \case
             Nothing -> panic "couldn't generate next client ID"
             Just c ->
-              restrict (toS $ UC.toText c)
-                :: Restricted (N1, N254) BS.ByteString
+              restrict (toS $ UC.toText c) ::
+                Restricted (N1, N254) BS.ByteString
         ZMQ.runZMQ $ do
           s <- ZMQ.socket ZMQ.Dealer
           connectWithOptions uuid common s
           reqrepClient s req common
 
-subClient
-  :: C.Listen
-  -> ZMQ.Socket z ZMQ.Sub
-  -> C.CommonOpts
-  -> ZMQ.ZMQ z ()
+subClient ::
+  C.Listen ->
+  ZMQ.Socket z ZMQ.Sub ->
+  C.CommonOpts ->
+  ZMQ.ZMQ z ()
 subClient l s common =
   forever $
-    ZMQ.receive s <&>
-    decode .
-    toS >>= \case
-    Nothing -> putText "Couldn't decode published message"
-    Just message ->
-      filterCPD l message & \case
-        Nothing -> return ()
-        Just filtered -> liftIO . putText . (if C.jsonPrint common then encodeT else toS . pShow) $ filtered
+    ZMQ.receive s
+      <&> decode
+      . toS >>= \case
+        Nothing -> putText "Couldn't decode published message"
+        Just message ->
+          filterCPD l message & \case
+            Nothing -> return ()
+            Just filtered -> liftIO . putText . (if C.jsonPrint common then encodeT else toS . pShow) $ filtered
 
 filterCPD :: C.Listen -> UPub.Pub -> Maybe UPub.Pub
 filterCPD C.All p = Just p
@@ -95,20 +94,20 @@ filterCPD C.Raw (PubMeasurements _ _) = Nothing
 filterCPD C.Raw (PubCPD _ _) = Nothing
 filterCPD C.Raw p = Just p
 
-reqrepClient
-  :: ZMQ.Socket z ZMQ.Dealer
-  -> UReq.Req
-  -> C.CommonOpts
-  -> ZMQ.ZMQ z ()
+reqrepClient ::
+  ZMQ.Socket z ZMQ.Dealer ->
+  UReq.Req ->
+  C.CommonOpts ->
+  ZMQ.ZMQ z ()
 reqrepClient s req v = do
   ZMQ.send s [] (toS $ encode req)
   dispatchProtocol s v req
 
-dispatchProtocol
-  :: ZMQ.Socket z ZMQ.Dealer
-  -> C.CommonOpts
-  -> UReq.Req
-  -> ZMQ.ZMQ z ()
+dispatchProtocol ::
+  ZMQ.Socket z ZMQ.Dealer ->
+  C.CommonOpts ->
+  UReq.Req ->
+  ZMQ.ZMQ z ()
 dispatchProtocol s v = \case
   (UReq.ReqSliceList x) -> reqrep s v Protocols.SliceList x
   (UReq.ReqKillSlice x) -> reqrep s v Protocols.KillSlice x
@@ -119,15 +118,15 @@ dispatchProtocol s v = \case
   (UReq.ReqCPD x) -> reqrep s v Protocols.CPD x
   (UReq.ReqRun x) ->
     if UReq.detachCmd x
-    then putText "Client detached."
-    else reqstream s v Protocols.Run x
+      then putText "Client detached."
+      else reqstream s v Protocols.Run x
 
-reqrep
-  :: ZMQ.Socket z ZMQ.Dealer
-  -> C.CommonOpts
-  -> Protocols.ReqRep req rep
-  -> req
-  -> ZMQ.ZMQ z ()
+reqrep ::
+  ZMQ.Socket z ZMQ.Dealer ->
+  C.CommonOpts ->
+  Protocols.ReqRep req rep ->
+  req ->
+  ZMQ.ZMQ z ()
 reqrep s opts = \case
   Protocols.CPD ->
     const $ do
@@ -170,9 +169,8 @@ reqrep s opts = \case
         Nothing -> putText "Couldn't decode reply"
         Just (URep.RepGetState (URep.GetState st)) ->
           if C.jsonPrint opts
-          then putText $ toS (AP.encodePretty st)
-          else
-            do
+            then putText $ toS (AP.encodePretty st)
+            else do
               putText "Current daemon state:"
               pPrint st
         _ -> putText "reply wasn't in protocol"
@@ -183,9 +181,8 @@ reqrep s opts = \case
         Nothing -> putText "Couldn't decode reply"
         Just (URep.RepGetConfig (URep.GetConfig cfg)) ->
           if C.jsonPrint opts
-          then putText $ toS (AP.encodePretty cfg)
-          else
-            do
+            then putText $ toS (AP.encodePretty cfg)
+            else do
               putText "Daemon configuration:"
               pPrint cfg
         _ -> putText "reply wasn't in protocol"
@@ -218,12 +215,12 @@ reqrep s opts = \case
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
 
-reqstream
-  :: ZMQ.Socket z ZMQ.Dealer
-  -> C.CommonOpts
-  -> Protocols.ReqStream req rep
-  -> req
-  -> ZMQ.ZMQ z ()
+reqstream ::
+  ZMQ.Socket z ZMQ.Dealer ->
+  C.CommonOpts ->
+  Protocols.ReqStream req rep ->
+  req ->
+  ZMQ.ZMQ z ()
 reqstream s c Protocols.Run UReq.Run {..} = do
   ZMQ.connect s $ toS (rpcAddress c)
   msg <- ZMQ.receive s
@@ -253,9 +250,10 @@ kill cmdID c =
   ZMQ.runZMQ $ do
     s <- ZMQ.socket ZMQ.Dealer
     uuid <-
-      liftIO $ UC.nextUpstreamClientID <&> \case
-        Nothing -> panic "couldn't generate next client ID"
-        Just clientID -> (restrict (toS $ UC.toText clientID) :: Restricted (N1, N254) BS.ByteString)
+      liftIO $
+        UC.nextUpstreamClientID <&> \case
+          Nothing -> panic "couldn't generate next client ID"
+          Just clientID -> (restrict (toS $ UC.toText clientID) :: Restricted (N1, N254) BS.ByteString)
     connectWithOptions uuid c s
     ZMQ.send s [] (toS $ encode $ UReq.ReqKillCmd (UReq.KillCmd cmdID))
 

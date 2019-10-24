@@ -1,17 +1,17 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-{-|
-Module      : Bandit.Class
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : MIT
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : Bandit.Class
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : MIT
+-- Maintainer  : fre@freux.fr
 module Bandit.Class
   ( -- * Generalized Bandit
-    Bandit (..)
-  , -- * Discrete Multi-Armed-Bandits
-    Arms (..)
-  , ParameterFreeMAB (..)
+    Bandit (..),
+
+    -- * Discrete Multi-Armed-Bandits
+    Arms (..),
+    ParameterFreeMAB (..),
   )
 where
 
@@ -41,7 +41,6 @@ import Protolude
 --
 -- * @l@ is a superset of admissible losses \(\mathbb{L}\) (statically
 -- known).
---
 class Bandit b hyper a l | b -> l, b -> hyper where
 
   -- | Init hyper returns the initial state of the bandit algorithm and the
@@ -59,7 +58,6 @@ newtype Arms a = Arms (NonEmpty a)
 --
 -- \[ R_T = \sum_{t=1}^{T} \ell_{a^t}^t - \text{min}_{a=1}^{K} \sum_{t=1}^{T}
 -- \ell_{a}^t \]
---
 class (Eq a, Bandit b (Arms a) a l) => ParameterFreeMAB b a l | b -> l where
 
   -- | @init as@ returns the initial state of the bandit algorithm, where @as@

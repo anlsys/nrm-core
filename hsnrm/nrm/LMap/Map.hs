@@ -1,26 +1,25 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : LMap.Map
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : LMap.Map
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module LMap.Map
-  ( Map
-  , LMap.Map.fromList
-  , LMap.Map.toList
-  , LMap.Map.map
-  , LMap.Map.empty
-  , LMap.Map.null
-  , lookup
-  , insert
-  , alter
-  , delete
-  , update
-  , elems
-  , keys
-  , mapKV
+  ( Map,
+    LMap.Map.fromList,
+    LMap.Map.toList,
+    LMap.Map.map,
+    LMap.Map.empty,
+    LMap.Map.null,
+    lookup,
+    insert,
+    alter,
+    delete,
+    update,
+    elems,
+    keys,
+    mapKV,
   )
 where
 
@@ -81,13 +80,11 @@ type instance Index (Map k a) = k
 type instance IxValue (Map k a) = a
 
 instance Ord k => Ixed (Map k a) where
-
   ix k f m = case lookup k m of
     Just v -> f v <&> \v' -> insert k v' m
     Nothing -> pure m
 
 instance Ord k => At (Map k a) where
-
   at k f m =
     f mv <&> \case
       Nothing -> maybe m (const (delete k m)) mv

@@ -1,11 +1,10 @@
-{-|
-Module      : NRM.Actuators
-Copyright   : (c) 2019, UChicago Argonne, LLC.
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Actuators
+-- Copyright   : (c) 2019, UChicago Argonne, LLC.
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Actuators
-  ( cpdActuators
+  ( cpdActuators,
   )
 where
 
@@ -22,4 +21,5 @@ cpdActuators :: NRMState -> Map CPD.ActuatorID CPD.Actuator
 cpdActuators st =
   DM.fromList $
     DM.toList
-      (lenses st :: LensMap NRMState ActuatorKey Actuator) <&> \(k, ScopedLens sl) -> toCPDActuator (k, view sl st)
+      (lenses st :: LensMap NRMState ActuatorKey Actuator)
+      <&> \(k, ScopedLens sl) -> toCPDActuator (k, view sl st)

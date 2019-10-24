@@ -1,16 +1,15 @@
-{-|
-Module      : NRM.Types.Topology
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Topology
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Topology
-  ( PUID (..)
-  , CoreID (..)
-  , PackageID (..)
-  , PU (..)
-  , Core (..)
-  , Package (..)
+  ( PUID (..),
+    CoreID (..),
+    PackageID (..),
+    PU (..),
+    Core (..),
+    Package (..),
   )
 where
 

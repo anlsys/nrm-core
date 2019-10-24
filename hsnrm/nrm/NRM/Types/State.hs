@@ -1,30 +1,34 @@
 {-# LANGUAGE RankNTypes #-}
 
-{-|
-Module      : NRM.Types.State
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.State
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.State
-  ( NRMState (..)
-  , -- * Insertion
-    insertSlice
-  , -- * Useful maps
-    cmdIDMap
-  , pidMap
-  , awaitingCmdIDMap
-  , runningCmdIDCmdMap
-  , awaitingCmdIDCmdMap
-  , -- * lookups
-    lookupCmd
-  , lookupProcess
-  , -- * Rendering views
-    showSliceList
-  , showSlices
-  , -- * Lenses
-    _cmdID
-  , _sliceID
+  ( NRMState (..),
+
+    -- * Insertion
+    insertSlice,
+
+    -- * Useful maps
+    cmdIDMap,
+    pidMap,
+    awaitingCmdIDMap,
+    runningCmdIDCmdMap,
+    awaitingCmdIDCmdMap,
+
+    -- * lookups
+    lookupCmd,
+    lookupProcess,
+
+    -- * Rendering views
+    showSliceList,
+    showSlices,
+
+    -- * Lenses
+    _cmdID,
+    _sliceID,
   )
 where
 
@@ -41,7 +45,7 @@ import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
 import NRM.Types.Actuator
-import NRM.Types.Cmd 
+import NRM.Types.Cmd
 import NRM.Types.CmdID as CmdID
 import NRM.Types.Process as P
 import NRM.Types.Sensor
@@ -51,59 +55,56 @@ import Protolude
 
 data NRMState
   = NRMState
-      { pus :: LM.Map PUID PU
-      , cores :: LM.Map CoreID Core
-      , packages :: LM.Map PackageID Package
-      , slices :: LM.Map SliceID Slice
-      , dummyRuntime :: Maybe DummyRuntime
-      , singularityRuntime :: Maybe SingularityRuntime
-      , nodeosRuntime :: Maybe NodeosRuntime
+      { pus :: LM.Map PUID PU,
+        cores :: LM.Map CoreID Core,
+        packages :: LM.Map PackageID Package,
+        slices :: LM.Map SliceID Slice,
+        dummyRuntime :: Maybe DummyRuntime,
+        singularityRuntime :: Maybe SingularityRuntime,
+        nodeosRuntime :: Maybe NodeosRuntime
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
 instance HasLensMap NRMState ActuatorKey Actuator where
-
   lenses s =
     mconcat
       [ addPath (field @"packages") <$> lenses (view (field @"packages") s)
       ]
 
 instance HasLensMap NRMState ActiveSensorKey ActiveSensor where
-
   lenses s =
     mconcat
       [ addPath (field @"slices") <$> lenses (view (field @"slices") s)
       ]
 
 instance HasLensMap NRMState PassiveSensorKey PassiveSensor where
-
   lenses s =
     mconcat
       [ addPath (field @"packages") <$> lenses (view (field @"packages") s)
       ]
 
 instance JSONSchema NRMState where
-
   schema _ = schema (Proxy :: Proxy Text)
 
 showSliceList :: [(SliceID, Slice)] -> Text
 showSliceList l =
-  mconcat $ l <&> \(sliceID, Slice {..}) ->
-    "slice: ID " <> C.toText sliceID <> "\n" <> mconcat (descCmd <$> LM.toList cmds)
+  mconcat $
+    l <&> \(sliceID, Slice {..}) ->
+      "slice: ID " <> C.toText sliceID <> "\n" <> mconcat (descCmd <$> LM.toList cmds)
   where
     descCmd (cmdID, cmdCore -> CmdCore {..}) =
-      " command: ID " <> CmdID.toText cmdID <>
-        descSpec cmdPath arguments <>
-        "\n"
-    descSpec
-      :: ( IsString a
-         , Monoid a
-         , StringConv Text a
-         , StringConv Arg a
-         )
-      => Command
-      -> Arguments
-      -> a
+      " command: ID " <> CmdID.toText cmdID
+        <> descSpec cmdPath arguments
+        <> "\n"
+    descSpec ::
+      ( IsString a,
+        Monoid a,
+        StringConv Text a,
+        StringConv Arg a
+      ) =>
+      Command ->
+      Arguments ->
+      a
     descSpec (Command cmd) (Arguments args) =
       " : " <> toS cmd <> " " <> (mconcat . intersperse " " $ toS <$> args)
 
@@ -126,7 +127,8 @@ pidMap s = mconcat $ LM.toList (slices s) <&> mkMap
     mkMap :: forall c. (c, Slice) -> DM.Map ProcessID (CmdID, Cmd, c, Slice)
     mkMap x@(_, c) =
       DM.fromList $
-        zip (pid <$> LM.elems (cmds c))
+        zip
+          (pid <$> LM.elems (cmds c))
           (LM.toList (cmds c) <&> mkTriple x)
 
 mkTriple :: (c, d) -> (a, b) -> (a, b, c, d)
@@ -143,21 +145,23 @@ cmdIDMap = mkCmdIDMap cmds
 awaitingCmdIDMap :: NRMState -> DM.Map CmdID (CmdCore, SliceID, Slice)
 awaitingCmdIDMap = mkCmdIDMap awaiting
 
-mkCmdIDMap
-  :: Ord k
-  => (Slice -> LM.Map k a)
-  -> NRMState
-  -> DM.Map k (a, SliceID, Slice)
+mkCmdIDMap ::
+  Ord k =>
+  (Slice -> LM.Map k a) ->
+  NRMState ->
+  DM.Map k (a, SliceID, Slice)
 mkCmdIDMap accessor s = mconcat $ LM.toList (slices s) <&> mkMap
   where
     mkMap x@(_, c) =
       DM.fromList $
-        zip (LM.keys $ accessor c)
+        zip
+          (LM.keys $ accessor c)
           (LM.elems (accessor c) <&> mk x)
     mk :: (b, c) -> a -> (a, b, c)
     mk (cid, c) cm = (cm, cid, c)
 
 {-# WARNING runningCmdIDCmdMap "To remove" #-}
+
 -- | List commands currently registered as running
 runningCmdIDCmdMap :: NRMState -> DM.Map CmdID Cmd
 runningCmdIDCmdMap = cmdsMap cmds
@@ -167,14 +171,14 @@ awaitingCmdIDCmdMap :: NRMState -> DM.Map CmdID CmdCore
 awaitingCmdIDCmdMap = cmdsMap awaiting
 
 -- | List commands awaiting to be launched
-cmdsMap
-  :: (Slice -> LM.Map CmdID a)
-  -> NRMState
-  -> DM.Map CmdID a
+cmdsMap ::
+  (Slice -> LM.Map CmdID a) ->
+  NRMState ->
+  DM.Map CmdID a
 cmdsMap accessor s =
   DM.fromList . LM.toList . mconcat $
-    accessor <$>
-    LM.elems (slices s)
+    accessor
+      <$> LM.elems (slices s)
 
 -- Lenses
 _sliceID :: SliceID -> Lens' NRMState (Maybe Slice)
@@ -199,5 +203,5 @@ _cmdID cmdID = lens getter setter
     mayRemoveSlice x =
       x >>= \slice ->
         if length (cmds slice) == 1
-        then Nothing
-        else Just $ slice & field @"cmds" . at cmdID .~ Nothing
+          then Nothing
+          else Just $ slice & field @"cmds" . at cmdID .~ Nothing

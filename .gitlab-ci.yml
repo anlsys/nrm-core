@@ -13,18 +13,15 @@ ormolu:
       (import ./default.nix).fd
       ' '
       (import ./default.nix).ormolu
-      ' --run bash << EOF
-      for F in \$(fd -e hs); do
-        echo "checking format for \$F"
-        ormolu < \$F | cmp -s \$F -
-        if [ \$? -ne 0 ]; then
-          echo "[!] \$F is not indempotent via ormolu." >&2
-          RETURN=1
-        else
-          echo "ok: \$F "
-        fi
+      ' --run bash <<< '
+      echo $LC_ALL
+      echo $LOCALE_ARCHIVE
+      cd hsnrm
+      for F in $(fd -e hs); do
+        echo "(ormolu -o -XTypeApplications < $F | cmp -s $F -) && echo "great" || (echo "fail" >&2 ; RETURN= 1)"
+        (ormolu < $F | cmp -s $F -) && echo "great" || (echo "fail" >&2 && exit 1)
       done
-      EOF
+      '
   tags:
   - integration
 

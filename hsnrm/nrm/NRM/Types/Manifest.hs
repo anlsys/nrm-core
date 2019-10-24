@@ -1,26 +1,24 @@
 {-# LANGUAGE DerivingVia #-}
-
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-{-|
-Module      : NRM.Types.Manifest
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Manifest
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Manifest
-  ( Manifest (..)
-  , App (..)
-  , Slice (..)
-  , Scheduler (..)
-  , PowerPolicy (..)
-  , Power (..)
-  , Instrumentation (..)
-  , ImageType (..)
-  , Perfwrapper (..)
-  , Pw (..)
-  , Image (..)
-  , jsonOptions
+  ( Manifest (..),
+    App (..),
+    Slice (..),
+    Scheduler (..),
+    PowerPolicy (..),
+    Power (..),
+    Instrumentation (..),
+    ImageType (..),
+    Perfwrapper (..),
+    Pw (..),
+    Image (..),
+    jsonOptions,
   )
 where
 
@@ -38,10 +36,10 @@ import Protolude
 
 data Manifest
   = Manifest
-      { name :: Text
-      , app :: App
-      , hwbind :: Bool
-      , image :: Maybe Image
+      { name :: Text,
+        app :: App,
+        hwbind :: Bool,
+        image :: Maybe Image
       }
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Manifest
@@ -52,19 +50,19 @@ data SliceRuntime = Singularity | Nodeos | Dummy
 
 data App
   = App
-      { slice :: Slice
-      , scheduler :: Scheduler
-      , perfwrapper :: Perfwrapper
-      , power :: Power
-      , instrumentation :: Maybe Instrumentation
+      { slice :: Slice,
+        scheduler :: Scheduler,
+        perfwrapper :: Perfwrapper,
+        power :: Power,
+        instrumentation :: Maybe Instrumentation
       }
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON App
 
 data Slice
   = Slice
-      { cpus :: Integer
-      , mems :: Integer
+      { cpus :: Integer,
+        mems :: Integer
       }
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Slice
@@ -79,9 +77,9 @@ data PowerPolicy = NoPowerPolicy | DDCM | DVFS | Combined
 
 data Power
   = Power
-      { policy :: PowerPolicy
-      , profile :: Bool
-      , slowdown :: Integer
+      { policy :: PowerPolicy,
+        profile :: Bool,
+        slowdown :: Integer
       }
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Power
@@ -92,8 +90,8 @@ data Perfwrapper = PerfwrapperDisabled | Perfwrapper Pw
 
 data Pw
   = MkPw
-      { perfFreq :: U.Frequency
-      , perfLimit :: U.Operations
+      { perfFreq :: U.Frequency,
+        perfLimit :: U.Operations
       }
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Pw
@@ -111,52 +109,46 @@ data ImageType = Sif | Docker
 
 data Image
   = Image
-      { path :: Text
-      , magetype :: ImageType
-      , binds :: Maybe [Text]
+      { path :: Text,
+        magetype :: ImageType,
+        binds :: Maybe [Text]
       }
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Image
 
 instance Default Manifest where
-
   def = Manifest
-    { name = "default"
-    , app = def
-    , hwbind = False
-    , image = def
+    { name = "default",
+      app = def,
+      hwbind = False,
+      image = def
     }
 
 instance Default Power where
-
   def = Power
-    { policy = NoPowerPolicy
-    , profile = False
-    , slowdown = 1
+    { policy = NoPowerPolicy,
+      profile = False,
+      slowdown = 1
     }
 
 instance Default App where
-
   def = App
-    { slice = def
-    , scheduler = FIFO
-    , perfwrapper = def
-    , power = def
-    , instrumentation = Nothing
+    { slice = def,
+      scheduler = FIFO,
+      perfwrapper = def,
+      power = def,
+      instrumentation = Nothing
     }
 
 instance Default Perfwrapper where
-
   def = PerfwrapperDisabled
 
 instance Default Instrumentation where
-
   def = Instrumentation
     { ratelimit = U.hz 1
     }
 
 instance Default Slice where
-
   def = Slice {cpus = 1, mems = 1}
 
 jsonOptions :: Options

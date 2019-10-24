@@ -1,18 +1,16 @@
 {-# LANGUAGE DerivingVia #-}
-
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-{-|
-Module      : NRM.Types.Process
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Process
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Process
-  ( ProcessID (..)
-  , ProcessState (..)
-  , blankState
-  , isDone
+  ( ProcessID (..),
+    ProcessState (..),
+    blankState,
+    isDone,
   )
 where
 
@@ -29,9 +27,9 @@ import qualified System.Posix.Types as P
 
 data ProcessState
   = ProcessState
-      { ended :: Maybe ExitCode
-      , stdoutFinished :: Bool
-      , stderrFinished :: Bool
+      { ended :: Maybe ExitCode,
+        stdoutFinished :: Bool,
+        stderrFinished :: Bool
       }
   deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ProcessState
@@ -48,7 +46,7 @@ isDone ProcessState {..} = case ended of
 
 newtype ProcessID = ProcessID {rawPid :: P.CPid}
   deriving (Eq, Ord, Show, Read, Generic, Data)
-  deriving (Num,Real,Enum,Integral) via P.CPid
+  deriving (Num, Real, Enum, Integral) via P.CPid
 
 instance MessagePack ProcessID where
 
@@ -57,13 +55,10 @@ instance MessagePack ProcessID where
   fromObject x = ProcessID . P.CPid <$> fromObject x
 
 instance ToJSON ProcessID where
-
   toJSON (ProcessID x) = toJSON (fromIntegral x :: Int)
 
 instance FromJSON ProcessID where
-
   parseJSON = fmap (ProcessID . P.CPid) . parseJSON
 
 instance JSONSchema ProcessID where
-
   schema Proxy = schema (Proxy :: Proxy Int)

@@ -1,15 +1,14 @@
 {-# LANGUAGE DerivingVia #-}
 
-{-|
-Module      : NRM.Types.DownstreamCmdID
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.DownstreamCmdID
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.DownstreamCmdID
-  ( DownstreamCmdID (..)
-  , fromText
-  , toText
+  ( DownstreamCmdID (..),
+    fromText,
+    toText,
   )
 where
 
@@ -32,21 +31,18 @@ fromText :: Text -> Maybe DownstreamCmdID
 fromText = fmap DownstreamCmdID <$> U.fromText
 
 instance IsString DownstreamCmdID where
-
   fromString x =
-    fromMaybe (panic "couldn't decode DownstreamCmdID")
+    fromMaybe
+      (panic "couldn't decode DownstreamCmdID")
       (Data.Aeson.decode $ toS x)
 
 instance ToJSON DownstreamCmdID where
-
   toJSON (DownstreamCmdID x) = toJSON x
 
 instance FromJSON DownstreamCmdID where
-
   parseJSON = fmap DownstreamCmdID <$> parseJSON
 
 instance JSONSchema DownstreamCmdID where
-
   schema Proxy = schema (Proxy :: Proxy Text)
 
 instance MessagePack DownstreamCmdID where

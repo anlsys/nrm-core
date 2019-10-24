@@ -1,39 +1,42 @@
 {-# LANGUAGE DerivingVia #-}
-
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-{-|
-Module      : NRM.Types.Units
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Types.Units
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Types.Units
   ( -- * Operations
-    Operations (..)
-  , -- * Application Progress
-    Progress
-  , fromProgress
-  , progress
-  , -- * Frequency
-    Frequency
-  , hz
-  , fromHz
-  , -- * Time
-    Time
-  , uS
-  , seconds
-  , fromuS
-  , fromSeconds
-  , -- * Energy
-    Energy
-  , uJ
-  , fromuJ
-  , -- * Power
-    Power
-  , uW
-  , fromuW
-  , watts
+    Operations (..),
+
+    -- * Application Progress
+    Progress,
+    fromProgress,
+    progress,
+
+    -- * Frequency
+    Frequency,
+    hz,
+    fromHz,
+
+    -- * Time
+    Time,
+    uS,
+    seconds,
+    fromuS,
+    fromSeconds,
+
+    -- * Energy
+    Energy,
+    uJ,
+    fromuJ,
+
+    -- * Power
+    Power,
+    uW,
+    fromuW,
+    watts,
   )
 where
 

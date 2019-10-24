@@ -1,11 +1,10 @@
-{-|
-Module      : NRM.Processes
-Copyright   : (c) UChicago Argonne, 2019
-License     : BSD3
-Maintainer  : fre@freux.fr
--}
+-- |
+-- Module      : NRM.Processes
+-- Copyright   : (c) UChicago Argonne, 2019
+-- License     : BSD3
+-- Maintainer  : fre@freux.fr
 module NRM.Processes
-  ( signalProcess
+  ( signalProcess,
   )
 where
 
