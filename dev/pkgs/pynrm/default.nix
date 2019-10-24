@@ -18,6 +18,6 @@ pythonPackages.buildPythonPackage {
     rm nrm/schemas/downstreamEvent.json
     cp ${resources}/share/nrm/downstreamEvent.json nrm/schemas/
     substituteInPlace bin/nrmd \
-      --replace "os.environ['NRMSO']" \"${hsnrm}/bin/nrm.so\"
+      --replace "os.environ[\"NRMSO\"]" \"${hsnrm}/bin/nrm.so\"
   '';
 }
