@@ -120,10 +120,6 @@ behavior c st _callTime (Req clientid msg) =
             )
               & mayInjectLibnrmPreload c manifest
         )
-    --Just preload -> maybePath <&> \x -> preload <> " " <> x
-    --"LD_PRELOAD"
-
-    -- <> Env [ ("LD_PRELOAD"=  ) | instrum <- instrumentation manifest ]
     UReq.ReqKillSlice UReq.KillSlice {..} -> do
       let (maybeSlice, st') = removeSlice killSliceID st
       return
@@ -303,6 +299,6 @@ mayInjectLibnrmPreload c manifest e =
     injector ratelimit path (Env env) =
       Env $
         env & LM.insert "NRM_RATELIMIT" (show $ U.fromHz ratelimit)
-          & (flip LM.alter) "LD_PRELOAD" \case
+          & (flip LM.alter) "LD_PRELOAD" $ \case
             Nothing -> Just path
             Just x -> Just $ x <> " " <> path
