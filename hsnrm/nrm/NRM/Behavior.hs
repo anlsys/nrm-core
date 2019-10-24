@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeApplications #-}
+
 -- |
 -- Module      : NRM.Behavior
 -- Copyright   : (c) UChicago Argonne, 2019
@@ -290,19 +292,17 @@ folder time (s, ms) (k, ScopedLens l) =
             IllegalFailureRemediation sensor' -> (s & l .~ sensor', Nothing)
 
 mayInjectLibnrmPreload :: Cfg -> Manifest -> Env -> Env
-mayInjectLibnrmPreload c manifest (Env env) =
-  Env $
-    let maybePath = do
-          ratelimit <- (Manifest.instrumentation . Manifest.app) manifest <&> Manifest.ratelimit
-          libnrmPath <- Cfg.libnrmPath c
-          return (ratelimit, libnrmPath)
-     in maybePath & \case
-          Nothing -> env
-          Just (ratelimit, path) ->
-            env & LM.insert "NRM_RATELIMIT" (show $ U.fromHz ratelimit)
-              & LM.alter
-                ( \case
-                    Nothing -> Just path
-                    Just x -> Just $ x <> " " <> path
-                )
-                "LD_PRELOAD"
+mayInjectLibnrmPreload c manifest e =
+  fromMaybe e $
+    injector
+      <$> ((Manifest.instrumentation . Manifest.app) manifest <&> Manifest.ratelimit)
+      <*> Cfg.libnrmPath c
+      <*> Just e
+  where
+    injector :: U.Frequency -> Text -> Env -> Env
+    injector ratelimit path (Env env) =
+      Env $
+        env & LM.insert "NRM_RATELIMIT" (show $ U.fromHz ratelimit)
+          & (flip LM.alter) "LD_PRELOAD" \case
+            Nothing -> Just path
+            Just x -> Just $ x <> " " <> path
