@@ -68,7 +68,7 @@ process _cfg time st sensorKey value =
                 , time = time
                 }
               )
-          AdjustInterval _r -> Adjusted (st & sl %~ (\sensor -> sensor)) -- TODO adjustment
+          AdjustInterval _r -> Adjusted (st & sl %~ id) -- TODO adjustment
 
 data ProcessPassiveSensorOutput
   = IllegalValueRemediation PassiveSensor
@@ -104,7 +104,7 @@ processPassiveSensorFailure ps time =
   last ps & \case
     Nothing -> LegalFailure
     Just (oldTime, _)
-      | observedFrequency < (fromHz $ S.frequency ps) ->
+      | observedFrequency < fromHz (S.frequency ps) ->
         IllegalFailureRemediation ps {S.frequency = observedFrequency & hz}
       | otherwise -> LegalFailure
       where

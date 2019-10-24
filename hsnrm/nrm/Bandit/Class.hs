@@ -64,8 +64,8 @@ class (Eq a, Bandit b (Arms a) a l) => ParameterFreeMAB b a l | b -> l where
 
   -- | @init as@ returns the initial state of the bandit algorithm, where @as@
   -- is a set of available actions.
-  initMAB :: (MonadRandom m) => (Arms a) -> m (b, a)
-  initMAB = init 
+  initMAB :: (MonadRandom m) => Arms a -> m (b, a)
+  initMAB = init
 
   -- | @step l@ iterates the bandit process one step forward by feeding loss
   -- value @l@.

@@ -50,7 +50,7 @@ behavior :: Cfg.Cfg -> NRMState -> U.Time -> NRMEvent -> IO (NRMState, Behavior)
 behavior _ st _callTime (DoOutput cmdID outputType content) =
   return . swap $ st &
     _cmdID cmdID
-      \case
+      ( \case
         Nothing -> (Log "No such command was found in the NRM state.", Nothing)
         Just c ->
           content & \case
@@ -63,6 +63,7 @@ behavior _ st _callTime (DoOutput cmdID outputType content) =
                     Just exc -> (mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc), Nothing)
                     Nothing -> (NoBehavior, Just (c & field @"processState" .~ newPstate))
             _ -> (respondContent content c cmdID outputType, Just c)
+      )
 behavior _ st _callTime (RegisterCmd cmdID cmdstatus) =
   cmdstatus & \case
     NotLaunched ->
@@ -255,7 +256,7 @@ folder
   -> (PassiveSensorKey, ScopedLens NRMState PassiveSensor)
   -> IO (NRMState, Maybe [CPD.Measurement])
 folder time (s, ms) (k, ScopedLens l) =
-  let ps = (view l s)
+  let ps = view l s
    in perform ps <&> \case
         Just value ->
           processPassiveSensor ps time (toS k) value & \case

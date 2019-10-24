@@ -99,14 +99,14 @@ showState = toS . pShow
 -- | Behave on downstream message
 downstreamReceive :: C.Cfg -> TS.NRMState -> Double -> Text -> Text -> IO (TS.NRMState, B.Behavior)
 downstreamReceive cfg s t msg clientid =
-  B.DownstreamEvent <$> (DC.fromText clientid) <*> (M.decodeT $ toS msg) & \case
+  B.DownstreamEvent <$> DC.fromText clientid <*> M.decodeT msg & \case
     Nothing -> return (s, B.Log "couldn't decode downstream receive")
     Just ev -> B.behavior cfg s (t & seconds) ev
 
 -- | Behave on upstream message
 upstreamReceive :: C.Cfg -> TS.NRMState -> Double -> Text -> Text -> IO (TS.NRMState, B.Behavior)
 upstreamReceive cfg s t msg clientid =
-  B.Req <$> (UC.fromText clientid) <*> (M.decodeT msg) & \case
+  B.Req <$> UC.fromText clientid <*> M.decodeT msg & \case
     Nothing -> return (s, B.Log "couldn't decode upstream receive")
     Just ev -> B.behavior cfg s (t & seconds) ev
 
@@ -141,7 +141,7 @@ doStderr = handleTag URep.StderrOutput
 -- | when a command was properly started.
 registerCmdSuccess :: C.Cfg -> TS.NRMState -> Double -> Text -> Int -> IO (TS.NRMState, B.Behavior)
 registerCmdSuccess cfg s t cmdIDT pid =
-  B.RegisterCmd <$> (CmdID.fromText cmdIDT) ?? B.Launched (Process.ProcessID $ SPT.CPid $ fromIntegral pid) & \case
+  B.RegisterCmd <$> CmdID.fromText cmdIDT ?? B.Launched (Process.ProcessID $ SPT.CPid $ fromIntegral pid) & \case
     Nothing -> return (s, B.Log "couldn't decode cmdID in registerCmdSuccess nrm.so call")
     Just ev -> B.behavior cfg s (t & seconds) ev
 

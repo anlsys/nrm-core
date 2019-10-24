@@ -51,12 +51,12 @@ data V = V Double (I.Interval Double)
 
 eval :: Map SensorID V -> OExpr -> Maybe V
 eval m = \case
-  (OValue sensorID) -> DM.lookup sensorID m
-  OScalarMult s a -> ev a <&> \(V x i) -> V (s * x) $ singleton s * i
-  OAdd a b -> ev2 a b \(V x1 i1) (V x2 i2) -> V (x1 + x2) (i1 + i2)
-  OSub a b -> ev2 a b \(V x1 i1) (V x2 i2) -> V (x1 - x2) (i1 - i2)
-  OMul a b -> ev2 a b \(V x1 i1) (V x2 i2) -> V (x1 * x2) (i1 * i2)
-  ODiv a b -> ev2 a b \(V x1 i1) (V x2 i2) -> V (x1 / x2) (i1 / i2)
+  OValue sensorID -> DM.lookup sensorID m
+  OScalarMult s a -> ev a <&> (\(V x i) -> V (s * x) $ singleton s * i)
+  OAdd a b -> ev2 a b $ \(V x1 i1) (V x2 i2) -> V (x1 + x2) (i1 + i2)
+  OSub a b -> ev2 a b $ \(V x1 i1) (V x2 i2) -> V (x1 - x2) (i1 - i2)
+  OMul a b -> ev2 a b $ \(V x1 i1) (V x2 i2) -> V (x1 * x2) (i1 * i2)
+  ODiv a b -> ev2 a b $ \(V x1 i1) (V x2 i2) -> V (x1 / x2) (i1 / i2)
   where
     ev = eval m
     ev2 a b f = do

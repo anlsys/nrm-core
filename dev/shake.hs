@@ -1,5 +1,5 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE NoImplicitPrelude #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PackageImports #-}
 
 {-|
@@ -9,17 +9,15 @@ Copyright   : (c) Valentin Reis, 2018
 License     : MIT
 Maintainer  : fre@freux.fr
 -}
-
 import Control.Monad
 import Data.Text (dropEnd, strip)
+import Data.Text (lines)
 import Development.Shake hiding (getEnv)
 import Development.Shake.FilePath
 import Options.Applicative as OA
 import Protolude
-import Data.Text (lines)
 import System.Directory
 import System.Environment (getEnv, withArgs)
-import qualified Prelude
 import "Glob" System.FilePath.Glob
 import qualified System.IO as SIO
   ( BufferMode (..)
@@ -28,6 +26,7 @@ import qualified System.IO as SIO
   )
 import System.Posix.Process
 import System.Process.Typed
+import qualified Prelude
 
 ghcidTarget :: Text -> Text -> Maybe Text -> [Text]
 ghcidTarget cabalfile target test =
@@ -45,7 +44,7 @@ ghcidTarget cabalfile target test =
         test
       )
 
-runGhcid :: Text ->Text -> Maybe Text -> IO ()
+runGhcid :: Text -> Text -> Maybe Text -> IO ()
 runGhcid cabalfile target test = do
   runProcess_ "rm -f .ghc.*"
   runProcess_ $ setWorkingDir "hsnrm" $ shell "cp -f $CABALFILE hsnrm.cabal"
@@ -57,12 +56,12 @@ main = do
   SIO.hSetBuffering SIO.stdout SIO.NoBuffering <>
     void (join (execParser (info (opts cabalFile <**> helper) idm)))
   where
-    opts ::  Text ->Parser (IO ())
-    opts cabalFile=
+    opts :: Text -> Parser (IO ())
+    opts cabalFile =
       hsubparser
         ( OA.command
           "ghcid"
-          ( info (runGhcid cabalFile<$> targetParser <*> testParser)
+          ( info (runGhcid cabalFile <$> targetParser <*> testParser)
             (progDesc "Run an argo-compatible nix-build.")
           ) <>
           OA.command "britt"
@@ -122,7 +121,7 @@ runshake as =
       version <- liftIO $ toS . strip . toS <$> readProcessStdout_ "ghc --numeric-version"
       ghcPathRaw <- liftIO $ strip . toS <$> readProcessStdout_ "which ghc"
       let ghcPath = dropEnd 8 ghcPathRaw
-      liftIO ( runProcess_ $ setWorkingDir "hsnrm" $ shell "cp -f $CABALFILE hsnrm.cabal")
+      liftIO (runProcess_ $ setWorkingDir "hsnrm" $ shell "cp -f $CABALFILE hsnrm.cabal")
       liftIO
         ( runProcess_ $ setWorkingDir "hsnrm" $
           proc "cabal"
@@ -139,7 +138,8 @@ runshake as =
           proc "cabal"
             [ "v2-run"
             , "--builddir=../_build"
-            , "codegen", "../resources/"
+            , "codegen"
+            , "../resources/"
             ]
         )
     phony "codegen" $
@@ -148,7 +148,8 @@ runshake as =
           proc "cabal"
             [ "v2-run"
             , "--builddir=../_build"
-            , "codegen","../resources/"
+            , "codegen"
+            , "../resources/"
             ]
         )
     phony "client" $
@@ -160,16 +161,17 @@ runshake as =
             , "--builddir=../_build"
             ]
         )
-    phony "doc" $do
-      (exitCode, out) <- liftIO
-        ( readProcessStdout $ setWorkingDir "hsnrm" $
-          proc "cabal"
-            [ "v2-haddock"
-            , "nrm.so"
-            , "--haddock-hyperlink-source"
-            , "--builddir=../_build"
-            ]
-        )
+    phony "doc" $ do
+      (exitCode, out) <-
+        liftIO
+          ( readProcessStdout $ setWorkingDir "hsnrm" $
+            proc "cabal"
+              [ "v2-haddock"
+              , "nrm.so"
+              , "--haddock-hyperlink-source"
+              , "--builddir=../_build"
+              ]
+          )
       putText $ toS out
       let path = Prelude.last $ Data.Text.lines $ toS out
-      liftIO ( runProcess_ $ proc "cp" ["-r",dropFileName $  toS path  , "html" ])
+      liftIO (runProcess_ $ proc "cp" ["-r", dropFileName $ toS path, "html"])

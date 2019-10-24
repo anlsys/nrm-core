@@ -60,7 +60,7 @@ data EpsGreedyHyper a
 instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
 
   init (EpsGreedyHyper e (Arms (a :| as))) =
-    return $
+    return
       ( Screening $ ScreeningGreedy
           { tScreening = 1
           , epsScreening = e
@@ -92,9 +92,7 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
                   , k = length (screened sg) + 1
                   , weights = toW <$> ((l, screening sg) :| screened sg)
                   }
-            a <- pickAction eeg
-            put $ ExploreExploit $ eeg {lastAction = a}
-            return a
+            pickreturn eeg
             where
               toW :: forall a. (Double, a) -> Weight a
               toW (loss, action) = Weight loss 1 action
@@ -107,9 +105,16 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
                   then updateAvgLoss l w
                   else w
                 }
-        a <- pickAction eeg
-        put $ ExploreExploit $ eeg {lastAction = a}
-        return a
+        pickreturn eeg
+
+pickreturn
+  :: (MonadRandom m, MonadState (EpsGreedy b) m)
+  => ExploreExploitGreedy b
+  -> m b
+pickreturn eeg = do
+  a <- pickAction eeg
+  put $ ExploreExploit $ eeg {lastAction = a}
+  return a
 
 pickAction :: (MonadRandom m) => ExploreExploitGreedy a -> m a
 pickAction ExploreExploitGreedy {..} =

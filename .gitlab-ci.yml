@@ -10,13 +10,22 @@ ormolu:
   script:
     - |
       nix-shell -p '
-        (import ./default.nix).hlint
+      (import ./default.nix).fd
+      ' '
+      (import ./default.nix).ormolu
       ' --run bash << EOF
-      cd hsnrm
-      hlint .
+      for F in \$(fd -e hs); do
+        ormolu < \$F | cmp -s \$F -
+        if [ $? -ne 0 ]; then
+          echo "[!] \$F is not indempotent via ormolu." >&2
+          RETURN=1
+        else
+          echo "ok: \$F "
+        fi
+      done
       EOF
   tags:
-    - integration
+  - integration
 
 hlint:
   stage: source

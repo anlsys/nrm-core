@@ -29,7 +29,7 @@ mkObjective :: NRMState -> Objective
 mkObjective st =
   lAf <> lPf & \case
     [] -> Nothing
-    v : vs -> Just (foldl (OAdd) v vs)
+    v : vs -> Just (foldl OAdd v vs)
   where
     lA = DM.keys (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor)
     lP = DM.keys (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor)

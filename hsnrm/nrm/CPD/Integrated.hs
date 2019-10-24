@@ -32,7 +32,7 @@ data Integrator
       }
   deriving (Generic)
 
-data Integrated
+newtype Integrated
   = Integrated
       { integrated :: Map SensorID Double
       }

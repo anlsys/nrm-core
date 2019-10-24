@@ -1,4 +1,3 @@
-{-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DerivingVia #-}
 
 {-|
@@ -73,7 +72,7 @@ instance
   init (Arms as) = do
     a <- RS.sample . DC.fromWeightedList $ toList as <&> (1 :: Double,)
     let ws = as <&> Weight (Probability 1) (CumulativeLoss 0)
-    return $
+    return
       ( Exp3
           { t = 1
           , lastAction = a
