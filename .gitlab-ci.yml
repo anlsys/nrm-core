@@ -15,6 +15,7 @@ ormolu:
       (import ./default.nix).ormolu
       ' --run bash << EOF
       for F in \$(fd -e hs); do
+        echo "checking format for \$F"
         ormolu < \$F | cmp -s \$F -
         if [ $? -ne 0 ]; then
           echo "[!] \$F is not indempotent via ormolu." >&2
@@ -61,6 +62,7 @@ clang-format:
         (import ./default.nix).clang-tools
       ' --run bash << EOF
       for F in libnrm/src/*.c; do
+        echo "checking format for \$F"
         clang-format < \$F | cmp -s \$F -
         if [ $? -ne 0 ]; then
           echo "[!] $F does not respect default clang-format." >&2
