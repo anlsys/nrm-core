@@ -20,6 +20,7 @@ let
   };
   unbreak = x:
     x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
+  callPackage = pkgs.lib.callPackageWith pkgs;
 in pkgs // rec {
 
   nrmPythonPackages = pkgs.python37Packages.override {
@@ -89,7 +90,9 @@ in pkgs // rec {
         nrmbin =
           self.callCabal2nix "hsnrm.cabal" patchedSrcBin { inherit nrmlib; };
         dhall = super.dhall_1_24_0;
-
+        dhrun = (self.callCabal2nix "dhrun" (builtins.fetchGit {
+          inherit (pkgs.stdenv.lib.importJSON ./pkgs/dhrun/pin.json) url rev;
+        })) { };
       };
   };
 
@@ -168,11 +171,54 @@ in pkgs // rec {
       export PYTHONPATH=$PYTHONPATH:./pynrm/
     '';
   };
-}
 
-#GHC_GMP = "${pkgs.gmp6.override { withStatic = true; }}/lib";
-#GHC_ZLIB = "${pkgs.zlib.static}/lib";
-#GHC_GLIBC = "${pkgs.glibc.static}/lib";
-#GHC_FFI =
-#"${pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })}/lib";
-#GHC_VERSION = "${pkgs.haskellPackages.ghc.version}";
+  dhrun = haskellPackages.dhrun.overrideAttrs (old:{
+      installPhase = old.installPhase + ''
+        mkdir -p $out/share/
+        cp -r resources $out/share/
+      '';
+    });
+
+  dhrunTestConfigLayer = pkgs.stdenv.mkDerivation rec {
+    name = "dhrunSpecs";
+    src = ./dhrun;
+    installPhase = ''
+      mkdir -p $out
+      cp -r $src/* $out
+      substituteInPlace $out/assets/simple-H2O.xml --replace \
+        H2O.HF.wfs.xml $out/assets/H2O.HF.wfs.xml
+      substituteInPlace $out/assets/simple-H2O.xml --replace \
+        O.BFD.xml $out/assets/O.BFD.xml
+      substituteInPlace $out/assets/simple-H2O.xml --replace \
+        H.BFD.xml $out/assets/H.BFD.xml
+      substituteInPlace $out/lib.dh --replace \
+        "dataDir = \"./\"" "dataDir = \"$out/\""
+      substituteInPlace $out/lib.dh --replace \
+        "https://xgitlab.cels.anl.gov/argo/dhrun/raw/master/" "./"
+      ln -s ${dhrun}/share/resources $out/resources
+    '';
+    unpackPhase = "true";
+  };
+
+  doDhrun = dhallcall:
+    test.overrideAttrs (old: {
+      buildPhase = ''
+        dhrun run <<< 'let all = ${dhrunTestConfigLayer}/all-tests.dh
+                      "${dhrunTestConfigLayer}/" "${nrm}/share/examples/" in all.${dhallcall}'
+      '';
+      installPhase = ''
+        mkdir -p $out
+        cp _output/* $out/
+      '';
+    });
+
+  stream = callPackage ./pkgs/stream {
+    iterationCount = "2000";
+    inherit libnrm;
+    nrmSupport = true;
+  };
+
+  testGeneric = doDhrun genericTestName;
+  doDhrunApp = app: doDhrun "${app} True < NoCap = {=} | Cap : Text >";
+  testSTREAM = addBI (doDhrunApp "stream") stream;
+}

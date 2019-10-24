@@ -1,0 +1,457 @@
+  λ(dataDir : Text)
+→ λ(manifestDir : Text)
+→ let values =
+        https://xgitlab.cels.anl.gov/argo/dhrun/raw/master/resources/package.dh
+  
+  let types =
+        https://xgitlab.cels.anl.gov/argo/dhrun/raw/master/resources/types.dh
+  
+  let assetDir = dataDir ++ "assets/"
+  
+  let openmcDir = assetDir ++ "openmc/"
+  
+  let lammpsDir = assetDir
+  
+  let qmcPackDir = assetDir
+  
+  let basicCommand =
+          λ ( args
+            : { name :
+                  Text
+              , outprefix :
+                  Text
+              , outwants :
+                  List Text
+              , outavoids :
+                  List Text
+              }
+            )
+        → { name =
+              args.name
+          , args =
+              [] : List Text
+          , out =
+              { filename =
+                  "${args.outprefix}.out"
+              , filecheck =
+                  { wants = args.outwants, avoids = args.outavoids }
+              }
+          , err =
+              { filename =
+                  "${args.outprefix}.err"
+              , filecheck =
+                  values.emptyCheck ⫽ { avoids = args.outavoids }
+              }
+          , postchecks =
+              [] : List types.FileCheck
+          , vars =
+              values.emptyVars
+          , passvars =
+              [ "PATH" ]
+          , timeout =
+              [] : Optional Natural
+          , otherwd =
+              [] : Optional Text
+          , exitcode =
+              [] : Optional Integer
+          }
+  
+  let Powercap = < Cap : Text | NoCap : {} >
+  
+  let MakeBaseArg =
+        { manifest :
+            Text
+        , cmd :
+            Text
+        , containerName :
+            Text
+        , args :
+            List Text
+        , verbose :
+            Bool
+        , singularity :
+            Bool
+        , cmdwants :
+            List Text
+        , cmdavoids :
+            List Text
+        , vars :
+            List types.EnvVar
+        , timeout :
+            Optional Natural
+        , runExitcode :
+            Optional Integer
+        , passvars :
+            List Text
+        , powercap :
+            Powercap
+        , runwd :
+            Optional Text
+        }
+  
+  let emptyMakeBaseArg =
+          λ(cmd : Text)
+        → λ(manifest : Text)
+        → λ(containerName : Text)
+        →   { manifest =
+                manifest
+            , cmd =
+                cmd
+            , containerName =
+                containerName
+            , args =
+                [] : List Text
+            , verbose =
+                True
+            , singularity =
+                False
+            , cmdwants =
+                [] : List Text
+            , cmdavoids =
+                [] : List Text
+            , vars =
+                values.emptyVars
+            , timeout =
+                [] : Optional Natural
+            , runExitcode =
+                [] : Optional Integer
+            , passvars =
+                [] : List Text
+            , powercap =
+                < NoCap = {=} | Cap : Text >
+            , runwd =
+                [] : Optional Text
+            }
+          : MakeBaseArg
+  
+  let addVerbose = λ(v : Bool) → if v then [ "--verbose" ] else [] : List Text
+  
+  let addSingularity =
+          λ(v : Bool)
+        → if v then [ "--container-runtime", "singularity" ] else [] : List Text
+  
+  let addPowercap =
+          λ(p : Powercap)
+        → merge
+          { Cap =
+              λ(x : Text) → [ "--powercap", x ]
+          , NoCap =
+              λ(x : {}) → [] : List Text
+          }
+          p
+  
+  let makeBase =
+          λ(args : MakeBaseArg)
+        →   { cmds =
+                [   basicCommand
+                    { name =
+                        "nrmd"
+                    , outprefix =
+                        "nrmd"
+                    , outwants =
+                        [] : List Text
+                    , outavoids =
+                        [ "Traceback", "ValueError" ] : List Text
+                    }
+                  ⫽ { args =
+                          [ "--nrm_log", "./nrm_log" ]
+                        # addVerbose args.verbose
+                        # addSingularity args.singularity
+                        # addPowercap args.powercap
+                    , vars =
+                        [ { varname =
+                              "ARGO_NODEOS_CONFIG"
+                          , value =
+                              "/tmp/argo_nodeos_config"
+                          }
+                        ]
+                    }
+                , let b =
+                        basicCommand
+                        { name =
+                            "nrm"
+                        , outprefix =
+                            "nrmrun"
+                        , outwants =
+                            args.cmdwants
+                        , outavoids =
+                            args.cmdavoids
+                        }
+                  
+                  in    b
+                      ⫽ { args =
+                              [ "run"
+                              , "-u"
+                              , args.containerName
+                              , args.manifest
+                              , args.cmd
+                              ]
+                            # args.args
+                        , passvars =
+                            b.passvars # args.passvars
+                        , vars =
+                            args.vars
+                        , timeout =
+                            args.timeout
+                        , exitcode =
+                            args.runExitcode
+                        , otherwd =
+                            args.runwd
+                        }
+                ]
+            , verbose =
+                True
+            , cleaning =
+                True
+            , workdir =
+                "./_output"
+            , pre =
+                [] : List Text
+            , post =
+                [] : List Text
+            }
+          : types.Config
+  
+  let makeExtended =
+          λ(args : MakeBaseArg)
+        → λ(cmds : List types.Cmd)
+        → let b = makeBase args in b ⫽ { cmds = b.cmds # cmds }
+  
+  let OptionalSleep = < Cmd : Text | Sleep : {} >
+  
+  let FilterTestArgs =
+        { manifestname :
+            Text
+        , filter :
+            Text
+        , cmd :
+            Text
+        , args :
+            List Text
+        , vars :
+            List types.EnvVar
+        , passvars :
+            List Text
+        , cmdavoids :
+            List Text
+        , isTest :
+            Bool
+        , timeout :
+            Optional Natural
+        , powercap :
+            Powercap
+        }
+  
+  let emptyFilterTestArgs =
+          λ(filter : Text)
+        → λ(cmd : Text)
+        →   { cmd =
+                cmd
+            , manifestname =
+                "perfwrap.yml"
+            , filter =
+                filter
+            , args =
+                [] : List Text
+            , vars =
+                values.emptyVars
+            , passvars =
+                [] : List Text
+            , cmdavoids =
+                [] : List Text
+            , isTest =
+                False
+            , timeout =
+                [] : Optional Natural
+            , powercap =
+                < NoCap = {=} | Cap : Text >
+            }
+          : FilterTestArgs
+  
+  let appTest =
+          λ(args : FilterTestArgs)
+        → let cn = "testContainer"
+          
+          in  makeExtended
+              { manifest =
+                      manifestDir
+                  ++  (       if args.isTest
+                        
+                        then  args.manifestname
+                        
+                        else  "parallel.yml"
+                      )
+              , containerName =
+                  cn
+              , cmd =
+                  args.cmd
+              , args =
+                  args.args
+              , verbose =
+                  True
+              , singularity =
+                  False
+              , cmdwants =
+                  [] : List Text
+              , cmdavoids =
+                  args.cmdavoids
+              , vars =
+                  args.vars
+              , passvars =
+                  args.passvars
+              , timeout =
+                  args.timeout
+              , runwd =
+                  [] : Optional Text
+              , runExitcode =
+                  [] : Optional Integer
+              , powercap =
+                  args.powercap
+              }
+              [ let b =
+                      values.emptyCmd
+                      { name =
+                          "nrm"
+                      , outfile =
+                          "nrmlisten.out"
+                      , errfile =
+                          "nrmlisten.err"
+                      }
+                
+                in    b
+                    ⫽ { args =
+                          [ "listen", "-u", cn, "--filter", args.filter ]
+                      , out =
+                            b.out
+                          ⫽ { filecheck =
+                                  values.emptyCheck
+                                ⫽ { wants =
+                                            if args.isTest
+                                      
+                                      then  [ args.filter ]
+                                      
+                                      else  [] : List Text
+                                  }
+                            }
+                      }
+              ]
+  
+  let ProgressAppTestArg =
+        { cmd :
+            Text
+        , args :
+            List Text
+        , vars :
+            List types.EnvVar
+        , passvars :
+            List Text
+        , cmdavoids :
+            List Text
+        , isTest :
+            Bool
+        , timeout :
+            Optional Natural
+        , powercap :
+            Powercap
+        }
+  
+  let emptyProgressAppTestArg =
+          λ(cmd : Text)
+        → λ(args : List Text)
+        →   { cmd =
+                cmd
+            , args =
+                args
+            , vars =
+                [] : List types.EnvVar
+            , passvars =
+                [] : List Text
+            , cmdavoids =
+                [] : List Text
+            , isTest =
+                False
+            , timeout =
+                [] : Optional Natural
+            , powercap =
+                < NoCap = {=} | Cap : Text >
+            }
+          : ProgressAppTestArg
+  
+  let progressAppTest =
+          λ(args : ProgressAppTestArg)
+        → appTest
+          (   emptyFilterTestArgs "progress" args.cmd
+            ⫽ { args =
+                  args.args
+              , manifestname =
+                  "basic.yml"
+              , vars =
+                  args.vars
+              , passvars =
+                  args.passvars
+              , cmdavoids =
+                  args.cmdavoids
+              , isTest =
+                  args.isTest
+              , timeout =
+                  args.timeout
+              , powercap =
+                  args.powercap
+              }
+          )
+  
+  let mkListen =
+          λ(cn : Text)
+        → λ(filter : Text)
+        → let b =
+                values.emptyCmd
+                { name =
+                    "nrm"
+                , outfile =
+                    filter ++ ".out"
+                , errfile =
+                    filter ++ ".err"
+                }
+          
+          in  b ⫽ { args = [ "listen", "-u", cn, "--filter", filter ] }
+  
+  let powerexpeCmds =
+        [ mkListen "testContainer" "power"
+        , mkListen "testContainer" "performance"
+        , mkListen "testContainer" "control"
+        ] : List types.Cmd
+  
+  let extendApp =
+          λ(c : types.Config)
+        → λ(isTest : Bool)
+        → if isTest then c else c ⫽ { cmds = c.cmds # powerexpeCmds }
+  
+  in  { values =
+          values
+      , emptyMakeBaseArg =
+          emptyMakeBaseArg
+      , makeBase =
+          makeBase
+      , makeExtended =
+          makeExtended
+      , appTest =
+          appTest
+      , progressAppTest =
+          progressAppTest
+      , emptyFilterTestArgs =
+          emptyFilterTestArgs
+      , qmcPackDir =
+          qmcPackDir
+      , openmcDir =
+          openmcDir
+      , lammpsDir =
+          lammpsDir
+      , manifestDir =
+          manifestDir
+      , emptyProgressAppTestArg =
+          emptyProgressAppTestArg
+      , powerexpeCmds =
+          powerexpeCmds
+      , extendApp =
+          extendApp
+      }

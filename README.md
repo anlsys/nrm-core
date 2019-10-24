@@ -1,4 +1,12 @@
-monorepo version of NRM with libnrm code generation and separated logic via shared library
+HNRM monorepo
+
+### deps/building
+
+get Nix,
+
+- release: `nix-build -A nrm`
+- dev build: `nix-shell`, then `./shake build && ./shake client`
+- local CI: `nix-env -f. -iA gitlab-runner && gitlab-runner exec shell <jobname>` . see `.gitlab-ci.yml` for job names
 
 ### architecture
 
@@ -28,21 +36,3 @@ monorepo version of NRM with libnrm code generation and separated logic via shar
 - code generation for libnrm (c headers, python downstream schema)
 ###### `libnrm`
 - sending progress reports
-
-### dev
-
-#### structure
-
-- hsnrm dependencies
-
-#### workflow
-
-Obtain dependencies:
-```
-$ nix-shell
-```
-
-build hnrm.so and perform code generation step
-```
-[nix-shell:nrm/]$ ./shake build
-```
