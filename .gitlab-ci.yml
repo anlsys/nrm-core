@@ -17,7 +17,7 @@ ormolu:
       for F in \$(fd -e hs); do
         echo "checking format for \$F"
         ormolu < \$F | cmp -s \$F -
-        if [ $? -ne 0 ]; then
+        if [ \$? -ne 0 ]; then
           echo "[!] \$F is not indempotent via ormolu." >&2
           RETURN=1
         else
@@ -64,7 +64,7 @@ clang-format:
       for F in libnrm/src/*.c; do
         echo "checking format for \$F"
         clang-format < \$F | cmp -s \$F -
-        if [ $? -ne 0 ]; then
+        if [ \$? -ne 0 ]; then
           echo "[!] $F does not respect default clang-format." >&2
           RETURN=1
         fi
