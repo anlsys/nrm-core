@@ -299,6 +299,9 @@ mayInjectLibnrmPreload c manifest e =
     injector ratelimit path (Env env) =
       Env $
         env & LM.insert "NRM_RATELIMIT" (show $ U.fromHz ratelimit)
-          & (flip LM.alter) "LD_PRELOAD" $ \case
-            Nothing -> Just path
-            Just x -> Just $ x <> " " <> path
+          & LM.alter
+            ( \case
+                Nothing -> Just path
+                Just x -> Just $ x <> " " <> path
+            )
+            "LD_PRELOAD"
