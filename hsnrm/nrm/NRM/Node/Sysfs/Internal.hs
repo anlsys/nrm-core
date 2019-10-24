@@ -36,8 +36,8 @@ import Data.Data
 import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
-import NRM.Classes.Topology
 import LMap.Map as LM
+import NRM.Classes.Topology
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
 import Protolude
@@ -68,7 +68,7 @@ newtype MeasuredEnergy = MeasuredEnergy Energy
 newtype HwmonDir = HwmonDir FilePath
   deriving (Show)
 
-data RAPLCommand
+newtype RAPLCommand
   = RAPLCommand
       { powercap :: Power
       }
@@ -173,8 +173,7 @@ applyRAPLPcap filePath (RAPLCommand cap) =
 -- | Lists available rapl directories.
 getRAPLDirs :: FilePath -> IO (Maybe RAPLDirs)
 getRAPLDirs d =
-  try (RAPLDirs . LM.fromList <$> (listDirFilter processRAPLFolder d)) >>=
-    return . \case
+  try (RAPLDirs . LM.fromList <$> listDirFilter processRAPLFolder d) <&> \case
     Left (SomeException _) -> Nothing
     Right dirs -> Just dirs
 

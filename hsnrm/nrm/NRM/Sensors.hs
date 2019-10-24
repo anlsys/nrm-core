@@ -68,7 +68,7 @@ process _cfg time st sensorKey value =
                 , time = time
                 }
               )
-          AdjustInterval _r -> Adjusted (st & sl %~ id) -- TODO adjustment
+          AdjustInterval _r -> Adjusted (st & sl %~ identity) -- TODO adjustment
 
 data ProcessPassiveSensorOutput
   = IllegalValueRemediation PassiveSensor

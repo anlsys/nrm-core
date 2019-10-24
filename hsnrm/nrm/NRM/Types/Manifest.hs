@@ -98,7 +98,7 @@ data Pw
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Pw
 
-data Instrumentation
+newtype Instrumentation
   = Instrumentation
       { ratelimit :: U.Frequency
       }

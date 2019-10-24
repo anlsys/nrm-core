@@ -21,12 +21,12 @@ import Data.Maybe (fromJust)
 import Data.MessagePack
 import LensMap.Core
 import NRM.Node.Sysfs
-import Numeric.Interval
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Actuator as A
 import NRM.Types.Sensor as S
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
+import Numeric.Interval
 import Protolude hiding (max)
 
 -- | Record containing all information about a CPU Package.
@@ -43,6 +43,8 @@ data Rapl
 newtype Package = Package {rapl :: Maybe Rapl}
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
+unsafeJAA _ = Just
+
 instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
 
   lenses (packageID, package) =
@@ -53,7 +55,7 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
           (A.RaplKey packageID)
           ( ScopedLens
             ( _2 . field @"rapl" .
-              (lens fromJust \(Just _) a -> Just a) . --TODO refactor for -fwarn-uni-patterns
+              lens fromJust unsafeJAA . --TODO refactor for -fwarn-uni-patterns
               lens getter setter
             )
           )
@@ -76,7 +78,7 @@ instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
           (S.RaplKey packageID)
           ( ScopedLens
             ( _2 . field @"rapl" .
-              (lens fromJust \(Just _) a -> Just a) .
+              lens fromJust unsafeJAA .
               lens getter setter
             )
           )

@@ -138,7 +138,7 @@ newtype Arguments = Arguments [Arg]
   deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Arguments
 
-newtype Env = Env {fromEnv :: (LM.Map Text Text)}
+newtype Env = Env {fromEnv :: LM.Map Text Text}
   deriving (Show, Generic, Data, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Env
   deriving (Semigroup, Monoid) via LM.Map Text Text
