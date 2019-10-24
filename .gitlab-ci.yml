@@ -11,9 +11,19 @@ ormolu:
     - integration
   script:
     - |
-      nix-shell -p '(import ./.).fd' '(import ./.).ormolu' --run bash <<< '
+      nix-shell --pure -E '
+        let pkgs = (import ./.);
+        in pkgs.mkShell {
+          buildInputs = [pkgs.fd pkgs.ormolu];
+          shellHook =
+            "export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive \n" +
+            "export LANG=en_US.UTF-8";
+        }
+      ' --run bash <<< '
         RETURN=0
         cd hsnrm
+        echo $LOCALE_ARCHIVE
+        echo $LANG
         for F in $(fd -e hs); do
           ormolu -o -XTypeApplications -m check $F
           if [ $? -ne 0 ]; then
@@ -21,7 +31,6 @@ ormolu:
             RETURN=1
           fi
         done
-        echo $RETURN
         if [ $RETURN -ne 0 ]; then exit 1; fi
       '
 
@@ -30,7 +39,7 @@ hlint:
   tags:
     - integration
   script:
-    - nix-shell -p '(import ./.).hlint' --run bash <<< 'cd hsnrm && hlint .'
+    - nix-shell --pure -p '(import ./.).hlint' --run bash <<< 'cd hsnrm && hlint .'
 
 black:
   stage: source
@@ -38,7 +47,7 @@ black:
     - integration
   script:
     - |
-      nix-shell -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
+      nix-shell --pure -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
         black pynrm/bin/* --check
         black pynrm/nrm/*.py --check
       '
@@ -49,13 +58,13 @@ clang-format:
     - integration
   script:
     - |
-      nix-shell -p '(import ./.).fd' '(import ./.).clang-tools' --run bash <<< '
+      nix-shell --pure -p '(import ./.).fd' '(import ./.).clang-tools' --run bash <<< '
         RETURN=0
         cd libnrm
         for F in $(fd -e c); do
           clang-format < $F | cmp -s $F -
           if [ $? -ne 0 ]; then
-            echo "[!] $F does not pass clang-format format check."  >&2
+            echo "[!] $F does not pass clang-format format check." >&2
             RETURN=1
           fi
         done

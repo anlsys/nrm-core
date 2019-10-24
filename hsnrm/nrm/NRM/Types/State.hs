@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TypeApplications #-}
 
 -- |
 -- Module      : NRM.Types.State
@@ -68,19 +69,19 @@ data NRMState
 instance HasLensMap NRMState ActuatorKey Actuator where
   lenses s =
     mconcat
-      [ addPath (field@"packages") <$> lenses (view (field@"packages") s)
+      [ addPath (field @"packages") <$> lenses (view (field @"packages") s)
       ]
 
 instance HasLensMap NRMState ActiveSensorKey ActiveSensor where
   lenses s =
     mconcat
-      [ addPath (field@"slices") <$> lenses (view (field@"slices") s)
+      [ addPath (field @"slices") <$> lenses (view (field @"slices") s)
       ]
 
 instance HasLensMap NRMState PassiveSensorKey PassiveSensor where
   lenses s =
     mconcat
-      [ addPath (field@"packages") <$> lenses (view (field@"packages") s)
+      [ addPath (field @"packages") <$> lenses (view (field @"packages") s)
       ]
 
 instance JSONSchema NRMState where
@@ -182,7 +183,7 @@ cmdsMap accessor s =
 
 -- Lenses
 _sliceID :: SliceID -> Lens' NRMState (Maybe Slice)
-_sliceID sliceID = field@"slices" . at sliceID
+_sliceID sliceID = field @"slices" . at sliceID
 
 _cmdID :: CmdID -> Lens' NRMState (Maybe Cmd)
 _cmdID cmdID = lens getter setter
@@ -192,7 +193,7 @@ _cmdID cmdID = lens getter setter
     setter st (Just cmd) =
       lookupCmd cmdID st & \case
         Just (_, sliceID, slice) ->
-          st & _sliceID sliceID ?~ (slice & (field@"cmds" . at cmdID) ?~ cmd)
+          st & _sliceID sliceID ?~ (slice & (field @"cmds" . at cmdID) ?~ cmd)
         Nothing -> st
     setter st Nothing =
       lookupCmd cmdID st & \case
@@ -204,4 +205,4 @@ _cmdID cmdID = lens getter setter
       x >>= \slice ->
         if length (cmds slice) == 1
           then Nothing
-          else Just $ slice & field@"cmds" . at cmdID .~ Nothing
+          else Just $ slice & field @"cmds" . at cmdID .~ Nothing
