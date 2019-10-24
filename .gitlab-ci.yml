@@ -18,8 +18,7 @@ ormolu:
       echo $LOCALE_ARCHIVE
       cd hsnrm
       for F in $(fd -e hs); do
-        echo "(ormolu -o -XTypeApplications < $F | cmp -s $F -) && echo "great" || (echo "fail" >&2 ; RETURN= 1)"
-        (ormolu < $F | cmp -s $F -) && echo "great" || (echo "fail" >&2 && exit 1)
+        ormolu -o -XTypeApplications < $F | cmp -s $F -; echo $?;
       done
       '
   tags:

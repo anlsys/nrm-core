@@ -61,6 +61,7 @@ data NRMState
         slices :: LM.Map SliceID Slice,
         dummyRuntime :: Maybe DummyRuntime,
         singularityRuntime :: Maybe SingularityRuntime,
+
         nodeosRuntime :: Maybe NodeosRuntime
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
