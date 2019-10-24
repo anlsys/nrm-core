@@ -7,6 +7,8 @@ stages:
 
 ormolu:
   stage: source
+  tags:
+    - integration
   script:
     - |
       nix-shell -p '(import ./.).fd' '(import ./.).ormolu' --run bash <<< '
@@ -23,33 +25,29 @@ ormolu:
         exit 1
       fi
       '
-  tags:
-  - integration
 
 hlint:
   stage: source
-  script:
-    - |
-      nix-shell -p '(import ./.).hlint' --run bash <<< '
-      cd hsnrm
-      hlint .
-      '
   tags:
     - integration
+  script:
+    - nix-shell -p '(import ./.).hlint' --run bash <<< 'cd hsnrm && hlint .'
 
 black:
   stage: source
+  tags:
+    - integration
   script:
     - |
       nix-shell -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
       black pynrm/bin/* --check
       black pynrm/nrm/*.py --check
       '
-  tags:
-    - integration
 
 clang-format:
   stage: source
+  tags:
+    - integration
   script:
     - |
       nix-shell -p '(import ./.).fd' '(import ./.).clang-tools' --run bash <<< '
@@ -65,35 +63,33 @@ clang-format:
       if [ $RETURN -ne 0 ]; then
         exit 1
       fi'
-  tags:
-  - integration
 
 nix-build-nrm.so:
   stage: lib
-  script: nix-build -A haskellPackages.nrmso --no-build-output
   tags:
-  - integration
+    - integration
+  script: nix-build -A haskellPackages.nrmso --no-build-output
 
 nix-build-binaries:
   stage: afterlib
-  script: nix-build -A haskellPackages.nrmbin --no-build-output
   tags:
-  - integration
+    - integration
+  script: nix-build -A haskellPackages.nrmbin --no-build-output
 
 nix-build-resources:
   stage: codegen
-  script: nix-build -A resources --no-build-output
   tags:
-  - integration
+    - integration
+  script: nix-build -A resources --no-build-output
 
 nix-build-libnrm:
   stage: linked
-  script: nix-build -A libnrm --no-build-output
   tags:
-  - integration
+    - integration
+  script: nix-build -A libnrm --no-build-output
 
 nix-build-pynrm:
   stage: linked
-  script: nix-build -A pynrm --no-build-output
   tags:
-  - integration
+    - integration
+  script: nix-build -A pynrm --no-build-output
