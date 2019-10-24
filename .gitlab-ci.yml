@@ -45,10 +45,11 @@ nrm.so:
 doc:
   stage: afterlib
   script:
-    - nix-build -A haskellPackages.nrmlib.doc -o result-doc
-    - cp -r result-doc/* result-doc-cp
-    - rm -f result-doc
-    - chmod -R +r result-doc-cp
+    - |
+      nix-build -A haskellPackages.nrmlib.doc -o result-doc
+      cp -r result-doc/* result-doc-cp
+      rm -f result-doc
+      chmod -R +r result-doc-cp
   artifacts:
     paths:
       - result-doc-cp/*
