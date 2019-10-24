@@ -9,11 +9,7 @@ ormolu:
   stage: source
   script:
     - |
-      nix-shell -p '
-      (import ./default.nix).fd
-      ' '
-      (import ./default.nix).ormolu
-      ' --run bash <<< '
+      nix-shell -p '(import ./.).fd' '(import ./.).ormolu' --run bash <<< '
       RETURN=0
       cd hsnrm
       for F in $(fd -e hs); do
@@ -34,12 +30,10 @@ hlint:
   stage: source
   script:
     - |
-      nix-shell -p '
-        (import ./default.nix).hlint
-      ' --run bash << EOF
+      nix-shell -p '(import ./.).hlint' --run bash <<< '
       cd hsnrm
       hlint .
-      EOF
+      '
   tags:
     - integration
 
@@ -47,12 +41,10 @@ black:
   stage: source
   script:
     - |
-      nix-shell -p '
-        (import ./default.nix).nrmPythonPackages.black
-      ' --run bash << EOF
+      nix-shell -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
       black pynrm/bin/* --check
       black pynrm/nrm/*.py --check
-      EOF
+      '
   tags:
     - integration
 
@@ -60,11 +52,7 @@ clang-format:
   stage: source
   script:
     - |
-      nix-shell -p '
-      (import ./default.nix).fd
-      ' '
-      (import ./default.nix).clang-tools
-      ' --run bash <<< '
+      nix-shell -p '(import ./.).fd' '(import ./.).clang-tools' --run bash <<< '
       RETURN=0
       cd libnrm
       for F in $(fd -e c); do
