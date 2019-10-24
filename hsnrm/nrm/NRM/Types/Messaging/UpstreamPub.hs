@@ -28,7 +28,7 @@ import NRM.Types.Units
 import Protolude
 
 data Pub
-  = PubMeasurements Time CPD.Measurements
+  = PubMeasurements Time [CPD.Measurement]
   | PubCPD Time CPD.Problem
   | PubPower Time PowerState
   | PubSliceStart Time SliceStart

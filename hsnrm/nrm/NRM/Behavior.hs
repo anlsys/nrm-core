@@ -173,9 +173,10 @@ behavior _ st _callTime (ChildDied pid exitcode) =
                   sliceID
                   (Ct.insertCmd cmdID cmd {processState = newPstate} slice)
                   st
-behavior _ st _callTime (DoControl _time) = bhv st NoBehavior
+behavior _ st _callTime (DoControl _time) = do
+  bhv st NoBehavior
 behavior _ st _callTime (DoSensor time) = do
-  -- This function is complicated, needs custom types.
+  -- This function is too complicated, needs custom types..
   (st', measurements) <- foldM (folder time) (st, Just []) (DM.toList lMap)
   measurements & \case
     Just ms -> bhv st' $ Pub [UPub.PubMeasurements time ms]

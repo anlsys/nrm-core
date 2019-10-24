@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 target=$1
 storepath=$(nix-build -A nrm)
+echo $storepath
 nix-copy-closure --to $target $storepath
 ssh $target "sudo rm -rf ~/nrm && ln -s $storepath ~/nrm"

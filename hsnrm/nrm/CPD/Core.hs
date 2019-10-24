@@ -161,8 +161,6 @@ newtype Actuator = Actuator {actions :: [Discrete]}
 ------- OBJECTIVE
 type Objective = Maybe OExpr
 
---deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Objective
---deriving (Show, Eq, Generic, Data, MessagePack, Interpret, Inject)
 emptyObjective :: Objective
 emptyObjective = Nothing
 

@@ -171,7 +171,7 @@ getDefault x =
 generateDefaultConfigurations :: Text -> IO ()
 generateDefaultConfigurations prefix = do
   putText "Codegen: Dhall types."
-  typeToFile (Proxy :: Proxy CPD.Values.Measurements) $ toS prefix <> "/types/CPDMeasurements.dhall"
+  typeToFile (Proxy :: Proxy [CPD.Values.Measurement]) $ toS prefix <> "/types/CPDMeasurements.dhall"
   typeToFile (Proxy :: Proxy CPD.Values.Actions) $ toS prefix <> "/types/CPDActions.dhall"
   --typeToFile (Proxy :: Proxy CPD.Core.Problem) $ toS prefix <> "/types/CPDProblem.dhall"
   for_ [minBound .. maxBound] $ \t -> do

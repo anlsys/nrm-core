@@ -39,11 +39,18 @@ newtype Integrated
 
 data IntegratorAction = IntegratorPasses | TriggerStep Integrated
 
-integrateProblem :: Problem -> IntegratedProblem
+integrateProblem ::
+  Problem ->
+  IntegratedProblem
 integrateProblem = panic "integrateProblem not implemented"
 
-initIntegrator :: IntegratedProblem -> Integrator
+initIntegrator ::
+  IntegratedProblem ->
+  Integrator
 initIntegrator = panic "initIntegrator not implemented"
 
-stepIntegrator :: (MonadState Integrator m) => Measurements -> m IntegratorAction
+stepIntegrator ::
+  (MonadState Integrator m) =>
+  [Measurement] ->
+  m IntegratorAction
 stepIntegrator _measurements = panic "stepIntegrator not implemented"

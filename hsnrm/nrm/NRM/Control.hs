@@ -34,8 +34,8 @@ import Protolude
 
 data Input
   = -- | A sensor measurement event
-    Event V.Measurements
-  | -- | A sensor measurement event
+    Event [V.Measurement]
+  | -- | A non-event
     Time Time
   | -- | Events
     Reconfigure C.Problem

@@ -7,7 +7,6 @@
 -- Maintainer  : fre@freux.fr
 module CPD.Values
   ( Measurement (..),
-    Measurements,
     Action (..),
     Actions (..),
   )
@@ -23,8 +22,6 @@ import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import NRM.Types.Units
 import Protolude
-
-type Measurements = [Measurement]
 
 data Measurement
   = Measurement
