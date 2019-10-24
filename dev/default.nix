@@ -93,6 +93,8 @@ in pkgs // rec {
       };
   };
 
+  nrmso-nodoc = pkgs.haskell.lib.dontHaddock haskellPackages.nrmlib;
+
   resources = pkgs.runCommand "patchedSrc" { } ''
     mkdir -p $out/share/nrm
     ${haskellPackages.nrmbin}/bin/codegen $out/share/nrm

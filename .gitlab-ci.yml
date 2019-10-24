@@ -68,48 +68,32 @@ clang-format:
   tags:
   - integration
 
-nrm.so:
+nix-build-nrm.so:
   stage: lib
-  script: nix-build -A haskellPackages.nrmlib
+  script: nix-build -A haskellPackages.nrmso --no-build-output
   tags:
   - integration
 
-doc:
+nix-build-binaries:
   stage: afterlib
-  script:
-    - |
-      nix-build -A haskellPackages.nrmlib.doc
-      cp -r result-doc/* result-doc-cp
-      rm -f result-doc
-      chmod -R +r result-doc-cp
-  artifacts:
-    paths:
-      - result-doc-cp/*
-    expire_in: 1 week
-    when: always
+  script: nix-build -A haskellPackages.nrmbin --no-build-output
   tags:
   - integration
 
-binaries:
-  stage: afterlib
-  script: nix-build -A haskellPackages.nrmbin
-  tags:
-  - integration
-
-resources:
+nix-build-resources:
   stage: codegen
-  script: nix-build -A resources
+  script: nix-build -A resources --no-build-output
   tags:
   - integration
 
-libnrm:
+nix-build-libnrm:
   stage: linked
-  script: nix-build -A libnrm
+  script: nix-build -A libnrm --no-build-output
   tags:
   - integration
 
-pynrm:
+nix-build-pynrm:
   stage: linked
-  script: nix-build -A pynrm
+  script: nix-build -A pynrm --no-build-output
   tags:
   - integration
