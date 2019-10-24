@@ -18,6 +18,10 @@ let
         && (baseNameOf path != "result") && (baseNameOf path != "README")
         && (baseNameOf path != "dist")) path;
   };
+  unbreak = x:
+    x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
+in pkgs // rec {
+
   nrmPythonPackages = pkgs.python37Packages.override {
     overrides = self: super: rec {
       cffi = super.cffi.overridePythonAttrs (o: { doCheck = false; });
@@ -41,9 +45,6 @@ let
       };
     };
   };
-  unbreak = x:
-    x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
-in pkgs // rec {
 
   cabalFile = dhallSpec:
     pkgs.runCommand "cabalFile" { } ''
@@ -100,7 +101,13 @@ in pkgs // rec {
 
   nrm = pkgs.symlinkJoin {
     name = "nrmFull";
-    paths = [ haskellPackages.nrmbin pynrm resources pkgs.linuxPackages.perf ];
+    paths = [
+      haskellPackages.nrmbin
+      pynrm
+      resources
+      pkgs.linuxPackages.perf
+      pkgs.hwloc
+    ];
   };
 
   hsnrm-hack = pkgs.haskellPackages.shellFor {
@@ -123,6 +130,11 @@ in pkgs // rec {
       nrmPythonPackages.pytype
       nrmPythonPackages.sphinx
     ];
+
+    shellHook = ''
+      export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
+      export LANG=en_US.UTF-8
+    '';
   });
 
   libnrm-hack = libnrm.overrideAttrs

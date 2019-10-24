@@ -61,7 +61,7 @@ def send(apiname=None):
 
         def send_multi(self, msgs):
             for msg in msgs:
-                send(self,msg)
+                send(self, msg)
 
         setattr(cls, "send_multi", send_multi)
 

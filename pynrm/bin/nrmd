@@ -5,5 +5,5 @@ from nrm.nrmlib import NrmLib
 import nrm.daemon
 import os
 
-with NrmLib(os.environ['NRMSO']) as lib:
+with NrmLib(os.environ["NRMSO"]) as lib:
     nrm.daemon.runner(lib.cli(sys.argv[1:]), lib)

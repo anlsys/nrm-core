@@ -9,9 +9,11 @@ black:
   stage: source
   script:
     - |
-      nix-shell default.nix -A pynrm-hack --run bash << EOF
-      black pynrm/bin/*.py --check
-      black pynrm/nrm/* --check
+      nix-shell -p '
+        (import ./default.nix).nrmPythonPackages.black
+      ' --run bash << EOF
+      black pynrm/bin/* --check
+      black pynrm/nrm/*.py --check
       EOF
   tags:
     - integration
@@ -20,12 +22,13 @@ clang-format:
   stage: source
   script:
     - |
-      nix-shell default.nix -A libnrm-hack --run bash << EOF
-      pwd
+      nix-shell -p '
+        (import ./default.nix).clang-tools
+      ' --run bash << EOF
       for F in libnrm/src/*.c; do
         clang-format < \$F | cmp -s \$F -
         if [ $? -ne 0 ]; then
-          echo "[!] $FILE does not respect the agreed coding style." >&2
+          echo "[!] $F does not respect the agreed coding style." >&2
           RETURN=1
         fi
       done
