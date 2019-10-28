@@ -45,6 +45,7 @@ import NRM.Types.DownstreamThread
 import NRM.Types.DownstreamThreadID
 import NRM.Types.Manifest as Manifest
 import NRM.Types.Process
+import NRM.Types.Units
 import NRM.Types.Sensor
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
@@ -116,20 +117,18 @@ addDownstreamThreadClient ::
   DownstreamThreadID ->
   Maybe Cmd
 addDownstreamThreadClient Cmd {..} downstreamThreadClientID =
-  cmdCore & manifest & Manifest.app & Manifest.perfwrapper & \case
-    PerfwrapperDisabled -> Nothing
-    Perfwrapper pw ->
-      Just $ Cmd
-        { downstreamThreads =
-            LM.insert
-              downstreamThreadClientID
-              ( DownstreamThread
-                  (Manifest.perfLimit pw)
-                  (Manifest.perfFreq pw)
-              )
-              downstreamThreads,
-          ..
-        }
+  cmdCore & manifest & Manifest.app & Manifest.instrumentation <&> \(Manifest.Instrumentation ratelimit) ->
+    Cmd
+      { downstreamThreads =
+          LM.insert
+            downstreamThreadClientID
+            ( DownstreamThread
+                (1 & progress)
+                ratelimit
+            )
+            downstreamThreads,
+        ..
+      }
 
 removeDownstreamThreadClient :: Cmd -> DownstreamThreadID -> Cmd
 removeDownstreamThreadClient Cmd {..} downstreamThreadClientID = Cmd
@@ -142,10 +141,6 @@ removeDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
   { downstreamCmds = LM.delete downstreamCmdClientID downstreamCmds,
     ..
   }
-
---newtype TaskID = TaskID Int
---deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
---deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON TaskID
 
 newtype Arg = Arg Text
   deriving (Show, Generic, Data, MessagePack)
@@ -176,4 +171,5 @@ wrapCmd c (Command a, Arguments as) = (c, Arguments $ Arg a : as)
 
 instance HasLensMap (CmdID, Cmd) ActiveSensorKey ActiveSensor where
   lenses (_cmdID, cmd) =
-    addPath (_2 . field @"downstreamCmds") <$> lenses (downstreamCmds cmd)
+    (addPath (_2 . field @"downstreamCmds") <$> lenses (downstreamCmds cmd))
+      <> (addPath (_2 . field @"downstreamThreads") <$> lenses (downstreamThreads cmd))

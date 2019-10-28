@@ -53,11 +53,11 @@ newtype Operations = Operations {fromOps :: Int}
   deriving (Show, JSONSchema, ToJSON, FromJSON) via Int
 
 newtype Progress = Progress {fromProgress :: Int}
-  deriving (Generic, Data, MessagePack)
+  deriving (Eq, Ord, Generic, Data, MessagePack)
   deriving (Show, JSONSchema, ToJSON, FromJSON) via Int
 
 newtype Frequency = Frequency {fromHz :: Double}
-  deriving (Eq,Ord, Generic, Data, Inject, Interpret, MessagePack)
+  deriving (Eq, Ord, Generic, Data, Inject, Interpret, MessagePack)
   deriving (Show, JSONSchema, ToJSON, FromJSON) via Double
 
 newtype Power = Power {fromuW :: Double}

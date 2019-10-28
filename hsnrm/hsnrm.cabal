@@ -121,7 +121,7 @@ library nrmlib
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
-    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
                  -fwarn-missing-signatures -fwarn-name-shadowing
@@ -205,7 +205,7 @@ library banditlib
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
-    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
                  -fwarn-missing-signatures -fwarn-name-shadowing
@@ -370,7 +370,7 @@ executable nrm.so
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
-    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
                  -fwarn-missing-signatures -fwarn-name-shadowing
@@ -380,8 +380,8 @@ executable nrm.so
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations -fPIC -shared -no-hs-main -dynamic
+                 -Wredundant-constraints -Wpartial-fields -fPIC -shared -no-hs-main
+                 -dynamic
     build-depends:
         base -any,
         protolude -any,
@@ -536,7 +536,7 @@ executable nrmstatic
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
-    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
                  -fwarn-missing-signatures -fwarn-name-shadowing
@@ -616,7 +616,7 @@ executable nrm
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
-    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
                  -fwarn-missing-signatures -fwarn-name-shadowing
@@ -642,7 +642,7 @@ executable nrmddep
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
-    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
                  -fwarn-missing-signatures -fwarn-name-shadowing
@@ -668,7 +668,7 @@ executable codegen
                         TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
-    ghc-options: -Wall -Wcompat -Wincomplete-uni-patterns
+    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
                  -fwarn-missing-signatures -fwarn-name-shadowing

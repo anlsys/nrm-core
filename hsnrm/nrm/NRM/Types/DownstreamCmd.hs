@@ -1,5 +1,6 @@
 {-# LANGUAGE DerivingVia #-}
 {-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
+{-# LANGUAGE TypeApplications #-}
 
 -- |
 -- Module      : NRM.Types.DownstreamCmd
@@ -41,7 +42,7 @@ instance
     ActiveSensorKey
     ActiveSensor
   where
-  lenses (downstreamCmdID, _downstreamCmd) =
+  lenses (downstreamCmdID, downstreamCmd) =
     DM.singleton
       (DownstreamCmdKey downstreamCmdID)
       (ScopedLens (_2 . lens getter setter))
@@ -50,7 +51,7 @@ instance
         ActiveSensor
           { activeTags = [Tag "perf"],
             activeSource = Source $ show downstreamCmdID,
-            activeRange = 0 ... 1,
+            activeRange = 0 ... (maxValue downstreamCmd & fromOps & fromIntegral),
             maxFrequency = ratelimit,
             process = identity
           }

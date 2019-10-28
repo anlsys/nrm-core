@@ -13,10 +13,7 @@ module NRM.State
     registerAwaiting,
     registerFailed,
     registerLaunched,
-    registerDownstreamCmdClient,
-    unRegisterDownstreamCmdClient,
-    registerDownstreamThreadClient,
-    unRegisterDownstreamThreadClient,
+    --unRegisterDownstreamThreadClient,
 
     -- * Removal
 
@@ -41,7 +38,6 @@ import NRM.Slices.Singularity as CS
 import NRM.Types.Cmd
 import NRM.Types.CmdID
 import NRM.Types.Configuration as Cfg
-import NRM.Types.DownstreamCmdID
 import NRM.Types.DownstreamThreadID
 import NRM.Types.Process
 import NRM.Types.Slice
@@ -236,79 +232,3 @@ registerFailed cmdID st =
       if LM.null (cmds c)
         then Nothing
         else Just $ c {awaiting = LM.delete cmdID (awaiting c)}
-
--- | Registers a downstream Cmd client
-registerDownstreamCmdClient ::
-  CmdID ->
-  DownstreamCmdID ->
-  NRMState ->
-  Maybe NRMState
-registerDownstreamCmdClient cmdID downstreamCmdID st =
-  DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
-    insertSlice
-      sliceID
-      ( slice
-          { cmds = addDownstreamCmdClient cmd downstreamCmdID & \case
-              Just c -> LM.insert cmdID c (cmds slice)
-              Nothing -> cmds slice
-          }
-      )
-      st
-
--- | un-registers a downstream Cmd client
-unRegisterDownstreamCmdClient ::
-  CmdID ->
-  DownstreamCmdID ->
-  NRMState ->
-  Maybe NRMState
-unRegisterDownstreamCmdClient cmdID downstreamCmdID st =
-  DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
-    insertSlice
-      sliceID
-      ( slice
-          { cmds =
-              LM.insert
-                cmdID
-                (removeDownstreamCmdClient cmd downstreamCmdID)
-                (cmds slice)
-          }
-      )
-      st
-
--- | un-registers a downstream thread client
-unRegisterDownstreamThreadClient ::
-  CmdID ->
-  DownstreamThreadID ->
-  NRMState ->
-  Maybe NRMState
-unRegisterDownstreamThreadClient cmdID downstreamThreadID st =
-  DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
-    insertSlice
-      sliceID
-      ( slice
-          { cmds =
-              LM.insert
-                cmdID
-                (removeDownstreamThreadClient cmd downstreamThreadID)
-                (cmds slice)
-          }
-      )
-      st
-
--- | Registers a downstream Cmd client
-registerDownstreamThreadClient ::
-  CmdID ->
-  DownstreamThreadID ->
-  NRMState ->
-  Maybe NRMState
-registerDownstreamThreadClient cmdID downstreamThreadID st =
-  DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
-    insertSlice
-      sliceID
-      ( slice
-          { cmds = addDownstreamThreadClient cmd downstreamThreadID & \case
-              Just c -> LM.insert cmdID c (cmds slice)
-              Nothing -> cmds slice
-          }
-      )
-      st
