@@ -58,12 +58,14 @@ library nrmlib
         NRM.Types.Topology.CoreID
         NRM.Types.Topology.PUID
         NRM.Types.Units
+        NRM.Types.Controller
         NRM.Types.Actuator
         NRM.Types.Sensor
         NRM.Types.Behavior
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.CmdID
+        NRM.Types.NRM
         NRM.Types.Process
         NRM.Types.DownstreamThread
         NRM.Types.DownstreamThreadID
@@ -308,12 +310,14 @@ executable nrm.so
         NRM.Types.Topology.CoreID
         NRM.Types.Topology.PUID
         NRM.Types.Units
+        NRM.Types.Controller
         NRM.Types.Actuator
         NRM.Types.Sensor
         NRM.Types.Behavior
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.CmdID
+        NRM.Types.NRM
         NRM.Types.Process
         NRM.Types.DownstreamThread
         NRM.Types.DownstreamThreadID
@@ -474,12 +478,14 @@ executable nrmstatic
         NRM.Types.Topology.CoreID
         NRM.Types.Topology.PUID
         NRM.Types.Units
+        NRM.Types.Controller
         NRM.Types.Actuator
         NRM.Types.Sensor
         NRM.Types.Behavior
         NRM.Types.Slice
         NRM.Types.Cmd
         NRM.Types.CmdID
+        NRM.Types.NRM
         NRM.Types.Process
         NRM.Types.DownstreamThread
         NRM.Types.DownstreamThreadID

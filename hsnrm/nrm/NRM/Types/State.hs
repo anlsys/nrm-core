@@ -50,6 +50,7 @@ import NRM.Types.Cmd
 import NRM.Types.CmdID as CmdID
 import NRM.Types.Process as P
 import NRM.Types.Sensor
+import NRM.Types.Controller
 import NRM.Types.Slice as C
 import NRM.Types.Topology
 import Protolude
@@ -62,7 +63,8 @@ data NRMState
         slices :: LM.Map SliceID Slice,
         dummyRuntime :: Maybe DummyRuntime,
         singularityRuntime :: Maybe SingularityRuntime,
-        nodeosRuntime :: Maybe NodeosRuntime
+        nodeosRuntime :: Maybe NodeosRuntime,
+        controller :: Controller
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 

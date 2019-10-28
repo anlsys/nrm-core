@@ -27,6 +27,7 @@ module NRM.State
   )
 where
 
+import Data.Default
 import Data.Map as DM
 import LMap.Map as LM
 import NRM.Node.Hwloc
@@ -61,7 +62,8 @@ initialState c = do
       Just (RAPLDirs rapldirs) -> Protolude.foldl goRAPL packages' (LM.toList rapldirs)
       Nothing -> packages'
   return NRMState
-    { slices = LM.fromList [],
+    { controller = def,
+      slices = LM.fromList [],
       pus = LM.fromList $ (,PU) <$> selectPUIDs hwl,
       cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl,
       dummyRuntime =
