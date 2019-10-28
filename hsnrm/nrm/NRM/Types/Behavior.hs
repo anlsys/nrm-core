@@ -22,7 +22,6 @@ import NRM.Types.Messaging.UpstreamPub as UPub
 import NRM.Types.Messaging.UpstreamRep
 import NRM.Types.Messaging.UpstreamReq
 import NRM.Types.Process
-import NRM.Types.Units
 import NRM.Types.UpstreamClient
 import Protolude hiding (Rep)
 
