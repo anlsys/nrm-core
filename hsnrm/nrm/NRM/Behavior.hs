@@ -52,17 +52,15 @@ behavior :: Cfg.Cfg -> NRMState -> U.Time -> NRMEvent -> IO (NRMState, Behavior)
 behavior _ st _callTime (DoOutput cmdID outputType content) = return . swap $
   st & _cmdID cmdID \case
     Nothing -> (Log "No such command was found in the NRM state.", Nothing)
-    Just c ->
-      content & \case
-        "" ->
-          let newPstate =
-                outputType & \case
-                  URep.StdoutOutput -> (processState c) {stdoutFinished = True}
-                  URep.StderrOutput -> (processState c) {stderrFinished = True}
-           in isDone newPstate & \case
-                Just exc -> (mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc), Nothing)
-                Nothing -> (NoBehavior, Just (c & field @"processState" .~ newPstate))
-        _ -> (respondContent content c cmdID outputType, Just c)
+    Just c -> content & \case
+      "" ->
+        let newPstate = outputType & \case
+              URep.StdoutOutput -> (processState c) {stdoutFinished = True}
+              URep.StderrOutput -> (processState c) {stderrFinished = True}
+         in isDone newPstate & \case
+              Just exc -> (mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc), Nothing)
+              Nothing -> (NoBehavior, Just (c & field @"processState" .~ newPstate))
+      _ -> (respondContent content c cmdID outputType, Just c)
 behavior _ st _callTime (RegisterCmd cmdID cmdstatus) =
   cmdstatus & \case
     NotLaunched -> registerFailed cmdID st & \case
@@ -141,74 +139,74 @@ behavior _ st _callTime (ChildDied pid exitcode) =
     Just (cmdID, cmd, sliceID, slice) ->
       let newPstate = (processState cmd) {ended = Just exitcode}
        in isDone newPstate & \case
-            Just _ ->
-              removeCmd (KProcessID pid) st & \case
-                Just (_, _, _, _, st') ->
-                  bhv st' $
-                    ClearChild
-                      cmdID
-                      ( (,URep.RepCmdEnded (URep.CmdEnded exitcode))
-                          <$> (upstreamClientID . cmdCore $ cmd)
-                      )
-                Nothing -> bhv st $ panic "Error during command removal from NRM state"
-            Nothing ->
-              noBhv $
-                insertSlice
-                  sliceID
-                  (Ct.insertCmd cmdID cmd {processState = newPstate} slice)
-                  st
+            Just _ -> removeCmd (KProcessID pid) st & \case
+              Just (_, _, _, _, st') ->
+                bhv st' $
+                  ClearChild
+                    cmdID
+                    ( (,URep.RepCmdEnded (URep.CmdEnded exitcode))
+                        <$> (upstreamClientID . cmdCore $ cmd)
+                    )
+              Nothing -> bhv st $ panic "Error during command removal from NRM state"
+            Nothing -> noBhv $ insertSlice sliceID (Ct.insertCmd cmdID cmd {processState = newPstate} slice) st
 behavior cfg st callTime (DownstreamEvent clientid msg) =
-  msg & \case
-    DEvent.CmdPerformance cmdID perf -> DCmID.fromText (toS clientid) & \case
-      Nothing -> logLR "couldn't decode clientID to UUID" st
-      Just downstreamCmdID -> Sensors.process cfg callTime st (Sensor.DownstreamCmdKey downstreamCmdID) (U.fromOps perf & fromIntegral) & \case
-        Sensors.NotFound -> return . swap $
-          st & _cmdID cmdID \case
-            Nothing -> logL "No command was found in the NRM state for the cmdID associatid with this cmdPerf message." Nothing
-            Just c -> logL "downstream thread registered." $ addDownstreamCmdClient c downstreamCmdID
-        Sensors.Adjusted st' -> logLR "Out-of-range value received, sensor adjusted" st'
-        Sensors.Ok st' measurement ->
-          bhv st' $ Pub [UPub.PubMeasurements callTime [measurement], UPub.PubPerformance callTime cmdID perf]
-    DEvent.ThreadProgress downstreamThreadID payload ->
-      Sensors.process cfg callTime st (Sensor.DownstreamThreadKey downstreamThreadID) (payload & U.fromProgress & fromIntegral) & \case
-        Sensors.NotFound -> return . swap $
-          st & _cmdID (cmdID downstreamThreadID) \case
-            Nothing -> logL "No command was found in the NRM state for this downstreamThreadID." Nothing
-            Just c -> logL "downstream thread registered." $ addDownstreamThreadClient c downstreamThreadID
-        Sensors.Adjusted st' -> logLR "Out-of-range value received, sensor adjusted" st'
-        Sensors.Ok st' measurement ->
-          bhv st' $ Pub [UPub.PubMeasurements callTime [measurement], UPub.PubProgress callTime downstreamThreadID payload]
-    DEvent.ThreadPhaseContext downstreamThreadID phaseContext ->
-      Sensors.process cfg callTime st (Sensor.DownstreamThreadKey downstreamThreadID) (DEvent.computetime phaseContext & fromIntegral) & \case
-        Sensors.NotFound -> return . swap $
-          st & _cmdID (cmdID downstreamThreadID) \case
-            Nothing -> logL "No command was found in the NRM state for this downstreamThreadID." Nothing
-            Just c -> logL "downstream thread registered." $ addDownstreamThreadClient c downstreamThreadID
-        Sensors.Adjusted st' -> logLR "Out-of-range value received, sensor adjusted" st'
-        Sensors.Ok st' measurement ->
-          bhv st' $ Pub [UPub.PubMeasurements callTime [measurement], UPub.PubPhaseContext callTime downstreamThreadID phaseContext]
-    DEvent.CmdPause cmdID -> DCmID.fromText (toS clientid) & \case
-      Nothing -> logLR "couldn't decode clientID to UUID" st
-      Just downstreamCmdID -> return . swap $
-        st & _cmdID cmdID \case
-          Nothing -> logL "No corresponding command for this downstream cmd 'pause' request." Nothing
-          Just c -> logL "downstream cmd un-registered." $ Just (c & field @"downstreamCmds" . at downstreamCmdID .~ Nothing)
-    DEvent.ThreadPause downstreamThreadID -> return . swap $
-      st & _cmdID (cmdID downstreamThreadID) \case
-        Nothing -> logL "No corresponding command for this downstream thread 'pause' request." Nothing
-        Just c -> logL "downstream thread un-registered." (Just (c & field @"downstreamThreads" . at downstreamThreadID .~ Nothing))
-    DEvent.ThreadPhasePause _ -> logLR "unimplemented ThreadPhasePause handler" st
+  behaviorDownstreamEvent cfg st callTime clientid msg
 behavior _ st _callTime (DoControl _time) = do
   bhv st NoBehavior
 behavior _ st _callTime (DoSensor time) = do
-  (st', measurements) <- foldM (folder time) (st, Just []) (DM.toList lMap)
-  measurements & \case
-    Just ms -> bhv st' $ Pub [UPub.PubMeasurements time ms]
-    Nothing -> bhv st' $ Pub [UPub.PubCPD time (NRMCPD.toCPD st')]
-  where
-    lMap :: LensMap NRMState PassiveSensorKey PassiveSensor
-    lMap = lenses st
+  foldM (folder time) (st, Just []) (DM.toList $ lenses st) >>= \case
+    (st', Just ms) -> bhv st' $ Pub [UPub.PubMeasurements time ms]
+    (st', Nothing) -> bhv st' $ Pub [UPub.PubCPD time (NRMCPD.toCPD st')]
 behavior _ st _callTime DoShutdown = bhv st NoBehavior
+
+behaviorDownstreamEvent ::
+  (StringConv a Text, Monad m) =>
+  Cfg ->
+  NRMState ->
+  U.Time ->
+  a ->
+  DEvent.Event ->
+  m (NRMState, Behavior)
+behaviorDownstreamEvent cfg st callTime clientid = \case
+  DEvent.CmdPerformance cmdID perf -> DCmID.fromText (toS clientid) & \case
+    Nothing -> logLR "couldn't decode clientID to UUID" st
+    Just downstreamCmdID -> Sensors.process cfg callTime st (Sensor.DownstreamCmdKey downstreamCmdID) (U.fromOps perf & fromIntegral) & \case
+      Sensors.NotFound -> return . swap $
+        st & _cmdID cmdID \case
+          Nothing -> logL "No command was found in the NRM state for the cmdID associatid with this cmdPerf message." Nothing
+          Just c -> logL "downstream thread registered." $ addDownstreamCmdClient c downstreamCmdID
+      Sensors.Adjusted st' -> logLR "Out-of-range value received, sensor adjusted" st'
+      Sensors.Ok st' measurement ->
+        bhv st' $ Pub [UPub.PubMeasurements callTime [measurement], UPub.PubPerformance callTime cmdID perf]
+  DEvent.ThreadProgress downstreamThreadID payload ->
+    Sensors.process cfg callTime st (Sensor.DownstreamThreadKey downstreamThreadID) (payload & U.fromProgress & fromIntegral) & \case
+      Sensors.NotFound -> return . swap $
+        st & _cmdID (cmdID downstreamThreadID) \case
+          Nothing -> logL "No command was found in the NRM state for this downstreamThreadID." Nothing
+          Just c -> logL "downstream thread registered." $ addDownstreamThreadClient c downstreamThreadID
+      Sensors.Adjusted st' -> logLR "Out-of-range value received, sensor adjusted" st'
+      Sensors.Ok st' measurement ->
+        bhv st' $ Pub [UPub.PubMeasurements callTime [measurement], UPub.PubProgress callTime downstreamThreadID payload]
+  DEvent.ThreadPhaseContext downstreamThreadID phaseContext ->
+    Sensors.process cfg callTime st (Sensor.DownstreamThreadKey downstreamThreadID) (DEvent.computetime phaseContext & fromIntegral) & \case
+      Sensors.NotFound -> return . swap $
+        st & _cmdID (cmdID downstreamThreadID) \case
+          Nothing -> logL "No command was found in the NRM state for this downstreamThreadID." Nothing
+          Just c -> logL "downstream thread registered." $ addDownstreamThreadClient c downstreamThreadID
+      Sensors.Adjusted st' -> logLR "Out-of-range value received, sensor adjusted" st'
+      Sensors.Ok st' measurement ->
+        bhv st' $ Pub [UPub.PubMeasurements callTime [measurement], UPub.PubPhaseContext callTime downstreamThreadID phaseContext]
+  DEvent.CmdPause cmdID -> DCmID.fromText (toS clientid) & \case
+    Nothing -> logLR "couldn't decode clientID to UUID" st
+    Just downstreamCmdID -> return . swap $
+      st & _cmdID cmdID \case
+        Nothing -> logL "No corresponding command for this downstream cmd 'pause' request." Nothing
+        Just c -> logL "downstream cmd un-registered." $ Just (c & field @"downstreamCmds" . at downstreamCmdID .~ Nothing)
+  DEvent.ThreadPause downstreamThreadID -> return . swap $
+    st & _cmdID (cmdID downstreamThreadID) \case
+      Nothing -> logL "No corresponding command for this downstream thread 'pause' request." Nothing
+      Just c -> logL "downstream thread un-registered." (Just (c & field @"downstreamThreads" . at downstreamThreadID .~ Nothing))
+  DEvent.ThreadPhasePause _ -> logLR "unimplemented ThreadPhasePause handler" st
 
 logLR :: (Monad m) => Text -> b -> m (b, Behavior)
 logLR x y = return (y, Log x)
