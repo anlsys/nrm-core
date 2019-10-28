@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE TypeApplications #-}
 
 -- |
 -- Module      : NRM.Types.Cmd
@@ -18,7 +19,9 @@ module NRM.Types.Cmd
     Env (..),
     wrapCmd,
     addDownstreamCmdClient,
+    addDownstreamThreadClient,
     removeDownstreamCmdClient,
+    removeDownstreamThreadClient,
   )
 where
 
@@ -107,6 +110,32 @@ addDownstreamCmdClient Cmd {..} downstreamCmdClientID =
               downstreamCmds,
           ..
         }
+
+addDownstreamThreadClient ::
+  Cmd ->
+  DownstreamThreadID ->
+  Maybe Cmd
+addDownstreamThreadClient Cmd {..} downstreamThreadClientID =
+  cmdCore & manifest & Manifest.app & Manifest.perfwrapper & \case
+    PerfwrapperDisabled -> Nothing
+    Perfwrapper pw ->
+      Just $ Cmd
+        { downstreamThreads =
+            LM.insert
+              downstreamThreadClientID
+              ( DownstreamThread
+                  (Manifest.perfLimit pw)
+                  (Manifest.perfFreq pw)
+              )
+              downstreamThreads,
+          ..
+        }
+
+removeDownstreamThreadClient :: Cmd -> DownstreamThreadID -> Cmd
+removeDownstreamThreadClient Cmd {..} downstreamThreadClientID = Cmd
+  { downstreamThreads = LM.delete downstreamThreadClientID downstreamThreads,
+    ..
+  }
 
 removeDownstreamCmdClient :: Cmd -> DownstreamCmdID -> Cmd
 removeDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd

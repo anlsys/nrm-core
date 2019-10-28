@@ -100,7 +100,7 @@ in pkgs // rec {
 
   resources = pkgs.runCommand "patchedSrc" { } ''
     mkdir -p $out/share/nrm
-    ${haskellPackages.nrmbin}/bin/codegen $out/share/nrm
+    ${haskellPackages.nrmbin}/bin/codegen $out/share/nrm/
   '';
 
   libnrm = pkgs.callPackage ./pkgs/libnrm {
@@ -123,7 +123,6 @@ in pkgs // rec {
       pynrm
       resources
       pkgs.linuxPackages.perf
-      pkgs.hwloc
     ];
   };
 
@@ -166,8 +165,8 @@ in pkgs // rec {
     buildInputs = [ pkgs.hwloc ormolu ];
 
     shellHook = ''
-      export NRMSO=./_build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
-      export PATH=$PATH:./dev/:./pynrm/bin:./_build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm
+      export NRMSO=./.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
+      export PATH=$PATH:./dev/:./pynrm/bin:./.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm
       export PYTHONPATH=$PYTHONPATH:./pynrm/
     '';
   };

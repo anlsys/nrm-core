@@ -44,6 +44,7 @@ let defcopts =
       →   prelude.defaults.CompilerOptions
         ⫽ { GHC =
                   [ "-Wall"
+                  , "-O0"
                   , "-Wcompat"
                   , "-Wincomplete-uni-patterns"
                   , "-Wmissing-home-modules"
@@ -246,6 +247,7 @@ let modules =
       , "NRM.Types.DownstreamCmdID"
       , "NRM.Types.State"
       , "NRM.Types.UpstreamClient"
+      , "NRM.Types.DownstreamClient"
       , "NRM.Classes.Messaging"
       , "NRM.Classes.Sensors"
       , "NRM.Classes.Actuators"

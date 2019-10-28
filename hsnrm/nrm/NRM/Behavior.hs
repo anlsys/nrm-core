@@ -24,7 +24,8 @@ import NRM.Types.Behavior
 import NRM.Types.Cmd
 import NRM.Types.CmdID as CmdID
 import NRM.Types.Configuration as Cfg
-import qualified NRM.Types.DownstreamThreadID as DTID
+import NRM.Types.DownstreamCmdID as DCmID
+import NRM.Types.DownstreamThreadID as DTID
 import NRM.Types.Manifest as Manifest
 import qualified NRM.Types.Messaging.DownstreamEvent as DEvent
 import qualified NRM.Types.Messaging.UpstreamPub as UPub
@@ -116,7 +117,7 @@ behavior c st _callTime (Req clientid msg) =
           StartChild cmdID runCmd runArgs $
             ( Env $
                 env spec & fromEnv
-                  & LM.insert "NRM_CMDID" (toText cmdID)
+                  & LM.insert "NRM_CMDID" (CmdID.toText cmdID)
             )
               & mayInjectLibnrmPreload c manifest
         )
@@ -187,7 +188,29 @@ behavior _ st _callTime (DoSensor time) = do
 behavior _ st _callTime DoShutdown = bhv st NoBehavior
 behavior cfg st callTime (DownstreamEvent clientid msg) =
   msg & \case
-    DEvent.ThreadProgress _ _ -> return (st, Log "unimplemented")
+    DEvent.ThreadProgress downstreamThreadID payload ->
+      Sensors.process
+        cfg
+        callTime
+        st
+        (Sensor.DownstreamThreadKey downstreamThreadID)
+        (payload & U.fromProgress & fromInteger)
+        & \case
+          Sensors.NotFound ->
+            return $
+              registerDownstreamThreadClient
+                (DTID.cmdID downstreamThreadID)
+                downstreamThreadID
+                st
+                <&> (,Log "downstream thread client registered.")
+                & fromMaybe (st, Log "no such ThreadClient")
+          Sensors.Adjusted st' -> bhv st' $ Log "Out-of-range value received, sensor adjusted"
+          Sensors.Ok st' measurement ->
+            bhv st' $
+              Pub
+                [ UPub.PubMeasurements callTime [measurement],
+                  UPub.PubProgress callTime downstreamThreadID payload
+                ]
     DEvent.ThreadPhaseContext downstreamThreadID phaseContext ->
       Sensors.process
         cfg
@@ -198,9 +221,12 @@ behavior cfg st callTime (DownstreamEvent clientid msg) =
         & \case
           Sensors.NotFound ->
             return $
-              registerDownstreamCmdClient (DTID.cmdID downstreamThreadID) clientid st
-                <&> (,Log "downstream cmd client registered.")
-                & fromMaybe (st, Log "no such Cmd")
+              registerDownstreamThreadClient
+                (DTID.cmdID downstreamThreadID)
+                downstreamThreadID
+                st
+                <&> (,Log "downstream thread client registered.")
+                & fromMaybe (st, Log "no such ThreadClient")
           Sensors.Adjusted st' -> bhv st' $ Log "Out-of-range value received, sensor adjusted"
           Sensors.Ok st' measurement ->
             bhv st' $
@@ -208,32 +234,39 @@ behavior cfg st callTime (DownstreamEvent clientid msg) =
                 [ UPub.PubMeasurements callTime [measurement],
                   UPub.PubPhaseContext callTime downstreamThreadID phaseContext
                 ]
-    DEvent.ThreadPause _ -> return (st, Log "unimplemented ThreadPause handler")
-    DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented ThreadPhasePause handler")
-    DEvent.CmdPerformance cmdID perf ->
-      Sensors.process
-        cfg
-        callTime
-        st
-        (Sensor.DownstreamCmdKey clientid)
-        (U.fromOps perf & fromIntegral)
-        & \case
-          Sensors.NotFound ->
-            return $
-              registerDownstreamCmdClient cmdID clientid st
-                <&> (,Log "downstream cmd client registered.")
-                & fromMaybe (st, Log "no such Cmd")
-          Sensors.Adjusted st' -> bhv st' $ Log "Out-of-range value received, sensor adjusted"
-          Sensors.Ok st' measurement ->
-            bhv st' $
-              Pub
-                [ UPub.PubMeasurements callTime [measurement],
-                  UPub.PubPerformance callTime cmdID perf
-                ]
-    DEvent.CmdPause cmdID ->
-      unRegisterDownstreamCmdClient cmdID clientid st & \case
+    DEvent.ThreadPause downstreamThreadID ->
+      unRegisterDownstreamThreadClient (DTID.cmdID downstreamThreadID) downstreamThreadID st & \case
         Just st' -> bhv st' $ Log "downstream cmd client un-registered."
         Nothing -> bhv st $ Log "No corresponding command for this downstream cmd 'pause' request."
+    DEvent.ThreadPhasePause _ -> return (st, Log "unimplemented ThreadPhasePause handler")
+    DEvent.CmdPerformance cmdID perf ->
+      DCmID.fromText (toS clientid) & \case
+        Nothing -> return (st, Log "couldn't decode clientID to UUID")
+        Just clientID -> Sensors.process
+          cfg
+          callTime
+          st
+          (Sensor.DownstreamCmdKey clientID)
+          (U.fromOps perf & fromIntegral)
+          & \case
+            Sensors.NotFound ->
+              return $
+                registerDownstreamCmdClient cmdID clientID st
+                  <&> (,Log "downstream cmd client registered.")
+                  & fromMaybe (st, Log "no such Cmd")
+            Sensors.Adjusted st' -> bhv st' $ Log "Out-of-range value received, sensor adjusted"
+            Sensors.Ok st' measurement ->
+              bhv st' $
+                Pub
+                  [ UPub.PubMeasurements callTime [measurement],
+                    UPub.PubPerformance callTime cmdID perf
+                  ]
+    DEvent.CmdPause cmdID ->
+      DCmID.fromText (toS clientid) & \case
+        Nothing -> return (st, Log "couldn't decode clientID to UUID")
+        Just clientID -> unRegisterDownstreamCmdClient cmdID clientID st & \case
+          Just st' -> bhv st' $ Log "downstream cmd client un-registered."
+          Nothing -> bhv st $ Log "No corresponding command for this downstream cmd 'pause' request."
 
 noBhv :: a -> IO (a, Behavior)
 noBhv = flip bhv NoBehavior

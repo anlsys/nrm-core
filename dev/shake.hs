@@ -33,7 +33,7 @@ ghcidTarget cabalfile target test =
   [ "-C"
   , "hsnrm"
   , "--command"
-  , "cabal " <> "v2-repl " <> target <> " --ghc-option=-fno-code" <> " --builddir=../_build"
+  , "cabal " <> "v2-repl " <> target <> " --ghc-option=-fno-code" <> " --builddir=../.build"
   , "--restart=hsnrm.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"
@@ -129,7 +129,7 @@ runshake as =
             , "nrm.so"
             , "--ghc-option=-lHSrts-ghc" <> version
             , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
-            , "--builddir=../_build"
+            , "--builddir=../.build"
             , "--jobs=4"
             ]
         )
@@ -137,7 +137,7 @@ runshake as =
         ( runProcess_ $ setWorkingDir "hsnrm" $
           proc "cabal"
             [ "v2-run"
-            , "--builddir=../_build"
+            , "--builddir=../.build"
             , "codegen"
             , "../resources/"
             ]
@@ -147,7 +147,7 @@ runshake as =
         ( runProcess_ $ setWorkingDir "hsnrm" $
           proc "cabal"
             [ "v2-run"
-            , "--builddir=../_build"
+            , "--builddir=../.build"
             , "codegen"
             , "../resources/"
             ]
@@ -158,7 +158,7 @@ runshake as =
           proc "cabal"
             [ "v2-build"
             , "nrm"
-            , "--builddir=../_build"
+            , "--builddir=../.build"
             ]
         )
     phony "doc" $ do
@@ -169,7 +169,7 @@ runshake as =
               [ "v2-haddock"
               , "nrm.so"
               , "--haddock-hyperlink-source"
-              , "--builddir=../_build"
+              , "--builddir=../.build"
               ]
           )
       putText $ toS out

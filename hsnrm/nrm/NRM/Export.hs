@@ -49,7 +49,6 @@ import qualified NRM.Types.Configuration as C
     logfile,
     verbose,
   )
-import qualified NRM.Types.DownstreamCmdID as DC
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Process as Process
 import qualified NRM.Types.State as TS
@@ -101,7 +100,7 @@ showState = toS . pShow
 -- | Behave on downstream message
 downstreamReceive :: C.Cfg -> TS.NRMState -> Double -> Text -> Text -> IO (TS.NRMState, B.Behavior)
 downstreamReceive cfg s t msg clientid =
-  B.DownstreamEvent <$> DC.fromText clientid <*> M.decodeT msg & \case
+  B.DownstreamEvent <$> Just (toS clientid) <*> M.decodeT msg & \case
     Nothing -> return (s, B.Log "couldn't decode downstream receive")
     Just ev -> B.behavior cfg s (t & seconds) ev
 

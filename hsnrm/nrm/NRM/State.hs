@@ -15,6 +15,8 @@ module NRM.State
     registerLaunched,
     registerDownstreamCmdClient,
     unRegisterDownstreamCmdClient,
+    registerDownstreamThreadClient,
+    unRegisterDownstreamThreadClient,
 
     -- * Removal
 
@@ -269,6 +271,44 @@ unRegisterDownstreamCmdClient cmdID downstreamCmdID st =
                 cmdID
                 (removeDownstreamCmdClient cmd downstreamCmdID)
                 (cmds slice)
+          }
+      )
+      st
+
+-- | un-registers a downstream thread client
+unRegisterDownstreamThreadClient ::
+  CmdID ->
+  DownstreamThreadID ->
+  NRMState ->
+  Maybe NRMState
+unRegisterDownstreamThreadClient cmdID downstreamThreadID st =
+  DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
+    insertSlice
+      sliceID
+      ( slice
+          { cmds =
+              LM.insert
+                cmdID
+                (removeDownstreamThreadClient cmd downstreamThreadID)
+                (cmds slice)
+          }
+      )
+      st
+
+-- | Registers a downstream Cmd client
+registerDownstreamThreadClient ::
+  CmdID ->
+  DownstreamThreadID ->
+  NRMState ->
+  Maybe NRMState
+registerDownstreamThreadClient cmdID downstreamThreadID st =
+  DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
+    insertSlice
+      sliceID
+      ( slice
+          { cmds = addDownstreamThreadClient cmd downstreamThreadID & \case
+              Just c -> LM.insert cmdID c (cmds slice)
+              Nothing -> cmds slice
           }
       )
       st

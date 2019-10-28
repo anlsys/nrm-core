@@ -63,9 +63,7 @@ in  \(ghcPath:Text)  -> \(ghcNumericVersion:Text) ->   prelude.defaults.Package
                         common.allmodules
                     }
                   ⫽ common.copts
-                    [ "-Wmissed-specialisations"
-                    , "-Wall-missed-specialisations"
-                    , "-fPIC"
+                    [ "-fPIC"
                     , "-shared"
                     , "-no-hs-main"
                     , "-dynamic"

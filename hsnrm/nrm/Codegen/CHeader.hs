@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# OPTIONS_GHC -fno-warn-incomplete-uni-patterns #-}
 
 -- |
 -- Module      : Codegen.CHeader
@@ -12,12 +13,15 @@ module Codegen.CHeader
 where
 
 {-import Data.JSON.Schema.Generator as G-}
+
+import Data.Char (toLower)
 import qualified Data.Text as T
 import GHC.Generics
   ( C,
     S,
   )
 import Protolude
+import Prelude (String)
 import qualified Prelude
   ( undefined,
   )
@@ -29,8 +33,8 @@ type Key = Text
 data HeaderType = HDouble | HInt | HString
 
 toHeaderText :: HeaderType -> Text
-toHeaderText HDouble = " \\\"%f\\\""
-toHeaderText HInt = " \\\"%d\\\""
+toHeaderText HDouble = " %f"
+toHeaderText HInt = " %d"
 toHeaderText HString = " \\\"%s\\\""
 
 type CHeaderEntries = [(Key, HeaderType)]
@@ -43,11 +47,11 @@ toHeader h =
     h <&> \(msgname, khl) ->
       "#define NRM_"
         <> T.toUpper msgname
-        <> "_FORMAT \"{\\\"tag\\\":\\\""
-        <> T.toLower msgname
-        <> "\\\","
+        <> "_FORMAT \"{\\\""
+        <> (toS msgname & (\((x : xs) :: String) -> toLower x : xs) & toS)
+        <> "\\\":{"
         <> mconcat (intersperse "," (toField <$> khl))
-        <> "}\""
+        <> "}}\""
   where
     toField :: (Key, HeaderType) -> Text
     toField (key, tpe) = key <> ":" <> toHeaderText tpe

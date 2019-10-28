@@ -71,6 +71,7 @@ library nrmlib
         NRM.Types.DownstreamCmdID
         NRM.Types.State
         NRM.Types.UpstreamClient
+        NRM.Types.DownstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Sensors
         NRM.Classes.Actuators
@@ -320,6 +321,7 @@ executable nrm.so
         NRM.Types.DownstreamCmdID
         NRM.Types.State
         NRM.Types.UpstreamClient
+        NRM.Types.DownstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Sensors
         NRM.Classes.Actuators
@@ -485,6 +487,7 @@ executable nrmstatic
         NRM.Types.DownstreamCmdID
         NRM.Types.State
         NRM.Types.UpstreamClient
+        NRM.Types.DownstreamClient
         NRM.Classes.Messaging
         NRM.Classes.Sensors
         NRM.Classes.Actuators

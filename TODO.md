@@ -54,3 +54,5 @@ locate and remove {-*-} comments
 - check adjustRange calls
 
 - check presence of 'identity'
+
+- fix silly recursive doubling!

@@ -57,7 +57,7 @@ newtype Progress = Progress {fromProgress :: Int}
   deriving (Show, JSONSchema, ToJSON, FromJSON) via Int
 
 newtype Frequency = Frequency {fromHz :: Double}
-  deriving (Eq, Generic, Data, Inject, Interpret, MessagePack)
+  deriving (Eq,Ord, Generic, Data, Inject, Interpret, MessagePack)
   deriving (Show, JSONSchema, ToJSON, FromJSON) via Double
 
 newtype Power = Power {fromuW :: Double}

@@ -16,7 +16,7 @@ import Data.MessagePack
 import qualified NRM.Classes.Messaging as M
 import NRM.Types.Cmd
 import NRM.Types.CmdID
-import NRM.Types.DownstreamCmdID
+import NRM.Types.DownstreamClient
 import NRM.Types.Messaging.DownstreamEvent
 import NRM.Types.Messaging.UpstreamPub as UPub
 import NRM.Types.Messaging.UpstreamRep
@@ -33,7 +33,7 @@ data NRMEvent
   | -- | Registering a child process.
     RegisterCmd CmdID CmdStatus
   | -- | Event from the application side.
-    DownstreamEvent DownstreamCmdID Event
+    DownstreamEvent DownstreamClientID Event
   | -- | Stdin/stdout data from the app side.
     DoOutput CmdID OutputType Text
   | -- | Child death event
