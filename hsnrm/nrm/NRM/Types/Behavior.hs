@@ -62,7 +62,7 @@ data Behavior
   | -- | Reply to an upstream client.
     Rep UpstreamClientID Rep
   | -- | Publish messages on upstream
-    Pub [UPub.Pub]
+    Pub UPub.Pub
   | -- | Start a child process
     StartChild CmdID Command Arguments Env
   | -- | Kill children processes and send some messages back upstream.
@@ -78,7 +78,7 @@ instance MessagePack Behavior where
 
   toObject NoBehavior = toObject ("noop" :: Text)
   toObject (Log msg) = toObject ("log" :: Text, msg)
-  toObject (Pub msgs) = toObject ("publish" :: Text, M.encodeT <$> msgs)
+  toObject (Pub msg) = toObject ("publish" :: Text, M.encodeT msg)
   toObject (Rep clientid msg) =
     toObject ("reply" :: Text, clientid, M.encodeT msg)
   toObject (StartChild cmdID cmd args env) =
