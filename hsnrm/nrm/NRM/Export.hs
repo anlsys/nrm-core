@@ -113,11 +113,11 @@ upstreamReceive cfg s t msg clientid =
 
 -- | when it's time to activate a sensor
 doSensor :: C.Cfg -> TS.NRMState -> Double -> IO (TS.NRMState, B.Behavior)
-doSensor c s t = B.behavior c s (t & seconds) (B.DoSensor $ t & seconds)
+doSensor c s t = B.behavior c s (t & seconds) B.DoSensor
 
 -- | when it's time to run the control loop
 doControl :: C.Cfg -> TS.NRMState -> Double -> IO (TS.NRMState, B.Behavior)
-doControl c s t = B.behavior c s (t & seconds) (B.DoControl $ t & seconds)
+doControl c s t = B.behavior c s (t & seconds) B.DoControl
 
 -- | when a child dies
 childDied :: C.Cfg -> TS.NRMState -> Double -> Int -> Int -> IO (TS.NRMState, B.Behavior)

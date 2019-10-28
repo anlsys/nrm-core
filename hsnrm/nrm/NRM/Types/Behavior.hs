@@ -39,9 +39,9 @@ data NRMEvent
   | -- | Child death event
     ChildDied ProcessID ExitCode
   | -- | Sensor callback
-    DoSensor Time
+    DoSensor
   | -- | Control loop calback
-    DoControl Time
+    DoControl
   | -- | Shutting down the daemon
     DoShutdown
 

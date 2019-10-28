@@ -151,13 +151,15 @@ behavior _ st _callTime (ChildDied pid exitcode) =
             Nothing -> noBhv $ insertSlice sliceID (Ct.insertCmd cmdID cmd {processState = newPstate} slice) st
 behavior cfg st callTime (DownstreamEvent clientid msg) =
   behaviorDownstreamEvent cfg st callTime clientid msg
-behavior _ st _callTime (DoControl _time) = do
-  bhv st NoBehavior
-behavior _ st _callTime (DoSensor time) = do
-  foldM (folder time) (st, Just []) (DM.toList $ lenses st) >>= \case
-    (st', Just ms) -> bhv st' $ Pub [UPub.PubMeasurements time ms]
-    (st', Nothing) -> bhv st' $ Pub [UPub.PubCPD time (NRMCPD.toCPD st')]
+behavior cfg st callTime DoControl = mayControl cfg st callTime
+behavior _ st callTime DoSensor = do
+  foldM (folder callTime) (st, Just []) (DM.toList $ lenses st) >>= \case
+    (st', Just ms) -> bhv st' $ Pub [UPub.PubMeasurements callTime ms]
+    (st', Nothing) -> bhv st' $ Pub [UPub.PubCPD callTime (NRMCPD.toCPD st')]
 behavior _ st _callTime DoShutdown = bhv st NoBehavior
+
+-- | behaviorControl checks the integrator state and triggers a control iteration if NRM is ready.
+mayControl cfg st callTime = undefined
 
 behaviorDownstreamEvent ::
   (StringConv a Text, Monad m) =>
