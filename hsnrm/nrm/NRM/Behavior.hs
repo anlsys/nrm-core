@@ -16,6 +16,7 @@ where
 
 import CPD.Values as CPD
 import Control.Lens hiding (to)
+import Control.Monad.Trans.RWS.Lazy (RWST)
 import Data.Generics.Product
 import Data.Map as DM
 import LMap.Map as LM
@@ -55,17 +56,22 @@ behavior cfg st time event = execNRM (nrm time event) cfg st
 nrm :: U.Time -> NRMEvent -> NRM ()
 nrm _callTime (DoOutput cmdID outputType content) = do
   st <- get
-  let (bh, st') = st & _cmdID cmdID $ \case
-        Nothing -> (Log "No such command was found in the NRM state.", Nothing)
-        Just c -> content & \case
-          "" ->
-            let newPstate = outputType & \case
-                  URep.StdoutOutput -> (processState c) {stdoutFinished = True}
-                  URep.StderrOutput -> (processState c) {stderrFinished = True}
-             in isDone newPstate & \case
-                  Just exc -> (mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc), Nothing)
-                  Nothing -> (NoBehavior, Just (c & field @"processState" .~ newPstate))
-          _ -> (respondContent content c cmdID outputType, Just c)
+  let (bh, st') =
+        st
+          & _cmdID
+            cmdID
+            ( \case
+                Nothing -> (Log "No such command was found in the NRM state.", Nothing)
+                Just c -> content & \case
+                  "" ->
+                    let newPstate = outputType & \case
+                          URep.StdoutOutput -> (processState c) {stdoutFinished = True}
+                          URep.StderrOutput -> (processState c) {stderrFinished = True}
+                     in isDone newPstate & \case
+                          Just exc -> (mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc), Nothing)
+                          Nothing -> (NoBehavior, Just (c & field @"processState" .~ newPstate))
+                  _ -> (respondContent content c cmdID outputType, Just c)
+            )
   put st'
   behave bh
 nrm _callTime (RegisterCmd cmdID cmdstatus) = do
@@ -273,11 +279,12 @@ nrmDownstreamEvent callTime clientid = \case
         log "downstream thread un-registered."
         return ONotFound
   DEvent.ThreadPhasePause _ -> log "unimplemented ThreadPhasePause handler" >> return ONotFound
-    where
-      registerDTT c dtid = do
-        put $ addDownstreamThreadClient c dtid
-        log "downstream thread registered."
-        return OAdjustment
+  where
+    registerDTT :: Cmd -> DownstreamThreadID -> RWST Cfg [Behavior] (Maybe Cmd) IO (CommonOutcome a)
+    registerDTT c dtid = do
+      put $ addDownstreamThreadClient c dtid
+      log "downstream thread registered."
+      return OAdjustment
 
 data CommonOutcome a = OAdjustment | OOk a | ONotFound
 
