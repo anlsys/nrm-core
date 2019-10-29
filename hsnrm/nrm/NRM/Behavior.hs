@@ -28,7 +28,7 @@ import NRM.Types.Behavior
 import NRM.Types.Cmd
 import NRM.Types.CmdID as CmdID
 import NRM.Types.Configuration as Cfg
-import NRM.Types.Controller
+import NRM.Types.Controller as Controller
 import qualified NRM.Types.DownstreamClient as DC
 import NRM.Types.DownstreamCmdID as DCmID
 import NRM.Types.DownstreamThreadID as DTID
@@ -52,7 +52,7 @@ behavior cfg st time event = execNRM (nrm time event) cfg st
 -- | The nrm function contains the main logic of the NRM daemon. It changes the state and
 -- produces an associated behavior to be executed by the runtime. This contains the slice
 -- management logic, the sensor callback logic, the control loop callback logic. RWS monad.
-nrm :: U.Time -> NRMEvent -> NRM
+nrm :: U.Time -> NRMEvent -> NRM ()
 nrm _callTime (DoOutput cmdID outputType content) = do
   st <- get
   let (bh, st') = st & _cmdID cmdID \case
@@ -163,77 +163,124 @@ nrm _callTime (ChildDied pid exitcode) = do
                     )
               Nothing -> log "Error during command removal from NRM state"
             Nothing -> put $ insertSlice sliceID (Ct.insertCmd cmdID cmd {processState = newPstate} slice) st
-nrm callTime (DownstreamEvent clientid msg) = do
-  nrmDownstreamEvent callTime clientid msg
-  mayControl callTime
-nrm callTime DoControl = do
-  mayControl callTime
+nrm callTime (DownstreamEvent clientid msg) =
+  nrmDownstreamEvent callTime clientid msg >>= \case
+    OOk m -> return $ Event callTime [m]
+    ONotFound -> return $ NoEvent callTime
+    OAdjustment -> get <&> NRMCPD.toCPD <&> Reconfigure callTime
+    >>= doControl
+nrm callTime DoControl = doControl (NoEvent callTime)
 nrm callTime DoSensor = do
   st <- get
-  (st', x) <- lift (foldM (folder callTime) (st, Just []) (DM.toList $ lenses st))
+  (st', measurements) <- lift (foldM (folder callTime) (st, Just []) (DM.toList $ lenses st))
   put st'
-  x & \case
-    Just ms -> pub $ UPub.PubMeasurements callTime ms
-    Nothing -> pub $ UPub.PubCPD callTime (NRMCPD.toCPD st')
+  measurements & \case
+    Just [] -> return ()
+    Just ms ->
+      pub (UPub.PubMeasurements callTime ms)
+        >> doControl (Event callTime ms)
+    Nothing ->
+      let cpd = NRMCPD.toCPD st'
+       in pub (UPub.PubCPD callTime cpd)
+            >> doControl (Reconfigure callTime cpd)
 nrm _callTime DoShutdown = behave NoBehavior
 
 -- | nrmControl checks the integrator state and triggers a control iteration if NRM is ready.
-mayControl :: U.Time -> NRM
-mayControl callTime = zoom (field @"controller") $
-  control (NoEvent callTime) >>= \case
+doControl :: Controller.Input -> NRM ()
+doControl input = zoom (field @"controller") $
+  control input >>= \case
     DoNothing -> log "null control"
     Decision _ -> log "control command not implemented"
 
-nrmDownstreamEvent :: U.Time -> DC.DownstreamClientID -> DEvent.Event -> NRM
+nrmDownstreamEvent ::
+  U.Time ->
+  DC.DownstreamClientID ->
+  DEvent.Event ->
+  NRM (CommonOutcome CPD.Measurement)
 nrmDownstreamEvent callTime clientid = \case
   DEvent.CmdPerformance cmdID perf -> DCmID.fromText (toS clientid) & \case
-    Nothing -> log "couldn't decode clientID to UUID"
-    Just downstreamCmdID -> commonSP callTime (Sensor.DownstreamCmdKey downstreamCmdID) (U.fromOps perf & fromIntegral) >>= \case
-      ONotFound -> zoom (_cmdID cmdID) $
-        get >>= \case
-          Nothing -> log "No command was found in the NRM state for the cmdID associatid with this cmdPerf message."
-          Just c -> do
-            log "downstream thread registered."
-            put $ addDownstreamCmdClient c downstreamCmdID
-      OAdjustment -> return ()
-      OOk -> pub $ UPub.PubPerformance callTime cmdID perf
+    Nothing -> log "couldn't decode clientID to UUID" >> return ONotFound
+    Just downstreamCmdID -> commonSP
+      callTime
+      (Sensor.DownstreamCmdKey downstreamCmdID)
+      (U.fromOps perf & fromIntegral)
+      >>= \case
+        ONotFound -> zoom (_cmdID cmdID) $
+          get >>= \case
+            Nothing -> do
+              log $
+                "No command was found in the NRM state for "
+                  <> "the cmdID associatid with this cmdPerf message."
+              return ONotFound
+            Just c -> do
+              put $ addDownstreamCmdClient c downstreamCmdID
+              log "downstream thread registered."
+              return OAdjustment
+        OAdjustment -> return OAdjustment
+        OOk m -> pub (UPub.PubPerformance callTime cmdID perf) >> return (OOk m)
   DEvent.ThreadProgress downstreamThreadID payload ->
-    commonSP callTime (Sensor.DownstreamThreadKey downstreamThreadID) (payload & U.fromProgress & fromIntegral) >>= \case
-      ONotFound -> zoom (_cmdID (cmdID downstreamThreadID)) $
-        get >>= \case
-          Nothing -> log "No command was found in the NRM state for this downstreamThreadID."
-          Just c -> do
-            log "downstream thread registered."
-            put $ addDownstreamThreadClient c downstreamThreadID
-      OAdjustment -> return ()
-      OOk -> pub $ UPub.PubProgress callTime downstreamThreadID payload
+    commonSP
+      callTime
+      (Sensor.DownstreamThreadKey downstreamThreadID)
+      (payload & U.fromProgress & fromIntegral)
+      >>= \case
+        ONotFound -> zoom (_cmdID (cmdID downstreamThreadID)) $
+          get >>= \case
+            Nothing -> do
+              log $
+                "No command was found in the NRM state for "
+                  <> "this downstreamThreadID."
+              return ONotFound
+            Just c -> do
+              put $ addDownstreamThreadClient c downstreamThreadID
+              log "downstream thread registered."
+              return OAdjustment
+        OAdjustment -> return OAdjustment
+        OOk m -> pub (UPub.PubProgress callTime downstreamThreadID payload) >> return (OOk m)
   DEvent.ThreadPhaseContext downstreamThreadID phaseContext ->
-    commonSP callTime (Sensor.DownstreamThreadKey downstreamThreadID) (DEvent.computetime phaseContext & fromIntegral) >>= \case
-      ONotFound -> zoom (_cmdID (cmdID downstreamThreadID)) $
-        get >>= \case
-          Nothing -> log "No command was found in the NRM state for this downstreamThreadID."
-          Just c -> do
-            log "downstream thread registered."
-            put $ addDownstreamThreadClient c downstreamThreadID
-      OAdjustment -> return ()
-      OOk -> pub $ UPub.PubPhaseContext callTime downstreamThreadID phaseContext
+    commonSP
+      callTime
+      (Sensor.DownstreamThreadKey downstreamThreadID)
+      (DEvent.computetime phaseContext & fromIntegral)
+      >>= \case
+        ONotFound -> zoom (_cmdID (cmdID downstreamThreadID)) $
+          get >>= \case
+            Nothing -> do
+              log $
+                "No command was found in the NRM state for"
+                  <> " this downstreamThreadID."
+              return ONotFound
+            Just c -> do
+              put $ addDownstreamThreadClient c downstreamThreadID
+              log "downstream thread registered."
+              return OAdjustment
+        OAdjustment -> return OAdjustment
+        OOk m ->
+          pub (UPub.PubPhaseContext callTime downstreamThreadID phaseContext)
+            >> return (OOk m)
   DEvent.CmdPause cmdID -> DCmID.fromText (toS clientid) & \case
-    Nothing -> log "couldn't decode clientID to UUID"
+    Nothing -> log "couldn't decode clientID to UUID" >> return ONotFound
     Just downstreamCmdID -> zoom (_cmdID cmdID) $
       get >>= \case
-        Nothing -> log "No corresponding command for this downstream cmd 'pause' request."
+        Nothing -> do
+          log $ "No corresponding command for this downstream" <> " cmd 'pause' request."
+          return ONotFound
         Just c -> do
           put $ Just (c & field @"downstreamCmds" . at downstreamCmdID .~ Nothing)
           log "downstream cmd un-registered."
+          return OAdjustment
   DEvent.ThreadPause downstreamThreadID -> zoom (_cmdID (cmdID downstreamThreadID)) $
     get >>= \case
-      Nothing -> log "No corresponding command for this downstream thread 'pause' request."
+      Nothing ->
+        log "No corresponding command for this downstream thread 'pause' request."
+          >> return ONotFound
       Just c -> do
-        log "downstream thread un-registered."
         put $ Just (c & field @"downstreamThreads" . at downstreamThreadID .~ Nothing)
-  DEvent.ThreadPhasePause _ -> log "unimplemented ThreadPhasePause handler"
+        log "downstream thread un-registered."
+        return ONotFound
+  DEvent.ThreadPhasePause _ -> log "unimplemented ThreadPhasePause handler" >> return ONotFound
 
-data CommonOutcome = OAdjustment | OOk | ONotFound
+data CommonOutcome a = OAdjustment | OOk a | ONotFound
 
 commonSP callTime key value = do
   cfg <- ask
@@ -249,7 +296,7 @@ commonProcess callTime = \case
   Sensors.Ok st' measurement -> do
     put st'
     pub $ UPub.PubMeasurements callTime [measurement]
-    return OOk
+    return $ OOk measurement
 
 mayRep :: Cmd -> URep.Rep -> Behavior
 mayRep c rp =

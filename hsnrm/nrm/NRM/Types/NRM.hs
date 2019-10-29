@@ -25,21 +25,21 @@ import NRM.Types.UpstreamClient
 import Protolude hiding (Rep, log)
 
 -- | The NRM monad is just a RWS.
-type NRM = RWST Cfg [Behavior] NRMState IO ()
+type NRM a = RWST Cfg [Behavior] NRMState IO a
 
-execNRM :: NRM -> Cfg -> NRMState -> IO (NRMState, [Behavior])
+execNRM :: NRM a -> Cfg -> NRMState -> IO (NRMState, [Behavior])
 execNRM = execRWST
 
 -- | Perform a behavior
-behave :: Behavior -> NRM
+behave :: Behavior -> NRM ()
 behave b = tell [b]
 
 -- | NRM reply
-rep :: UpstreamClientID -> Rep -> NRM
+rep :: UpstreamClientID -> Rep -> NRM ()
 rep clientID rp = behave $ Rep clientID rp
 
 -- | NRM publish
-pub :: Pub -> NRM
+pub :: Pub -> NRM ()
 pub msg = behave $ Pub msg
 
 -- | NRM log

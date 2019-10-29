@@ -11,11 +11,11 @@ module NRM.Control
   )
 where
 
-import Control.Lens
-import Data.Generics.Product
+--import Control.Lens
+--import Data.Generics.Product
 import NRM.Orphans.NonEmpty ()
-import Protolude
 import NRM.Types.Controller
+import Protolude
 
 control :: (MonadState Controller m) => Input -> m Decision
 control (Reconfigure _time c) = do
