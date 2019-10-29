@@ -48,9 +48,9 @@ import NRM.Slices.Singularity
 import NRM.Types.Actuator
 import NRM.Types.Cmd
 import NRM.Types.CmdID as CmdID
+import NRM.Types.Controller
 import NRM.Types.Process as P
 import NRM.Types.Sensor
-import NRM.Types.Controller
 import NRM.Types.Slice as C
 import NRM.Types.Topology
 import Protolude

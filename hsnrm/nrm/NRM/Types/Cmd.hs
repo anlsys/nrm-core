@@ -45,8 +45,8 @@ import NRM.Types.DownstreamThread
 import NRM.Types.DownstreamThreadID
 import NRM.Types.Manifest as Manifest
 import NRM.Types.Process
-import NRM.Types.Units
 import NRM.Types.Sensor
+import NRM.Types.Units
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
 

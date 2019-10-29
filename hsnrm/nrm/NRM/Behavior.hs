@@ -55,7 +55,7 @@ behavior cfg st time event = execNRM (nrm time event) cfg st
 nrm :: U.Time -> NRMEvent -> NRM ()
 nrm _callTime (DoOutput cmdID outputType content) = do
   st <- get
-  let (bh, st') = st & _cmdID cmdID \case
+  let (bh, st') = st & _cmdID cmdID $ \case
         Nothing -> (Log "No such command was found in the NRM state.", Nothing)
         Just c -> content & \case
           "" ->
@@ -231,10 +231,7 @@ nrmDownstreamEvent callTime clientid = \case
                 "No command was found in the NRM state for "
                   <> "this downstreamThreadID."
               return ONotFound
-            Just c -> do
-              put $ addDownstreamThreadClient c downstreamThreadID
-              log "downstream thread registered."
-              return OAdjustment
+            Just c -> registerDTT c downstreamThreadID
         OAdjustment -> return OAdjustment
         OOk m -> pub (UPub.PubProgress callTime downstreamThreadID payload) >> return (OOk m)
   DEvent.ThreadPhaseContext downstreamThreadID phaseContext ->
@@ -250,10 +247,7 @@ nrmDownstreamEvent callTime clientid = \case
                 "No command was found in the NRM state for"
                   <> " this downstreamThreadID."
               return ONotFound
-            Just c -> do
-              put $ addDownstreamThreadClient c downstreamThreadID
-              log "downstream thread registered."
-              return OAdjustment
+            Just c -> registerDTT c downstreamThreadID
         OAdjustment -> return OAdjustment
         OOk m ->
           pub (UPub.PubPhaseContext callTime downstreamThreadID phaseContext)
@@ -279,6 +273,11 @@ nrmDownstreamEvent callTime clientid = \case
         log "downstream thread un-registered."
         return ONotFound
   DEvent.ThreadPhasePause _ -> log "unimplemented ThreadPhasePause handler" >> return ONotFound
+    where
+      registerDTT c dtid = do
+        put $ addDownstreamThreadClient c dtid
+        log "downstream thread registered."
+        return OAdjustment
 
 data CommonOutcome a = OAdjustment | OOk a | ONotFound
 

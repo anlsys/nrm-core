@@ -1,6 +1,6 @@
 {-# LANGUAGE DerivingVia #-}
-{-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
 {-# LANGUAGE TypeApplications #-}
+{-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
 
 -- |
 -- Module      : NRM.Types.DownstreamCmd

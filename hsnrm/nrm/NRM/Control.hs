@@ -1,5 +1,4 @@
 {-# LANGUAGE DerivingVia #-}
-{-# LANGUAGE TypeApplications #-}
 
 -- |
 -- Module      : NRM.Control
@@ -18,7 +17,7 @@ import NRM.Types.Controller
 import Protolude
 
 control :: (MonadState Controller m) => Input -> m Decision
-control (Reconfigure _time c) = do
+control (Reconfigure _time c) =
   --field @"cpd" .= c
   {-field @"bandit" .= init [ ]-}
   return DoNothing
