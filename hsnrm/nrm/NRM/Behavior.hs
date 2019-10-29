@@ -280,7 +280,10 @@ nrmDownstreamEvent callTime clientid = \case
         return ONotFound
   DEvent.ThreadPhasePause _ -> log "unimplemented ThreadPhasePause handler" >> return ONotFound
   where
-    registerDTT :: Cmd -> DownstreamThreadID -> RWST Cfg [Behavior] (Maybe Cmd) IO (CommonOutcome a)
+    registerDTT ::
+      Cmd ->
+      DownstreamThreadID ->
+      RWST Cfg [Behavior] (Maybe Cmd) IO (CommonOutcome a)
     registerDTT c dtid = do
       put $ addDownstreamThreadClient c dtid
       log "downstream thread registered."
