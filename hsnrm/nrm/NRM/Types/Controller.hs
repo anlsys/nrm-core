@@ -43,7 +43,7 @@ newtype BanditActions = BanditActions [V.Actions]
 
 data Controller
   = Controller
-      { cpd :: Maybe C.Problem,
+      { integratedProblem :: Maybe C.IntegratedProblem,
         integrator :: C.Integrator,
         bandit :: Maybe (Exp3 SensorID)
       }
@@ -51,7 +51,7 @@ data Controller
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
 
 instance Default Controller where
-  def = Controller {cpd = Nothing, integrator = undefined, bandit = Nothing}
+  def = Controller {integratedProblem = Nothing, integrator = undefined, bandit = Nothing}
 
 -- Bunch of instances to serialize the bandit state..
 --

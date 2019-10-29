@@ -9,7 +9,6 @@ module CPD.Integrated
   ( Integrator (..),
     IntegratedProblem (..),
     IntegratorAction (..),
-    Integrated (..),
     integrateProblem,
     initIntegrator,
     stepIntegrator,
@@ -18,10 +17,18 @@ where
 
 import CPD.Core
 import CPD.Values
+import qualified Data.Aeson as A
+import Data.Data
+import Data.JSON.Schema
+import Data.MessagePack
+import Dhall
+import NRM.Classes.Messaging
 import NRM.Types.Units
 import Protolude
 
 data IntegratedProblem = IntegratedProblem {}
+  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON IntegratedProblem
 
 data Integrator
   = Integrator
@@ -31,20 +38,13 @@ data Integrator
       }
   deriving (Generic)
 
-newtype Integrated
-  = Integrated
-      { integrated :: Map SensorID Double
-      }
-  deriving (Generic)
+data IntegratorAction = IntegratorPasses | TriggerStep Integrator
 
-data IntegratorAction = IntegratorPasses | TriggerStep Integrated
-
-integrateProblem ::
-  Problem ->
-  IntegratedProblem
+integrateProblem :: Problem -> IntegratedProblem
 integrateProblem = panic "integrateProblem not implemented"
 
 initIntegrator ::
+  Time ->
   IntegratedProblem ->
   Integrator
 initIntegrator = panic "initIntegrator not implemented"
