@@ -1,5 +1,6 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE TypeApplications #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
 -- Module      : NRM.Control
@@ -7,27 +8,88 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.Control
-  ( control,
+  ( banditCartesianProductControl,
   )
 where
 
+import Bandit.Class
+import Bandit.Exp3
+import CPD.Core
 import CPD.Integrated
+import CPD.Utils
+import CPD.Values
 import Control.Lens
+import Control.Monad.Trans.RWS.Lazy (RWST)
 import Data.Generics.Product
+import Data.Map as DM
+import Data.Random
 import NRM.Orphans.NonEmpty ()
+import NRM.Types.Behavior (Behavior)
+import NRM.Types.Configuration (Cfg)
 import NRM.Types.Controller
+import Numeric.Interval
 import Protolude
+import Refined
 
-control :: (MonadState Controller m) => Input -> m Decision
-control (Reconfigure t cpd) = do
-  let ipb = integrateProblem cpd
-  field @"integratedProblem" .= Just ipb
-  field @"integrator" .= initIntegrator t ipb
-  return DoNothing
--- data Controller
---   = Controller
---       { cpd :: Maybe C.IntegratedProblem,
---         integrator :: C.Integrator,
---         bandit :: Maybe (Exp3 SensorID)
---       }
---
+-- |  basic control strategy - uses a bandit with a cartesian product
+-- of admissible actuator actions as the the decision space.
+banditCartesianProductControl ::
+  ( Applicative (Zoomed m0 ([Action])),
+    Zoom m0 m (Exp3 [Action]) Controller,
+    MonadRandom m,
+    MonadRandom m0
+  ) =>
+  Input ->
+  m Decision
+banditCartesianProductControl (Reconfigure t cpd) =
+  integrateProblem cpd & \case
+    Nothing -> do
+      field @"integratedProblem" .= Nothing
+      field @"bandit" .= Nothing
+      freq <- use $ (field @"integrator") . (field @"maximumControlFrequency")
+      field @"integrator" .= initIntegrator t freq
+      doNothing
+    Just ipb -> do
+      field @"integratedProblem" .= Just ipb
+      freq <- use $ (field @"integrator") . (field @"maximumControlFrequency")
+      field @"integrator" .= initIntegrator t freq
+      nonEmpty
+        ( sequence $
+            DM.toList (iactuators ipb)
+              <&> \(actuatorID, actions -> discretes) ->
+                [(Action actuatorID d) | d <- discretes]
+        )
+        & \case
+          Nothing -> do
+            field @"bandit" .= Nothing
+            doNothing
+          Just acp -> do
+            (b, a) <- initPFMAB (Arms acp)
+            field @"bandit" .= Just b
+            return $ Decision a
+banditCartesianProductControl (NoEvent _) = doNothing
+banditCartesianProductControl (Event t ms) = do
+  for_ ms $ \(Measurement sensorID sensorValue sensorTime) ->
+    field @"integrator"
+      . field @"measured"
+      . (at sensorID)
+      . _Just <>= [(sensorTime, sensorValue)]
+  ipb <- use (field @"integratedProblem")
+  i <- use (field @"integrator")
+  (calculate t i =<< ipb) & \case
+    Nothing -> doNothing
+    Just (Calculate remains measurements) -> do
+      field @"integrator" . field @"measured" .= remains
+      let iobj = join $ iobjective <$> ipb
+      let mv = measurements
+      let mr = isensors <$> ipb
+      (,) <$> (eval mv =<< iobj) <*> (evalRange undefined =<< iobj) & \case -- todo UNDEFINED in terms of `mr`
+        Nothing -> doNothing
+        Just (value, range) -> ZeroOneInterval <$> refine ((value - inf range) / (width range)) & \case
+          Left _ -> doNothing
+          Right v -> (zoom ((field @"bandit") . _Just) $ stepPFMAB v) >>= \a -> return $ Decision a
+
+doNothing :: (Monad m) => m Decision
+doNothing = return DoNothing
+
+instance MonadRandom (RWST Cfg [Behavior] s IO)

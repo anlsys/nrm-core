@@ -84,13 +84,10 @@ instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
       getter (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices last) =
         PassiveSensor
           { passiveTags = [Tag "power", Tag "RAPL"],
-            passiveSource = Source textID,
             passiveRange = 0 ... fromuJ maxEnergy,
             frequency = freq,
             perform = measureRAPLDir path <&> fmap (fromuJ . energy),
             last = last <&> fmap fromuJ
           }
-        where
-          textID = show packageID
       setter rapl passiveSensor =
         rapl & field @"max" .~ MaxEnergy (uJ (sup $ passiveRange passiveSensor))

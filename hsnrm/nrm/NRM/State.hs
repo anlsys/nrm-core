@@ -27,7 +27,6 @@ module NRM.State
   )
 where
 
-import Data.Default
 import Data.Map as DM
 import LMap.Map as LM
 import NRM.Node.Hwloc
@@ -39,6 +38,7 @@ import NRM.Slices.Singularity as CS
 import NRM.Types.Cmd
 import NRM.Types.CmdID
 import NRM.Types.Configuration as Cfg
+import NRM.Types.Controller
 import NRM.Types.DownstreamThreadID
 import NRM.Types.Process
 import NRM.Types.Slice
@@ -50,8 +50,8 @@ import NRM.Types.UpstreamClient
 import Protolude
 
 -- | Populate the initial NRMState.
-initialState :: Cfg -> IO NRMState
-initialState c = do
+initialState :: Cfg -> Time -> IO NRMState
+initialState c time = do
   hwl <- getHwlocData
   let packages' =
         LM.fromList $
@@ -62,7 +62,7 @@ initialState c = do
       Just (RAPLDirs rapldirs) -> Protolude.foldl goRAPL packages' (LM.toList rapldirs)
       Nothing -> packages'
   return NRMState
-    { controller = def,
+    { controller = initialController time (maximumControlFrequency c),
       slices = LM.fromList [],
       pus = LM.fromList $ (,PU) <$> selectPUIDs hwl,
       cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl,

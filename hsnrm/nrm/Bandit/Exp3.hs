@@ -14,6 +14,7 @@
 module Bandit.Exp3
   ( -- * State
     Exp3 (..),
+    ZeroOneInterval (..),
 
     -- * Internal
     Weight (..),

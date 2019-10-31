@@ -8,7 +8,6 @@
 module CPD.Values
   ( Measurement (..),
     Action (..),
-    Actions (..),
   )
 where
 
@@ -29,17 +28,13 @@ data Measurement
         sensorValue :: Double,
         time :: Time
       }
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Measurement
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Measurement
 
 data Action
   = Action
       { actuatorID :: ActuatorID,
         actuatorValue :: Discrete
       }
+  deriving (Show, Eq, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Action
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
-
-newtype Actions = Actions [Action]
-  deriving (JSONSchema, A.ToJSON, A.FromJSON, Interpret, Inject) via [Action]
-  deriving (Show, Generic, Data, MessagePack)

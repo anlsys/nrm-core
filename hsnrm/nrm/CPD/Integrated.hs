@@ -11,11 +11,13 @@ module CPD.Integrated
     IntegratorAction (..),
     integrateProblem,
     initIntegrator,
-    stepIntegrator,
+    calculate,
+    Calculate (..),
   )
 where
 
 import CPD.Core
+import CPD.Utils
 import CPD.Values
 import qualified Data.Aeson as A
 import Data.Data
@@ -24,33 +26,56 @@ import Data.MessagePack
 import Dhall
 import NRM.Classes.Messaging
 import NRM.Types.Units
+import Numeric.Interval as I hiding (elem)
 import Protolude
 
-data IntegratedProblem = IntegratedProblem {}
+data IntegratedProblem
+  = IntegratedProblem
+      { isensors :: Map SensorID (Interval Double),
+        iactuators :: Map ActuatorID Actuator,
+        iobjective :: Objective,
+        iobjRange :: I.Interval Double
+      }
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON IntegratedProblem
+  deriving
+    (JSONSchema, A.ToJSON, A.FromJSON)
+    via GenericJSON IntegratedProblem
 
 data Integrator
   = Integrator
       { tLast :: Time,
-        minPeriod :: Time,
+        maximumControlFrequency :: Frequency,
         measured :: Map SensorID [(Time, Double)]
       }
   deriving (Generic)
 
 data IntegratorAction = IntegratorPasses | TriggerStep Integrator
 
-integrateProblem :: Problem -> IntegratedProblem
-integrateProblem = panic "integrateProblem not implemented"
+integrateProblem :: Problem -> Maybe IntegratedProblem
+integrateProblem p =
+  IntegratedProblem
+    <$> (Just ranges)
+    <*> (Just $ actuators p)
+    <*> (Just $ objective p)
+    <*> (evalRange ranges =<< objective p)
+  where
+    ranges = sensors p <&> range
 
 initIntegrator ::
-  Time ->
-  IntegratedProblem ->
+  Time -> -- ^ current time
+  Frequency -> -- ^ maximum control frequency
   Integrator
 initIntegrator = panic "initIntegrator not implemented"
 
-stepIntegrator ::
-  (MonadState Integrator m) =>
-  [Measurement] ->
-  m IntegratorAction
-stepIntegrator _measurements = panic "stepIntegrator not implemented"
+data Calculate
+  = Calculate
+      { remains :: Map SensorID [(Time, Double)],
+        measurements :: Map SensorID Double
+      }
+
+calculate ::
+  Time ->
+  Integrator ->
+  IntegratedProblem ->
+  Maybe Calculate
+calculate = undefined

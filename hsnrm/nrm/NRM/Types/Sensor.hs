@@ -19,7 +19,6 @@ module NRM.Types.Sensor
     SensorKey (..),
 
     -- * Re-exports
-    CPD.Source (..),
     CPD.SensorID (..),
   )
 where
@@ -44,7 +43,6 @@ data PassiveSensor
       { perform :: IO (Maybe Double),
         passiveTags :: [Tag],
         frequency :: U.Frequency,
-        passiveSource :: CPD.Source,
         passiveRange :: Interval Double,
         last :: Maybe (U.Time, Double)
       }
@@ -55,7 +53,6 @@ data ActiveSensor
       { maxFrequency :: U.Frequency,
         activeTags :: [Tag],
         process :: Double -> Double,
-        activeSource :: CPD.Source,
         activeRange :: Interval Double
       }
 
@@ -78,21 +75,14 @@ instance ToCPDSensor ActiveSensorKey ActiveSensor where
   toCPDSensor (id, ActiveSensor {..}) =
     ( toS id,
       CPD.Sensor
-        { sensorMeta =
-            CPD.Metadata
-              activeRange
-              (CPD.MaxFrequency maxFrequency),
-          source = activeSource,
-          ..
-        }
+        activeRange
+        maxFrequency
     )
 
 instance ToCPDSensor PassiveSensorKey PassiveSensor where
   toCPDSensor (id, PassiveSensor {..}) =
     ( toS id,
       CPD.Sensor
-        { sensorMeta = CPD.Metadata passiveRange (CPD.MaxFrequency frequency),
-          source = passiveSource,
-          ..
-        }
+        passiveRange
+        frequency
     )

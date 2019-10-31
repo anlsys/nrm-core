@@ -48,7 +48,6 @@ instance
       getter (DownstreamThread _maxValue ratelimit) =
         ActiveSensor
           { activeTags = [Tag "perf"],
-            activeSource = Source $ show downstreamThreadID,
             activeRange = 0 ... (maxValue downstreamThread & fromProgress & fromIntegral),
             maxFrequency = ratelimit,
             process = identity

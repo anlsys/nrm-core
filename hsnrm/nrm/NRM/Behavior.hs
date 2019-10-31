@@ -194,7 +194,7 @@ nrm _callTime DoShutdown = behave NoBehavior
 -- | nrmControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
 doControl input = zoom (field @"controller") $
-  control input >>= \case
+  banditCartesianProductControl input >>= \case
     DoNothing -> log "null control"
     Decision _ -> log "control command not implemented"
 

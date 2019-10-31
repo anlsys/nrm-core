@@ -50,7 +50,6 @@ instance
       getter (DownstreamCmd _maxValue ratelimit) =
         ActiveSensor
           { activeTags = [Tag "perf"],
-            activeSource = Source $ show downstreamCmdID,
             activeRange = 0 ... (maxValue downstreamCmd & fromOps & fromIntegral),
             maxFrequency = ratelimit,
             process = identity

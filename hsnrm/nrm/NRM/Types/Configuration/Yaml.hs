@@ -18,6 +18,7 @@ import qualified NRM.Types.Cmd as Cmd
 import qualified NRM.Types.Configuration as I
 import Protolude
 import System.IO.Error
+import NRM.Types.Units
 
 data Cfg
   = Cfg
@@ -36,7 +37,8 @@ data Cfg
         downstreamCfg :: Maybe I.DownstreamCfg,
         upstreamCfg :: Maybe I.UpstreamCfg,
         raplCfg :: Maybe I.RaplCfg,
-        hwmonCfg :: Maybe I.HwmonCfg
+        hwmonCfg :: Maybe I.HwmonCfg,
+        maximumControlFrequency :: Maybe Frequency
       }
   deriving (Generic)
 
@@ -62,6 +64,7 @@ toInternal d = I.Cfg
     singularity = fromDefault singularity I.singularity,
     dummy = fromDefault dummy I.dummy,
     nodeos = fromDefault nodeos I.nodeos,
+    maximumControlFrequency = fromDefault maximumControlFrequency I.maximumControlFrequency,
     slice_runtime = fromDefault slice_runtime I.slice_runtime,
     downstreamCfg = fromDefault downstreamCfg I.downstreamCfg,
     upstreamCfg = fromDefault upstreamCfg I.upstreamCfg,
@@ -85,6 +88,7 @@ fromInternal d = Cfg
     singularity = toJust I.singularity,
     dummy = toJust I.dummy,
     nodeos = toJust I.nodeos,
+    maximumControlFrequency = toJust I.maximumControlFrequency,
     slice_runtime = toJust I.slice_runtime,
     downstreamCfg = toJust I.downstreamCfg,
     upstreamCfg = toJust I.upstreamCfg,

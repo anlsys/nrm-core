@@ -11,7 +11,9 @@ module CPD.Utils
     MeasurementValidation (..),
     ActionValidation (..),
     combine,
+    evalNum,
     eval,
+    evalRange,
   )
 where
 
@@ -43,22 +45,37 @@ combine (Problem a b goal) (Problem c d goal')
   | goal == goal' = Just $ Problem (a <> c) (b <> d) goal
   | otherwise = Nothing
 
-{-availableDiscreteActions :: Problem -> [Actions]-}
-{-availableDiscreteActions (Problem _ as _) = mconcat $ as <&> \aKv ->
-  [Actions (aKv ^. field @"actuatorKey") a | a <- listDiscreteActuatorActions]-}
-data V = V Double (I.Interval Double)
-
-eval :: Map SensorID V -> OExpr -> Maybe V
-eval m = \case
+-- | Standard object evaluation on Num instances.
+evalNum ::
+  (Fractional a) =>
+  (Double -> a) ->
+  Map SensorID a ->
+  OExpr ->
+  Maybe a
+evalNum scalarLifter m = \case
   OValue sensorID -> DM.lookup sensorID m
-  OScalarMult s a -> ev a <&> (\(V x i) -> V (s * x) $ singleton s * i)
-  OAdd a b -> ev2 a b $ \(V x1 i1) (V x2 i2) -> V (x1 + x2) (i1 + i2)
-  OSub a b -> ev2 a b $ \(V x1 i1) (V x2 i2) -> V (x1 - x2) (i1 - i2)
-  OMul a b -> ev2 a b $ \(V x1 i1) (V x2 i2) -> V (x1 * x2) (i1 * i2)
-  ODiv a b -> ev2 a b $ \(V x1 i1) (V x2 i2) -> V (x1 / x2) (i1 / i2)
+  OScalarMult s a -> ev a <&> (\i -> scalarLifter s * i)
+  OAdd a b -> ev2 a b (+)
+  OSub a b -> ev2 a b (-)
+  OMul a b -> ev2 a b (*)
+  ODiv a b -> ev2 a b (/)
   where
-    ev = eval m
+    ev = evalNum scalarLifter m
     ev2 a b f = do
       v1 <- ev a
       v2 <- ev b
       return $ f v1 v2
+
+-- | Objective value evaluation.
+eval ::
+  Map SensorID Double ->
+  OExpr ->
+  Maybe Double
+eval = evalNum (identity :: Double -> Double)
+
+-- | Objective range evaluation.
+evalRange ::
+  Map SensorID (Interval Double) ->
+  OExpr ->
+  Maybe (Interval Double)
+evalRange = evalNum (singleton :: Double -> Interval Double)

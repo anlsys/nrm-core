@@ -59,7 +59,7 @@ process _cfg time st sensorKey value =
     Just (ScopedLens sl) ->
       view sl st & \s ->
         CPD.validateMeasurement
-          (range . sensorMeta . snd $ toCPDSensor (sensorKey, s))
+          (range . snd $ toCPDSensor (sensorKey, s))
           value
           & \case
             MeasurementOk ->

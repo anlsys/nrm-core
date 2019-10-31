@@ -56,3 +56,5 @@ locate and remove {-*-} comments
 - check presence of 'identity'
 
 - fix silly recursive doubling!
+
+- move whichever lists to NonEmpty

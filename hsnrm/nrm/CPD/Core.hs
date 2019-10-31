@@ -10,18 +10,15 @@ module CPD.Core
   ( -- * Metadata
     Problem (..),
     emptyProblem,
-    Metadata (..),
     Interval,
     Admissible (..),
     Discrete (..),
-    Frequency (..),
 
     -- * Sensors
 
     -- ** Definitions
     SensorID (..),
     Sensor (..),
-    Source (..),
 
     -- * Actuators
 
@@ -76,14 +73,9 @@ data Problem
 emptyProblem :: Problem
 emptyProblem = Problem DM.empty DM.empty emptyObjective
 
-newtype Frequency
-  = MaxFrequency {maxFrequency :: Units.Frequency}
+data Sensor = Sensor {range :: Interval Double, maxFrequency :: Units.Frequency}
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Frequency
-
-data Metadata = Metadata {range :: Interval Double, frequency :: Frequency}
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Metadata
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Sensor
 
 deriving instance MessagePack (Interval Double)
 
@@ -117,19 +109,6 @@ newtype SensorID = SensorID {sensorID :: Text}
       Inject
     )
   deriving (IsString) via Text
-
-newtype Source = Source {sourceTag :: Text}
-  deriving (Show, Generic, Data, MessagePack)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Source
-  deriving (Interpret, Inject) via Text
-
-data Sensor
-  = Sensor
-      { source :: Source,
-        sensorMeta :: Metadata
-      }
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Sensor
 
 ------- ACTUATORS
 class CPDLActuator a where
