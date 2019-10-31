@@ -33,7 +33,7 @@ class Daemon(object):
     lib: Any
 
     def __post_init__(self):
-        self.state = self.lib.initialState(self.cfg)
+        self.state = self.lib.initialState(self.cfg, time.time())
 
         self.cmds = {}
 
@@ -113,17 +113,21 @@ class Daemon(object):
 
         def r(*argsCallback, **kwargsCallback):
             args = argsConfig + argsCallback
-            _logger.debug(
-                "calling into nrm.so with symbol %s and arguments %s", name, str(args)
-            )
             kwargs = dict(kwargsConfig, **kwargsCallback)
-            st, bh = self.lib.__getattr__(name)(
+            _logger.debug(
+                "calling into nrm.so with symbol %s and arguments {cfg,state,time},%s,%s ",
+                name,
+                str(args),
+                str(kwargs),
+            )
+            st, bhs = self.lib.__getattr__(name)(
                 self.cfg, self.state, time.time(), *args, **kwargs
             )
             self.state = st
-            _logger.debug("received behavior from nrm.so: %s", str(bh))
-            if bh != "noop":
-                self.dispatch[bh[0]](*bh[1:])
+            _logger.debug("received behaviors from nrm.so: %s", str(bhs))
+            for bh in bhs:
+                if bh != "noop":
+                    self.dispatch[bh[0]](*bh[1:])
 
         return r
 

@@ -17,6 +17,7 @@ module CPD.Integrated
 where
 
 import CPD.Core
+import Data.Map as DM
 import CPD.Utils
 import qualified Data.Aeson as A
 import Data.Data
@@ -64,7 +65,11 @@ initIntegrator ::
   Time ->
   Frequency ->
   Integrator
-initIntegrator = panic "initIntegrator not implemented"
+initIntegrator t f = Integrator
+  { tLast = t,
+    maximumControlFrequency = f,
+    measured = DM.empty
+  }
 
 data Calculate
   = Calculate
@@ -77,4 +82,4 @@ calculate ::
   Integrator ->
   IntegratedProblem ->
   Maybe Calculate
-calculate time i ipb = undefined
+calculate time i ipb = Nothing
