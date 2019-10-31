@@ -37,7 +37,7 @@ hlint:
   tags:
     - integration
   script:
-    - nix-shell --pure -p '(import ./.).hlint' --run bash <<< 'cd hsnrm && hlint .'
+    - nix-shell --pure -p '(import ./.).hlint' --run bash <<< 'hlint hsnrm/ --hint=./hlint.yaml'
 
 black:
   stage: source
