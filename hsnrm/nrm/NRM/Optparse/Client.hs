@@ -313,7 +313,7 @@ run rc common = do
     case sliceName rc of
       Nothing -> fromMaybe (panic "Couldn't generate next slice ID") <$> nextSliceID
       Just n -> return $ Name n
-  env <- fmap (\(x, y) -> (toS x, toS y)) <$> getEnvironment
+  env <- fmap (bimap toS toS) <$> getEnvironment
   return $
     Opts
       ( Right . ReqRun $ Run

@@ -86,13 +86,13 @@ instance MessagePack Behavior where
     toObject
       ( "kill" :: Text,
         cmdIDs,
-        (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> reps
+        second M.encodeT <$> reps
       )
   toObject (ClearChild cmdID maybeRep) =
     toObject
       ( "pop" :: Text,
         cmdID,
-        (\(clientid, msg) -> (clientid, M.encodeT msg)) <$> Protolude.toList maybeRep
+        second M.encodeT <$> Protolude.toList maybeRep
       )
 
   fromObject x = to <$> gFromObject x

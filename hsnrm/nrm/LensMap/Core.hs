@@ -37,8 +37,7 @@ instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (Map k v) key a
         Map key (ScopedLens (k, v) a) ->
         [(key, ScopedLens (Map k v) a)]
       go k lensMap =
-        DM.toList lensMap <&> \(sensorKey, scopedLens) ->
-          (sensorKey, augmentedLens k scopedLens)
+        DM.toList lensMap <&> second (augmentedLens k)
       augmentedLens ::
         forall k v a.
         (Ord k) =>
@@ -60,8 +59,7 @@ instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (LM.Map k v) ke
         Map key (ScopedLens (k, v) a) ->
         [(key, ScopedLens (LM.Map k v) a)]
       go k lensMap =
-        DM.toList lensMap <&> \(sensorKey, scopedLens) ->
-          (sensorKey, augmentedLens k scopedLens)
+        DM.toList lensMap <&> second (augmentedLens k)
       augmentedLens ::
         forall k v a.
         Ord k =>
