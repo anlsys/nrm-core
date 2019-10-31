@@ -27,6 +27,7 @@ import NRM.Orphans.NonEmpty ()
 import NRM.Types.Behavior (Behavior)
 import NRM.Types.Configuration (Cfg)
 import NRM.Types.Controller
+import NRM.Types.Units
 import Numeric.Interval
 import Protolude
 import Refined
@@ -67,27 +68,39 @@ banditCartesianProductControl (Reconfigure t cpd) =
             (b, a) <- initPFMAB (Arms acp)
             field @"bandit" .= Just b
             return $ Decision a
-banditCartesianProductControl (NoEvent _) = doNothing
+banditCartesianProductControl (NoEvent t) = tryControlStep t
 banditCartesianProductControl (Event t ms) = do
   for_ ms $ \(Measurement sensorID sensorValue sensorTime) ->
     field @"integrator"
       . field @"measured"
       . (at sensorID)
       . _Just <>= [(sensorTime, sensorValue)]
-  ipb <- use (field @"integratedProblem")
+  tryControlStep t
+
+tryControlStep ::
+  ( Applicative (Zoomed m0 ([Action])),
+    Zoom m0 m (Exp3 [Action]) Controller,
+    MonadRandom m0
+  ) =>
+  Time ->
+  m Decision
+tryControlStep t = do
   i <- use (field @"integrator")
-  (calculate t i =<< ipb) & \case
+  use (field @"integratedProblem") >>= \case
     Nothing -> doNothing
-    Just (Calculate remains measurements) -> do
-      field @"integrator" . field @"measured" .= remains
-      let iobj = join $ iobjective <$> ipb
-      let mv = measurements
-      let mr = isensors <$> ipb
-      (,) <$> (eval mv =<< iobj) <*> (evalRange undefined =<< iobj) & \case -- todo UNDEFINED in terms of `mr`
-        Nothing -> doNothing
-        Just (value, range) -> ZeroOneInterval <$> refine ((value - inf range) / (width range)) & \case
-          Left _ -> doNothing
-          Right v -> (zoom ((field @"bandit") . _Just) $ stepPFMAB v) >>= \a -> return $ Decision a
+    Just ipb -> (calculate t i ipb) & \case
+      Nothing -> doNothing
+      Just (Calculate remains measurements) -> do
+        field @"integrator" . field @"measured" .= remains
+        let iobj = iobjective ipb
+        case (,) <$> (eval measurements =<< iobj) <*> (evalRange (isensors ipb) =<< iobj) of
+          Nothing -> doNothing
+          Just (value, range) ->
+            case ZeroOneInterval <$> refine ((value - inf range) / (width range)) of
+              Left _ -> doNothing
+              Right v ->
+                zoom (field @"bandit" . _Just) (stepPFMAB v)
+                  >>= return . Decision
 
 doNothing :: (Monad m) => m Decision
 doNothing = return DoNothing

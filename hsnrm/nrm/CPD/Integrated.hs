@@ -18,7 +18,6 @@ where
 
 import CPD.Core
 import CPD.Utils
-import CPD.Values
 import qualified Data.Aeson as A
 import Data.Data
 import Data.JSON.Schema
@@ -62,8 +61,8 @@ integrateProblem p =
     ranges = sensors p <&> range
 
 initIntegrator ::
-  Time -> -- ^ current time
-  Frequency -> -- ^ maximum control frequency
+  Time ->
+  Frequency ->
   Integrator
 initIntegrator = panic "initIntegrator not implemented"
 
@@ -78,4 +77,4 @@ calculate ::
   Integrator ->
   IntegratedProblem ->
   Maybe Calculate
-calculate = undefined
+calculate time i ipb = undefined
