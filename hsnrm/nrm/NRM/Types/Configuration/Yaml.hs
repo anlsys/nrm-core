@@ -16,9 +16,9 @@ import Data.Default
 import Data.Yaml
 import qualified NRM.Types.Cmd as Cmd
 import qualified NRM.Types.Configuration as I
+import NRM.Types.Units
 import Protolude
 import System.IO.Error
-import NRM.Types.Units
 
 data Cfg
   = Cfg

@@ -35,7 +35,7 @@ import Refined
 -- |  basic control strategy - uses a bandit with a cartesian product
 -- of admissible actuator actions as the the decision space.
 banditCartesianProductControl ::
-  ( Applicative (Zoomed m0 ([Action])),
+  ( Applicative (Zoomed m0 [Action]),
     Zoom m0 m (Exp3 [Action]) Controller,
     MonadRandom m,
     MonadRandom m0
@@ -47,18 +47,18 @@ banditCartesianProductControl (Reconfigure t cpd) =
     Nothing -> do
       field @"integratedProblem" .= Nothing
       field @"bandit" .= Nothing
-      freq <- use $ (field @"integrator") . (field @"maximumControlFrequency")
+      freq <- use $ field @"integrator" . field @"maximumControlFrequency"
       field @"integrator" .= initIntegrator t freq
       doNothing
     Just ipb -> do
       field @"integratedProblem" .= Just ipb
-      freq <- use $ (field @"integrator") . (field @"maximumControlFrequency")
+      freq <- use $ field @"integrator" . field @"maximumControlFrequency"
       field @"integrator" .= initIntegrator t freq
       nonEmpty
         ( sequence $
             DM.toList (iactuators ipb)
               <&> \(actuatorID, actions -> discretes) ->
-                [(Action actuatorID d) | d <- discretes]
+                [Action actuatorID d | d <- discretes]
         )
         & \case
           Nothing -> do
@@ -73,12 +73,11 @@ banditCartesianProductControl (Event t ms) = do
   for_ ms $ \(Measurement sensorID sensorValue sensorTime) ->
     field @"integrator"
       . field @"measured"
-      . (at sensorID)
-      . _Just <>= [(sensorTime, sensorValue)]
+      . ix sensorID <>= [(sensorTime, sensorValue)]
   tryControlStep t
 
 tryControlStep ::
-  ( Applicative (Zoomed m0 ([Action])),
+  ( Applicative (Zoomed m0 [Action]),
     Zoom m0 m (Exp3 [Action]) Controller,
     MonadRandom m0
   ) =>
@@ -88,7 +87,7 @@ tryControlStep t = do
   i <- use (field @"integrator")
   use (field @"integratedProblem") >>= \case
     Nothing -> doNothing
-    Just ipb -> (calculate t i ipb) & \case
+    Just ipb -> calculate t i ipb & \case
       Nothing -> doNothing
       Just (Calculate remains measurements) -> do
         field @"integrator" . field @"measured" .= remains
@@ -96,11 +95,10 @@ tryControlStep t = do
         case (,) <$> (eval measurements =<< iobj) <*> (evalRange (isensors ipb) =<< iobj) of
           Nothing -> doNothing
           Just (value, range) ->
-            case ZeroOneInterval <$> refine ((value - inf range) / (width range)) of
+            case ZeroOneInterval <$> refine ((value - inf range) / width range) of
               Left _ -> doNothing
               Right v ->
-                zoom (field @"bandit" . _Just) (stepPFMAB v)
-                  >>= return . Decision
+                Decision <$> zoom (field @"bandit" . _Just) (stepPFMAB v)
 
 doNothing :: (Monad m) => m Decision
 doNothing = return DoNothing

@@ -17,11 +17,11 @@ module CPD.Integrated
 where
 
 import CPD.Core
-import Data.Map as DM
 import CPD.Utils
 import qualified Data.Aeson as A
 import Data.Data
 import Data.JSON.Schema
+import Data.Map as DM
 import Data.MessagePack
 import Dhall
 import NRM.Classes.Messaging
@@ -54,9 +54,9 @@ data IntegratorAction = IntegratorPasses | TriggerStep Integrator
 integrateProblem :: Problem -> Maybe IntegratedProblem
 integrateProblem p =
   IntegratedProblem
-    <$> (Just ranges)
-    <*> (Just $ actuators p)
-    <*> (Just $ objective p)
+    <$> Just ranges
+    <*> Just (actuators p)
+    <*> Just (objective p)
     <*> (evalRange ranges =<< objective p)
   where
     ranges = sensors p <&> range
@@ -82,4 +82,5 @@ calculate ::
   Integrator ->
   IntegratedProblem ->
   Maybe Calculate
-calculate time i ipb = Nothing
+calculate _ _ _ = Nothing
+--calculate time i ipb = Nothing
