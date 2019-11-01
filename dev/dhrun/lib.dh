@@ -1,10 +1,7 @@
   λ(dataDir : Text)
 → λ(manifestDir : Text)
-→ let values =
-        https://xgitlab.cels.anl.gov/argo/dhrun/raw/master/resources/package.dh
-  
-  let types =
-        https://xgitlab.cels.anl.gov/argo/dhrun/raw/master/resources/types.dh
+→ let values = ./dhrun/package.dh
+  let types = ./dhrun/types.dh
   
   let assetDir = dataDir ++ "assets/"
   

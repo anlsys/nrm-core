@@ -1,29 +1,29 @@
   λ(dataDir : Text)
 -> λ(manifestDir : Text)
 → let lib = ./lib.dh dataDir manifestDir
-  
+
   let message = "HelloWorld"
-  
+
   let cn = "testContainer"
-  
+
   let basicManifest = manifestDir ++ "perfwrap.dhall"
-  
+
   let singularityManifest = manifestDir ++ "singularity.yml"
-  
+
   let argIfTest =
           λ(isTest : Bool)
         → { isTest =
               isTest
           , timeout =
                     if isTest
-              
+
               then  [ 600 ] : Optional Natural
-              
+
               else  [] : Optional Natural
           }
-  
+
   let Powercap = < Cap : Text | NoCap : {} >
-  
+
   in  { run-singularity =
           lib.makeBase
           (   lib.emptyMakeBaseArg "echo" singularityManifest cn
