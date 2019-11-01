@@ -55,6 +55,7 @@ data ActiveSensor
         process :: Double -> Double,
         activeRange :: Interval Double
       }
+  deriving (Generic)
 
 data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | DownstreamThreadKey DownstreamThreadID
   deriving (Ord, Eq, Show)

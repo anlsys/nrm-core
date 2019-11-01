@@ -43,3 +43,5 @@ locate and remove {-*-} comments
 -respect raplEnabled=False
 
 - eliminate legacy NoBehavior
+
+- remove --enable-pmpi

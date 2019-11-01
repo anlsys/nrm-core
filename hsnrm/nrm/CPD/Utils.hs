@@ -31,8 +31,8 @@ data ActionValidation = ActionOk | InvalidAction
 validateMeasurement :: Interval Double -> Double -> MeasurementValidation
 validateMeasurement i x
   | x `member` i = MeasurementOk
-  | x <= inf i = AdjustInterval $ (inf i - width i) ... sup i
-  | otherwise = AdjustInterval $ inf i ... (sup i + width i)
+  | x < inf i = AdjustInterval $ 2 * x - sup i ... sup i
+  | otherwise = AdjustInterval $ inf i ... 2 * x - inf i
 
 validateAction :: Admissible -> Action -> ActionValidation
 validateAction (Admissible ds) (Action _actuator d)

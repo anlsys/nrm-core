@@ -72,7 +72,7 @@ process _cfg time st sensorKey value =
                       time = time
                     }
                 )
-            AdjustInterval _r -> Adjusted (st & sl %~ identity) -- TODO adjustment
+            AdjustInterval r -> Adjusted (st & sl . field @"activeRange" .~ r)
 
 data ProcessPassiveSensorOutput
   = IllegalValueRemediation PassiveSensor
@@ -87,10 +87,10 @@ processPassiveSensor ::
 processPassiveSensor ps@(passiveRange -> i) time sensorID value
   | value < inf i =
     IllegalValueRemediation $
-      ps {last = Nothing, passiveRange = Protolude.max 0 (inf i) - width i ... sup i}
+      ps {last = Nothing, passiveRange = 2 * value - sup i ... sup i}
   | sup i < value =
     IllegalValueRemediation $
-      ps {last = Nothing, passiveRange = inf i ... sup i + width i}
+      ps {last = Nothing, passiveRange = inf i ... 2 * value - inf i}
   | otherwise =
     LegalMeasurement
       (ps & field @"last" ?~ (time, value))
