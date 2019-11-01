@@ -55,6 +55,7 @@ def send(apiname=None):
         else:
 
             def send(self, msg):
+                _logger.error("pyzmq sending: %s", msg.encode())
                 self.socket.send(msg.encode())
 
         setattr(cls, "send", send)

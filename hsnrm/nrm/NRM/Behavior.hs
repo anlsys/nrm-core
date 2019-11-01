@@ -170,10 +170,12 @@ nrm _callTime (ChildDied pid exitcode) = do
               Nothing -> log "Error during command removal from NRM state"
             Nothing -> put $ insertSlice sliceID (Ct.insertCmd cmdID cmd {processState = newPstate} slice) st
 nrm callTime (DownstreamEvent clientid msg) =
-  nrmDownstreamEvent callTime clientid msg >>= \case
-    OOk m -> return $ Event callTime [m]
-    ONotFound -> return $ NoEvent callTime
-    OAdjustment -> get <&> NRMCPD.toCPD <&> Reconfigure callTime
+  nrmDownstreamEvent callTime clientid msg
+    >>= ( \case
+            OOk m -> return $ Event callTime [m]
+            ONotFound -> return $ NoEvent callTime
+            OAdjustment -> get <&> NRMCPD.toCPD <&> Reconfigure callTime
+        )
     >>= doControl
 nrm callTime DoControl = doControl (NoEvent callTime)
 nrm callTime DoSensor = do
@@ -193,10 +195,11 @@ nrm _callTime DoShutdown = behave NoBehavior
 
 -- | nrmControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
-doControl input = zoom (field @"controller") $
-  banditCartesianProductControl input >>= \case
-    DoNothing -> log "null control"
-    Decision _ -> log "control command not implemented"
+doControl input = return ()
+--zoom (field @"controller") $
+  --banditCartesianProductControl input >>= \case
+    --DoNothing -> log "null control"
+    --Decision _ -> log "control command not implemented"
 
 nrmDownstreamEvent ::
   U.Time ->

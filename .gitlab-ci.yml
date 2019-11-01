@@ -4,6 +4,7 @@ stages:
   - afterlib
   - codegen
   - linked
+  - integration
 
 ormolu:
   stage: source
@@ -98,3 +99,19 @@ nix-build-pynrm:
   tags:
     - integration
   script: nix-build -A pynrm --no-build-output
+
+nix-build-nrmFull:
+  stage: linked
+  tags:
+    - integration
+  script: nix-build -A nrm --no-build-output
+
+dhrun-hello:
+  stage: integration
+  tags:
+    - integration
+  script:
+    - |
+      nix-shell --pure -p '(import ./.).nrm' -p '(import ./.).dhrun' --run bash <<< '
+        
+      '

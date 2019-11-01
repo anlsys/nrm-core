@@ -75,15 +75,14 @@ subClient ::
   C.CommonOpts ->
   ZMQ.ZMQ z ()
 subClient l s common =
-  forever $
-    ZMQ.receive s
-      <&> decode
-      . toS >>= \case
-        Nothing -> putText "Couldn't decode published message"
-        Just message ->
-          filterCPD l message & \case
-            Nothing -> return ()
-            Just filtered -> liftIO . putText . (if C.jsonPrint common then encodeT else toS . pShow) $ filtered
+  forever $ do
+    m <- ZMQ.receive s
+    decode (toS m) & \case
+      Nothing -> putText ("Couldn't decode published message: " <> toS m)
+      Just message ->
+        filterCPD l message & \case
+          Nothing -> return ()
+          Just filtered -> liftIO . putText . (if C.jsonPrint common then encodeT else toS . pShow) $ filtered
 
 filterCPD :: C.Listen -> UPub.Pub -> Maybe UPub.Pub
 filterCPD C.All p = Just p

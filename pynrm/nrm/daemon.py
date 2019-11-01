@@ -51,7 +51,7 @@ class Daemon(object):
 
         self.dispatch = {
             "reply": self.upstream_rpc.send,
-            "publish": self.upstream_pub.send_multi,
+            "publish": self.upstream_pub.send,
             "cmd": self.cmd,
             "kill": self.kill,
             "pop": self.popchild,
@@ -126,6 +126,7 @@ class Daemon(object):
             self.state = st
             _logger.debug("received behaviors from nrm.so: %s", str(bhs))
             for bh in bhs:
+                _logger.debug("addressing behavior %s", str(bh))
                 if bh != "noop":
                     self.dispatch[bh[0]](*bh[1:])
 
