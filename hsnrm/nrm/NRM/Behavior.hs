@@ -196,10 +196,11 @@ nrm _callTime DoShutdown = behave NoBehavior
 -- | nrmControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
 doControl input = return ()
+
 --zoom (field @"controller") $
-  --banditCartesianProductControl input >>= \case
-    --DoNothing -> log "null control"
-    --Decision _ -> log "control command not implemented"
+--banditCartesianProductControl input >>= \case
+--DoNothing -> log "null control"
+--Decision _ -> log "control command not implemented"
 
 nrmDownstreamEvent ::
   U.Time ->
@@ -258,9 +259,15 @@ nrmDownstreamEvent callTime clientid = \case
               return ONotFound
             Just c -> registerDTT c downstreamThreadID
         OAdjustment -> return OAdjustment
-        OOk m ->
-          pub (UPub.PubPhaseContext callTime downstreamThreadID phaseContext)
-            >> return (OOk m)
+        OOk m -> do
+          st <- get
+          DM.lookup (cmdID downstreamThreadID) (cmdIDMap st) & \case
+            Nothing ->
+              log "internal NRM state warning: phasecontext pub lookup failed"
+                >> return (OOk m)
+            Just (_, sliceID, _) ->
+              pub (UPub.PubPhaseContext callTime downstreamThreadID sliceID phaseContext)
+                >> return (OOk m)
   DEvent.CmdPause cmdID -> DCmID.fromText (toS clientid) & \case
     Nothing -> log "couldn't decode clientID to UUID" >> return ONotFound
     Just downstreamCmdID -> zoom (_cmdID cmdID) $

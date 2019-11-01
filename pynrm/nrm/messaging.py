@@ -55,7 +55,6 @@ def send(apiname=None):
         else:
 
             def send(self, msg):
-                _logger.error("pyzmq sending: %s", msg.encode())
                 self.socket.send(msg.encode())
 
         setattr(cls, "send", send)
@@ -89,8 +88,12 @@ def recv_callback_noapi():
             _logger.info("receiving message: %r", frames)
             assert len(frames) == 2
             msg = frames[1]
+            try:
+                identity = frames[0].decode()
+            except UnicodeDecodeError as e:
+                identity = "unassigned"
             assert self.callback
-            self.callback(msg, frames[0])
+            self.callback(msg, identity)
 
         def setup_recv_callback(self, callback):
             self.stream = zmqstream.ZMQStream(self.socket)

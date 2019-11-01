@@ -34,7 +34,7 @@ data Pub
   | PubSliceStart Time SliceStart
   | PubSliceExit Time SliceExit
   | PubPerformance Time CmdID Operations
-  | PubPhaseContext Time DownstreamThreadID PhaseContext
+  | PubPhaseContext Time DownstreamThreadID SliceID PhaseContext
   | PubProgress Time DownstreamThreadID Progress
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Pub

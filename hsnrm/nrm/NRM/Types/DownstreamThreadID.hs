@@ -26,10 +26,16 @@ data DownstreamThreadID
       { cmdID :: CmdID,
         processID :: P.ProcessID,
         taskID :: TaskID,
-        threadID :: ThreadID
+        threadID :: ThreadID,
+        rankID :: RankID
       }
   deriving (Eq, Ord, Show, Generic, Data, MessagePack, ToJSONKey, FromJSONKey)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamThreadID
+
+newtype RankID = RankID {fromRankID :: Int}
+  deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON RankID
+  deriving (Num, Real, Enum, Integral) via Int
 
 newtype TaskID = TaskID {fromTaskID :: Text}
   deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)

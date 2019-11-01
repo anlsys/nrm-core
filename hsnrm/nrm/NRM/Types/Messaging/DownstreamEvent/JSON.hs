@@ -26,19 +26,22 @@ data Event
         processID :: Int,
         taskID :: Text,
         threadID :: Int,
+        rankID :: Int,
         payload :: Int
       }
   | ThreadPause
       { cmdID :: Text,
         processID :: Int,
         taskID :: Text,
-        threadID :: Int
+        threadID :: Int,
+        rankID :: Int
       }
   | ThreadPhaseContext
       { cmdID :: Text,
         processID :: Int,
         taskID :: Text,
         threadID :: Int,
+        rankID :: Int,
         cpu :: Int,
         aggregation :: Int,
         computetime :: Int,
@@ -48,6 +51,7 @@ data Event
       { cmdID :: Text,
         processID :: Int,
         taskID :: Text,
-        threadID :: Int
+        threadID :: Int,
+        rankID :: Int
       }
   deriving (Generic, CHeaderGen)

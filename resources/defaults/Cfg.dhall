@@ -46,4 +46,6 @@
     }
 , hwmonCfg =
     { hwmonEnabled = True, hwmonPath = "/sys/class/hwmon" }
+, maximumControlFrequency =
+    { fromHz = 1.0 }
 }

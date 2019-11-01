@@ -54,6 +54,7 @@
                         "processID",
                         "taskID",
                         "threadID",
+                        "rankID",
                         "payload"
                     ],
                     "type": "object",
@@ -68,6 +69,9 @@
                             "type": "number"
                         },
                         "payload": {
+                            "type": "number"
+                        },
+                        "rankID": {
                             "type": "number"
                         },
                         "threadID": {
@@ -88,7 +92,8 @@
                         "cmdID",
                         "processID",
                         "taskID",
-                        "threadID"
+                        "threadID",
+                        "rankID"
                     ],
                     "type": "object",
                     "properties": {
@@ -99,6 +104,9 @@
                             "type": "string"
                         },
                         "processID": {
+                            "type": "number"
+                        },
+                        "rankID": {
                             "type": "number"
                         },
                         "threadID": {
@@ -120,6 +128,7 @@
                         "processID",
                         "taskID",
                         "threadID",
+                        "rankID",
                         "cpu",
                         "aggregation",
                         "computetime",
@@ -145,6 +154,9 @@
                         "totaltime": {
                             "type": "number"
                         },
+                        "rankID": {
+                            "type": "number"
+                        },
                         "threadID": {
                             "type": "number"
                         },
@@ -166,7 +178,8 @@
                         "cmdID",
                         "processID",
                         "taskID",
-                        "threadID"
+                        "threadID",
+                        "rankID"
                     ],
                     "type": "object",
                     "properties": {
@@ -177,6 +190,9 @@
                             "type": "string"
                         },
                         "processID": {
+                            "type": "number"
+                        },
+                        "rankID": {
                             "type": "number"
                         },
                         "threadID": {
