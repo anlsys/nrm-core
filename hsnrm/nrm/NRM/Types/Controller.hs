@@ -36,7 +36,7 @@ data Input
   | -- | Events
     Reconfigure Time C.Problem
 
-data Decision = DoNothing | Decision [V.Action]
+data Decision = DoNothing | Decision [V.Action] deriving (Show)
 
 data Controller
   = Controller

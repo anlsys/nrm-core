@@ -13,11 +13,9 @@ module Bandit.EpsGreedy
 where
 
 import Bandit.Class
-{-import qualified Data.List.NonEmpty as NE-}
-import Data.Random
-import qualified Data.Random.Distribution.Categorical as DC
-import qualified Data.Random.Sample as RS
+import Bandit.Util
 import Protolude
+import System.Random
 
 data EpsGreedy a
   = Screening (ScreeningGreedy a)
@@ -58,19 +56,19 @@ data EpsGreedyHyper a
 
 instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
 
-  init (EpsGreedyHyper e (Arms (a :| as))) =
-    return
-      ( Screening $ ScreeningGreedy
-          { tScreening = 1,
-            epsScreening = e,
-            screening = a,
-            screened = [],
-            screenQueue = as
-          },
-        a
-      )
+  init g (EpsGreedyHyper e (Arms (a :| as))) =
+    ( Screening $ ScreeningGreedy
+        { tScreening = 1,
+          epsScreening = e,
+          screening = a,
+          screened = [],
+          screenQueue = as
+        },
+      a,
+      g
+    )
 
-  step l =
+  step g l =
     get >>= \case
       Screening sg ->
         case screenQueue sg of
@@ -82,7 +80,7 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
                   screened = (l, screening sg) : screened sg,
                   screenQueue = as
                 }
-            return a
+            return (a, g)
           [] -> do
             let eeg = ExploreExploitGreedy
                   { t = tScreening sg + 1,
@@ -91,7 +89,7 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
                     k = length (screened sg) + 1,
                     weights = toW <$> ((l, screening sg) :| screened sg)
                   }
-            pickreturn eeg
+            pickreturn eeg g
             where
               toW :: forall a. (Double, a) -> Weight a
               toW (loss, action) = Weight loss 1 action
@@ -104,20 +102,21 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
                       then updateAvgLoss l w
                       else w
                 }
-        pickreturn eeg
+        pickreturn eeg g
 
 pickreturn ::
-  (MonadRandom m, MonadState (EpsGreedy b) m) =>
+  (RandomGen g, MonadState (EpsGreedy b) m) =>
   ExploreExploitGreedy b ->
-  m b
-pickreturn eeg = do
-  a <- pickAction eeg
+  g ->
+  m (b, g)
+pickreturn eeg g = do
+  let (a, g') = pickAction eeg g
   put $ ExploreExploit $ eeg {lastAction = a}
-  return a
+  return (a, g')
 
-pickAction :: (MonadRandom m) => ExploreExploitGreedy a -> m a
+pickAction :: (RandomGen g) => ExploreExploitGreedy a -> g -> (a, g)
 pickAction ExploreExploitGreedy {..} =
-  RS.sample . DC.fromWeightedList $ toList $ weights <&> w2tuple
+  sampleWL (toList $ weights <&> w2tuple)
   where
     w2tuple :: Weight b -> (Double, b)
     w2tuple (Weight avgloss _hits action) = (avgloss, action)

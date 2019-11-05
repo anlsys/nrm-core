@@ -96,7 +96,7 @@ squeeze _t mstM =
     newround (Done _totalAverageDone lastTimeDone lastValueDone) =
       Running lastTimeDone lastTimeDone lastValueDone lastValueDone
     newround _ = Never
-    isDone Done{} = True
+    isDone Done {} = True
     isDone _ = False
 
 data MeasurementState
@@ -138,61 +138,3 @@ initIntegrator t tmin = Integrator
     minimumControlInterval = tmin,
     measured = DM.empty
   }
--- calculate ::
---   Time ->
---   Integrator ->
---   IntegratedProblem ->
---   Maybe Calculate
--- calculate
---   t
---   ( clear t ->
---       ( Integrator
---           tLast
---           deltaT
---           timeSeriesMap
---         )
---     )
---   ( IntegratedProblem
---       sensors
---       actuators
---       objective
---       range
---     )
---     | t - tLast < deltaT = Nothing
---     | otherwise =
---       let integrated :: [Maybe (SensorID, ProcessedTS)]
---           integrated =
---             ( DM.toList
---                 timeSeriesMap
---                 <&> (\(sensorID, ts) -> (sensorID,) <$> integrate ts)
---             )
---           maybeResults :: Maybe [(SensorID, ProcessedTS)]
---           maybeResults = sequence integrated
---        in ptsToCalculate <$> maybeResults
---     where
---       integrate :: [(Time, Double)] -> Maybe ProcessedTS
---       integrate ((tFirst, vFirst) : (tSecond, vSecond) : ts)
---         | fst (last ts) < tLast + deltaT = Nothing
---         | otherwise =
---           let proxyValue =
---                 vSecond + fromuS (tSecond - tLast)
---                   * ((vFirst - vSecond) / fromuS (tFirst - tSecond))
---            in Just $
---                 ProcessedTS
---                   [p | p@(tp, _) <- ts, tp >= t]
---                   ( snd $
---                       foldl
---                         folder
---                         ((tLast, proxyValue), 0)
---                         ( (tSecond, vSecond)
---                             : ts
---                         )
---                   )
---       integrate _ = Nothing
---       folder ::
---         ((Time, Double), Double) ->
---         (Time, Double) ->
---         ((Time, Double), Double)
---       folder ((t', previous), accum) (t'', value)
---         | t'' < t + deltaT = ((t'',value),(t'' - t') * min value previous)
---         | otherwise = (t', accum)

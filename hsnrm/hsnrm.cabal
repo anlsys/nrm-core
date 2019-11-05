@@ -113,6 +113,7 @@ library nrmlib
         Bandit.Class
         Bandit.Exp3
         Bandit.EpsGreedy
+        Bandit.Util
     hs-source-dirs: nrm bin
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
@@ -138,14 +139,13 @@ library nrmlib
     build-depends:
         base -any,
         protolude -any,
+        MonadRandom -any,
         mtl-compat -any,
         vcs-revision -any,
         transformers -any,
         generic-data -any,
         bytestring -any,
         random -any,
-        random-fu -any,
-        MonadRandom -any,
         prettyprinter -any,
         zeromq4-haskell -any,
         zeromq4-conduit -any,
@@ -197,6 +197,7 @@ library banditlib
         Bandit.Class
         Bandit.Exp3
         Bandit.EpsGreedy
+        Bandit.Util
     hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
@@ -222,14 +223,13 @@ library banditlib
     build-depends:
         base -any,
         protolude -any,
+        MonadRandom -any,
         mtl-compat -any,
         vcs-revision -any,
         transformers -any,
         generic-data -any,
         bytestring -any,
         random -any,
-        random-fu -any,
-        MonadRandom -any,
         prettyprinter -any,
         zeromq4-haskell -any,
         zeromq4-conduit -any,
@@ -366,6 +366,7 @@ executable nrm.so
         Bandit.Class
         Bandit.Exp3
         Bandit.EpsGreedy
+        Bandit.Util
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
@@ -391,14 +392,13 @@ executable nrm.so
     build-depends:
         base -any,
         protolude -any,
+        MonadRandom -any,
         mtl-compat -any,
         vcs-revision -any,
         transformers -any,
         generic-data -any,
         bytestring -any,
         random -any,
-        random-fu -any,
-        MonadRandom -any,
         prettyprinter -any,
         zeromq4-haskell -any,
         zeromq4-conduit -any,
@@ -535,6 +535,7 @@ executable nrmstatic
         Bandit.Class
         Bandit.Exp3
         Bandit.EpsGreedy
+        Bandit.Util
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
@@ -559,14 +560,13 @@ executable nrmstatic
     build-depends:
         base -any,
         protolude -any,
+        MonadRandom -any,
         mtl-compat -any,
         vcs-revision -any,
         transformers -any,
         generic-data -any,
         bytestring -any,
         random -any,
-        random-fu -any,
-        MonadRandom -any,
         prettyprinter -any,
         zeromq4-haskell -any,
         zeromq4-conduit -any,

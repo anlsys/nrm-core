@@ -19,26 +19,23 @@ import CPD.Integrated
 import CPD.Utils
 import CPD.Values
 import Control.Lens
-import Control.Monad.Trans.RWS.Lazy (RWST)
 import Data.Generics.Product
 import Data.Map as DM
-import Data.Random
 import NRM.Orphans.NonEmpty ()
-import NRM.Types.Behavior (Behavior)
-import NRM.Types.Configuration (Cfg)
 import NRM.Types.Controller
 import NRM.Types.Units
 import Numeric.Interval
 import Protolude
 import Refined
+import System.Random
 
 -- |  basic control strategy - uses a bandit with a cartesian product
 -- of admissible actuator actions as the the decision space.
 banditCartesianProductControl ::
   ( Applicative (Zoomed m0 [Action]),
     Zoom m0 m (Exp3 [Action]) Controller,
-    MonadRandom m,
-    MonadRandom m0
+    MonadIO m,
+    MonadIO m0
   ) =>
   Input ->
   m Decision
@@ -57,9 +54,7 @@ banditCartesianProductControl (Reconfigure t cpd) =
       nonEmpty
         ( cartesianProduct
             ( DM.toList (iactuators ipb)
-                <&> ( \(actuatorID, actions -> discretes) ->
-                        [Action actuatorID d | d <- discretes]
-                    )
+                <&> \(actuatorID, a) -> Action actuatorID <$> actions a
             )
         )
         & \case
@@ -67,7 +62,9 @@ banditCartesianProductControl (Reconfigure t cpd) =
             field @"bandit" .= Nothing
             doNothing
           Just acp -> do
-            (b, a) <- initPFMAB (Arms acp)
+            g <- liftIO getStdGen
+            let (b, a, g') = initPFMAB g (Arms acp)
+            liftIO $ setStdGen g'
             field @"bandit" .= Just b
             return $ Decision a
 banditCartesianProductControl (NoEvent t) = tryControlStep t
@@ -83,7 +80,7 @@ banditCartesianProductControl (Event t ms) = do
 tryControlStep ::
   ( Applicative (Zoomed m0 [Action]),
     Zoom m0 m (Exp3 [Action]) Controller,
-    MonadRandom m0
+    MonadIO m0
   ) =>
   Time ->
   m Decision
@@ -103,7 +100,15 @@ tryControlStep t =
               case ZeroOneInterval <$> refine ((value - inf range) / width range) of
                 Left _ -> doNothing
                 Right v ->
-                  Decision <$> zoom (field @"bandit" . _Just) (stepPFMAB v)
+                  Decision
+                    <$> zoom
+                      (field @"bandit" . _Just)
+                      ( do
+                          g <- liftIO getStdGen
+                          (a, g') <- stepPFMAB g v
+                          liftIO $ setStdGen g'
+                          return a
+                      )
 
 doNothing :: (Monad m) => m Decision
 doNothing = return DoNothing
@@ -114,5 +119,3 @@ cartesianProduct :: [[Action]] -> [[Action]]
 cartesianProduct [] = []
 cartesianProduct [[]] = []
 cartesianProduct s = sequence s
-
-instance MonadRandom (RWST Cfg [Behavior] s IO)

@@ -15,8 +15,8 @@ module Bandit.Class
   )
 where
 
-import Data.Random
 import Protolude
+import System.Random
 
 -- | Bandit b hyper f a l is the class for a bandit algorithm. This is mostly
 -- here to help structure the library itself.  We have the following bandit
@@ -45,10 +45,10 @@ class Bandit b hyper a l | b -> l, b -> hyper where
 
   -- | Init hyper returns the initial state of the bandit algorithm and the
   -- first action.
-  init :: (MonadRandom m) => hyper -> m (b, a)
+  init :: (RandomGen g) => g -> hyper -> (b, a, g)
 
   -- | @step loss@ iterates the bandit process one step forward.
-  step :: (MonadRandom m, MonadState b m) => l -> m a
+  step :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
 
 newtype Arms a = Arms (NonEmpty a)
 
@@ -62,10 +62,10 @@ class (Eq a, Bandit b (Arms a) a l) => ParameterFreeMAB b a l | b -> l where
 
   -- | @init as@ returns the initial state of the bandit algorithm, where @as@
   -- is a set of available actions.
-  initPFMAB :: (MonadRandom m) => Arms a -> m (b, a)
+  initPFMAB :: (RandomGen g) => g -> Arms a -> (b, a, g)
   initPFMAB = init
 
   -- | @step l@ iterates the bandit process one step forward by feeding loss
   -- value @l@.
-  stepPFMAB :: (MonadRandom m, MonadState b m) => l -> m a
+  stepPFMAB :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
   stepPFMAB = step

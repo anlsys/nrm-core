@@ -24,13 +24,12 @@ module Bandit.Exp3
 where
 
 import Bandit.Class
+import Bandit.Util
 import Control.Lens
 import Data.Generics.Product
-import Data.Random
-import qualified Data.Random.Distribution.Categorical as DC
-import qualified Data.Random.Sample as RS
 import Protolude
 import qualified Refined as R
+import System.Random
 
 -- | The EXP3 state
 data Exp3 a
@@ -72,20 +71,22 @@ instance
   Bandit (Exp3 a) (Arms a) a (ZeroOneInterval Double)
   where
 
-  init (Arms as) = do
-    a <- RS.sample . DC.fromWeightedList $ toList as <&> (1 :: Double,)
-    let ws = as <&> Weight (Probability 1) (CumulativeLoss 0)
-    return
-      ( Exp3
-          { t = 1,
-            lastAction = a,
-            k = length as,
-            weights = ws
-          },
-        a
-      )
+  init g (Arms as) =
+    ( Exp3
+        { t = 1,
+          lastAction = a,
+          k = length as,
+          weights = ws
+        },
+      a,
+      g'
+    )
+    where
+      awl = toList as <&> (1 :: Double,)
+      (a, g') = sampleWL awl g
+      ws = as <&> Weight (Probability 1) (CumulativeLoss 0)
 
-  step (unrefineLoss -> l) =
+  step g (unrefineLoss -> l) =
     get <&> lastAction >>= \oldAction -> do
       _weights
         %= fmap (\w -> if action w == oldAction then updateCumLoss l w else w)
@@ -93,13 +94,15 @@ instance
       k <- use $ field @"k"
       _weights %= recompute t k
       field @"t" += 1
-      pickAction
+      pickAction g
 
-pickAction :: (MonadRandom m, MonadState (Exp3 a) m) => m a
-pickAction = get >>= s >>= btw (assign (field @"lastAction"))
+pickAction :: (RandomGen g, MonadState (Exp3 a) m) => g -> m (a, g)
+pickAction g = do
+  bandit <- get
+  let (a, g') = sampleWL (toList (weights bandit) <&> w2tuple) g
+  field @"lastAction" .= a
+  return (a, g')
   where
-    s :: forall (m :: * -> *) t. MonadRandom m => Exp3 t -> m t
-    s bandit = RS.sample . DC.fromWeightedList $ toList (weights bandit) <&> w2tuple
     w2tuple :: forall b. Weight b -> (Double, b)
     w2tuple (Weight p _ action) = (getProbability p, action)
 
@@ -118,9 +121,6 @@ recompute t k weights = updatep <$> weights
       exp (- sqrt (2.0 * log (fromIntegral k) / fromIntegral (t * k)) * cL)
     denom = getSum $ foldMap denomF weights
     denomF (getCumulativeLoss . cumulativeLoss -> cL) = Sum $ expw cL
-
-btw :: (Functor f) => (t -> f b) -> t -> f t
-btw k x = x <$ k x
 
 -- | Regret bound for this \(\mathbb{L}=[0,1]\)-loss hyperparameter-free EXP3 version:
 -- \[

@@ -102,8 +102,6 @@ let deps =
           nobound "optparse-applicative"
       , random =
           nobound "random"
-      , random-fu =
-          nobound "random-fu"
       , intervals =
           nobound "intervals"
       , hxt =
@@ -128,6 +126,8 @@ let deps =
           nobound "aeson"
       , hsnrm-lib =
           nobound "hsnrm-lib"
+      , monadRandom =
+          nobound "MonadRandom"
       , directory =
           nobound "directory"
       , transformers =
@@ -166,8 +166,6 @@ let deps =
           nobound "dhall"
       , bytestring =
           nobound "bytestring"
-      , monadrandom =
-          nobound "MonadRandom"
       , data-msgpack =
           nobound "data-msgpack"
       , storable-endian =
@@ -291,21 +289,20 @@ let extramodules =
       , "CPD.Text"
       ]
 
-let banditmodules = [ "Bandit.Class", "Bandit.Exp3", "Bandit.EpsGreedy" ]
+let banditmodules = [ "Bandit.Class", "Bandit.Exp3", "Bandit.EpsGreedy", "Bandit.Util" ]
 
 let allmodules = modules # extramodules # banditmodules
 
 let libdep =
       [ deps.base
       , deps.protolude
+      , deps.monadRandom
       , deps.mtl-compat
       , deps.vcs-revision
       , deps.transformers
       , deps.generic-data
       , deps.bytestring
       , deps.random
-      , deps.random-fu
-      , deps.monadrandom
       , deps.prettyprinter
       , deps.zeromq4-haskell
       , deps.zeromq4-conduit
