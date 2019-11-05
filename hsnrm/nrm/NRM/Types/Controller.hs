@@ -47,10 +47,10 @@ data Controller
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
 
-initialController :: Time -> Frequency -> Controller
-initialController time freq = Controller
+initialController :: Time -> Time -> Controller
+initialController time minTime = Controller
   { integratedProblem = Nothing,
-    integrator = initIntegrator time freq,
+    integrator = initIntegrator time minTime,
     bandit = Nothing
   }
 

@@ -47,18 +47,20 @@ banditCartesianProductControl (Reconfigure t cpd) =
     Nothing -> do
       field @"integratedProblem" .= Nothing
       field @"bandit" .= Nothing
-      freq <- use $ field @"integrator" . field @"maximumControlFrequency"
-      field @"integrator" .= initIntegrator t freq
+      minTime <- use $ field @"integrator" . field @"minimumControlInterval"
+      field @"integrator" .= initIntegrator t minTime
       doNothing
     Just ipb -> do
       field @"integratedProblem" .= Just ipb
-      freq <- use $ field @"integrator" . field @"maximumControlFrequency"
-      field @"integrator" .= initIntegrator t freq
+      minTime <- use $ field @"integrator" . field @"minimumControlInterval"
+      field @"integrator" .= initIntegrator t minTime
       nonEmpty
-        ( sequence $
-            DM.toList (iactuators ipb)
-              <&> \(actuatorID, actions -> discretes) ->
-                [Action actuatorID d | d <- discretes]
+        ( cartesianProduct
+            ( DM.toList (iactuators ipb)
+                <&> ( \(actuatorID, actions -> discretes) ->
+                        [Action actuatorID d | d <- discretes]
+                    )
+            )
         )
         & \case
           Nothing -> do
@@ -71,9 +73,11 @@ banditCartesianProductControl (Reconfigure t cpd) =
 banditCartesianProductControl (NoEvent t) = tryControlStep t
 banditCartesianProductControl (Event t ms) = do
   for_ ms $ \(Measurement sensorID sensorValue sensorTime) ->
-    field @"integrator"
-      . field @"measured"
-      . ix sensorID <>= [(sensorTime, sensorValue)]
+    field @"integrator" %= \(Integrator tlast delta measuredM) ->
+      Integrator
+        tlast
+        delta
+        (measuredM & ix sensorID %~ measureValue (tlast + delta) (sensorTime, sensorValue))
   tryControlStep t
 
 tryControlStep ::
@@ -83,24 +87,32 @@ tryControlStep ::
   ) =>
   Time ->
   m Decision
-tryControlStep t = do
-  i <- use (field @"integrator")
+tryControlStep t =
   use (field @"integratedProblem") >>= \case
     Nothing -> doNothing
-    Just ipb -> calculate t i ipb & \case
-      Nothing -> doNothing
-      Just (Calculate remains measurements) -> do
-        field @"integrator" . field @"measured" .= remains
-        let iobj = iobjective ipb
-        case (,) <$> (eval measurements =<< iobj) <*> (evalRange (isensors ipb) =<< iobj) of
-          Nothing -> doNothing
-          Just (value, range) ->
-            case ZeroOneInterval <$> refine ((value - inf range) / width range) of
-              Left _ -> doNothing
-              Right v ->
-                Decision <$> zoom (field @"bandit" . _Just) (stepPFMAB v)
+    Just ipb -> use (field @"integrator" . field @"measured")
+      <&> squeeze t
+      >>= \case
+        Nothing -> doNothing
+        Just (measurements, newMeasured) -> do
+          field @"integrator" . field @"measured" .= newMeasured
+          let iobj = iobjective ipb
+          case (,) <$> (eval measurements =<< iobj) <*> (evalRange (isensors ipb) =<< iobj) of
+            Nothing -> doNothing
+            Just (value, range) ->
+              case ZeroOneInterval <$> refine ((value - inf range) / width range) of
+                Left _ -> doNothing
+                Right v ->
+                  Decision <$> zoom (field @"bandit" . _Just) (stepPFMAB v)
 
 doNothing :: (Monad m) => m Decision
 doNothing = return DoNothing
+
+-- | Cartesian product of lists. basically `sequence` with special treatment of
+-- corner cases.
+cartesianProduct :: [[Action]] -> [[Action]]
+cartesianProduct [] = []
+cartesianProduct [[]] = []
+cartesianProduct s = sequence s
 
 instance MonadRandom (RWST Cfg [Behavior] s IO)

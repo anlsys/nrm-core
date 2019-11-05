@@ -1,32 +1,33 @@
   λ(dataDir : Text)
--> λ(manifestDir : Text)
+→ λ(daemonCfg : Text)
+→ λ(manifestDir : Text)
 → let lib = ./lib.dh dataDir manifestDir
-
+  
   let message = "HelloWorld"
-
+  
   let cn = "testContainer"
-
-  let basicManifest = manifestDir ++ "perfwrap.dhall"
-
+  
+  let basicManifest = manifestDir ++ "default.dhall"
+  
   let singularityManifest = manifestDir ++ "singularity.yml"
-
+  
   let argIfTest =
           λ(isTest : Bool)
         → { isTest =
               isTest
           , timeout =
                     if isTest
-
+              
               then  [ 600 ] : Optional Natural
-
+              
               else  [] : Optional Natural
           }
-
+  
   let Powercap = < Cap : Text | NoCap : {} >
-
+  
   in  { run-singularity =
           lib.makeBase
-          (   lib.emptyMakeBaseArg "echo" singularityManifest cn
+          (   lib.emptyMakeBaseArg "echo" singularityManifest daemonCfg cn
             ⫽ { args =
                   [ message ]
               , verbose =
@@ -43,7 +44,7 @@
           )
       , run =
           lib.makeBase
-          (   lib.emptyMakeBaseArg "echo" basicManifest cn
+          (   lib.emptyMakeBaseArg "echo" basicManifest daemonCfg cn
             ⫽ { args =
                   [ message ]
               , verbose =
@@ -56,26 +57,9 @@
                   [ 600 ] : Optional Natural
               }
           )
-      , pwd =
-          lib.makeBase
-          (   lib.emptyMakeBaseArg "pwd" basicManifest cn
-            ⫽ { args =
-                  [] : List Text
-              , verbose =
-                  True
-              , cmdwants =
-                  [ "toto" ] : List Text
-              , cmdavoids =
-                  [ "Traceback" ]
-              , timeout =
-                  [ 600 ] : Optional Natural
-              , runwd =
-                  [ "toto" ] : Optional Text
-              }
-          )
       , exitcode =
           lib.makeBase
-          (   lib.emptyMakeBaseArg "false" basicManifest cn
+          (   lib.emptyMakeBaseArg "false" basicManifest daemonCfg cn
             ⫽ { args =
                   [] : List Text
               , verbose =
@@ -92,7 +76,7 @@
           )
       , hello =
           lib.makeBase
-          (   lib.emptyMakeBaseArg "echo" basicManifest cn
+          (   lib.emptyMakeBaseArg "echo" basicManifest daemonCfg cn
             ⫽ { args =
                   [ message ]
               , verbose =
@@ -107,9 +91,11 @@
           )
       , listen =
           lib.makeExtended
-          (   lib.emptyMakeBaseArg "sleep" basicManifest cn
+          (   lib.emptyMakeBaseArg "sleep" basicManifest daemonCfg cn
             ⫽ { args =
                   [ "1" ]
+              , daemonCfg =
+                  daemonCfg
               , verbose =
                   True
               , cmdwants =
@@ -132,6 +118,7 @@
           ]
       , power =
           lib.appTest
+          daemonCfg
           (   lib.emptyFilterTestArgs "power" "sleep"
             ⫽ { timeout =
                   [ 600 ] : Optional Natural
@@ -143,6 +130,7 @@
           )
       , performance =
           lib.appTest
+          daemonCfg
           (   lib.emptyFilterTestArgs "performance" "sleep"
             ⫽ { timeout =
                   [ 600 ] : Optional Natural
@@ -159,6 +147,7 @@
           → λ(powercap : Powercap)
           → lib.extendApp
             ( lib.progressAppTest
+              daemonCfg
               (   lib.emptyProgressAppTestArg
                   "mpiexec"
                   [ "-n"
@@ -180,6 +169,7 @@
           → λ(powercap : Powercap)
           → lib.extendApp
             ( lib.progressAppTest
+              daemonCfg
               (   lib.emptyProgressAppTestArg
                   "mpiexec"
                   [ "-n"
@@ -204,6 +194,7 @@
           → λ(powercap : Powercap)
           → lib.extendApp
             (   lib.progressAppTest
+                daemonCfg
                 (   lib.emptyProgressAppTestArg
                     "mpiexec"
                     [ "-n", if isTest then "2" else "24", "openmc" ]
@@ -226,6 +217,7 @@
           → λ(powercap : Powercap)
           → lib.extendApp
             ( lib.progressAppTest
+              daemonCfg
               (   lib.emptyProgressAppTestArg
                   "mpiexec"
                   [ "-n"
@@ -258,6 +250,7 @@
           → λ(powercap : Powercap)
           → lib.extendApp
             ( lib.progressAppTest
+              daemonCfg
               (   lib.emptyProgressAppTestArg "stream_c" ([] : List Text)
                 ⫽ argIfTest isTest
                 ⫽ { vars =

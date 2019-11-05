@@ -7,6 +7,15 @@
  *
  *    this file is generated, modifications will be erased.
 */
+
+
+#define NRM_DEFAULT_URI "ipc:///tmp/nrm-downstream-event"
+#define NRM_ENV_URI "NRM_DOWNSTREAM_EVENT_URI"
+#define NRM_ENV_CMDID "NRM_CMDID"
+#define NRM_ENV_RATELIMIT "NRM_RATELIMIT"
+#define NRM_ENV_TRANSMIT "NRM_TRANSMIT"
+#define NRM_DEFAULT_RATELIMIT_THRESHOLD (10000000LL)
+
 #define NRM_CMDPERFORMANCE_FORMAT "{\"cmdPerformance\":{\"cmdID\": \"%s\",\"perf\": %d}}"
 #define NRM_CMDPAUSE_FORMAT "{\"cmdPause\":{\"cmdID\": \"%s\"}}"
 #define NRM_THREADPROGRESS_FORMAT "{\"threadProgress\":{\"cmdID\": \"%s\",\"processID\": %d,\"taskID\": \"%s\",\"threadID\": %d,\"rankID\": %d,\"payload\": %d}}"

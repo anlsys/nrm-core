@@ -65,8 +65,8 @@ newtype Power = Power {fromuW :: Double}
   deriving (Show, JSONSchema, ToJSON, FromJSON) via Double
 
 newtype Time = Time {fromuS :: Double}
-  deriving (Eq, Generic, Data, Inject, Interpret, MessagePack)
-  deriving (Show, JSONSchema, ToJSON, FromJSON) via Double
+  deriving (Eq,Ord, Generic, Data, Inject, Interpret, MessagePack)
+  deriving (Show, Num,Fractional,JSONSchema, ToJSON, FromJSON) via Double
 
 newtype Energy = Energy {fromuJ :: Double}
   deriving (Eq, Generic, Data, Inject, Interpret, MessagePack)

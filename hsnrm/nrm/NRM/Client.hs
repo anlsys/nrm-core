@@ -29,6 +29,7 @@ import NRM.Types.State
 import qualified NRM.Types.UpstreamClient as UC
 import NeatInterpolation
 import Protolude hiding (Rep)
+import System.Exit (exitWith)
 import System.IO (hFlush)
 import qualified System.Posix.Signals as SPS
   ( Handler (..),
@@ -131,19 +132,30 @@ reqrep s opts = \case
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepCPD (URep.CPD cpd)) ->
+        Just (URep.RepCPD (URep.CPD acpd scpd)) ->
           putText
             [text|
+              asynchronous Control Problem Description:
+               $acpdT
+
+              $scpdT
+
               $actuatorcount actuator(s) currently registered.
               $sensorcount sensor(s) currently registered.
-              CPD Internal view
-               $cpdT
              |]
           where
-            --cpdTD = CPD.showProblemDhall cpd
-            cpdT = toS $ pShow cpd
-            actuatorcount = show $ length (CPD.actuators cpd)
-            sensorcount = show $ length (CPD.sensors cpd)
+            acpdT = toS $ pShow acpd
+            scpdT = scpd & \case
+              Nothing -> "no synchronous problem description currently available"
+              Just (toS . pShow -> c) ->
+                toS
+                  [text|
+                   synchronous(integrated) Control Problem Description:
+                    $c
+
+                  |]
+            actuatorcount = show $ length (CPD.actuators acpd)
+            sensorcount = show $ length (CPD.sensors acpd)
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.SliceList ->
@@ -238,7 +250,10 @@ reqstream s c Protocols.Run UReq.Run {..} = do
         Just (URep.RepThisCmdKilled _) -> putText "Command killed."
         Just (URep.RepCmdEnded (URep.exitCode -> x)) -> case x of
           ExitSuccess -> putText "Command ended successfully."
-          ExitFailure exitcode -> liftIO $ die ("Command ended with exit code" <> show exitcode)
+          ec@(ExitFailure exitcode) ->
+            liftIO $
+              putText ("Command ended with exit code: " <> show (exitcode `mod` 256))
+                >> exitWith ec
         Nothing -> putText "error: NRM client received malformed message."
         _ -> putText "error: NRM client received wrong type of message."
     zmqCCHandler :: IO () -> ZMQ.ZMQ z ()

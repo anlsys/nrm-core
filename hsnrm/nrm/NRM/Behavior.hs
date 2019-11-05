@@ -14,6 +14,7 @@ module NRM.Behavior
   )
 where
 
+import CPD.Integrated as CPD
 import CPD.Values as CPD
 import Control.Lens hiding (to)
 import Control.Monad.Trans.RWS.Lazy (RWST)
@@ -23,6 +24,7 @@ import LMap.Map as LM
 import LensMap.Core as LensMap
 import qualified NRM.CPD as NRMCPD
 import NRM.Control
+import NRM.Messaging
 import NRM.Sensors as Sensors
 import NRM.State
 import NRM.Types.Behavior
@@ -96,7 +98,7 @@ nrm _callTime (Req clientid msg) = do
   st <- get
   c <- ask
   msg & \case
-    UReq.ReqCPD _ -> rep clientid (URep.RepCPD . URep.CPD $ NRMCPD.toCPD st)
+    UReq.ReqCPD _ -> rep clientid (URep.RepCPD $ URep.CPD (NRMCPD.toCPD st) (CPD.integrateProblem $ NRMCPD.toCPD st))
     UReq.ReqSliceList _ -> rep clientid (URep.RepList . URep.SliceList . LM.toList $ slices st)
     UReq.ReqGetState _ -> rep clientid (URep.RepGetState $ URep.GetState st)
     UReq.ReqGetConfig _ -> rep clientid (URep.RepGetConfig $ URep.GetConfig c)
@@ -117,7 +119,7 @@ nrm _callTime (Req clientid msg) = do
           . createSlice runSliceID
       behave
         $ StartChild cmdID runCmd runArgs
-        $ (Env $ env spec & fromEnv & LM.insert "NRM_CMDID" (CmdID.toText cmdID))
+        $ (Env $ env spec & fromEnv & LM.insert cmdIDEnvVar (CmdID.toText cmdID))
           & mayInjectLibnrmPreload c manifest
     UReq.ReqKillSlice UReq.KillSlice {..} -> do
       let (maybeSlice, st') = removeSlice killSliceID st
@@ -183,7 +185,8 @@ nrm callTime DoSensor = do
   (st', measurements) <- lift (foldM (folder callTime) (st, Just []) (DM.toList $ lenses st))
   put st'
   measurements & \case
-    Just [] -> return ()
+    Just [] ->
+      doControl (Event callTime [])
     Just ms ->
       pub (UPub.PubMeasurements callTime ms)
         >> doControl (Event callTime ms)
@@ -195,12 +198,10 @@ nrm _callTime DoShutdown = behave NoBehavior
 
 -- | nrmControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
-doControl input = return ()
-
---zoom (field @"controller") $
---banditCartesianProductControl input >>= \case
---DoNothing -> log "null control"
---Decision _ -> log "control command not implemented"
+doControl input = zoom (field @"controller") $
+  banditCartesianProductControl input >>= \case
+    DoNothing -> log "null control"
+    Decision d -> log $ "control takes action" <> show d
 
 nrmDownstreamEvent ::
   U.Time ->
@@ -359,7 +360,7 @@ mayInjectLibnrmPreload c manifest e =
     injector :: U.Frequency -> Text -> Env -> Env
     injector ratelimit path (Env env) =
       Env $
-        env & LM.insert "NRM_RATELIMIT" (show $ U.fromHz ratelimit)
+        env & LM.insert ratelimitEnvVar (show $ U.fromHz ratelimit)
           & LM.alter
             ( \case
                 Nothing -> Just path

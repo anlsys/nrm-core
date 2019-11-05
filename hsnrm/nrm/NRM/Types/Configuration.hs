@@ -56,7 +56,7 @@ data Cfg
         upstreamCfg :: UpstreamCfg,
         raplCfg :: RaplCfg,
         hwmonCfg :: HwmonCfg,
-        maximumControlFrequency :: Frequency
+        minimumControlInterval :: Time
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
@@ -128,7 +128,7 @@ instance Default Cfg where
       raplCfg = def,
       hwmonCfg = def,
       verbose = Normal,
-      maximumControlFrequency = 1 & hz
+      minimumControlInterval = 0.1 & seconds
     }
 
 instance Default UpstreamCfg where

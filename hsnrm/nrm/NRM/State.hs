@@ -62,7 +62,7 @@ initialState c time = do
       Just (RAPLDirs rapldirs) -> Protolude.foldl goRAPL packages' (LM.toList rapldirs)
       Nothing -> packages'
   return NRMState
-    { controller = initialController time (maximumControlFrequency c),
+    { controller = initialController time (minimumControlInterval c),
       slices = LM.fromList [],
       pus = LM.fromList $ (,PU) <$> selectPUIDs hwl,
       cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl,

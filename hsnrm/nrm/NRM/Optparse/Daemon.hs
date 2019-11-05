@@ -8,9 +8,7 @@ module NRM.Optparse.Daemon
   )
 where
 
-import qualified Data.ByteString as B
-  ( getContents,
-  )
+import qualified Data.ByteString as B (getContents)
 import Dhall
 import NRM.Types.Configuration
 import qualified NRM.Types.Configuration as C
@@ -20,9 +18,7 @@ import Protolude
 import System.Directory
 import System.FilePath.Posix
 import Text.Editor
-import qualified Prelude
-  ( print,
-  )
+import qualified Prelude (print)
 
 data MainCfg
   = MainCfg
@@ -64,37 +60,34 @@ opts = (load <$> commonParser) <**> helper
 data SourceType = Dhall | Yaml
   deriving (Eq)
 
-data FinallySource = NoExt | FinallyFile SourceType Text | FinallyStdin SourceType
+data FinallySource = NoExt Text | FinallyArg SourceType Text | FinallyStdin SourceType
 
 ext :: SourceType -> Maybe Text -> FinallySource
-ext _ (Just fn)
-  | xt `elem` [".dh", ".dhall"] = FinallyFile Dhall fn
-  | xt `elem` [".yml", ".yaml"] = FinallyFile Yaml fn
-  | otherwise = NoExt
+ext _ (Just ct)
+  | xt `elem` [".dh", ".dhall"] = FinallyArg Dhall ct
+  | xt `elem` [".yml", ".yaml"] = FinallyArg Yaml ct
+  | otherwise = NoExt ct
   where
-    xt = takeExtension $ toS fn
+    xt = takeExtension $ toS ct
 ext st Nothing = FinallyStdin st
 
 load :: MainCfg -> IO Cfg
 load MainCfg {..} =
   (if edit then editing else return) =<< case ext stdinType inputfile of
-    (FinallyFile Dhall filename) ->
+    (FinallyArg Dhall content) ->
       (if v then detailed else identity) $
-        C.inputCfg
-          =<< toS
-          <$> makeAbsolute (toS filename)
-    (FinallyFile Yaml filename) ->
+        C.inputCfg (toS content)
+    (FinallyArg Yaml filename) ->
       Y.decodeCfgFile =<< toS <$> makeAbsolute (toS filename)
     (FinallyStdin Yaml) ->
       B.getContents <&> Y.decodeCfg >>= \case
         Left e -> Prelude.print e >> die "yaml parsing exception."
         Right cfg -> return cfg
     (FinallyStdin Dhall) -> B.getContents >>= C.inputCfg . toS
-    NoExt ->
-      die
-        ( "couldn't figure out extension for input file. "
-            <> "Please use something in {.yml,.yaml,.dh,.dhall} ."
-        )
+    NoExt content -> do
+      putText "couldn't figure out extension for input file. defaulting to dhall normalization"
+      (if v then detailed else identity) $
+        C.inputCfg (toS content)
   where
     v = verbosity == Verbose
 

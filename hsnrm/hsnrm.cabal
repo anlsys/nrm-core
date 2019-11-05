@@ -45,6 +45,7 @@ library nrmlib
         NRM.Version
         NRM.Sensors
         NRM.Actuators
+        NRM.Messaging
         NRM.Processes
         NRM.State
         NRM.Node.Sysfs.Internal
@@ -297,6 +298,7 @@ executable nrm.so
         NRM.Version
         NRM.Sensors
         NRM.Actuators
+        NRM.Messaging
         NRM.Processes
         NRM.State
         NRM.Node.Sysfs.Internal
@@ -465,6 +467,7 @@ executable nrmstatic
         NRM.Version
         NRM.Sensors
         NRM.Actuators
+        NRM.Messaging
         NRM.Processes
         NRM.State
         NRM.Node.Sysfs.Internal

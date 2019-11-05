@@ -32,6 +32,7 @@ import qualified Dhall.Parser
 import qualified Dhall.TypeCheck as Dhall
 import qualified NRM.Classes.Examples as Examples
 import qualified NRM.Manifest.Examples ()
+import NRM.Messaging
 import qualified NRM.Types.Configuration as C
 import qualified NRM.Types.Configuration.Yaml as CI (encodeDCfg)
 import qualified NRM.Types.Manifest as MI
@@ -52,7 +53,7 @@ main = do
   (toS -> prefix) : _ <- getArgs
   putText "Codegen: LibNRM C headers."
   putText $ "  Writing libnrm header to " <> prefix <> "/nrm_messaging.h"
-  writeFile (toS $ prefix <> "/nrm_messaging.h") $ toS (licenseC <> libnrmHeader)
+  writeFile (toS $ prefix <> "/nrm_messaging.h") $ toS (licenseC<> "\n\n" <> libnrmVars <> "\n\n" <> libnrmHeader)
   putText "Codegen: JSON schemas"
   --verboseWriteSchema prefix "upstreamPub" upstreamPubSchema
   --verboseWriteSchema prefix "upstreamRep" upstreamRepSchema

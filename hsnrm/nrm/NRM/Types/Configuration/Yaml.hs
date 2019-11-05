@@ -38,7 +38,7 @@ data Cfg
         upstreamCfg :: Maybe I.UpstreamCfg,
         raplCfg :: Maybe I.RaplCfg,
         hwmonCfg :: Maybe I.HwmonCfg,
-        maximumControlFrequency :: Maybe Frequency
+        minimumControlInterval :: Maybe Time
       }
   deriving (Generic)
 
@@ -64,7 +64,7 @@ toInternal d = I.Cfg
     singularity = fromDefault singularity I.singularity,
     dummy = fromDefault dummy I.dummy,
     nodeos = fromDefault nodeos I.nodeos,
-    maximumControlFrequency = fromDefault maximumControlFrequency I.maximumControlFrequency,
+    minimumControlInterval = fromDefault minimumControlInterval I.minimumControlInterval,
     slice_runtime = fromDefault slice_runtime I.slice_runtime,
     downstreamCfg = fromDefault downstreamCfg I.downstreamCfg,
     upstreamCfg = fromDefault upstreamCfg I.upstreamCfg,
@@ -88,7 +88,7 @@ fromInternal d = Cfg
     singularity = toJust I.singularity,
     dummy = toJust I.dummy,
     nodeos = toJust I.nodeos,
-    maximumControlFrequency = toJust I.maximumControlFrequency,
+    minimumControlInterval = toJust I.minimumControlInterval,
     slice_runtime = toJust I.slice_runtime,
     downstreamCfg = toJust I.downstreamCfg,
     upstreamCfg = toJust I.upstreamCfg,

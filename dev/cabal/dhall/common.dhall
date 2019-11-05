@@ -221,6 +221,7 @@ let modules =
       , "NRM.Version"
       , "NRM.Sensors"
       , "NRM.Actuators"
+      , "NRM.Messaging"
       , "NRM.Processes"
       , "NRM.State"
       , "NRM.Node.Sysfs.Internal"

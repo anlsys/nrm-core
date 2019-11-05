@@ -159,7 +159,9 @@ class Daemon(object):
             self.cmds[cmdID] = p
             registerSuccess(p.proc.pid)
             _logger.info("Command start success.")
-        except Exception:
+        # except Exception:
+        except:
+            _logger.info("Unexpected error:", sys.exc_info()[0])
             registerFailed()
             _logger.info("Command start failure.")
 

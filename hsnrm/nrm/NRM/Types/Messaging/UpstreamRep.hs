@@ -29,6 +29,7 @@ module NRM.Types.Messaging.UpstreamRep
 where
 
 import qualified CPD.Core as CPD
+import qualified CPD.Integrated as CPD
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
@@ -109,9 +110,10 @@ data NoSuchSlice
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON NoSuchSlice
 
-newtype CPD
+data CPD
   = CPD
-      { cpd :: CPD.Problem
+      { acpd :: CPD.Problem,
+        scpd :: Maybe CPD.IntegratedProblem
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CPD

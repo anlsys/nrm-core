@@ -145,7 +145,7 @@ instance Default Perfwrapper where
 
 instance Default Instrumentation where
   def = Instrumentation
-    { ratelimit = U.hz 1
+    { ratelimit = U.hz 10000000
     }
 
 instance Default Slice where

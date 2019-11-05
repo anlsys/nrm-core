@@ -4,10 +4,6 @@
 
 , pkgs ? import (fetched ./pkgs.json) { }
 
-, staticPkgs ? import (builtins.fetchTarball
-  "https://github.com/NixOS/nixpkgs-channels/archive/08d245eb31a3de0ad73719372190ce84c1bf3aee.tar.gz")
-  { }
-
 }:
 with pkgs.lib;
 let
@@ -162,12 +158,12 @@ in pkgs // rec {
 
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
 
-    buildInputs = [ pkgs.hwloc ormolu ];
+    buildInputs = [ pkgs.hwloc ormolu haskellPackages.dhrun ];
 
     shellHook = ''
-      export NRMSO=./.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
-      export PATH=$PATH:./dev/:./pynrm/bin:./.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm
-      export PYTHONPATH=$PYTHONPATH:./pynrm/
+      export NRMSO=${builtins.toPath ../.}/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
+      export PATH=${builtins.toPath ../.}/dev/:${builtins.toPath ../.}/pynrm/bin:${builtins.toPath ../.}/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
+      export PYTHONPATH=${builtins.toPath ../.}/pynrm/:$PYTHONPATH
     '';
   };
 

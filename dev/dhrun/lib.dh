@@ -44,7 +44,7 @@
           , vars =
               values.emptyVars
           , passvars =
-              [ "PATH" ]
+              [ "PATH" , "PWD", "PYTHONPATH", "NRMSO"]
           , timeout =
               [] : Optional Natural
           , otherwd =
@@ -59,6 +59,8 @@
         { manifest :
             Text
         , cmd :
+            Text
+        , daemonCfg :
             Text
         , containerName :
             Text
@@ -89,6 +91,7 @@
   let emptyMakeBaseArg =
           λ(cmd : Text)
         → λ(manifest : Text)
+        → λ(daemonCfg : Text)
         → λ(containerName : Text)
         →   { manifest =
                 manifest
@@ -96,6 +99,8 @@
                 cmd
             , containerName =
                 containerName
+            , daemonCfg =
+                daemonCfg
             , args =
                 [] : List Text
             , verbose =
@@ -121,21 +126,8 @@
             }
           : MakeBaseArg
   
-  let addVerbose = λ(v : Bool) → if v then [ "--verbose" ] else [] : List Text
   
-  let addSingularity =
-          λ(v : Bool)
-        → if v then [ "--container-runtime", "singularity" ] else [] : List Text
   
-  let addPowercap =
-          λ(p : Powercap)
-        → merge
-          { Cap =
-              λ(x : Text) → [ "--powercap", x ]
-          , NoCap =
-              λ(x : {}) → [] : List Text
-          }
-          p
   
   let makeBase =
           λ(args : MakeBaseArg)
@@ -151,10 +143,7 @@
                         [ "Traceback", "ValueError" ] : List Text
                     }
                   ⫽ { args =
-                          [ "--nrm_log", "./nrm_log" ]
-                        # addVerbose args.verbose
-                        # addSingularity args.singularity
-                        # addPowercap args.powercap
+                          ([args.daemonCfg ]: List Text)
                     , vars =
                         [ { varname =
                               "ARGO_NODEOS_CONFIG"
@@ -178,9 +167,9 @@
                   in    b
                       ⫽ { args =
                               [ "run"
-                              , "-u"
+                              , "-s"
                               , args.containerName
-                              , args.manifest
+                              , "--manifest=" ++ args.manifest
                               , args.cmd
                               ]
                             # args.args
@@ -266,7 +255,8 @@
           : FilterTestArgs
   
   let appTest =
-          λ(args : FilterTestArgs)
+          λ(daemonCfg : Text)
+         -> λ(args : FilterTestArgs)
         → let cn = "testContainer"
           
           in  makeExtended
@@ -278,6 +268,7 @@
                         
                         else  "parallel.yml"
                       )
+              ,daemonCfg = daemonCfg
               , containerName =
                   cn
               , cmd =
@@ -317,7 +308,7 @@
                 
                 in    b
                     ⫽ { args =
-                          [ "listen", "-u", cn, "--filter", args.filter ]
+                          [ "listen", "-s", cn, "--filter", args.filter ]
                       , out =
                             b.out
                           ⫽ { filecheck =
@@ -375,8 +366,9 @@
           : ProgressAppTestArg
   
   let progressAppTest =
-          λ(args : ProgressAppTestArg)
-        → appTest
+          λ(daemonCfg : Text)
+          ->λ(args : ProgressAppTestArg)
+        → appTest daemonCfg
           (   emptyFilterTestArgs "progress" args.cmd
             ⫽ { args =
                   args.args
@@ -410,7 +402,7 @@
                     filter ++ ".err"
                 }
           
-          in  b ⫽ { args = [ "listen", "-u", cn, "--filter", filter ] }
+          in  b ⫽ { args = [ "listen", "-s", cn, "--filter", filter ] }
   
   let powerexpeCmds =
         [ mkListen "testContainer" "power"
