@@ -21,12 +21,25 @@ from a local clone:
 $ firefox $(nix-build -A haskellPackages.nrmlib.doc)/share/doc/nrmlib-*/html/index.html
 ```
 
-##### make a release build: `nix-build -A nrm`
+##### make a release build: 
 
-- enter a development environment: `nix-shell`
-   - use `$ ./shake build` to build the `nrm.so` shared library
-   - use `$ ./shake client` to build the `nrm` client
-   - the appropriate Nix `shellHooks` are in place for you to use `nrm` and `nrmd`.
+```
+nix-build -A nrm
+```
+
+##### enter a development environment: 
+
+enter a dev env using:
+
+```
+nix-shell
+```
+
+then:
+
+- use `$ ./shake build` to build the `nrm.so` shared library
+- use `$ ./shake client` to build the `nrm` client
+- the appropriate Nix `shellHooks` are in place for you to use `nrm` and `nrmd`.
 
 ##### run CI jobs locally: 
 
