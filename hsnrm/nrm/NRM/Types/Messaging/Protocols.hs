@@ -9,9 +9,9 @@ module NRM.Types.Messaging.Protocols
   )
 where
 
+import qualified CPD.Core as CPD
 import qualified NRM.Types.Messaging.UpstreamRep as Rep
 import qualified NRM.Types.Messaging.UpstreamReq as Req
-import qualified CPD.Core as CPD
 
 data ReqRep req rep where
   SliceList :: ReqRep Req.SliceList Rep.SliceList
