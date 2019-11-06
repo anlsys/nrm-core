@@ -191,11 +191,6 @@ hasCoretempInNameFile fp =
       "coretemp" -> MaybeT $ pure $ Just $ HwmonDir fp
       _ -> mzero
 
-{-where-}
-{-f :: Either SomeException Text -> IO (Maybe HwmonDir)-}
-{-f (Right "coretemp") = return . Just $ HwmonDir fp-}
-{-f _ = return Nothing-}
-
 -- | Lists available hwmon directories.
 getHwmonDirs :: FilePath -> IO HwmonDirs
 getHwmonDirs fp = HwmonDirs <$> listDirFilter hasCoretempInNameFile fp
