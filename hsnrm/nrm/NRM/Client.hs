@@ -24,6 +24,7 @@ import qualified NRM.Optparse.Client as C
 import NRM.Types.CmdID as CmdID
 import qualified NRM.Types.Messaging.Protocols as Protocols
 import NRM.Types.Messaging.UpstreamPub as UPub
+import CPD.Core (prettyCPD)
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
 import qualified NRM.Types.Slice as C
@@ -145,7 +146,7 @@ reqrep s opts = \case
           putText
             [text|
               asynchronous Control Problem Description:
-               $acpdT
+              $acpdT
 
               $scpdT
 
@@ -153,7 +154,7 @@ reqrep s opts = \case
               $sensorcount sensor(s) currently registered.
              |]
           where
-            acpdT = pShowOpts opts acpd
+            acpdT = prettyCPD acpd
             scpdT = scpd & \case
               Nothing -> "no synchronous problem description currently available"
               Just (pShowOpts opts -> c) ->
