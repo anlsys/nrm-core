@@ -119,6 +119,7 @@ in pkgs // rec {
       pynrm
       resources
       pkgs.linuxPackages.perf
+      pkgs.hwloc
     ];
   };
 

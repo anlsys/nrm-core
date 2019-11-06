@@ -27,7 +27,7 @@ import NRM.Types.Controller
 import NRM.Types.NRM
 import NRM.Types.Units
 import Numeric.Interval
-import Protolude hiding (log)
+import Protolude
 import Refined
 import System.Random
 
@@ -70,16 +70,14 @@ banditCartesianProductControl cpd (Event t ms) = do
   forM_ ms $ \(Measurement sensorID sensorValue sensorTime) -> do
     let s = DM.lookup sensorID (sensors cpd)
     s & \case
-      Nothing -> log "tx" >> return ()
+      Nothing -> return ()
       Just (range -> r) ->
         let v = (sensorTime, (sensorValue - inf r) / width r)
-         in do
-              log ("measuring with range " <> show r <> " :" <> show v)
-              field @"integrator" %= \(Integrator tlast delta measuredM) ->
-                Integrator
-                  tlast
-                  delta
-                  (measuredM & ix sensorID %~ measureValue (tlast + delta) v)
+         in field @"integrator" %= \(Integrator tlast delta measuredM) ->
+              Integrator
+                tlast
+                delta
+                (measuredM & ix sensorID %~ measureValue (tlast + delta) v)
   tryControlStep cpd t
 
 tryControlStep ::
@@ -87,7 +85,7 @@ tryControlStep ::
   Time ->
   ControlM Decision
 tryControlStep cpd t = case objective cpd of
-  Nothing -> log "ti" >> doNothing
+  Nothing -> doNothing
   Just oexpr -> cStep oexpr (sensors cpd <&> range) t
 
 cStep ::
@@ -97,14 +95,14 @@ cStep ::
   ControlM Decision
 cStep oexpr sensorRanges t =
   use (field @"integrator" . field @"measured") <&> squeeze t >>= \case
-    Nothing -> log "to" >> doNothing
+    Nothing -> doNothing
     Just (measurements, newMeasured) -> do
       field @"integrator" . field @"measured" .= newMeasured
       case (,) <$> eval measurements oexpr <*> evalRange sensorRanges oexpr of
         Nothing -> doNothing
         Just (value, range) ->
           case ZeroOneInterval <$> refine ((value - inf range) / width range) of
-            Left _ -> log ("tu\n" <> show value <> "\n " <> show range) >> doNothing
+            Left _ -> doNothing
             Right v ->
               Decision
                 <$> zoom
