@@ -44,15 +44,8 @@ then:
 ##### run CI jobs locally: 
 
 you need a gitlab runner at the same version as your CI infrastructure.
-A minima, try `nix-env -iA nixpkgs.gitlab-runner`.
-
-```
-nix-shell -p '(import ./default.nix).yq' --run bash <<< '
-for jobname in $(yq 'keys| .[]' .gitlab-ci.yml); do
-  gitlab-runner exec shell $(echo $jobname | jq -r ${1} ); 
-done
-'
-```
+A minima, try `nix-env -iA nixpkgs.gitlab-runner`. You can then run
+a unique job using `./ci <jobname>` or all jobs using `./ci`.
 
 ### architecture
 
