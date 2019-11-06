@@ -44,12 +44,12 @@ data OptimizationSemantics
   | Rapl
   | DownstreamThreadSignal
   | DownstreamCmdSignal
-  deriving (Eq,Show)
+  deriving (Eq, Show)
 
 data Tag
   = Tag
-      { standardDirection :: Direction, -- | A standard direction we'd like to take this sensor
-        preciseSemantics :: [OptimizationSemantics] -- | used for complex daemon configuration
+      { standardDirection :: Direction,
+        preciseSemantics :: [OptimizationSemantics]
       }
 
 data Sensor
