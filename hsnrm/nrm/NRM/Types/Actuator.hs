@@ -8,6 +8,7 @@
 module NRM.Types.Actuator
   ( Actuator (..),
     ActuatorKey (..),
+    fromCPDKey,
   )
 where
 
@@ -22,11 +23,14 @@ data Actuator
         go :: Double -> IO ()
       }
 
-data ActuatorKey = RaplKey PackageID | A
-  deriving (Show, Eq, Ord)
+newtype ActuatorKey = RaplKey PackageID
+  deriving (Show, Read, Eq, Ord)
 
 instance StringConv ActuatorKey CPD.ActuatorID where
   strConv _ = CPD.ActuatorID . show
+
+fromCPDKey :: CPD.ActuatorID -> Maybe ActuatorKey
+fromCPDKey (CPD.ActuatorID id) = readMaybe (toS id)
 
 instance ToCPDActuator ActuatorKey Actuator where
   toCPDActuator (id, Actuator {..}) =

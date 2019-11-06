@@ -20,7 +20,7 @@ import Refined.Orphan.Aeson ()
 
 -- | A Package OS identifier.
 newtype PackageID = PackageID Int
-  deriving (Eq, Ord, Show, Generic, Data, FromJSONKey, ToJSONKey, MessagePack)
+  deriving (Eq, Ord, Show, Read, Generic, Data, FromJSONKey, ToJSONKey, MessagePack)
   deriving (FromJSON, ToJSON, JSONSchema) via GenericJSON PackageID
 
 instance IdFromString PackageID where

@@ -22,6 +22,7 @@ module NRM.Behavior
   )
 where
 
+import CPD.Core as CPD
 import CPD.Values as CPD
 import Control.Lens hiding (to)
 import Control.Monad.Trans.RWS.Lazy (RWST)
@@ -34,6 +35,7 @@ import NRM.Control
 import NRM.Messaging
 import NRM.Sensors as Sensors
 import NRM.State
+import NRM.Types.Actuator
 import NRM.Types.Behavior
 import NRM.Types.Cmd
 import NRM.Types.CmdID as CmdID
@@ -206,11 +208,19 @@ nrm _callTime DoShutdown = behave NoBehavior
 -- | doControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
 doControl input = do
-  p <- get <&> NRMCPD.toCPD
+  st <- get
   zoom (field @"controller") $
-    banditCartesianProductControl p input >>= \case
-      DoNothing -> log "No control"
-      Decision d -> log $ "control takes action" <> show d
+    banditCartesianProductControl (NRMCPD.toCPD st) input >>= \case
+      DoNothing -> return ()
+      Decision d -> forM_ d $ \(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->
+        fromCPDKey actuatorID & \case
+          Nothing -> log "couldn't decode actuatorID"
+          Just aKey ->
+            DM.lookup aKey (lenses st) & \case
+              Nothing -> log "NRM internal error: actuator not found."
+              Just (ScopedLens l) -> do
+                liftIO $ go (st ^. l) discreteValue
+                log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
 
 nrmDownstreamEvent ::
   U.Time ->

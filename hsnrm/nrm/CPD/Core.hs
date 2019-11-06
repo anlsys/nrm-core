@@ -62,7 +62,7 @@ import Numeric.Interval as I hiding (elem)
 import Protolude
 
 -- METADATA
-data Discrete = DiscreteText Text | DiscreteDouble Double
+newtype Discrete = DiscreteDouble Double
   deriving
     ( Show,
       Eq,
@@ -132,6 +132,7 @@ newtype ActuatorID = ActuatorID {actuatorID :: Text}
     ( Ord,
       Eq,
       Show,
+      Read,
       Generic,
       Data,
       MessagePack,
