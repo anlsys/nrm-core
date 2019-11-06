@@ -1,4 +1,4 @@
-{ stdenv, src, fetchgit, gfortran, pkgconfig, libnrm, nix-update-source
+{ stdenv, gcc, src, fetchgit, gfortran, pkgconfig, libnrm, nix-update-source
 , problemSize ? "80000000", iterationCount ? "20", nrmSupport ? false }:
 
 let inherit (stdenv.lib) optional;
@@ -13,7 +13,7 @@ in stdenv.mkDerivation {
   preBuild =
     "substituteInPlace Makefile --replace 'CFLAGS =' 'CFLAGS = -O2 -march=native -DSTREAM_ARRAY_SIZE=${problemSize} -DNTIMES=${iterationCount}'";
 
-  buildFlags = "CC=gcc FC=gfortran";
+  buildFlags = "CC=${gcc}/bin/gcc FC=${gfortran}/bin/gfortran";
 
   installPhase = ''
     mkdir -p $out/bin/

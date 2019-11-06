@@ -184,8 +184,9 @@ data OExpr
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON OExpr
   deriving (Show, Eq, Generic, Data, MessagePack, D.Interpret, D.Inject)
 
+prettyOExpr :: OExpr -> Text
 prettyOExpr = \case
-  OValue (SensorID id) -> id
+  OValue (SensorID id) -> "\"" <> id <> "\""
   OScalar d -> show d
   OAdd a b -> prettyOExpr a <> "+" <> prettyOExpr b
   OSub a b -> "(" <> prettyOExpr a <> "-" <> prettyOExpr b <> ")"

@@ -11,6 +11,7 @@ where
 
 import qualified NRM.Types.Messaging.UpstreamRep as Rep
 import qualified NRM.Types.Messaging.UpstreamReq as Req
+import qualified CPD.Core as CPD
 
 data ReqRep req rep where
   SliceList :: ReqRep Req.SliceList Rep.SliceList
@@ -19,7 +20,7 @@ data ReqRep req rep where
   SetPower :: ReqRep Req.SetPower Rep.GetPower
   KillSlice :: ReqRep Req.KillSlice Rep.SliceKilled
   KillCmd :: ReqRep Req.KillCmd Rep.CmdKilled
-  CPD :: ReqRep Req.CPD Rep.CPD
+  CPD :: ReqRep Req.CPD CPD.Problem
 
 data ReqStream req reps where
   Run :: ReqStream Req.Run '[Rep.Stdout, Rep.Stderr, Rep.CmdEnded]

@@ -7,6 +7,7 @@
 -- Maintainer  : fre@freux.fr
 module NRM.Types.NRM
   ( NRM,
+    App,
     execNRM,
     log,
     pub,
@@ -24,8 +25,11 @@ import NRM.Types.State
 import NRM.Types.UpstreamClient
 import Protolude hiding (Rep, log)
 
+-- |
+type App st a = RWST Cfg [Behavior] st IO a
+
 -- | The NRM monad is just a RWS.
-type NRM a = RWST Cfg [Behavior] NRMState IO a
+type NRM a = App NRMState a
 
 execNRM :: NRM a -> Cfg -> NRMState -> IO (NRMState, [Behavior])
 execNRM = execRWST

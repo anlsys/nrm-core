@@ -14,6 +14,7 @@ where
 import qualified CPD.Core as CPD
 --import qualified CPD.Text as CPD
 
+import CPD.Core (prettyCPD)
 import qualified Data.Aeson as A
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import qualified Data.ByteString as BS
@@ -24,7 +25,6 @@ import qualified NRM.Optparse.Client as C
 import NRM.Types.CmdID as CmdID
 import qualified NRM.Types.Messaging.Protocols as Protocols
 import NRM.Types.Messaging.UpstreamPub as UPub
-import CPD.Core (prettyCPD)
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
 import qualified NRM.Types.Slice as C
@@ -142,30 +142,19 @@ reqrep s opts = \case
     const $ do
       ZMQ.receive s <&> decode . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepCPD (URep.CPD acpd scpd)) ->
+        Just (URep.RepCPD cpd) ->
           putText
             [text|
               asynchronous Control Problem Description:
-              $acpdT
-
-              $scpdT
+              $cpdT
 
               $actuatorcount actuator(s) currently registered.
               $sensorcount sensor(s) currently registered.
              |]
           where
-            acpdT = prettyCPD acpd
-            scpdT = scpd & \case
-              Nothing -> "no synchronous problem description currently available"
-              Just (pShowOpts opts -> c) ->
-                toS
-                  [text|
-                   synchronous(integrated) Control Problem Description:
-                    $c
-
-                  |]
-            actuatorcount = show $ length (CPD.actuators acpd)
-            sensorcount = show $ length (CPD.sensors acpd)
+            cpdT = prettyCPD cpd
+            actuatorcount = show $ length (CPD.actuators cpd)
+            sensorcount = show $ length (CPD.sensors cpd)
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.SliceList ->

@@ -11,7 +11,6 @@ module NRM.Types.Messaging.UpstreamRep
     OutputType (..),
     EndStream (..),
     SliceList (..),
-    CPD (..),
     Stdout (..),
     Stderr (..),
     Start (..),
@@ -29,7 +28,6 @@ module NRM.Types.Messaging.UpstreamRep
 where
 
 import qualified CPD.Core as CPD
-import qualified CPD.Integrated as CPD
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
@@ -46,7 +44,7 @@ data Rep
   = -- | Listing slices upon upstream request
     RepList SliceList
   | -- | Returning current CPD
-    RepCPD CPD
+    RepCPD CPD.Problem
   | -- | Command Started successfully
     RepStart Start
   | -- | Command Produced Stdout output
@@ -109,14 +107,6 @@ data NoSuchSlice
   = NoSuchSlice
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON NoSuchSlice
-
-data CPD
-  = CPD
-      { acpd :: CPD.Problem,
-        scpd :: Maybe CPD.IntegratedProblem
-      }
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CPD
 
 newtype SliceList
   = SliceList

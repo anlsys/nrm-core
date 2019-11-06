@@ -14,7 +14,6 @@ module NRM.Behavior
   )
 where
 
-import CPD.Integrated as CPD
 import CPD.Values as CPD
 import Control.Lens hiding (to)
 import Control.Monad.Trans.RWS.Lazy (RWST)
@@ -54,7 +53,7 @@ behavior cfg st time event = execNRM (nrm time event) cfg st
 
 -- | The nrm function contains the main logic of the NRM daemon. It changes the state and
 -- produces an associated behavior to be executed by the runtime. This contains the slice
--- management logic, the sensor callback logic, the control loop callback logic. RWS monad.
+-- management logic, the sensor callback logic, the control loop callback logic. Works in the @NRM monad.
 nrm :: U.Time -> NRMEvent -> NRM ()
 nrm _callTime (DoOutput cmdID outputType content) = do
   st <- get
@@ -98,7 +97,7 @@ nrm _callTime (Req clientid msg) = do
   st <- get
   c <- ask
   msg & \case
-    UReq.ReqCPD _ -> rep clientid (URep.RepCPD $ URep.CPD (NRMCPD.toCPD st) (CPD.integrateProblem $ NRMCPD.toCPD st))
+    UReq.ReqCPD _ -> rep clientid (URep.RepCPD $ NRMCPD.toCPD st)
     UReq.ReqSliceList _ -> rep clientid (URep.RepList . URep.SliceList . LM.toList $ slices st)
     UReq.ReqGetState _ -> rep clientid (URep.RepGetState $ URep.GetState st)
     UReq.ReqGetConfig _ -> rep clientid (URep.RepGetConfig $ URep.GetConfig c)
@@ -304,6 +303,7 @@ nrmDownstreamEvent callTime clientid = \case
 
 data CommonOutcome a = OAdjustment | OOk a | ONotFound
 
+commonSP :: U.Time -> ActiveSensorKey -> Double -> NRM (CommonOutcome Measurement)
 commonSP callTime key value = do
   cfg <- ask
   st <- get

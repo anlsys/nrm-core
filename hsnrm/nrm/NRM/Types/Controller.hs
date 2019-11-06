@@ -15,6 +15,7 @@ module NRM.Types.Controller
 where
 
 import Bandit.Exp3
+import CPD.Core
 import CPD.Integrated as C
 import CPD.Values as V
 import Data.Aeson as A hiding ((.=))
@@ -45,9 +46,9 @@ data Controller
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
   deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
 
-initialController :: Time -> Time -> Controller
-initialController time minTime = Controller
-  { integrator = initIntegrator time minTime,
+initialController :: Time -> Time -> [SensorID] -> Controller
+initialController time minTime sensorIDs = Controller
+  { integrator = initIntegrator time minTime sensorIDs,
     bandit = Nothing
   }
 
