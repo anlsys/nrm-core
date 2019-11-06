@@ -10,6 +10,8 @@ module NRM.Types.Sensor
   ( -- * Internal representation
     Sensor (..),
     Tag (..),
+    Direction (..),
+    OptimizationSemantics (..),
     ActiveSensor (..),
     PassiveSensor (..),
 
@@ -32,7 +34,23 @@ import qualified NRM.Types.Units as U
 import Numeric.Interval
 import Protolude
 
-newtype Tag = Tag Text
+data Direction = Minimize | Maximize
+  deriving (Eq)
+
+-- | This datatype will evolve  and be used as leaf in a configuration
+-- language.
+data OptimizationSemantics
+  = Power
+  | Rapl
+  | DownstreamThreadSignal
+  | DownstreamCmdSignal
+  deriving (Eq,Show)
+
+data Tag
+  = Tag
+      { standardDirection :: Direction, -- | A standard direction we'd like to take this sensor
+        preciseSemantics :: [OptimizationSemantics] -- | used for complex daemon configuration
+      }
 
 data Sensor
   = Passive PassiveSensor
@@ -41,7 +59,7 @@ data Sensor
 data PassiveSensor
   = PassiveSensor
       { perform :: IO (Maybe Double),
-        passiveTags :: [Tag],
+        passiveTags :: Tag,
         frequency :: U.Frequency,
         passiveRange :: Interval Double,
         last :: Maybe (U.Time, Double)
@@ -51,7 +69,7 @@ data PassiveSensor
 data ActiveSensor
   = ActiveSensor
       { maxFrequency :: U.Frequency,
-        activeTags :: [Tag],
+        activeTags :: Tag,
         process :: Double -> Double,
         activeRange :: Interval Double
       }

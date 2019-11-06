@@ -54,7 +54,7 @@ evalNum ::
   Maybe a
 evalNum scalarLifter m = \case
   OValue sensorID -> DM.lookup sensorID m
-  OScalarMult s a -> ev a <&> (\i -> scalarLifter s * i)
+  OScalar s -> Just (scalarLifter s)
   OAdd a b -> ev2 a b (+)
   OSub a b -> ev2 a b (-)
   OMul a b -> ev2 a b (*)

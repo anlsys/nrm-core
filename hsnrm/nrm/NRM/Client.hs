@@ -13,6 +13,8 @@ where
 {-import qualified NRM.Types.Messaging.UpstreamReq as -}
 import qualified CPD.Core as CPD
 --import qualified CPD.Text as CPD
+
+import qualified Data.Aeson as A
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import qualified Data.ByteString as BS
 import Data.Restricted
@@ -99,27 +101,34 @@ reqrepClient ::
   UReq.Req ->
   C.CommonOpts ->
   ZMQ.ZMQ z ()
-reqrepClient s req v = do
+reqrepClient s req c = do
   ZMQ.send s [] (toS $ encode req)
-  dispatchProtocol s v req
+  dispatchProtocol s c req
 
 dispatchProtocol ::
   ZMQ.Socket z ZMQ.Dealer ->
   C.CommonOpts ->
   UReq.Req ->
   ZMQ.ZMQ z ()
-dispatchProtocol s v = \case
-  (UReq.ReqSliceList x) -> reqrep s v Protocols.SliceList x
-  (UReq.ReqKillSlice x) -> reqrep s v Protocols.KillSlice x
-  (UReq.ReqKillCmd x) -> reqrep s v Protocols.KillCmd x
-  (UReq.ReqSetPower x) -> reqrep s v Protocols.SetPower x
-  (UReq.ReqGetConfig x) -> reqrep s v Protocols.GetConfig x
-  (UReq.ReqGetState x) -> reqrep s v Protocols.GetState x
-  (UReq.ReqCPD x) -> reqrep s v Protocols.CPD x
+dispatchProtocol s c = \case
+  (UReq.ReqSliceList x) -> reqrep s c Protocols.SliceList x
+  (UReq.ReqKillSlice x) -> reqrep s c Protocols.KillSlice x
+  (UReq.ReqKillCmd x) -> reqrep s c Protocols.KillCmd x
+  (UReq.ReqSetPower x) -> reqrep s c Protocols.SetPower x
+  (UReq.ReqGetConfig x) -> reqrep s c Protocols.GetConfig x
+  (UReq.ReqGetState x) -> reqrep s c Protocols.GetState x
+  (UReq.ReqCPD x) -> reqrep s c Protocols.CPD x
   (UReq.ReqRun x) ->
     if UReq.detachCmd x
       then putText "Client detached."
-      else reqstream s v Protocols.Run x
+      else reqstream s c Protocols.Run x
+
+pShowOpts :: (Show a, A.ToJSON a) => C.CommonOpts -> a -> Text
+pShowOpts opts = if C.jsonPrint opts then toS . AP.encodePretty else pShowColor (C.color opts)
+  where
+    pShowColor :: (Show a) => Bool -> a -> Text
+    pShowColor True = toS . pShow
+    pShowColor False = toS . pShowNoColor
 
 reqrep ::
   ZMQ.Socket z ZMQ.Dealer ->
@@ -144,10 +153,10 @@ reqrep s opts = \case
               $sensorcount sensor(s) currently registered.
              |]
           where
-            acpdT = toS $ pShow acpd
+            acpdT = pShowOpts opts acpd
             scpdT = scpd & \case
               Nothing -> "no synchronous problem description currently available"
-              Just (toS . pShow -> c) ->
+              Just (pShowOpts opts -> c) ->
                 toS
                   [text|
                    synchronous(integrated) Control Problem Description:
@@ -179,11 +188,7 @@ reqrep s opts = \case
       case decode msg of
         Nothing -> putText "Couldn't decode reply"
         Just (URep.RepGetState (URep.GetState st)) ->
-          if C.jsonPrint opts
-            then putText $ toS (AP.encodePretty st)
-            else do
-              putText "Current daemon state:"
-              pPrint st
+          putText $ pShowOpts opts st
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.GetConfig ->
@@ -193,9 +198,7 @@ reqrep s opts = \case
         Just (URep.RepGetConfig (URep.GetConfig cfg)) ->
           if C.jsonPrint opts
             then putText $ toS (AP.encodePretty cfg)
-            else do
-              putText "Daemon configuration:"
-              pPrint cfg
+            else putText $ pShowOpts opts cfg
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.SetPower ->

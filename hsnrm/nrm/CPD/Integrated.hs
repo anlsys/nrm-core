@@ -127,7 +127,7 @@ integrateProblem p =
     <*> Just (objective p)
     <*> (evalRange ranges =<< objective p)
   where
-    ranges = sensors p <&> range
+    ranges = sensors p $> (0 ... 1)
 
 initIntegrator ::
   Time ->

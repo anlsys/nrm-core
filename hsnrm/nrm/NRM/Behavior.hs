@@ -173,10 +173,10 @@ nrm _callTime (ChildDied pid exitcode) = do
             Nothing -> put $ insertSlice sliceID (Ct.insertCmd cmdID cmd {processState = newPstate} slice) st
 nrm callTime (DownstreamEvent clientid msg) =
   nrmDownstreamEvent callTime clientid msg
-    >>= ( \case
-            OOk m -> return $ Event callTime [m]
-            ONotFound -> return $ NoEvent callTime
-            OAdjustment -> get <&> NRMCPD.toCPD <&> Reconfigure callTime
+    <&> ( \case
+            OOk m -> Event callTime [m]
+            ONotFound -> NoEvent callTime
+            OAdjustment -> Reconfigure callTime
         )
     >>= doControl
 nrm callTime DoControl = doControl (NoEvent callTime)
@@ -193,15 +193,17 @@ nrm callTime DoSensor = do
     Nothing ->
       let cpd = NRMCPD.toCPD st'
        in pub (UPub.PubCPD callTime cpd)
-            >> doControl (Reconfigure callTime cpd)
+            >> doControl (Reconfigure callTime)
 nrm _callTime DoShutdown = behave NoBehavior
 
 -- | nrmControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
-doControl input = zoom (field @"controller") $
-  banditCartesianProductControl input >>= \case
-    DoNothing -> log "null control"
-    Decision d -> log $ "control takes action" <> show d
+doControl input = do
+  p <- get <&> NRMCPD.toCPD
+  zoom (field @"controller") $
+    banditCartesianProductControl p input >>= \case
+      DoNothing -> log "null control"
+      Decision d -> log $ "control takes action" <> show d
 
 nrmDownstreamEvent ::
   U.Time ->

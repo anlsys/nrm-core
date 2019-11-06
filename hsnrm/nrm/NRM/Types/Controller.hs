@@ -15,7 +15,6 @@ module NRM.Types.Controller
 where
 
 import Bandit.Exp3
-import CPD.Core as C
 import CPD.Integrated as C
 import CPD.Values as V
 import Data.Aeson as A hiding ((.=))
@@ -34,14 +33,13 @@ data Input
   | -- | A non-event
     NoEvent Time
   | -- | Events
-    Reconfigure Time C.Problem
+    Reconfigure Time
 
 data Decision = DoNothing | Decision [V.Action] deriving (Show)
 
 data Controller
   = Controller
-      { integratedProblem :: Maybe C.IntegratedProblem,
-        integrator :: C.Integrator,
+      { integrator :: C.Integrator,
         bandit :: Maybe (Exp3 [V.Action])
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
@@ -49,8 +47,7 @@ data Controller
 
 initialController :: Time -> Time -> Controller
 initialController time minTime = Controller
-  { integratedProblem = Nothing,
-    integrator = initIntegrator time minTime,
+  { integrator = initIntegrator time minTime,
     bandit = Nothing
   }
 

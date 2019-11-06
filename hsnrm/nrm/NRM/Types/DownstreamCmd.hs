@@ -1,5 +1,6 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE TypeApplications #-}
+
 {-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
 
 -- |
@@ -8,7 +9,7 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.Types.DownstreamCmd
-  ( DownstreamCmd (..),
+  ( DownstreamCmd (..)
   )
 where
 
@@ -22,15 +23,15 @@ import Data.MessagePack
 import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Types.DownstreamCmdID
-import NRM.Types.Sensor
+import NRM.Types.Sensor as S
 import NRM.Types.Units as Units
 import Numeric.Interval
 import Protolude
 
 data DownstreamCmd
   = DownstreamCmd
-      { maxValue :: Units.Operations,
-        ratelimit :: Units.Frequency
+      { maxValue :: Units.Operations
+      , ratelimit :: Units.Frequency
       }
   deriving (Show, Generic, Data, MessagePack)
   deriving
@@ -40,8 +41,8 @@ data DownstreamCmd
 instance
   HasLensMap (DownstreamCmdID, DownstreamCmd)
     ActiveSensorKey
-    ActiveSensor
-  where
+    ActiveSensor where
+
   lenses (downstreamCmdID, downstreamCmd) =
     DM.singleton
       (DownstreamCmdKey downstreamCmdID)
@@ -49,11 +50,11 @@ instance
     where
       getter (DownstreamCmd _maxValue ratelimit) =
         ActiveSensor
-          { activeTags = [Tag "perf"],
-            activeRange = 0 ... (maxValue downstreamCmd & fromOps & fromIntegral),
-            maxFrequency = ratelimit,
-            process = identity
+          { activeTags = S.Tag S.Maximize [S.DownstreamCmdSignal]
+          , activeRange = 0 ... (maxValue downstreamCmd & fromOps & fromIntegral)
+          , maxFrequency = ratelimit
+          , process = identity
           }
       setter dc activeSensor =
-        dc & field @"maxValue"
-          .~ Operations (floor . sup $ activeRange activeSensor)
+        dc & field @"maxValue" .~
+          Operations (floor . sup $ activeRange activeSensor)

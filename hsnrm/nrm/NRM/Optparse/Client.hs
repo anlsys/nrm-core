@@ -41,6 +41,7 @@ data CommonOpts
   = CommonOpts
       { verbose :: ClientVerbosity,
         jsonPrint :: Bool,
+        color :: Bool,
         pubPort :: Int,
         rpcPort :: Int,
         upstreamBindAddress :: Text
@@ -60,6 +61,10 @@ parserCommon =
       False
       True
       (long "json" <> short 'j' <> help "Enable json printing.")
+    <*> flag
+      False
+      True
+      (long "color" <> short 'c' <> help "Enable color printing.")
     <*> Options.Applicative.option
       Options.Applicative.auto
       ( long "pub_port"

@@ -23,7 +23,7 @@ import LensMap.Core
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Actuator as A
-import NRM.Types.Sensor as S
+import qualified NRM.Types.Sensor as S
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
 import Numeric.Interval
@@ -67,7 +67,7 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
       setter rapl (Actuator actions _go) =
         rapl & field @"discreteChoices" .~ fmap uW actions
 
-instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
+instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor where
   lenses (packageID, package) =
     rapl package & \case
       Nothing -> DM.empty
@@ -82,12 +82,12 @@ instance HasLensMap (PackageID, Package) PassiveSensorKey PassiveSensor where
           )
     where
       getter (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices last) =
-        PassiveSensor
-          { passiveTags = [Tag "power", Tag "RAPL"],
+        S.PassiveSensor
+          { passiveTags = S.Tag S.Minimize [S.Power, S.Rapl],
             passiveRange = 0 ... fromuJ maxEnergy,
             frequency = freq,
             perform = measureRAPLDir path <&> fmap (fromuJ . energy),
             last = last <&> fmap fromuJ
           }
       setter rapl passiveSensor =
-        rapl & field @"max" .~ MaxEnergy (uJ (sup $ passiveRange passiveSensor))
+        rapl & field @"max" .~ MaxEnergy (uJ (sup $ S.passiveRange passiveSensor))

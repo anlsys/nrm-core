@@ -18,7 +18,7 @@ import CPD.Core
 import CPD.Integrated
 import CPD.Utils
 import CPD.Values
-import Control.Lens
+import Control.Lens hiding ((...))
 import Data.Generics.Product
 import Data.Map as DM
 import NRM.Orphans.NonEmpty ()
@@ -37,18 +37,17 @@ banditCartesianProductControl ::
     MonadIO m,
     MonadIO m0
   ) =>
+  Problem ->
   Input ->
   m Decision
-banditCartesianProductControl (Reconfigure t cpd) =
+banditCartesianProductControl cpd (Reconfigure t) =
   integrateProblem cpd & \case
     Nothing -> do
-      field @"integratedProblem" .= Nothing
       field @"bandit" .= Nothing
       minTime <- use $ field @"integrator" . field @"minimumControlInterval"
       field @"integrator" .= initIntegrator t minTime
       doNothing
     Just ipb -> do
-      field @"integratedProblem" .= Just ipb
       minTime <- use $ field @"integrator" . field @"minimumControlInterval"
       field @"integrator" .= initIntegrator t minTime
       nonEmpty
@@ -67,48 +66,63 @@ banditCartesianProductControl (Reconfigure t cpd) =
             liftIO $ setStdGen g'
             field @"bandit" .= Just b
             return $ Decision a
-banditCartesianProductControl (NoEvent t) = tryControlStep t
-banditCartesianProductControl (Event t ms) = do
-  for_ ms $ \(Measurement sensorID sensorValue sensorTime) ->
-    field @"integrator" %= \(Integrator tlast delta measuredM) ->
-      Integrator
-        tlast
-        delta
-        (measuredM & ix sensorID %~ measureValue (tlast + delta) (sensorTime, sensorValue))
-  tryControlStep t
+banditCartesianProductControl cpd (NoEvent t) = tryControlStep cpd t
+banditCartesianProductControl cpd (Event t ms) = do
+  for_ ms $ \(Measurement sensorID sensorValue sensorTime) -> do
+    let s = DM.lookup sensorID (sensors cpd)
+    s & \case
+      Nothing -> return ()
+      Just (range -> r) ->
+        field @"integrator" %= \(Integrator tlast delta measuredM) ->
+          Integrator
+            tlast
+            delta
+            (measuredM & ix sensorID %~ measureValue (tlast + delta) (sensorTime, (sensorValue - inf r) / width r))
+  tryControlStep cpd t
 
 tryControlStep ::
+  ( Zoom m0 m (Exp3 [Action]) Controller,
+    MonadIO m0,
+    Applicative (Zoomed m0 [Action])
+  ) =>
+  Problem ->
+  Time ->
+  m Decision
+tryControlStep cpd t = case objective cpd of
+  Nothing -> doNothing
+  Just oexpr -> cStep oexpr (DM.keys (sensors cpd)) t
+
+cStep ::
   ( Applicative (Zoomed m0 [Action]),
     Zoom m0 m (Exp3 [Action]) Controller,
     MonadIO m0
   ) =>
+  OExpr ->
+  [SensorID] ->
   Time ->
   m Decision
-tryControlStep t =
-  use (field @"integratedProblem") >>= \case
-    Nothing -> doNothing
-    Just ipb -> use (field @"integrator" . field @"measured")
-      <&> squeeze t
-      >>= \case
-        Nothing -> doNothing
-        Just (measurements, newMeasured) -> do
-          field @"integrator" . field @"measured" .= newMeasured
-          let iobj = iobjective ipb
-          case (,) <$> (eval measurements =<< iobj) <*> (evalRange (isensors ipb) =<< iobj) of
-            Nothing -> doNothing
-            Just (value, range) ->
-              case ZeroOneInterval <$> refine ((value - inf range) / width range) of
-                Left _ -> doNothing
-                Right v ->
-                  Decision
-                    <$> zoom
-                      (field @"bandit" . _Just)
-                      ( do
-                          g <- liftIO getStdGen
-                          (a, g') <- stepPFMAB g v
-                          liftIO $ setStdGen g'
-                          return a
-                      )
+cStep oexpr sensorList t =
+  use (field @"integrator" . field @"measured")
+    <&> squeeze t
+    >>= \case
+      Nothing -> doNothing
+      Just (measurements, newMeasured) -> do
+        field @"integrator" . field @"measured" .= newMeasured
+        case (eval measurements oexpr, evalRange (DM.fromList (sensorList <&> (,0 ... 1))) oexpr) of
+          (Just value, Just range) ->
+            case ZeroOneInterval <$> refine ((value - inf range) / width range) of
+              Left _ -> doNothing
+              Right v ->
+                Decision
+                  <$> zoom
+                    (field @"bandit" . _Just)
+                    ( do
+                        g <- liftIO getStdGen
+                        (a, g') <- stepPFMAB g v
+                        liftIO $ setStdGen g'
+                        return a
+                    )
+          _ -> doNothing
 
 doNothing :: (Monad m) => m Decision
 doNothing = return DoNothing

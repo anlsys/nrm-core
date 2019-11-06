@@ -32,6 +32,14 @@ module CPD.Core
     -- * Objective
     Objective,
     OExpr (..),
+
+    -- * Objective contstructor helpers
+    sID,
+    scalar,
+    (\+),
+    (\-),
+    (\/),
+    (\*),
   )
 where
 
@@ -143,9 +151,27 @@ type Objective = Maybe OExpr
 emptyObjective :: Objective
 emptyObjective = Nothing
 
+sID :: SensorID -> OExpr
+sID = OValue
+
+scalar :: Double -> OExpr
+scalar = OScalar
+
+(\+) :: OExpr -> OExpr -> OExpr
+(\+) = OAdd
+
+(\-) :: OExpr -> OExpr -> OExpr
+(\-) = OSub
+
+(\/) :: OExpr -> OExpr -> OExpr
+(\/) = ODiv
+
+(\*) :: OExpr -> OExpr -> OExpr
+(\*) = OMul
+
 data OExpr
   = OValue SensorID
-  | OScalarMult Double OExpr
+  | OScalar Double
   | OAdd OExpr OExpr
   | OSub OExpr OExpr
   | OMul OExpr OExpr

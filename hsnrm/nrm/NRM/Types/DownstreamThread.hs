@@ -22,7 +22,7 @@ import Data.MessagePack
 import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Types.DownstreamThreadID
-import NRM.Types.Sensor
+import NRM.Types.Sensor as S
 import NRM.Types.Units
 import Numeric.Interval
 import Protolude
@@ -47,7 +47,7 @@ instance
     where
       getter (DownstreamThread _maxValue ratelimit) =
         ActiveSensor
-          { activeTags = [Tag "perf"],
+          { activeTags = S.Tag S.Maximize [S.DownstreamThreadSignal],
             activeRange = 0 ... (maxValue downstreamThread & fromProgress & fromIntegral),
             maxFrequency = ratelimit,
             process = identity
