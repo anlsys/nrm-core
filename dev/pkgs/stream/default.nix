@@ -4,7 +4,10 @@
 let inherit (stdenv.lib) optional;
 
 in stdenv.mkDerivation {
-  src = (nix-update-source.fetch ./pin.json).src;
+  src = if nrmSupport then
+    (nix-update-source.fetch ./nrm.json).src
+  else
+    (nix-update-source.fetch ./raw.json).src;
   name = "stream";
 
   nativeBuildInputs = [ gfortran pkgconfig ];

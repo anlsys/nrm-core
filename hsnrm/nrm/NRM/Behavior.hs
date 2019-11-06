@@ -9,8 +9,16 @@ module NRM.Behavior
   ( -- * external interface
     behavior,
 
-    -- * NRM
+    -- * internal dispatching
     nrm,
+    nrmDownstreamEvent,
+    doControl,
+    commonSP,
+    commonProcess,
+    folder,
+    mayInjectLibnrmPreload,
+    mayRep,
+    respondContent,
   )
 where
 
@@ -195,13 +203,13 @@ nrm callTime DoSensor = do
             >> doControl (Reconfigure callTime)
 nrm _callTime DoShutdown = behave NoBehavior
 
--- | nrmControl checks the integrator state and triggers a control iteration if NRM is ready.
+-- | doControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
 doControl input = do
   p <- get <&> NRMCPD.toCPD
   zoom (field @"controller") $
     banditCartesianProductControl p input >>= \case
-      DoNothing -> log "null control"
+      DoNothing -> log "No control"
       Decision d -> log $ "control takes action" <> show d
 
 nrmDownstreamEvent ::
@@ -309,6 +317,7 @@ commonSP callTime key value = do
   st <- get
   Sensors.process cfg callTime st key value & commonProcess callTime
 
+commonProcess :: U.Time -> Output -> NRM (CommonOutcome Measurement)
 commonProcess callTime = \case
   Sensors.NotFound -> return ONotFound
   Sensors.Adjusted st' -> do

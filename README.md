@@ -1,4 +1,4 @@
-HNRM monorepo
+# NRM monorepo
 
 ### Installation
 
@@ -15,9 +15,31 @@ libnrm-instrumented applications can also be installed using `nix-env -f.  -iA s
 
 from a local clone:
 
-- release: `nix-build -A nrm`
-- dev build: `nix-shell`, then `./shake build and ./shake client`
-- local CI: `nix-env -f. -iA gitlab-runner && gitlab-runner exec shell <jobname>` . see `.gitlab-ci.yml` for job names
+##### read internal haddock documentation: 
+
+```
+$ firefox $(nix-build -A haskellPackages.nrmlib.doc)/share/doc/nrmlib-*/html/index.html
+```
+
+##### make a release build: `nix-build -A nrm`
+
+- enter a development environment: `nix-shell`
+   - use `$ ./shake build` to build the `nrm.so` shared library
+   - use `$ ./shake client` to build the `nrm` client
+   - the appropriate Nix `shellHooks` are in place for you to use `nrm` and `nrmd`.
+
+##### run CI jobs locally: 
+
+you need a gitlab runner at the same version as your CI infrastructure.
+A minima, try `nix-env -iA nixpkgs.gitlab-runner`.
+
+```
+nix-shell -p '(import ./default.nix).yq' --run bash <<< '
+for jobname in $(yq 'keys| .[]' .gitlab-ci.yml); do
+  gitlab-runner exec shell $(echo $jobname | jq -r ${1} ); 
+done
+'
+```
 
 ### architecture
 
