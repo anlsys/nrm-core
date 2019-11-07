@@ -2,16 +2,12 @@
 
 ### Installation
 
-#### Nix
-
 the NRM client and daemon can be installed in the user environment by running
 `nix-env -f. -iA nrm` from a local clone.
 
 libnrm-instrumented applications can also be installed using `nix-env -f.  -iA stream`.
 
 ### Development
-
-#### Nix
 
 from a local clone:
 
