@@ -167,7 +167,7 @@ processRAPLFolder fp =
 
 -- | Applies powercap commands.
 applyRAPLPcap :: FilePath -> RAPLCommand -> IO ()
-applyRAPLPcap filePath (RAPLCommand cap) = do
+applyRAPLPcap filePath (RAPLCommand cap) =
   writeFile
     (filePath <> "/constraint_0_power_limit_uw")
     (show . (floor :: Double -> Int) $ fromuW cap)
