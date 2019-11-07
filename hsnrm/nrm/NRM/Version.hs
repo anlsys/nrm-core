@@ -8,16 +8,9 @@ module NRM.Version
   )
 where
 
-import Distribution.VcsRevision.Git
-import Language.Haskell.TH.Syntax
+--import Distribution.VcsRevision.Git
+--import Language.Haskell.TH.Syntax
 import Protolude hiding (hash, lift)
 
 version :: Text
-version =
-  $( do
-       v <- qRunIO getRevision
-       lift $ case v of
-         Nothing -> "<none>"
-         Just (hash, True) -> hash ++ " (with local modifications)"
-         Just (hash, False) -> hash
-   )
+version = "git"

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-incomplete-patterns #-}
+
 -- |
 -- Module      : NRM.Messaging
 -- Copyright   : (c) UChicago Argonne, 2019
@@ -35,13 +37,12 @@ libnrmVars =
             ("NRM_ENV_RATELIMIT", Str ratelimitEnvVar),
             ("NRM_ENV_TRANSMIT", Str "NRM_TRANSMIT"),
             ( "NRM_DEFAULT_RATELIMIT_THRESHOLD",
-              LLPos
-                ( $$( refineTH $ floor $ fromHz $
-                        ratelimit (def :: Instrumentation)
-                    )
-                )
+              LLPos (f $ refine $ floor $ fromHz $ ratelimit (def :: Instrumentation))
             )
           ]
+  where
+    f :: Either a (Refined Positive Int) -> (Refined Positive Int)
+    f (Right x) = x
 
 toHeader :: (Text, V) -> Text
 toHeader (t, Str x) = "#define " <> t <> " " <> show x

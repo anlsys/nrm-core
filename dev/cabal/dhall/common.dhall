@@ -25,7 +25,7 @@ let defexts =
       , types.Extension.DerivingStrategies True
       , types.Extension.TypeApplications True
       , types.Extension.MultiWayIf True
-      , types.Extension.TemplateHaskell True
+      , types.Extension.TemplateHaskell False
       , types.Extension.BlockArguments True
       , types.Extension.GADTs True
       , types.Extension.FlexibleContexts True

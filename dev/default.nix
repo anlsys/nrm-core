@@ -162,18 +162,32 @@ in pkgs // rec {
     buildInputs = [ pkgs.hwloc ormolu haskellPackages.dhrun ];
 
     shellHook = ''
-      export NRMSO=${builtins.toPath ../.}/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
-      export PATH=${builtins.toPath ../.}/dev/:${builtins.toPath ../.}/pynrm/bin:${builtins.toPath ../.}/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
+      export NRMSO=${
+        builtins.toPath ../.
+      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
+      export PATH=${builtins.toPath ../.}/dev/:${
+        builtins.toPath ../.
+      }/pynrm/bin:${
+        builtins.toPath ../.
+      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
       export PYTHONPATH=${builtins.toPath ../.}/pynrm/:$PYTHONPATH
+      export NIX_GHC="${haskellPackages.nrmlib.env.NIX_GHC}"
+      export NIX_GHCPKG="${haskellPackages.nrmlib.env.NIX_GHCPKG}"
+      export NIX_GHC_DOCDIR="${haskellPackages.nrmlib.env.NIX_GHC_DOCDIR}"
+      export NIX_GHC_LIBDIR="${haskellPackages.nrmlib.env.NIX_GHC_LIBDIR}"
     '';
+
+    LC_ALL = "en_US.UTF-8";
+
+    LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
   };
 
-  dhrun = haskellPackages.dhrun.overrideAttrs (old:{
-      installPhase = old.installPhase + ''
-        mkdir -p $out/share/
-        cp -r resources $out/share/
-      '';
-    });
+  dhrun = haskellPackages.dhrun.overrideAttrs (old: {
+    installPhase = old.installPhase + ''
+      mkdir -p $out/share/
+      cp -r resources $out/share/
+    '';
+  });
 
   dhrunTestConfigLayer = pkgs.stdenv.mkDerivation rec {
     name = "dhrunSpecs";

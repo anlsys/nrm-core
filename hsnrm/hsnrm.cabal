@@ -122,7 +122,7 @@ library nrmlib
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
                         DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
+                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
@@ -206,7 +206,7 @@ library banditlib
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
                         DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
+                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
@@ -374,7 +374,7 @@ executable nrm.so
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
                         DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
+                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
@@ -543,7 +543,7 @@ executable nrmstatic
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
                         DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
+                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
@@ -622,7 +622,7 @@ executable nrm
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
                         DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
+                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
@@ -648,7 +648,7 @@ executable nrmddep
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
                         DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
+                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
@@ -674,7 +674,7 @@ executable codegen
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
                         ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
                         DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf TemplateHaskell BlockArguments GADTs
+                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
                         FlexibleContexts TypeOperators DataKinds PolyKinds
                         AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
