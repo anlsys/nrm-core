@@ -162,6 +162,7 @@ in pkgs // rec {
     buildInputs = [ pkgs.hwloc ormolu haskellPackages.dhrun ];
 
     shellHook = ''
+      # path for NRM dev experimentation
       export NRMSO=${
         builtins.toPath ../.
       }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
@@ -171,6 +172,7 @@ in pkgs // rec {
         builtins.toPath ../.
       }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
       export PYTHONPATH=${builtins.toPath ../.}/pynrm/:$PYTHONPATH
+      # exports for `ghcide` use
       export NIX_GHC="${haskellPackages.nrmlib.env.NIX_GHC}"
       export NIX_GHCPKG="${haskellPackages.nrmlib.env.NIX_GHCPKG}"
       export NIX_GHC_DOCDIR="${haskellPackages.nrmlib.env.NIX_GHC_DOCDIR}"

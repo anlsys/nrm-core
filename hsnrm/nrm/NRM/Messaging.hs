@@ -41,7 +41,7 @@ libnrmVars =
             )
           ]
   where
-    f :: Either a (Refined Positive Int) -> (Refined Positive Int)
+    f :: Either a (Refined Positive Int) -> Refined Positive Int
     f (Right x) = x
 
 toHeader :: (Text, V) -> Text
