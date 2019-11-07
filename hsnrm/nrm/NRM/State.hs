@@ -9,7 +9,6 @@ module NRM.State
 
     -- * Creation/Registration
     createSlice,
-    registerLibnrmDownstreamClient,
     registerAwaiting,
     registerFailed,
     registerLaunched,
@@ -39,7 +38,6 @@ import NRM.Types.Cmd
 import NRM.Types.CmdID
 import NRM.Types.Configuration as Cfg
 import NRM.Types.Controller
-import NRM.Types.DownstreamThreadID
 import NRM.Types.Process
 import NRM.Types.Slice
 import NRM.Types.State
@@ -105,13 +103,6 @@ initialState c time = do
                 }
             )
             m
-
--- | TODO
-registerLibnrmDownstreamClient ::
-  NRMState ->
-  DownstreamThreadID ->
-  NRMState
-registerLibnrmDownstreamClient s _ = s
 
 -- | Removes a slice from the state
 removeSlice :: SliceID -> NRMState -> (Maybe Slice, NRMState)

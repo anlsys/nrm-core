@@ -9,6 +9,9 @@ module Bandit.EpsGreedy
     EpsGreedyHyper (..),
     ScreeningGreedy (..),
     ExploreExploitGreedy (..),
+    pickreturn,
+    pickAction,
+    updateAvgLoss,
   )
 where
 
@@ -17,9 +20,12 @@ import Bandit.Util
 import Protolude
 import System.Random
 
+-- | EpsGreedy data structure for one action
 data EpsGreedy a
-  = Screening (ScreeningGreedy a)
-  | ExploreExploit (ExploreExploitGreedy a)
+  = -- | Screening for initial estimates
+    Screening (ScreeningGreedy a)
+  | -- | Sampling procedure started.
+    ExploreExploit (ExploreExploitGreedy a)
 
 data ScreeningGreedy a
   = ScreeningGreedy
@@ -104,6 +110,7 @@ instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
                 }
         pickreturn eeg g
 
+-- | Action selection and  return
 pickreturn ::
   (RandomGen g, MonadState (EpsGreedy b) m) =>
   ExploreExploitGreedy b ->
@@ -114,6 +121,7 @@ pickreturn eeg g = do
   put $ ExploreExploit $ eeg {lastAction = a}
   return (a, g')
 
+-- | Action selection primitive
 pickAction :: (RandomGen g) => ExploreExploitGreedy a -> g -> (a, g)
 pickAction ExploreExploitGreedy {..} =
   sampleWL (toList $ weights <&> w2tuple)
@@ -121,10 +129,13 @@ pickAction ExploreExploitGreedy {..} =
     w2tuple :: Weight b -> (Double, b)
     w2tuple (Weight avgloss _hits action) = (avgloss, action)
 
--- | TODO improve numerical resiliency.
+-- | This is a rudimentary online mean accumulator. Its numerical properties
+-- are probably bad, but we don't need much more here.
 updateAvgLoss :: Double -> Weight a -> Weight a
 updateAvgLoss l (Weight avgloss hits action) =
   Weight
-    ((avgloss * fromIntegral hits + l) / (fromIntegral hits + 1))
+    ( (avgloss * fromIntegral hits + l)
+        / (fromIntegral hits + 1)
+    )
     (hits + 1)
     action
