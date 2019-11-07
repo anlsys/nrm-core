@@ -33,8 +33,6 @@ where
 
 import Control.Monad.Trans.Maybe
 import Data.Aeson
-import GHC.IO.Encoding
-import qualified System.IO as SIO
 import Data.Data
 import Data.MessagePack
 import Data.Metrology.Show ()
@@ -170,10 +168,9 @@ processRAPLFolder fp =
 -- | Applies powercap commands.
 applyRAPLPcap :: FilePath -> RAPLCommand -> IO ()
 applyRAPLPcap filePath (RAPLCommand cap) = do
-  GHC.IO.Encoding.setLocaleEncoding SIO.utf8
   writeFile
     (filePath <> "/constraint_0_power_limit_uw")
-    (show $ fromuW cap)
+    (show . (floor :: Double -> Int) $ fromuW cap)
 
 -- | Lists available rapl directories.
 getRAPLDirs :: FilePath -> IO (Maybe RAPLDirs)
