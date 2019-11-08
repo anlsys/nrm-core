@@ -9,7 +9,8 @@ stages:
 ormolu:
   stage: source
   tags:
-    - integration
+    - kvm
+    - nix
   script:
     - |
       nix-shell --pure -E '
@@ -36,14 +37,16 @@ ormolu:
 hlint:
   stage: source
   tags:
-    - integration
+    - kvm
+    - nix
   script:
     - nix-shell --pure -p '(import ./.).hlint' --run bash <<< 'hlint hsnrm/ --hint=./.hlint.yaml'
 
 black:
   stage: source
   tags:
-    - integration
+    - kvm
+    - nix
   script:
     - |
       nix-shell --pure -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
@@ -54,7 +57,8 @@ black:
 clang-format:
   stage: source
   tags:
-    - integration
+    - kvm
+    - nix
   script:
     - |
       nix-shell --pure -p '(import ./.).fd' '(import ./.).clang-tools' --run bash <<< '
@@ -73,31 +77,36 @@ clang-format:
 nix-build-nrm.so:
   stage: lib
   tags:
-    - integration
+    - kvm
+    - nix
   script: nix-build -A haskellPackages.nrmlib --no-build-output
 
 nix-build-binaries:
   stage: afterlib
   tags:
-    - integration
+    - kvm
+    - nix
   script: nix-build -A haskellPackages.nrmbin --no-build-output
 
 nix-build-resources:
   stage: codegen
   tags:
-    - integration
+    - kvm
+    - nix
   script: nix-build -A resources --no-build-output
 
 nix-build-libnrm:
   stage: linked
   tags:
-    - integration
+    - kvm
+    - nix
   script: nix-build -A libnrm --no-build-output
 
 nix-build-pynrm:
   stage: linked
   tags:
-    - integration
+    - kvm
+    - nix
   script: nix-build -A pynrm --no-build-output
 
 nix-build-nrmFull:
@@ -109,7 +118,8 @@ nix-build-nrmFull:
 dhrun-hello:
   stage: integration
   tags:
-    - integration
+    - kvm
+    - nix
   script:
     - |
       nix-shell --pure -p '(import ./.).nrm' -p '(import ./.).dhrun' --run "dhrun run --verbose" <<< '
