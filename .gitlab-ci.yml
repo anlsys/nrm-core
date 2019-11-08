@@ -129,3 +129,18 @@ dhrun-hello:
           "../resources/examples/"
         in all.hello
       '
+
+dhrun-exitcode:
+  stage: integration
+  tags:
+    - kvm
+    - nix
+  script:
+    - |
+      nix-shell --pure -p '(import ./.).nrm' -p '(import ./.).dhrun' --run "dhrun run --verbose" <<< '
+        let all = ./dev/dhrun/all-tests.dh
+          "../dev/dhrun/assets/"
+          "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
+          "../resources/examples/"
+        in all.exitcode
+      '
