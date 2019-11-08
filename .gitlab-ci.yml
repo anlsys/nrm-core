@@ -1,8 +1,9 @@
 stages:
   - source
   - lib
-  - afterlib
+  - bin-so
   - codegen
+  - libnrm
   - linked
   - integration
 
@@ -82,7 +83,7 @@ nix-build-nrm.so:
   script: nix-build -A haskellPackages.nrmlib --no-build-output
 
 nix-build-binaries:
-  stage: afterlib
+  stage: bin-so
   tags:
     - kvm
     - nix
@@ -96,7 +97,7 @@ nix-build-resources:
   script: nix-build -A resources --no-build-output
 
 nix-build-libnrm:
-  stage: linked
+  stage: libnrm
   tags:
     - kvm
     - nix
