@@ -95,9 +95,9 @@ check-vendored-resources:
     - kvm
     - nix
   script:
-    - echo "check: are vendored resources up to date?"
+    - "echo 'check: are vendored resources up to date?'"
     - mkdir temp
-    - $(nix-build -A haskellPackages.nrmbin)/bin/codegen temp/
+    - "$(nix-build -A haskellPackages.nrmbin)/bin/codegen temp/"
     - diff -r temp resources
 
 nix-build-resources:
