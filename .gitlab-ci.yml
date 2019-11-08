@@ -1,6 +1,6 @@
 stages:
   - source
-  - raw
+  - rawbuild
   - lib
   - bin-so
   - codegen
@@ -77,7 +77,7 @@ clang-format:
       '
 
 raw-build-libnrm:
-  stage: raw
+  stage: rawbuild
   tags:
     - kvm
     - nix
