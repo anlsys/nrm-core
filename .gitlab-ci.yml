@@ -1,5 +1,6 @@
 stages:
   - source
+  - raw
   - lib
   - bin-so
   - codegen
@@ -74,6 +75,26 @@ clang-format:
         done
         if [ $RETURN -ne 0 ]; then exit 1; fi
       '
+
+raw-build-libnrm:
+  stage: raw
+  tags:
+    - kvm
+    - nix
+  script:
+    - |
+      nix-shell -E '
+        let pkgs = (import ./default.nix);
+        in pkgs.libnrm.overrideAttrs (o:{
+          preBuild="";
+        })
+      ' --run bash <<< '
+        cd libnrm
+        ./autogen.sh
+        ./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp
+        make
+      '
+
 
 nix-build-nrm.so:
   stage: lib
