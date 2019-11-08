@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 -- |
 -- Module      : NRM.Types.Behavior
 -- Copyright   : (c) UChicago Argonne, 2019
@@ -15,6 +17,7 @@ where
 import Data.MessagePack
 import qualified NRM.Classes.Messaging as M
 import NRM.Types.Cmd
+import NRM.Types.Configuration
 import NRM.Types.CmdID
 import NRM.Types.DownstreamClient
 import NRM.Types.Messaging.DownstreamEvent
@@ -57,7 +60,7 @@ data Behavior
   = -- | The No-Op
     NoBehavior
   | -- | Log a message
-    Log Text
+    Log DaemonVerbosity Text
   | -- | Reply to an upstream client.
     Rep UpstreamClientID Rep
   | -- | Publish messages on upstream
@@ -76,7 +79,9 @@ data Behavior
 instance MessagePack Behavior where
 
   toObject NoBehavior = toObject ("noop" :: Text)
-  toObject (Log msg) = toObject ("log" :: Text, msg)
+  toObject (Log Error msg) = toObject ("logError" :: Text, msg)
+  toObject (Log Info msg) = toObject ("logInfo" :: Text, msg)
+  toObject (Log Debug msg) = toObject ("logDebug" :: Text, msg)
   toObject (Pub msg) = toObject ("publish" :: Text, M.encodeT msg)
   toObject (Rep clientid msg) =
     toObject ("reply" :: Text, clientid, M.encodeT msg)

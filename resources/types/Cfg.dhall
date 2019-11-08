@@ -9,7 +9,7 @@
 --
 
 { verbose :
-    < Normal | Verbose | Debug >
+    < Error | Info | Debug >
 , logfile :
     Text
 , hwloc :

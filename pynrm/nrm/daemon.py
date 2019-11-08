@@ -52,7 +52,9 @@ class Daemon(object):
             "cmd": self.cmd,
             "kill": self.kill,
             "pop": self.popchild,
-            "log": _logger.info,
+            "logDebug": _logger.debug,
+            "logInfo": _logger.info,
+            "logError": _logger.error,
         }
 
         # register messaging server callbacks
@@ -81,7 +83,7 @@ class Daemon(object):
         elif signum == signal.SIGCHLD:
             ioloop.IOLoop.current().add_callback_from_signal(self.do_children)
         else:
-            _logger.error("Unhandled signal: %d", signum)
+            _logger.error("Received unhandled signal: %d", signum)
 
     def do_children(self):
         # find out if children have terminated
@@ -159,17 +161,16 @@ class Daemon(object):
             self.cmds[cmdID] = p
             registerSuccess(p.proc.pid)
             _logger.info("Command start success.")
-        # except Exception:
         except:
-            _logger.info("Unexpected error:", sys.exc_info()[0])
+            _logger.error("Unexpected error:", sys.exc_info()[0])
             registerFailed()
-            _logger.info("Command start failure.")
+            _logger.error("Command start failure.")
 
     def kill(self, cmdIDs, messages):
         """
             kill children and send messages up
         """
-        _logger.debug("Killing children: %s", str(cmdIDs))
+        _logger.info("Killing children: %s", str(cmdIDs))
         for cmdID in cmdIDs:
             if cmdID in self.cmds.keys():
                 self.cmds.pop(cmdID).proc.terminate()
@@ -180,7 +181,7 @@ class Daemon(object):
         """
             pop child child and send a message up
         """
-        _logger.debug("Killing children: %s", str(cmdIDs))
+        _logger.info("Killing children: %s", str(cmdIDs))
         for cmdID in cmdIDs:
             if cmdID in self.cmds.keys():
                 self.cmds.pop(cmdID).proc.terminate()
@@ -194,14 +195,6 @@ def runner(config, lib):
     print("Logging to %s" % logfile)
     _logger.addHandler(logging.FileHandler(logfile))
 
-    if lib.isVerbose(config):
-        _logger.info("Setting configuration to INFO level.")
-        _logger.setLevel(logging.INFO)
-
-    if lib.isDebug(config):
-        _logger.info("Setting configuration to DEBUG level and redirecting to stdout.")
-        _logger.setLevel(logging.DEBUG)
-        _logger.debug("NRM Daemon configuration:")
-        _logger.debug(lib.showConfiguration(config))
+    _logger.setLevel(lib.verbosity(config))
 
     Daemon(config, lib)

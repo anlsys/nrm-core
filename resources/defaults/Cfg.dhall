@@ -9,7 +9,7 @@
 --
 
 { verbose =
-    < Normal | Verbose | Debug >.Normal
+    < Error | Info | Debug >.Error
 , logfile =
     "/tmp/nrm.log"
 , hwloc =

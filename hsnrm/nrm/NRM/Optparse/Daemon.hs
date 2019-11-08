@@ -24,7 +24,6 @@ data MainCfg
   = MainCfg
       { inputfile :: Maybe Text,
         stdinType :: SourceType,
-        verbosity :: DaemonVerbosity,
         edit :: Bool
       }
 
@@ -45,10 +44,6 @@ commonParser =
           <> help
             "Assume stdin to be yaml instead of dhall."
       )
-    <*> flag
-      Normal
-      Verbose
-      (long "verbose" <> short 'v' <> help "Enable verbose mode.")
     <*> flag
       False
       True
@@ -75,8 +70,7 @@ load :: MainCfg -> IO Cfg
 load MainCfg {..} =
   (if edit then editing else return) =<< case ext stdinType inputfile of
     (FinallyArg Dhall content) ->
-      (if v then detailed else identity) $
-        C.inputCfg (toS content)
+      detailed $ C.inputCfg (toS content)
     (FinallyArg Yaml filename) ->
       Y.decodeCfgFile =<< toS <$> makeAbsolute (toS filename)
     (FinallyStdin Yaml) ->
@@ -86,10 +80,7 @@ load MainCfg {..} =
     (FinallyStdin Dhall) -> B.getContents >>= C.inputCfg . toS
     NoExt content -> do
       putText "couldn't figure out extension for input file. defaulting to dhall normalization"
-      (if v then detailed else identity) $
-        C.inputCfg (toS content)
-  where
-    v = verbosity == Verbose
+      detailed $ C.inputCfg (toS content)
 
 editing :: Cfg -> IO Cfg
 editing c =

@@ -98,18 +98,26 @@ cStep oexpr sensorRanges t =
     Nothing -> doNothing
     Just (measurements, newMeasured) -> do
       field @"integrator" . field @"measured" .= newMeasured
-      case (,) <$> eval measurements oexpr <*> evalRange sensorRanges oexpr of
+      case (,) <$> eval measurements oexpr
+        <*> evalRange sensorRanges oexpr of
         Nothing -> doNothing
-        Just (value, range) ->
-          case ZeroOneInterval <$> refine ((value - inf range) / width range) of
-            Left _ -> doNothing
-            Right v ->
+        Just (value, range) -> do
+          let finalValue = (value - inf range) / width range
+          refine finalValue & \case
+            Left _ -> do
+              logError
+                ( "objective estimate out of the [0-1] bound: "
+                    <> show finalValue
+                )
+              doNothing
+            Right v -> do
+              logInfo ("objective estimate: " <> show v)
               Decision
                 <$> zoom
                   (field @"bandit" . _Just)
                   ( do
                       g <- liftIO getStdGen
-                      (a, g') <- stepPFMAB g v
+                      (a, g') <- stepPFMAB g (ZeroOneInterval v)
                       liftIO $ setStdGen g'
                       return a
                   )

@@ -8,8 +8,7 @@ module NRM.Export
     parseDaemon,
 
     -- * Configuration queries
-    isDebug,
-    isVerbose,
+    verbosity,
     showConfiguration,
     C.logfile,
     upstreamPubAddress,
@@ -63,14 +62,13 @@ parseDaemon :: [Text] -> IO C.Cfg
 parseDaemon = O.parseArgDaemonCli
 
 -- | Queries configuration for 'verbose' verbosity
-isVerbose :: C.Cfg -> Bool
-isVerbose c =
-  C.Verbose == C.verbose c
-
--- | Queries configuration for 'debug' verbosity
-isDebug :: C.Cfg -> Bool
-isDebug c =
-  C.Debug == C.verbose c
+verbosity :: C.Cfg -> Int
+verbosity = match . C.verbose
+  where
+    match :: C.DaemonVerbosity -> Int
+    match C.Debug = 10
+    match C.Info = 20
+    match C.Error = 40
 
 -- | Show the configuration in text format
 showConfiguration :: C.Cfg -> Text
@@ -107,7 +105,7 @@ downstreamReceive ::
   IO (TS.NRMState, [B.Behavior])
 downstreamReceive cfg s t msg clientid =
   B.DownstreamEvent <$> Just (toS clientid) <*> M.decodeT msg & \case
-    Nothing -> return (s, [B.Log "couldn't decode downstream receive"])
+    Nothing -> return (s, [B.Log C.Error "couldn't decode downstream receive"])
     Just ev -> B.behavior cfg s (t & seconds) ev
 
 -- | Behave on upstream message
@@ -120,7 +118,7 @@ upstreamReceive ::
   IO (TS.NRMState, [B.Behavior])
 upstreamReceive cfg s t msg clientid =
   B.Req <$> UC.fromText clientid <*> M.decodeT msg & \case
-    Nothing -> return (s, [B.Log "couldn't decode upstream receive"])
+    Nothing -> return (s, [B.Log C.Error "couldn't decode upstream receive"])
     Just ev -> B.behavior cfg s (t & seconds) ev
 
 -- | when it's time to activate a sensor
@@ -182,7 +180,7 @@ registerCmdSuccess ::
   IO (TS.NRMState, [B.Behavior])
 registerCmdSuccess cfg s t cmdIDT pid =
   B.RegisterCmd <$> CmdID.fromText cmdIDT ?? B.Launched (Process.ProcessID $ SPT.CPid $ fromIntegral pid) & \case
-    Nothing -> return (s, [B.Log "couldn't decode cmdID in registerCmdSuccess nrm.so call"])
+    Nothing -> return (s, [B.Log C.Error "couldn't decode cmdID in registerCmdSuccess nrm.so call"])
     Just ev -> B.behavior cfg s (t & seconds) ev
 
 -- | when a command failed even starting.

@@ -68,9 +68,7 @@ doStdoutExport = exportIO E.doStdout
 
 doStderrExport = exportIO E.doStderr
 
-foreign export ccall isVerboseExport :: Ex
-
-foreign export ccall isDebugExport :: Ex
+foreign export ccall verbosityExport :: Ex
 
 foreign export ccall logfileExport :: Ex
 
@@ -84,9 +82,7 @@ foreign export ccall showStateExport :: Ex
 
 foreign export ccall showConfigurationExport :: Ex
 
-isVerboseExport = export E.isVerbose
-
-isDebugExport = export E.isDebug
+verbosityExport = export E.verbosity
 
 logfileExport = export E.logfile
 

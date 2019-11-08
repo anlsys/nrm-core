@@ -72,7 +72,7 @@ nrm _callTime (DoOutput cmdID outputType content) = do
           & _cmdID
             cmdID
             ( \case
-                Nothing -> (Log "No such command was found in the NRM state.", Nothing)
+                Nothing -> (Log Error "No such command was found in the NRM state.", Nothing)
                 Just c -> content & \case
                   "" ->
                     let newPstate = outputType & \case
@@ -343,7 +343,7 @@ mayRep :: Cmd -> URep.Rep -> Behavior
 mayRep c rp =
   (upstreamClientID . cmdCore) c & \case
     Just ucID -> Rep ucID rp
-    Nothing -> Log "This command does not have a registered upstream client."
+    Nothing -> Log Error "This command does not have a registered upstream client."
 
 respondContent :: Text -> Cmd -> CmdID -> URep.OutputType -> Behavior
 respondContent content cmd cmdID outputType = mayRep cmd $

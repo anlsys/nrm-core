@@ -22,7 +22,7 @@ import System.IO.Error
 
 data Cfg
   = Cfg
-      { verbose :: Maybe Bool,
+      { verbose :: Maybe Text,
         logfile :: Maybe Text,
         hwloc :: Maybe Text,
         perf :: Maybe Text,
@@ -53,7 +53,7 @@ instance FromJSON Cfg where
 
 toInternal :: Cfg -> I.Cfg
 toInternal d = I.Cfg
-  { verbose = if verbose d == Just True then I.Verbose else I.Normal,
+  { verbose = I.Error,
     logfile = fromDefault logfile I.logfile,
     hwloc = fromDefault hwloc I.hwloc,
     perf = fromDefault perf I.perf,
@@ -77,7 +77,7 @@ toInternal d = I.Cfg
 
 fromInternal :: I.Cfg -> Cfg
 fromInternal d = Cfg
-  { verbose = if I.verbose d == I.verbose (def :: I.Cfg) then Just True else Nothing,
+  { verbose = show <$> toJust I.verbose,
     logfile = toJust I.logfile,
     hwloc = toJust I.hwloc,
     perf = toJust I.perf,

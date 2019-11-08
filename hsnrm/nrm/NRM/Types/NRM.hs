@@ -10,6 +10,8 @@ module NRM.Types.NRM
     App,
     execNRM,
     log,
+    logInfo,
+    logError,
     pub,
     rep,
     behave,
@@ -46,6 +48,19 @@ rep clientID rp = behave $ Rep clientID rp
 pub :: Pub -> NRM ()
 pub msg = behave $ Pub msg
 
--- | NRM log
+-- | NRM debug level log
 log :: Text -> RWST Cfg [Behavior] a IO ()
-log l = tell [Log l]
+log = logVerbosity Debug
+
+-- | NRM info level log
+logInfo :: Text -> RWST Cfg [Behavior] a IO ()
+logInfo = logVerbosity Info
+
+-- | NRM error level log
+logError :: Text -> RWST Cfg [Behavior] a IO ()
+logError = logVerbosity Error
+
+-- | NRM verbose
+logVerbosity :: DaemonVerbosity -> Text -> RWST Cfg [Behavior] a IO ()
+logVerbosity vb l = verbose <$> ask
+  >>= \vc -> when (vb >= vc) $ tell [Log vb l]

@@ -34,8 +34,8 @@ data SliceRuntime = Singularity | Nodeos | Dummy
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceRuntime
 
-data DaemonVerbosity = Normal | Verbose | Debug
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+data DaemonVerbosity = Error | Info | Debug
+  deriving (Eq, Ord, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DaemonVerbosity
 
 data Cfg
@@ -127,7 +127,7 @@ instance Default Cfg where
       upstreamCfg = def,
       raplCfg = def,
       hwmonCfg = def,
-      verbose = Normal,
+      verbose = NRM.Types.Configuration.Error,
       minimumControlInterval = 0.1 & seconds
     }
 
