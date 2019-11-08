@@ -109,26 +109,25 @@ nix-build-pynrm:
     - nix
   script: nix-build -A pynrm --no-build-output
 
+nix-build-app-stream:
+  stage: linked
+  tags:
+    - kvm
+    - nix
+  script: nix-build -A stream --no-build-output
+
+nix-build-app-stream-raw:
+  stage: linked
+  tags:
+    - kvm
+    - nix
+  script: nix-build -A stream-raw --no-build-output
+
 nix-build-nrmFull:
   stage: linked
   tags:
     - integration
   script: nix-build -A nrm --no-build-output
-
-dhrun-hello:
-  stage: integration
-  tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell --pure -p '(import ./.).nrm' -p '(import ./.).dhrun' --run "dhrun run --verbose" <<< '
-        let all = ./dev/dhrun/all-tests.dh
-          "../dev/dhrun/assets/"
-          "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
-          "../resources/examples/"
-        in all.hello
-      '
 
 dhrun-exitcode:
   stage: integration
