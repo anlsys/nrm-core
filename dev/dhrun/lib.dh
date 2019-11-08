@@ -234,7 +234,7 @@
         →   { cmd =
                 cmd
             , manifestname =
-                "perfwrap.yml"
+                "perfwrap.dhall"
             , filter =
                 filter
             , args =
@@ -266,7 +266,7 @@
                         
                         then  args.manifestname
                         
-                        else  "parallel.yml"
+                        else  "parallel.dhall"
                       )
               ,daemonCfg = daemonCfg
               , containerName =
@@ -373,7 +373,7 @@
             ⫽ { args =
                   args.args
               , manifestname =
-                  "basic.yml"
+                  "basic.dhall"
               , vars =
                   args.vars
               , passvars =
