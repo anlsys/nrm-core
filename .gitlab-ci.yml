@@ -89,6 +89,17 @@ nix-build-binaries:
     - nix
   script: nix-build -A haskellPackages.nrmbin --no-build-output
 
+check-vendored-resources:
+  stage: codegen
+  tags:
+    - kvm
+    - nix
+  script:
+    - echo "check: are vendored resources up to date?"
+    - mkdir temp
+    - $(nix-build -A haskellPackages.nrmbin)/bin/codegen temp/
+    - diff -r temp resources
+
 nix-build-resources:
   stage: codegen
   tags:

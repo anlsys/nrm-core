@@ -20,7 +20,8 @@ import Protolude
 instance Examples Manifest where
   examples =
     fromList
-      [ ( "perfwrap",
+      [ ("default", def),
+        ( "perfwrap",
           def
             { app =
                 def
