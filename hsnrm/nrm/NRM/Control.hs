@@ -93,16 +93,18 @@ cStep ::
   Map SensorID (Interval Double) ->
   Time ->
   ControlM Decision
-cStep oexpr sensorRanges t =
+cStep oexpr sensorRanges t = do
+  i <- use (field @"integrator")
   use (field @"integrator" . field @"measured") <&> squeeze t >>= \case
     Nothing -> doNothing
     Just (measurements, newMeasured) -> do
       field @"integrator" . field @"measured" .= newMeasured
       case (,) <$> eval measurements oexpr
-        <*> evalRange sensorRanges oexpr of
+        <*> evalRange (sensorRanges $> (0 ... 1)) oexpr of
         Nothing -> doNothing
         Just (value, range) -> do
           let finalValue = (value - inf range) / width range
+          logInfo ("aggregated measurement computed with: \n sensor ranges:" <> show sensorRanges <> "\n sensor values:" <> show measurements <> "\n full integrator data structure:" <> show i)
           refine finalValue & \case
             Left _ -> do
               logError

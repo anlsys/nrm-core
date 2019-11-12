@@ -10,7 +10,7 @@
 module NRM.Sensors
   ( cpdSensors,
     NRM.Sensors.process,
-    Output (..),
+    MeasurementOutput (..),
     processPassiveSensor,
     ProcessPassiveSensorOutput (..),
     processPassiveSensorFailure,
@@ -45,7 +45,7 @@ cpdSensors st =
           <&> \(k, ScopedLens sl) -> toCPDSensor (k, view sl st)
       ]
 
-data Output = Adjusted NRMState | Ok NRMState Measurement | NotFound
+data MeasurementOutput = Adjusted NRMState | Ok NRMState Measurement | NotFound
 
 process ::
   Cfg ->
@@ -53,7 +53,7 @@ process ::
   NRMState ->
   ActiveSensorKey ->
   Double ->
-  Output
+  MeasurementOutput
 process _cfg time st sensorKey value =
   DM.lookup sensorKey (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor) & \case
     Nothing -> NotFound

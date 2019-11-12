@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-target=$1
-storepath=$(nix-build -A nrm)
+attr=$1
+target=$2
+storepath=$(nix-build -A $attr)
 echo $storepath
 nix-copy-closure --to $target $storepath
 ssh $target "~/.nix-profile/bin/nix-env -i $storepath"

@@ -35,6 +35,7 @@ data Input
     NoEvent Time
   | -- | Events
     Reconfigure Time
+  deriving (Show)
 
 data Decision = DoNothing | Decision [V.Action] deriving (Show)
 

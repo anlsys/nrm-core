@@ -208,6 +208,7 @@ nrm _callTime DoShutdown = behave NoBehavior
 -- | doControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
 doControl input = do
+  logInfo ("control called with input:" <> show input)
   st <- get
   zoom (field @"controller") $
     banditCartesianProductControl (NRMCPD.toCPD st) input >>= \case
@@ -327,12 +328,12 @@ commonSP callTime key value = do
   st <- get
   Sensors.process cfg callTime st key value & commonProcess callTime
 
-commonProcess :: U.Time -> Output -> NRM (CommonOutcome Measurement)
+commonProcess :: U.Time -> MeasurementOutput -> NRM (CommonOutcome Measurement)
 commonProcess callTime = \case
   Sensors.NotFound -> return ONotFound
   Sensors.Adjusted st' -> do
     put st'
-    log "Out-of-range value received, sensor adjusted"
+    logInfo "Out-of-range value received, sensor adjusted."
     return OAdjustment
   Sensors.Ok st' measurement -> do
     put st'
