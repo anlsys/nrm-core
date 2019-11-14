@@ -11,6 +11,7 @@ module NRM.Types.Configuration
     UpstreamCfg (..),
     DownstreamCfg (..),
     DaemonVerbosity (..),
+    ControlCfg (..),
     RaplCfg (..),
     HwmonCfg (..),
     jsonOptions,
@@ -56,10 +57,17 @@ data Cfg
         upstreamCfg :: UpstreamCfg,
         raplCfg :: Maybe RaplCfg,
         hwmonCfg :: HwmonCfg,
-        minimumControlInterval :: Time
+        controlCfg :: Maybe ControlCfg
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
+
+newtype ControlCfg
+  = ControlCfg
+      { minimumControlInterval :: Time
+      }
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ControlCfg
 
 data HwmonCfg
   = HwmonCfg
@@ -92,6 +100,11 @@ data UpstreamCfg
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON UpstreamCfg
+
+instance Default ControlCfg where
+  def = ControlCfg
+    { minimumControlInterval = 0.1 & seconds
+    }
 
 instance Default HwmonCfg where
   def = HwmonCfg
@@ -126,7 +139,7 @@ instance Default Cfg where
       raplCfg = def,
       hwmonCfg = def,
       verbose = NRM.Types.Configuration.Error,
-      minimumControlInterval = 0.1 & seconds
+      controlCfg = Nothing
     }
 
 instance Default UpstreamCfg where

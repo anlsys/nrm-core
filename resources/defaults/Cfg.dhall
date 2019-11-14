@@ -40,6 +40,6 @@
     None { raplPath : Text, raplFrequency : { fromHz : Double } }
 , hwmonCfg =
     { hwmonEnabled = True, hwmonPath = "/sys/class/hwmon" }
-, minimumControlInterval =
-    { fromuS = 100000.0 }
+, controlCfg =
+    None { minimumControlInterval : { fromuS : Double } }
 }

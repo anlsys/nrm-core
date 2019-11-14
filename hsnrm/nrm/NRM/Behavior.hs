@@ -208,9 +208,9 @@ nrm _callTime DoShutdown = return ()
 -- | doControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
 doControl input = do
-  logInfo ("control called with input:" <> show input)
   st <- get
-  zoom (field @"controller") $
+  zoom (field @"controller" . _Just) $ do
+    logInfo ("Control input:" <> show input)
     banditCartesianProductControl (NRMCPD.toCPD st) input >>= \case
       DoNothing -> return ()
       Decision d -> forM_ d $ \(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->

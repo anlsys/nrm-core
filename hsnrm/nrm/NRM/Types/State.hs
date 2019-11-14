@@ -64,7 +64,7 @@ data NRMState
         dummyRuntime :: Maybe DummyRuntime,
         singularityRuntime :: Maybe SingularityRuntime,
         nodeosRuntime :: Maybe NodeosRuntime,
-        controller :: Controller
+        controller :: Maybe Controller
       }
   deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
 
