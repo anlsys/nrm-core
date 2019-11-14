@@ -68,7 +68,7 @@ toInternal d = I.Cfg
     slice_runtime = fromDefault slice_runtime I.slice_runtime,
     downstreamCfg = fromDefault downstreamCfg I.downstreamCfg,
     upstreamCfg = fromDefault upstreamCfg I.upstreamCfg,
-    raplCfg = fromDefault raplCfg I.raplCfg,
+    raplCfg = raplCfg d,
     hwmonCfg = fromDefault hwmonCfg I.hwmonCfg
   }
   where
@@ -92,7 +92,7 @@ fromInternal d = Cfg
     slice_runtime = toJust I.slice_runtime,
     downstreamCfg = toJust I.downstreamCfg,
     upstreamCfg = toJust I.upstreamCfg,
-    raplCfg = toJust I.raplCfg,
+    raplCfg = I.raplCfg d,
     hwmonCfg = toJust I.hwmonCfg
   }
   where

@@ -54,7 +54,7 @@ data Cfg
         slice_runtime :: SliceRuntime,
         downstreamCfg :: DownstreamCfg,
         upstreamCfg :: UpstreamCfg,
-        raplCfg :: RaplCfg,
+        raplCfg :: Maybe RaplCfg,
         hwmonCfg :: HwmonCfg,
         minimumControlInterval :: Time
       }
@@ -71,8 +71,7 @@ data HwmonCfg
 
 data RaplCfg
   = RaplCfg
-      { raplEnabled :: Bool,
-        raplPath :: Text,
+      { raplPath :: Text,
         raplFrequency :: Frequency
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
@@ -102,8 +101,7 @@ instance Default HwmonCfg where
 
 instance Default RaplCfg where
   def = RaplCfg
-    { raplEnabled = True,
-      raplPath = "/sys/devices/virtual/powercap/intel-rapl",
+    { raplPath = "/sys/devices/virtual/powercap/intel-rapl",
       raplFrequency = 1 & hz
     }
 

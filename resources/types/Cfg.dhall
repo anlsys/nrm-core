@@ -37,7 +37,7 @@
 , upstreamCfg :
     { upstreamBindAddress : Text, pubPort : Integer, rpcPort : Integer }
 , raplCfg :
-    { raplEnabled : Bool, raplPath : Text, raplFrequency : { fromHz : Double } }
+    Optional { raplPath : Text, raplFrequency : { fromHz : Double } }
 , hwmonCfg :
     { hwmonEnabled : Bool, hwmonPath : Text }
 , minimumControlInterval :

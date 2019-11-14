@@ -37,13 +37,7 @@
 , upstreamCfg =
     { upstreamBindAddress = "*", pubPort = +2345, rpcPort = +3456 }
 , raplCfg =
-    { raplEnabled =
-        True
-    , raplPath =
-        "/sys/devices/virtual/powercap/intel-rapl"
-    , raplFrequency =
-        { fromHz = 1.0 }
-    }
+    None { raplPath : Text, raplFrequency : { fromHz : Double } }
 , hwmonCfg =
     { hwmonEnabled = True, hwmonPath = "/sys/class/hwmon" }
 , minimumControlInterval =

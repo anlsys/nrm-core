@@ -55,8 +55,9 @@ initialState c time = do
         LM.fromList $
           (,Package {rapl = Nothing})
             <$> selectPackageIDs hwl
-  packages <-
-    getDefaultRAPLDirs (toS $ Cfg.raplPath $ raplCfg c) <&> \case
+  packages <- raplCfg c & \case
+    Nothing -> return packages'
+    Just raplc -> getDefaultRAPLDirs (toS $ Cfg.raplPath raplc) <&> \case
       Just (RAPLDirs rapldirs) -> Protolude.foldl goRAPL packages' (LM.toList rapldirs)
       Nothing -> packages'
   return NRMState
