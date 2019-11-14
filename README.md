@@ -44,6 +44,11 @@ minima, try `nix-env -iA nixpkgs.gitlab-runner`. You can then run a unique job
 using `./ci <jobname>` or all jobs using `./ci`. This runs jobs on
 your latest local commit.
 
+
+##### install NRM to a (Nix-enabled) remote system user environment:
+
+`./deploy nrm user@host`
+
 ### architecture
 
 - `/pynrm` : daemon runtime
