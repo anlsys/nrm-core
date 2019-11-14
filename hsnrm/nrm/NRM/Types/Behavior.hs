@@ -57,9 +57,7 @@ data CmdStatus
 
 -- | The Behavior datatype encodes a behavior to be executed by the NRM runtime.
 data Behavior
-  = -- | The No-Op
-    NoBehavior
-  | -- | Log a message
+  = -- | Log a message
     Log DaemonVerbosity Text
   | -- | Reply to an upstream client.
     Rep UpstreamClientID Rep
@@ -78,7 +76,6 @@ data Behavior
 -- just exists for passing the behavior to the python runtime.
 instance MessagePack Behavior where
 
-  toObject NoBehavior = toObject ("noop" :: Text)
   toObject (Log Error msg) = toObject ("logError" :: Text, msg)
   toObject (Log Info msg) = toObject ("logInfo" :: Text, msg)
   toObject (Log Debug msg) = toObject ("logDebug" :: Text, msg)
