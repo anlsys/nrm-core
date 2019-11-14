@@ -40,6 +40,6 @@
     Optional { raplPath : Text, raplFrequency : { fromHz : Double } }
 , hwmonCfg :
     { hwmonEnabled : Bool, hwmonPath : Text }
-, minimumControlInterval :
-    { fromuS : Double }
+, controlCfg :
+    Optional { minimumControlInterval : { fromuS : Double } }
 }

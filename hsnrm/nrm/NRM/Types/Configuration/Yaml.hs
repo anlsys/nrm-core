@@ -16,7 +16,6 @@ import Data.Default
 import Data.Yaml
 import qualified NRM.Types.Cmd as Cmd
 import qualified NRM.Types.Configuration as I
-import NRM.Types.Units
 import Protolude
 import System.IO.Error
 
@@ -38,7 +37,7 @@ data Cfg
         upstreamCfg :: Maybe I.UpstreamCfg,
         raplCfg :: Maybe I.RaplCfg,
         hwmonCfg :: Maybe I.HwmonCfg,
-        minimumControlInterval :: Maybe Time
+        controlCfg :: Maybe I.ControlCfg
       }
   deriving (Generic)
 
@@ -64,11 +63,11 @@ toInternal d = I.Cfg
     singularity = fromDefault singularity I.singularity,
     dummy = fromDefault dummy I.dummy,
     nodeos = fromDefault nodeos I.nodeos,
-    minimumControlInterval = fromDefault minimumControlInterval I.minimumControlInterval,
     slice_runtime = fromDefault slice_runtime I.slice_runtime,
     downstreamCfg = fromDefault downstreamCfg I.downstreamCfg,
     upstreamCfg = fromDefault upstreamCfg I.upstreamCfg,
     raplCfg = raplCfg d,
+    controlCfg = controlCfg d,
     hwmonCfg = fromDefault hwmonCfg I.hwmonCfg
   }
   where
@@ -88,11 +87,11 @@ fromInternal d = Cfg
     singularity = toJust I.singularity,
     dummy = toJust I.dummy,
     nodeos = toJust I.nodeos,
-    minimumControlInterval = toJust I.minimumControlInterval,
     slice_runtime = toJust I.slice_runtime,
     downstreamCfg = toJust I.downstreamCfg,
     upstreamCfg = toJust I.upstreamCfg,
     raplCfg = I.raplCfg d,
+    controlCfg = I.controlCfg d,
     hwmonCfg = toJust I.hwmonCfg
   }
   where
