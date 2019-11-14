@@ -54,21 +54,19 @@ measureValue thresholdTime (newTime, newValue) (Running firstT lastT lastV avg)
       lastTime = newTime,
       lastValue = newValue,
       average =
-        ( ( trapezoidArea (lastT, lastV) (newTime, newValue)
-              + avg * fromuS (lastT - firstT)
-          )
-            / fromuS (newTime - firstT)
+        ( trapezoidArea (lastT, lastV) (newTime, newValue)
+            + avg * fromuS (lastT - firstT)
         )
+          / fromuS (newTime - firstT)
     }
   | otherwise = Done
     { lastTimeDone = newTime,
       lastValueDone = newValue,
       totalAverageDone =
-        ( ( trapezoidArea (lastT, lastV) (newTime, newValue)
-              + avg * fromuS (lastT - firstT)
-          )
-            / fromuS (newTime - firstT)
+        ( trapezoidArea (lastT, lastV) (newTime, newValue)
+            + avg * fromuS (lastT - firstT)
         )
+          / fromuS (newTime - firstT)
     }
 
 squeeze ::
