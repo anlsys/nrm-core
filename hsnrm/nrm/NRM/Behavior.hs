@@ -80,7 +80,7 @@ nrm _callTime (DoOutput cmdID outputType content) = do
                           URep.StderrOutput -> (processState c) {stderrFinished = True}
                      in isDone newPstate & \case
                           Just exc -> (mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc), Nothing)
-                          Nothing -> (NoBehavior, Just (c & field @"processState" .~ newPstate))
+                          Nothing -> (Log Debug ("warning, empty content: " <> show content), Just (c & field @"processState" .~ newPstate))
                   _ -> (respondContent content c cmdID outputType, Just c)
             )
   put st'
@@ -203,7 +203,7 @@ nrm callTime DoSensor = do
       let cpd = NRMCPD.toCPD st'
        in pub (UPub.PubCPD callTime cpd)
             >> doControl (Reconfigure callTime)
-nrm _callTime DoShutdown = behave NoBehavior
+nrm _callTime DoShutdown = return ()
 
 -- | doControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()

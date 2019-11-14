@@ -126,8 +126,7 @@ class Daemon(object):
             _logger.debug("received behaviors from nrm.so: %s", str(bhs))
             for bh in bhs:
                 _logger.debug("addressing behavior %s", str(bh))
-                if bh != "noop":
-                    self.dispatch[bh[0]](*bh[1:])
+                self.dispatch[bh[0]](*bh[1:])
 
         return r
 
