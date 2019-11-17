@@ -12,7 +12,7 @@ where
 
 import FFI.TypeUncurry.Msgpack
 import Foreign.C
-import qualified NRM.Export as E
+import qualified NRM.ExportIO as E
 import Protolude
 
 -- | All FFI exported names in this module must have this opaque type
@@ -44,6 +44,20 @@ foreign export ccall doStdoutExport :: Ex
 
 foreign export ccall doStderrExport :: Ex
 
+foreign export ccall verbosityExport :: Ex
+
+foreign export ccall logfileExport :: Ex
+
+foreign export ccall upstreamRpcAddressExport :: Ex
+
+foreign export ccall upstreamPubAddressExport :: Ex
+
+foreign export ccall downstreamEventAddressExport :: Ex
+
+foreign export ccall showStateExport :: Ex
+
+foreign export ccall showConfigurationExport :: Ex
+
 cliExport = exportIO E.parseDaemon
 
 initialStateExport = exportIO E.initialState
@@ -68,30 +82,16 @@ doStdoutExport = exportIO E.doStdout
 
 doStderrExport = exportIO E.doStderr
 
-foreign export ccall verbosityExport :: Ex
+verbosityExport = exportIO E.verbosity
 
-foreign export ccall logfileExport :: Ex
+logfileExport = exportIO E.logfile
 
-foreign export ccall upstreamRpcAddressExport :: Ex
+upstreamRpcAddressExport = exportIO E.upstreamRpcAddress
 
-foreign export ccall upstreamPubAddressExport :: Ex
+upstreamPubAddressExport = exportIO E.upstreamPubAddress
 
-foreign export ccall downstreamEventAddressExport :: Ex
+downstreamEventAddressExport = exportIO E.downstreamEventAddress
 
-foreign export ccall showStateExport :: Ex
+showConfigurationExport = exportIO E.showConfiguration
 
-foreign export ccall showConfigurationExport :: Ex
-
-verbosityExport = export E.verbosity
-
-logfileExport = export E.logfile
-
-upstreamRpcAddressExport = export E.upstreamRpcAddress
-
-upstreamPubAddressExport = export E.upstreamPubAddress
-
-downstreamEventAddressExport = export E.downstreamEventAddress
-
-showConfigurationExport = export E.showConfiguration
-
-showStateExport = export E.showState
+showStateExport = exportIO E.showState

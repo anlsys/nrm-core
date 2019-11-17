@@ -5,7 +5,7 @@ from ctypes import CDLL, POINTER, LibraryLoader, c_char
 import msgpack
 import logging
 
-logger = logging.getLogger("nrm")
+_logger = logging.getLogger("nrm")
 
 
 class HSO(CDLL):
@@ -27,14 +27,7 @@ class HSO(CDLL):
             self.free(ptr)
             return res
 
-        def catched(*args):
-            try:
-                res = wrapped_fun(*args)
-                return res
-            except:
-                logger.error("NRM shared lib call throwed an exception")
-
-        return catched
+        return wrapped_fun
 
     def __getattr__(self, name):
         try:
@@ -45,7 +38,7 @@ class HSO(CDLL):
                 fun = super(HSO, self).__getattr__(expName)
                 return self.wrap_into_msgpack(fun)
             except AttributeError:
-                logger.error(
+                _logger.error(
                     "NRM's python code tried to access an undefined symbol in nrm.so:"
                 )
                 raise e
@@ -55,7 +48,6 @@ class HSO(CDLL):
 def NrmLib(library, exportPattern="{name}Export"):
     hdll = LibraryLoader(HSO)
     hdll.exportPattern = exportPattern
-
     lib = hdll.LoadLibrary(library)
     lib.hs_init(0, 0)
     yield lib

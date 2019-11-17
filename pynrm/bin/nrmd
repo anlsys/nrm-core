@@ -5,5 +5,24 @@ from nrm.nrmlib import NrmLib
 import nrm.daemon
 import os
 
+
+class WrapEither(object):
+    def __init__(self, lib):
+        self.lib = lib
+
+    def __getattr__(self, name):
+        r = self.lib.__getattr__(name)
+
+        def eitherwrap(*args):
+            (success, content) = r(*args)
+            if success:
+                return content
+            else:
+                raise Exception("nrm.so library call raised exception: %s" + content)
+
+        return eitherwrap
+
+
 with NrmLib(os.environ["NRMSO"]) as lib:
-    nrm.daemon.runner(lib.cli(sys.argv[1:]), lib)
+    wrappedLib = WrapEither(lib)
+    nrm.daemon.runner(wrappedLib.cli(sys.argv[1:]), wrappedLib)

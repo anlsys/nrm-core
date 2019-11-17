@@ -26,7 +26,7 @@ in  \(ghcPath:Text)  -> \(ghcNumericVersion:Text) -> prelude.defaults.Package
                   ⫽ { main-is =
                         "Export.hs"
                     , build-depends =
-                        [common.nobound "nrmlib", common.deps.base, common.deps.protolude]
+                        [common.nobound "nrmlib", common.deps.base, common.deps.protolude , common.deps.enclosed-exceptions ]
                     , hs-source-dirs =
                         [ "bin" ]
                     }
