@@ -37,6 +37,7 @@ library nrmlib
         NRM.Control
         NRM.Codegen
         NRM.Export
+        NRM.ExportIO
         NRM.Client
         NRM.Daemon
         NRM.CPD
@@ -139,6 +140,7 @@ library nrmlib
     build-depends:
         base -any,
         protolude -any,
+        enclosed-exceptions -any,
         MonadRandom -any,
         mtl-compat -any,
         vcs-revision -any,
@@ -223,6 +225,7 @@ library banditlib
     build-depends:
         base -any,
         protolude -any,
+        enclosed-exceptions -any,
         MonadRandom -any,
         mtl-compat -any,
         vcs-revision -any,
@@ -290,6 +293,7 @@ executable nrm.so
         NRM.Control
         NRM.Codegen
         NRM.Export
+        NRM.ExportIO
         NRM.Client
         NRM.Daemon
         NRM.CPD
@@ -392,6 +396,7 @@ executable nrm.so
     build-depends:
         base -any,
         protolude -any,
+        enclosed-exceptions -any,
         MonadRandom -any,
         mtl-compat -any,
         vcs-revision -any,
@@ -459,6 +464,7 @@ executable nrmstatic
         NRM.Control
         NRM.Codegen
         NRM.Export
+        NRM.ExportIO
         NRM.Client
         NRM.Daemon
         NRM.CPD
@@ -560,6 +566,7 @@ executable nrmstatic
     build-depends:
         base -any,
         protolude -any,
+        enclosed-exceptions -any,
         MonadRandom -any,
         mtl-compat -any,
         vcs-revision -any,

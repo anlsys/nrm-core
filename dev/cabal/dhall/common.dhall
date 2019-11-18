@@ -168,6 +168,8 @@ let deps =
           nobound "bytestring"
       , data-msgpack =
           nobound "data-msgpack"
+      , enclosed-exceptions =
+          nobound "enclosed-exceptions"
       , storable-endian =
           nobound "storable-endian"
       , template-haskell =
@@ -211,6 +213,7 @@ let modules =
       , "NRM.Control"
       , "NRM.Codegen"
       , "NRM.Export"
+      , "NRM.ExportIO"
       , "NRM.Client"
       , "NRM.Daemon"
       , "NRM.CPD"
@@ -296,6 +299,7 @@ let allmodules = modules # extramodules # banditmodules
 let libdep =
       [ deps.base
       , deps.protolude
+      , deps.enclosed-exceptions
       , deps.monadRandom
       , deps.mtl-compat
       , deps.vcs-revision

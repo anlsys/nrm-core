@@ -177,6 +177,8 @@ in pkgs // rec {
       export NIX_GHCPKG="${haskellPackages.nrmlib.env.NIX_GHCPKG}"
       export NIX_GHC_DOCDIR="${haskellPackages.nrmlib.env.NIX_GHC_DOCDIR}"
       export NIX_GHC_LIBDIR="${haskellPackages.nrmlib.env.NIX_GHC_LIBDIR}"
+      cp $CABALFILE hsnrm/hsnrm.cabal
+      chmod +rw hsnrm/hsnrm.cabal
     '';
 
     LC_ALL = "en_US.UTF-8";

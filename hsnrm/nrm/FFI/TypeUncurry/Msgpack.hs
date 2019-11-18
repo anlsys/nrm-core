@@ -10,16 +10,12 @@
 module FFI.TypeUncurry.Msgpack
   ( MessagePackRec (..),
     getTypeListFromMsgpackArray,
-    uncurryMsgpack,
-    tryUncurryMsgpack,
-    tryUncurryMsgpackIO,
-    byteStringToCStringFun,
     byteStringToCStringFunIO,
-    export,
     exportIO,
   )
 where
 
+import Control.Exception.Enclosed (catchAny)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
@@ -85,30 +81,6 @@ errorMsg locationStr =
     ++ locationStr
     ++ ": got wrong number of function arguments or non-array"
 
--- | Translates a function of type @a -> b -> ... -> r@ to
--- a function that:
---
--- * takes as a single argument a 'ByteString' containing all arguments serialized in a MessagePack array
---
--- * returns its result serialized in a 'ByteString' via MessagePack 'MSG.pack'
---
--- This function throws an 'error' if the de-serialization of the arguments fails!
--- It is recommended to use 'tryUncurryMsgpack' instead.
-uncurryMsgpack ::
-  (MSG.MessagePack (TypeList l), ToTypeList f l r, MSG.MessagePack r) =>
-  f ->
-  (ByteString -> ByteString)
-uncurryMsgpack f bs =
-  BSL.toStrict $
-    MSG.pack
-      ( translate f
-          $ fromMaybe (error (errorMsg "uncurryMsgpack"))
-          $ MSG.unpack
-          $ BSL.fromStrict bs
-      )
-
--- | Like 'uncurryMsgpack', but for 'IO' functions.
---
 -- This function throws an 'error' if the de-serialization of the arguments fails!
 -- It is recommended to use 'tryUncurryMsgpackIO' instead.
 uncurryMsgpackIO ::
@@ -117,32 +89,17 @@ uncurryMsgpackIO ::
   (ByteString -> IO ByteString)
 uncurryMsgpackIO f bs =
   BSL.toStrict . MSG.pack
-    <$> translate
-      f
-      ( fromMaybe (error (errorMsg "uncurryMsgpackIO"))
-          $ MSG.unpack
-          $ BSL.fromStrict bs
+    <$> exceptionLess
+      ( translate
+          f
+          ( fromMaybe (error (errorMsg "uncurryMsgpackIO"))
+              $ MSG.unpack
+              $ BSL.fromStrict bs
+          )
       )
 
--- | Like 'uncurryMsgpack', but makes it clear when the 'ByteString' containing
--- the function arguments does not contain the right number/types of arguments.
-tryUncurryMsgpack ::
-  (MSG.MessagePack (TypeList l), ToTypeList f l r, MSG.MessagePack r) =>
-  f ->
-  (ByteString -> Maybe ByteString)
-tryUncurryMsgpack f bs = case MSG.unpack $ BSL.fromStrict bs of
-  Nothing -> Nothing
-  Just args -> Just . BSL.toStrict . MSG.pack $ translate f args
-
--- | Like 'uncurryMsgpack', but makes it clear when the 'ByteString' containing
--- the function arguments does not contain the right number/types of arguments.
-tryUncurryMsgpackIO ::
-  (MSG.MessagePack (TypeList l), ToTypeList f l (IO r), MSG.MessagePack r) =>
-  f ->
-  (ByteString -> Maybe (IO ByteString))
-tryUncurryMsgpackIO f bs = case MSG.unpack $ BSL.fromStrict bs of
-  Nothing -> Nothing
-  Just args -> Just $ BSL.toStrict . MSG.pack <$> translate f args
+exceptionLess :: IO a -> IO (Either Text a)
+exceptionLess io = catchAny (Right <$> io) $ return . Left . show
 
 -- | O(n). Makes a copy of the ByteString's contents into a malloc()ed area.
 -- You need to free() the returned string when you're done with it.
@@ -156,17 +113,6 @@ byteStringToMallocedCStringWith64bitLength bs =
 
 -- * Exporting
 
--- TODO implement via byteStringToCStringFunIO?
-
--- | Transforms a 'ByteString'-mapping function to 'CString'-mapping function
--- for use in the FFI.
-byteStringToCStringFun :: (ByteString -> ByteString) -> CString -> IO CString
-byteStringToCStringFun f cs = do
-  msgLength :: Int64 <- peekBE (castPtr cs)
-  cs_bs <- BS.packCStringLen (cs `plusPtr` 8, fromIntegral msgLength)
-  let res_bs = f cs_bs
-  byteStringToMallocedCStringWith64bitLength res_bs
-
 -- | Transforms a 'ByteString'-mapping 'IO' function to 'CString'-mapping function
 -- for use in the FFI.
 byteStringToCStringFunIO :: (ByteString -> IO ByteString) -> CString -> IO CString
@@ -176,21 +122,6 @@ byteStringToCStringFunIO f cs = do
   res_bs <- f cs_bs
   byteStringToMallocedCStringWith64bitLength res_bs
 
--- | Exports a "pure" function
--- to an FFI function that takes its arguments as a serialized MessagePack message.
---
--- Calling this function throws an 'error' if the de-serialization of the arguments fails!
--- Use 'tryExport' if you want to handle this case.
-export ::
-  (MSG.MessagePack (TypeList l), ToTypeList f l r, MSG.MessagePack r) =>
-  f ->
-  CString ->
-  IO CString
-export = byteStringToCStringFun . uncurryMsgpack
-
--- | Exports an 'IO' function to an FFI function that takes its arguments as a serialized MessagePack message.
---
--- Calling this function throws an 'error' if the de-serialization of the arguments fails!
 -- Use 'tryExportIO' if you want to handle this case.
 exportIO ::
   (MSG.MessagePack (TypeList l), ToTypeList f l (IO r), MSG.MessagePack r) =>
@@ -198,5 +129,3 @@ exportIO ::
   CString ->
   IO CString
 exportIO = byteStringToCStringFunIO . uncurryMsgpackIO
--- TODO make equivalent using tryUncurryMsgpack (tryExport)
--- TODO make equivalent using tryUncurryMsgpackIO (tryExport)
