@@ -8,9 +8,6 @@
 module NRM.Types.Messaging.UpstreamPub
   ( Pub (..),
     Progress (..),
-    Power (..),
-    SliceStart (..),
-    SliceExit (..),
   )
 where
 
@@ -28,41 +25,18 @@ import NRM.Types.Units
 import Protolude
 
 data Pub
-  = PubMeasurements Time [CPD.Measurement]
-  | PubCPD Time CPD.Problem
-  | PubPower Time PowerState
-  | PubSliceStart Time SliceStart
-  | PubSliceExit Time SliceExit
-  | PubPerformance Time CmdID Operations
-  | PubPhaseContext Time DownstreamThreadID SliceID PhaseContext
-  | PubProgress Time DownstreamThreadID Progress
+  = -- | publishing some CPD measurements
+    PubMeasurements Time [CPD.Measurement]
+  | -- | publishing a new problem state
+    PubCPD Time CPD.Problem
+  | -- | publishing when a cpu counter message is received
+    PubPerformance Time CmdID Operations
+  | -- | publishing when a preloaded message is received
+    PubPhaseContext Time DownstreamThreadID SliceID PhaseContext
+  | -- | publishing when instrumentation produces progress reports
+    PubProgress Time DownstreamThreadID Progress
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Pub
-
-data PowerState
-  = PowerState
-      { total :: Power,
-        limit :: Power
-      }
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON PowerState
-
-data SliceStart
-  = SliceStart
-      { startSliceID :: C.SliceID,
-        errno :: Int,
-        power :: Power
-      }
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceStart
-
-data SliceExit
-  = SliceExit
-      { exitSliceID :: C.SliceID,
-        profile_data :: Map Text Text
-      }
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceExit
 
 data Control
   = Control
