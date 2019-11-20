@@ -30,14 +30,22 @@ import qualified NRM.Types.Units as U
 import Protolude
 
 data Req
-  = ReqSliceList SliceList
-  | ReqRun Run
-  | ReqKillSlice KillSlice
-  | ReqCPD CPD
-  | ReqKillCmd KillCmd
-  | ReqSetPower SetPower
-  | ReqGetState GetState
-  | ReqGetConfig GetConfig
+  = -- | encodes a request for the list of current slices
+    ReqSliceList SliceList
+  | -- | encodes a request to run a command
+    ReqRun Run
+  | -- | encodes a request to kill a whole slice
+    ReqKillSlice KillSlice
+  | -- | encodes a request to obtain the current control problem description
+    ReqCPD CPD
+  | -- | encodes a request to kill a running command
+    ReqKillCmd KillCmd
+  | -- | encodes a request to set the global power bound
+    ReqSetPower SetPower
+  | -- | encodes a request to obtain the full daemon state
+    ReqGetState GetState
+  | -- | encodes a request to get the daemon configuration
+    ReqGetConfig GetConfig
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON Req
 

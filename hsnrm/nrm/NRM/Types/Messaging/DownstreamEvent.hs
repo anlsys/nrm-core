@@ -25,12 +25,18 @@ import NRM.Types.Units
 import Protolude
 
 data Event
-  = CmdPerformance CmdID Operations
-  | CmdPause CmdID
-  | ThreadProgress DownstreamThreadID Progress
-  | ThreadPause DownstreamThreadID
-  | ThreadPhaseContext DownstreamThreadID PhaseContext
-  | ThreadPhasePause DownstreamThreadID
+  = -- | performance wrapping operation count report
+    CmdPerformance CmdID Operations
+  | -- | pausing performance wrapping operation reports
+    CmdPause CmdID
+  | -- | instrumented thread progress report
+    ThreadProgress DownstreamThreadID Progress
+  | -- | pausing instrumented thread progress reports
+    ThreadPause DownstreamThreadID
+  | -- | preloaded MPI progress report
+    ThreadPhaseContext DownstreamThreadID PhaseContext
+  | -- | pausing preloaded MPI progress report
+    ThreadPhasePause DownstreamThreadID
   deriving (Generic, MessagePack)
 
 data PhaseContext
