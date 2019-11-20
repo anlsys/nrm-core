@@ -50,32 +50,56 @@
             "properties": {
                 "threadProgress": {
                     "required": [
-                        "cmdID",
-                        "processID",
-                        "taskID",
-                        "threadID",
-                        "rankID",
-                        "payload"
+                        "downstreamThreadID",
+                        "progress"
                     ],
                     "type": "object",
                     "properties": {
-                        "cmdID": {
-                            "type": "string"
-                        },
-                        "taskID": {
-                            "type": "string"
-                        },
-                        "processID": {
+                        "progress": {
                             "type": "number"
                         },
-                        "payload": {
-                            "type": "number"
-                        },
-                        "rankID": {
-                            "type": "number"
-                        },
-                        "threadID": {
-                            "type": "number"
+                        "downstreamThreadID": {
+                            "required": [
+                                "cmdID",
+                                "processID",
+                                "taskID",
+                                "threadID",
+                                "rankID"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "cmdID": {
+                                    "type": "string"
+                                },
+                                "taskID": {
+                                    "required": [
+                                        "fromTaskID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "fromTaskID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "processID": {
+                                    "type": "number"
+                                },
+                                "rankID": {
+                                    "required": [
+                                        "fromRankID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "fromRankID": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "threadID": {
+                                    "type": "number"
+                                }
+                            }
                         }
                     }
                 }
@@ -89,28 +113,52 @@
             "properties": {
                 "threadPause": {
                     "required": [
-                        "cmdID",
-                        "processID",
-                        "taskID",
-                        "threadID",
-                        "rankID"
+                        "downstreamThreadId"
                     ],
                     "type": "object",
                     "properties": {
-                        "cmdID": {
-                            "type": "string"
-                        },
-                        "taskID": {
-                            "type": "string"
-                        },
-                        "processID": {
-                            "type": "number"
-                        },
-                        "rankID": {
-                            "type": "number"
-                        },
-                        "threadID": {
-                            "type": "number"
+                        "downstreamThreadId": {
+                            "required": [
+                                "cmdID",
+                                "processID",
+                                "taskID",
+                                "threadID",
+                                "rankID"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "cmdID": {
+                                    "type": "string"
+                                },
+                                "taskID": {
+                                    "required": [
+                                        "fromTaskID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "fromTaskID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "processID": {
+                                    "type": "number"
+                                },
+                                "rankID": {
+                                    "required": [
+                                        "fromRankID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "fromRankID": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "threadID": {
+                                    "type": "number"
+                                }
+                            }
                         }
                     }
                 }
@@ -124,44 +172,76 @@
             "properties": {
                 "threadPhaseContext": {
                     "required": [
-                        "cmdID",
-                        "processID",
-                        "taskID",
-                        "threadID",
-                        "rankID",
-                        "cpu",
-                        "aggregation",
-                        "computetime",
-                        "totaltime"
+                        "downstreamThreadId",
+                        "phaseContext"
                     ],
                     "type": "object",
                     "properties": {
-                        "cmdID": {
-                            "type": "string"
+                        "downstreamThreadId": {
+                            "required": [
+                                "cmdID",
+                                "processID",
+                                "taskID",
+                                "threadID",
+                                "rankID"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "cmdID": {
+                                    "type": "string"
+                                },
+                                "taskID": {
+                                    "required": [
+                                        "fromTaskID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "fromTaskID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "processID": {
+                                    "type": "number"
+                                },
+                                "rankID": {
+                                    "required": [
+                                        "fromRankID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "fromRankID": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "threadID": {
+                                    "type": "number"
+                                }
+                            }
                         },
-                        "computetime": {
-                            "type": "number"
-                        },
-                        "taskID": {
-                            "type": "string"
-                        },
-                        "processID": {
-                            "type": "number"
-                        },
-                        "aggregation": {
-                            "type": "number"
-                        },
-                        "totaltime": {
-                            "type": "number"
-                        },
-                        "rankID": {
-                            "type": "number"
-                        },
-                        "threadID": {
-                            "type": "number"
-                        },
-                        "cpu": {
-                            "type": "number"
+                        "phaseContext": {
+                            "required": [
+                                "cpu",
+                                "aggregation",
+                                "computetime",
+                                "totaltime"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "computetime": {
+                                    "type": "number"
+                                },
+                                "aggregation": {
+                                    "type": "number"
+                                },
+                                "totaltime": {
+                                    "type": "number"
+                                },
+                                "cpu": {
+                                    "type": "number"
+                                }
+                            }
                         }
                     }
                 }
@@ -175,28 +255,52 @@
             "properties": {
                 "threadPhasePause": {
                     "required": [
-                        "cmdID",
-                        "processID",
-                        "taskID",
-                        "threadID",
-                        "rankID"
+                        "downstreamThreadId"
                     ],
                     "type": "object",
                     "properties": {
-                        "cmdID": {
-                            "type": "string"
-                        },
-                        "taskID": {
-                            "type": "string"
-                        },
-                        "processID": {
-                            "type": "number"
-                        },
-                        "rankID": {
-                            "type": "number"
-                        },
-                        "threadID": {
-                            "type": "number"
+                        "downstreamThreadId": {
+                            "required": [
+                                "cmdID",
+                                "processID",
+                                "taskID",
+                                "threadID",
+                                "rankID"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "cmdID": {
+                                    "type": "string"
+                                },
+                                "taskID": {
+                                    "required": [
+                                        "fromTaskID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "fromTaskID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "processID": {
+                                    "type": "number"
+                                },
+                                "rankID": {
+                                    "required": [
+                                        "fromRankID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "fromRankID": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "threadID": {
+                                    "type": "number"
+                                }
+                            }
                         }
                     }
                 }

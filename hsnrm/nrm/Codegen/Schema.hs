@@ -83,5 +83,5 @@ toOP (S.Constant aesonValue) =
   [("const", mkString $ toS (A.encode aesonValue))]
 toOP S.Any = []
 
-generatePretty :: (M.NRMMessage a b) => Proxy a -> Text
+generatePretty :: (M.NRMMessage a) => Proxy a -> Text
 generatePretty = toS . AP.encodePretty . toAeson . M.messageSchema

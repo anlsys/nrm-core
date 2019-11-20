@@ -35,8 +35,7 @@ data Pub
     PubPhaseContext Time DownstreamThreadID SliceID PhaseContext
   | -- | publishing when instrumentation produces progress reports
     PubProgress Time DownstreamThreadID Progress
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Pub
+  deriving (Show, Generic, MessagePack, NRMMessage)
 
 data Control
   = Control
@@ -48,9 +47,3 @@ data Control
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Control
-
-instance NRMMessage Pub Pub where
-
-  fromJ = identity
-
-  toJ = identity

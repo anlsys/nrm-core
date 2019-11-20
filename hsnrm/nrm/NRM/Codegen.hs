@@ -38,7 +38,7 @@ import qualified NRM.Types.Configuration.Yaml as CI (encodeDCfg)
 import qualified NRM.Types.Manifest as MI
 import qualified NRM.Types.Manifest.Yaml as MI (encodeManifest)
 import NRM.Types.Messaging.DownstreamEvent
-import qualified NRM.Types.Messaging.DownstreamEvent.JSON as Down (Event (..))
+import qualified NRM.Types.Messaging.DownstreamEvent as Down (Event (..))
 import NRM.Types.Messaging.UpstreamPub
 import NRM.Types.Messaging.UpstreamRep
 import NRM.Types.Messaging.UpstreamReq
@@ -86,7 +86,7 @@ downstreamEventSchema = generatePretty (Proxy :: Proxy Event)
 
 -- | The libnrm C header.
 libnrmHeader :: Text
-libnrmHeader = toHeader $ toCHeader (Proxy :: Proxy Down.Event)
+libnrmHeader = toS $ toCHeader (Proxy :: Proxy Down.Event)
 
 -- | A license for C headers.
 licenseC :: Text

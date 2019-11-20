@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
+{-# OPTIONS_GHC -fno-warn-partial-fields #-}
 
 -- |
 -- Module      : NRM.Types.Messaging.DownstreamEvent
@@ -13,31 +14,45 @@ where
 
 import Data.Aeson
 import Data.JSON.Schema
-import Data.Maybe (fromJust)
 import Data.MessagePack
 import NRM.Classes.Messaging
-import qualified NRM.Classes.Messaging as M
 import NRM.Types.CmdID as CmdID
 import NRM.Types.DownstreamThreadID
-import qualified NRM.Types.Messaging.DownstreamEvent.JSON as J
-import qualified NRM.Types.Process as P
 import NRM.Types.Units
 import Protolude
 
+-- | partial record selectors are unfortunately used here.
+-- They make the top level of the serialized JSON message format
+-- more readable by embedding tags.
 data Event
   = -- | performance wrapping operation count report
-    CmdPerformance CmdID Operations
+    CmdPerformance
+      { cmdID :: CmdID,
+        perf :: Operations
+      }
   | -- | pausing performance wrapping operation reports
-    CmdPause CmdID
+    CmdPause
+      { cmdID :: CmdID
+      }
   | -- | instrumented thread progress report
-    ThreadProgress DownstreamThreadID Progress
+    ThreadProgress
+      { downstreamThreadID :: DownstreamThreadID,
+        progress :: Progress
+      }
   | -- | pausing instrumented thread progress reports
-    ThreadPause DownstreamThreadID
+    ThreadPause
+      { downstreamThreadId :: DownstreamThreadID
+      }
   | -- | preloaded MPI progress report
-    ThreadPhaseContext DownstreamThreadID PhaseContext
+    ThreadPhaseContext
+      { downstreamThreadId :: DownstreamThreadID,
+        phaseContext :: PhaseContext
+      }
   | -- | pausing preloaded MPI progress report
-    ThreadPhasePause DownstreamThreadID
-  deriving (Generic, MessagePack)
+    ThreadPhasePause
+      { downstreamThreadId :: DownstreamThreadID
+      }
+  deriving (Generic, MessagePack, NRMMessage)
 
 data PhaseContext
   = PhaseContext
@@ -48,101 +63,3 @@ data PhaseContext
       }
   deriving (Generic, Show, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON PhaseContext
-
-instance M.NRMMessage Event J.Event where
-
-  toJ = \case
-    CmdPerformance cmdID perf ->
-      J.CmdPerformance
-        { cmdID = CmdID.toText cmdID,
-          perf = fromOps perf
-        }
-    CmdPause cmdID ->
-      J.CmdPause
-        { cmdID = CmdID.toText cmdID
-        }
-    ThreadProgress
-      (DownstreamThreadID threadCmdID processID taskID threadID rankID)
-      threadProgress ->
-        J.ThreadProgress
-          { cmdID = CmdID.toText threadCmdID,
-            processID = fromIntegral $ P.rawPid processID,
-            taskID = fromTaskID taskID,
-            threadID = fromIntegral threadID,
-            rankID = fromIntegral rankID,
-            payload = fromProgress threadProgress
-          }
-    ThreadPause (DownstreamThreadID threadCmdID processID taskID threadID rankID) ->
-      J.ThreadPause
-        { cmdID = CmdID.toText threadCmdID,
-          processID = fromIntegral processID,
-          taskID = fromTaskID taskID,
-          threadID = fromIntegral threadID,
-          rankID = fromIntegral rankID
-        }
-    ThreadPhaseContext
-      (DownstreamThreadID threadCmdID processID taskID threadID rankID)
-      (PhaseContext cpu aggregation computetime totaltime) ->
-        J.ThreadPhaseContext
-          { cmdID = CmdID.toText threadCmdID,
-            processID = fromIntegral processID,
-            taskID = fromTaskID taskID,
-            threadID = fromIntegral threadID,
-            rankID = fromIntegral rankID,
-            cpu = cpu,
-            aggregation = aggregation,
-            computetime = computetime,
-            totaltime = totaltime
-          }
-    ThreadPhasePause (DownstreamThreadID threadCmdID processID taskID threadID rankID) ->
-      J.ThreadPhasePause
-        { cmdID = CmdID.toText threadCmdID,
-          processID = fromIntegral processID,
-          taskID = fromTaskID taskID,
-          threadID = fromIntegral threadID,
-          rankID = fromIntegral rankID
-        }
-
-  fromJ = \case
-    J.CmdPerformance {..} ->
-      CmdPerformance (fromJust $ fromText cmdID) (Operations perf)
-    J.CmdPause {..} ->
-      CmdPause (fromJust $ CmdID.fromText cmdID)
-    J.ThreadProgress {..} ->
-      ThreadProgress
-        ( DownstreamThreadID
-            (fromJust $ CmdID.fromText cmdID)
-            (fromInteger $ toInteger processID)
-            (TaskID taskID)
-            (fromInteger $ toInteger threadID)
-            (fromInteger $ toInteger rankID)
-        )
-        (payload & progress)
-    J.ThreadPause {..} ->
-      ThreadPause
-        ( DownstreamThreadID
-            (fromJust $ CmdID.fromText cmdID)
-            (fromInteger $ toInteger processID)
-            (TaskID taskID)
-            (fromInteger $ toInteger threadID)
-            (fromInteger $ toInteger rankID)
-        )
-    J.ThreadPhaseContext {..} ->
-      ThreadPhaseContext
-        ( DownstreamThreadID
-            (fromJust $ CmdID.fromText cmdID)
-            (fromInteger $ toInteger processID)
-            (TaskID taskID)
-            (fromInteger $ toInteger threadID)
-            (fromInteger $ toInteger rankID)
-        )
-        (PhaseContext cpu aggregation computetime totaltime)
-    J.ThreadPhasePause {..} ->
-      ThreadPhasePause
-        ( DownstreamThreadID
-            (fromJust $ CmdID.fromText cmdID)
-            (fromInteger $ toInteger processID)
-            (TaskID taskID)
-            (fromInteger $ toInteger threadID)
-            (fromInteger $ toInteger rankID)
-        )

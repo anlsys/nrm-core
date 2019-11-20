@@ -15,7 +15,7 @@ module NRM.Types.Behavior
 where
 
 import Data.MessagePack
-import qualified NRM.Classes.Messaging as M
+import NRM.Classes.Messaging as M
 import NRM.Types.Cmd
 import NRM.Types.CmdID
 import NRM.Types.Configuration
@@ -79,7 +79,7 @@ instance MessagePack Behavior where
   toObject (Log Error msg) = toObject ("logError" :: Text, msg)
   toObject (Log Info msg) = toObject ("logInfo" :: Text, msg)
   toObject (Log Debug msg) = toObject ("logDebug" :: Text, msg)
-  toObject (Pub msg) = toObject ("publish" :: Text, M.encodeT msg)
+  toObject (Pub msg) = toObject ("publish" :: Text, encodeT msg)
   toObject (Rep clientid msg) =
     toObject ("reply" :: Text, clientid, M.encodeT msg)
   toObject (StartChild cmdID cmd args env) =

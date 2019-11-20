@@ -73,7 +73,7 @@ data Rep
     RepGetState GetState
   | -- | Configuration query response
     RepGetConfig GetConfig
-  deriving (Show, Generic, MessagePack)
+  deriving (Show, Generic, MessagePack, NRMMessage)
 
 data OutputType = StdoutOutput | StderrOutput
   deriving (Show, Generic, MessagePack)
@@ -178,9 +178,3 @@ newtype GetConfig
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON GetConfig
-
-instance NRMMessage Rep Rep where
-
-  fromJ = identity
-
-  toJ = identity

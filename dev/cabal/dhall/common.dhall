@@ -262,7 +262,6 @@ let modules =
       , "NRM.Orphans.Dhall"
       , "NRM.Orphans.NonEmpty"
       , "NRM.Types.Messaging.DownstreamEvent"
-      , "NRM.Types.Messaging.DownstreamEvent.JSON"
       , "NRM.Types.Messaging.UpstreamPub"
       , "NRM.Types.Messaging.UpstreamReq"
       , "NRM.Types.Messaging.UpstreamRep"

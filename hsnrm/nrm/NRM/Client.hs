@@ -140,7 +140,7 @@ reqrep ::
 reqrep s opts = \case
   Protocols.CPD ->
     const $ do
-      ZMQ.receive s <&> decode . toS >>= \case
+      ZMQ.receive s <&> decodeT . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
         Just (URep.RepCPD cpd) ->
           putText
@@ -159,7 +159,7 @@ reqrep s opts = \case
       liftIO $ hFlush stdout
   Protocols.SliceList ->
     const $ do
-      ZMQ.receive s <&> decode . toS >>= \case
+      ZMQ.receive s <&> decodeT . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
         Just (URep.RepList (URep.SliceList l)) ->
           putText
@@ -175,7 +175,7 @@ reqrep s opts = \case
   Protocols.GetState ->
     const $ do
       msg <- ZMQ.receive s <&> toS
-      case decode msg of
+      case decodeT msg of
         Nothing -> putText "Couldn't decode reply"
         Just (URep.RepGetState (URep.GetState st)) ->
           putText $ pShowOpts opts st
@@ -183,7 +183,7 @@ reqrep s opts = \case
       liftIO $ hFlush stdout
   Protocols.GetConfig ->
     const $ do
-      ZMQ.receive s <&> decode . toS >>= \case
+      ZMQ.receive s <&> decodeT . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
         Just (URep.RepGetConfig (URep.GetConfig cfg)) ->
           if C.jsonPrint opts
@@ -194,11 +194,11 @@ reqrep s opts = \case
   Protocols.SetPower ->
     const $ do
       msg <- ZMQ.receive s
-      liftIO . print $ ((decode $ toS msg) :: Maybe URep.Rep)
+      liftIO . print $ ((decodeT $ toS msg) :: Maybe URep.Rep)
       liftIO $ hFlush stdout
   Protocols.KillSlice ->
     const $ do
-      ZMQ.receive s <&> decode . toS >>= \case
+      ZMQ.receive s <&> decodeT . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
         Just (URep.RepSliceKilled (URep.SliceKilled sliceID)) ->
           putText $ "Killed slice ID: " <> C.toText sliceID
@@ -208,7 +208,7 @@ reqrep s opts = \case
       liftIO $ hFlush stdout
   Protocols.KillCmd ->
     const $ do
-      ZMQ.receive s <&> decode . toS >>= \case
+      ZMQ.receive s <&> decodeT . toS >>= \case
         Nothing -> putText "Couldn't decode reply"
         Just (URep.RepCmdKilled (URep.CmdKilled cmdID)) ->
           putText $ "Killed cmd ID: " <> CmdID.toText cmdID
@@ -228,7 +228,7 @@ reqstream ::
 reqstream s c Protocols.Run UReq.Run {..} = do
   ZMQ.connect s $ toS (rpcAddress c)
   msg <- ZMQ.receive s
-  case ((decode $ toS msg) :: Maybe URep.Rep) of
+  case ((decodeT $ toS msg) :: Maybe URep.Rep) of
     Nothing -> putText "error: received malformed message(1)."
     Just (URep.RepStart (URep.Start _ cmdID)) -> zmqCCHandler (kill cmdID c) >> go
     Just (URep.RepStartFailure _) -> putText "Command start failure."
@@ -237,7 +237,7 @@ reqstream s c Protocols.Run UReq.Run {..} = do
     go = do
       msg <- ZMQ.receive s
       when (C.verbose c == C.Verbose) $ liftIO $ print msg
-      case ((decode $ toS msg) :: Maybe URep.Rep) of
+      case ((decodeT $ toS msg) :: Maybe URep.Rep) of
         Just (URep.RepStdout (URep.stdoutPayload -> x)) -> putStr x >> go
         Just (URep.RepStderr (URep.stderrPayload -> x)) -> hPutStr stderr x >> go
         Just (URep.RepThisCmdKilled _) -> putText "Command killed."

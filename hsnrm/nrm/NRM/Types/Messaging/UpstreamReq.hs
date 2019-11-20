@@ -46,8 +46,7 @@ data Req
     ReqGetState GetState
   | -- | encodes a request to get the daemon configuration
     ReqGetConfig GetConfig
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON Req
+  deriving (Show, Generic, MessagePack, NRMMessage)
 
 data Run
   = Run
@@ -95,11 +94,3 @@ data GetState = GetState
 data GetConfig = GetConfig
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON GetConfig
-
-instance NRMMessage Req Req where
-
-  toJ = identity
-
-  fromJ = identity
-
-  messageSchema = gSchema
