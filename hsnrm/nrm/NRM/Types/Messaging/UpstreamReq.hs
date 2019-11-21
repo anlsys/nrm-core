@@ -5,6 +5,8 @@
 -- Copyright   : (c) UChicago Argonne, 2019
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
+--
+-- This module implements NRM's upstream API message formats.
 module NRM.Types.Messaging.UpstreamReq
   ( Req (..),
     Run (..),
@@ -30,21 +32,21 @@ import qualified NRM.Types.Units as U
 import Protolude
 
 data Req
-  = -- | encodes a request for the list of current slices
+  = -- | Request for the list of current slices.
     ReqSliceList SliceList
-  | -- | encodes a request to run a command
+  | -- | Request to run a command.
     ReqRun Run
-  | -- | encodes a request to kill a whole slice
+  | -- | Request to kill a whole slice.
     ReqKillSlice KillSlice
-  | -- | encodes a request to obtain the current control problem description
+  | -- | Request to obtain the current control problem description.
     ReqCPD CPD
-  | -- | encodes a request to kill a running command
+  | -- | Request to kill a running command.
     ReqKillCmd KillCmd
-  | -- | encodes a request to set the global power bound
+  | -- | Request to set the global power bound.
     ReqSetPower SetPower
-  | -- | encodes a request to obtain the full daemon state
+  | -- | Request to obtain the full daemon state.
     ReqGetState GetState
-  | -- | encodes a request to get the daemon configuration
+  | -- | Request to get the daemon configuration.
     ReqGetConfig GetConfig
   deriving (Show, Generic, MessagePack, NRMMessage)
 

@@ -5,6 +5,8 @@
 -- Copyright   : (c) UChicago Argonne, 2019
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
+--
+-- This module implements NRM's upstream API's published message formats.
 module NRM.Types.Messaging.UpstreamPub
   ( Pub (..),
     Progress (..),
@@ -25,15 +27,15 @@ import NRM.Types.Units
 import Protolude
 
 data Pub
-  = -- | publishing some CPD measurements
+  = -- | Publishing some CPD measurements.
     PubMeasurements Time [CPD.Measurement]
-  | -- | publishing a new problem state
+  | -- | Publishing a new problem state.
     PubCPD Time CPD.Problem
-  | -- | publishing when a cpu counter message is received
+  | -- | Publishing when a cpu counter message is received.
     PubPerformance Time CmdID Operations
-  | -- | publishing when a preloaded message is received
+  | -- | Publishing when a preloaded message is received.
     PubPhaseContext Time DownstreamThreadID SliceID PhaseContext
-  | -- | publishing when instrumentation produces progress reports
+  | -- | Publishing when instrumentation produces progress reports.
     PubProgress Time DownstreamThreadID Progress
   deriving (Show, Generic, MessagePack, NRMMessage)
 

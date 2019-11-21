@@ -6,6 +6,9 @@
 -- Copyright   : (c) UChicago Argonne, 2019
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
+--
+-- This module implements NRM's Downstream messaging API, which is used
+-- for reporting application performance and progress.
 module NRM.Types.Messaging.DownstreamEvent
   ( Event (..),
     PhaseContext (..),
@@ -21,34 +24,34 @@ import NRM.Types.DownstreamThreadID
 import NRM.Types.Units
 import Protolude
 
--- | partial record selectors are unfortunately used here.
+-- | Partial record selectors are unfortunately used here.
 -- They make the top level of the serialized JSON message format
 -- more readable by embedding tags.
 data Event
-  = -- | performance wrapping operation count report
+  = -- | Performance wrapping operation count report.
     CmdPerformance
       { cmdID :: CmdID,
         perf :: Operations
       }
-  | -- | pausing performance wrapping operation reports
+  | -- | Pausing performance wrapping operation reports.
     CmdPause
       { cmdID :: CmdID
       }
-  | -- | instrumented thread progress report
+  | -- | Instrumented thread progress report.
     ThreadProgress
       { downstreamThreadID :: DownstreamThreadID,
         progress :: Progress
       }
-  | -- | pausing instrumented thread progress reports
+  | -- | Pausing instrumented thread progress reports.
     ThreadPause
       { downstreamThreadId :: DownstreamThreadID
       }
-  | -- | preloaded MPI progress report
+  | -- | Preloaded MPI progress report.
     ThreadPhaseContext
       { downstreamThreadId :: DownstreamThreadID,
         phaseContext :: PhaseContext
       }
-  | -- | pausing preloaded MPI progress report
+  | -- | Pausing preloaded MPI progress report.
     ThreadPhasePause
       { downstreamThreadId :: DownstreamThreadID
       }
