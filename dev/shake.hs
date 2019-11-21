@@ -174,4 +174,4 @@ runshake as =
           )
       putText $ toS out
       let path = Prelude.last $ Data.Text.lines $ toS out
-      liftIO (runProcess_ $ proc "cp" ["-r", dropFileName $ toS path, "doc/nrm.so/haddocks"])
+      liftIO (runProcess_ . shell $ "cp -r " <> (dropFileName $ toS path) <> "/* doc/nrm.so/haddocks")
