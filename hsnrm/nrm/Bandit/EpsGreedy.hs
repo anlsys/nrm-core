@@ -3,6 +3,8 @@
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
+--
+-- This module implements the fixed rate Epsilon-Greedy MAB algorithm.
 module Bandit.EpsGreedy
   ( EpsGreedy (..),
     Weight (..),
@@ -20,11 +22,11 @@ import Bandit.Util
 import Protolude
 import System.Random
 
--- | EpsGreedy data structure for one action
+-- | The EpsGreedy state
 data EpsGreedy a
-  = -- | Screening for initial estimates
+  = -- | Still screening for initial estimates
     Screening (ScreeningGreedy a)
-  | -- | Sampling procedure started.
+  | -- | The sampling procedure has started.
     ExploreExploit (ExploreExploitGreedy a)
 
 data ScreeningGreedy a
@@ -45,7 +47,7 @@ data ExploreExploitGreedy a
         weights :: NonEmpty (Weight a)
       }
 
--- | EpsGreedy data structure for one action
+-- | The information maintaining structure for one action.
 data Weight a
   = Weight
       { averageLoss :: Double,
@@ -54,12 +56,15 @@ data Weight a
       }
   deriving (Generic)
 
+-- | The epsilon-greedy hyperparameter.
 data EpsGreedyHyper a
   = EpsGreedyHyper
       { epsilon :: Double,
         arms :: Arms a
       }
 
+-- The fixed rate Epsilon-Greedy MAB algorithm.
+-- Offers no interesting guarantees, works well in practice.
 instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
 
   init g (EpsGreedyHyper e (Arms (a :| as))) =
