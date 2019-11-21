@@ -19,6 +19,12 @@ let
   callPackage = pkgs.lib.callPackageWith pkgs;
 in pkgs // rec {
 
+  dhall-to-cabal-resources = pkgs.stdenv.mkDerivation {
+    name = "dhall-to-cabal-resources";
+    src = pkgs.haskellPackages.dhall-to-cabal.src;
+    installPhase = "cp -r dhall $out";
+  };
+
   nrmPythonPackages = pkgs.python37Packages.override {
     overrides = self: super: rec {
       cffi = super.cffi.overridePythonAttrs (o: { doCheck = false; });
@@ -43,27 +49,29 @@ in pkgs // rec {
     };
   };
 
-  cabalFile = dhallSpec:
+  #this needs to be seriously cleaned.
+  cabalFile = dhallDir: dhallFileName:
     pkgs.runCommand "cabalFile" { } ''
       export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
       export LANG=en_US.UTF-8
-      cp ${dhallSpec} cabal.dhall
-      substituteInPlace cabal.dhall --replace "= ./dhall" "= ${./cabal/dhall}"
+      cp ${dhallDir}/* .
+      substituteInPlace common.dhall --replace "= ./dhall-to-cabal" "= ${dhall-to-cabal-resources}"
+      substituteInPlace ${dhallFileName} --replace "= ./dhall-to-cabal" "= ${dhall-to-cabal-resources}"
       GHCVERSION=$(${haskellPackages.ghc}/bin/ghc --numeric-version)
-      ${haskellPackages.dhall-to-cabal}/bin/dhall-to-cabal <<< "./cabal.dhall \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
+      ${haskellPackages.dhall-to-cabal}/bin/dhall-to-cabal <<< "./${dhallFileName} \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
     '';
 
-  patchedSrc = source: rename: dhallFile:
+  patchedSrc = source: rename: dhallDir: dhallFileName:
     pkgs.runCommand "patchedSrc" { } ''
       mkdir -p $out
       cp -r ${source}/ $out/${rename}
       chmod -R +rw $out
-      cp ${cabalFile dhallFile} $out/hsnrm.cabal
+      cp ${cabalFile dhallDir dhallFileName} $out/hsnrm.cabal
     '';
 
-  patchedSrcLib = patchedSrc ../hsnrm/nrm "nrm" cabal/lib.dhall;
+  patchedSrcLib = patchedSrc ../hsnrm/nrm "nrm" ./cabal "lib.dhall";
 
-  patchedSrcBin = patchedSrc ../hsnrm/bin "bin" cabal/bin.dhall;
+  patchedSrcBin = patchedSrc ../hsnrm/bin "bin" ./cabal "bin.dhall";
 
   ormolu = let
     source = pkgs.fetchFromGitHub {
@@ -155,7 +163,7 @@ in pkgs // rec {
 
   hack = pkgs.mkShell {
 
-    CABALFILE = cabalFile cabal/dev.dhall; # for easy manual vendoring
+    CABALFILE = cabalFile ./cabal "dev.dhall"; # for easy manual vendoring
 
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
 
@@ -210,6 +218,7 @@ in pkgs // rec {
       substituteInPlace $out/lib.dh --replace \
         "https://xgitlab.cels.anl.gov/argo/dhrun/raw/master/" "./"
       ln -s ${dhrun}/share/resources $out/resources
+      ln -s ${dhall-to-cabal-resources} dev/cabal/dhall-to-cabal
     '';
     unpackPhase = "true";
   };

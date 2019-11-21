@@ -1,8 +1,8 @@
-let prelude = ./dhall/dhall-to-cabal/prelude.dhall
+let prelude = ./dhall-to-cabal/prelude.dhall
 
-let types = ./dhall/dhall-to-cabal/types.dhall
+let types = ./dhall-to-cabal/types.dhall
 
-let common = ./dhall/common.dhall
+let common = ./common.dhall
 
 in  \(ghcPath:Text)  -> \(ghcNumericVersion:Text) -> prelude.defaults.Package
     ⫽ { name =
