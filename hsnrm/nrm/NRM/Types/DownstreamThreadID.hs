@@ -29,19 +29,49 @@ data DownstreamThreadID
         threadID :: ThreadID,
         rankID :: RankID
       }
-  deriving (Eq, Ord, Show, Generic, Data, MessagePack, ToJSONKey, FromJSONKey)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamThreadID
+  deriving
+    ( Eq,
+      Ord,
+      Show,
+      Generic,
+      Data,
+      MessagePack,
+      ToJSONKey,
+      FromJSONKey
+    )
+  deriving
+    ( JSONSchema,
+      ToJSON,
+      FromJSON
+    )
+    via GenericJSON DownstreamThreadID
 
 newtype RankID = RankID {fromRankID :: Int}
   deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON RankID
-  deriving (Num, Real, Enum, Integral) via Int
+  deriving
+    ( JSONSchema,
+      ToJSON,
+      FromJSON,
+      Num,
+      Real,
+      Enum,
+      Integral
+    )
+    via Int
 
 newtype TaskID = TaskID {fromTaskID :: Text}
   deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON TaskID
+  deriving (JSONSchema, ToJSON, FromJSON) via Text
 
 newtype ThreadID = ThreadID Int
   deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ThreadID
-  deriving (Num, Real, Enum, Integral) via Int
+  deriving
+    ( JSONSchema,
+      ToJSON,
+      FromJSON,
+      Num,
+      Real,
+      Enum,
+      Integral
+    )
+    via Int

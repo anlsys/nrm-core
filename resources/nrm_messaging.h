@@ -18,7 +18,7 @@
 
 #define NRM_CMDPERFORMANCE_FORMAT "{\"cmdPerformance\":{\"cmdID\":\"%s\",\"perf\":\"%d\"}}"
 #define NRM_CMDPAUSE_FORMAT "{\"cmdPause\":{\"cmdID\":\"%s\"}}"
-#define NRM_THREADPROGRESS_FORMAT "{\"threadProgress\":{\"progress\":\"%d\",\"downstreamThreadID\":{\"cmdID\":\"%s\",\"taskID\":{\"fromTaskID\":\"%s\"},\"processID\":\"%d\",\"rankID\":{\"fromRankID\":\"%d\"},\"threadID\":\"%d\"}}}"
-#define NRM_THREADPAUSE_FORMAT "{\"threadPause\":{\"downstreamThreadId\":{\"cmdID\":\"%s\",\"taskID\":{\"fromTaskID\":\"%s\"},\"processID\":\"%d\",\"rankID\":{\"fromRankID\":\"%d\"},\"threadID\":\"%d\"}}}"
-#define NRM_THREADPHASECONTEXT_FORMAT "{\"threadPhaseContext\":{\"downstreamThreadId\":{\"cmdID\":\"%s\",\"taskID\":{\"fromTaskID\":\"%s\"},\"processID\":\"%d\",\"rankID\":{\"fromRankID\":\"%d\"},\"threadID\":\"%d\"},\"phaseContext\":{\"computetime\":\"%d\",\"aggregation\":\"%d\",\"totaltime\":\"%d\",\"cpu\":\"%d\"}}}"
-#define NRM_THREADPHASEPAUSE_FORMAT "{\"threadPhasePause\":{\"downstreamThreadId\":{\"cmdID\":\"%s\",\"taskID\":{\"fromTaskID\":\"%s\"},\"processID\":\"%d\",\"rankID\":{\"fromRankID\":\"%d\"},\"threadID\":\"%d\"}}}"
+#define NRM_THREADPROGRESS_FORMAT "{\"threadProgress\":{\"progress\":\"%d\",\"downstreamThreadID\":{\"cmdID\":\"%s\",\"taskID\":\"%s\",\"processID\":\"%d\",\"rankID\":\"%d\",\"threadID\":\"%d\"}}}"
+#define NRM_THREADPAUSE_FORMAT "{\"threadPause\":{\"downstreamThreadId\":{\"cmdID\":\"%s\",\"taskID\":\"%s\",\"processID\":\"%d\",\"rankID\":\"%d\",\"threadID\":\"%d\"}}}"
+#define NRM_THREADPHASECONTEXT_FORMAT "{\"threadPhaseContext\":{\"downstreamThreadId\":{\"cmdID\":\"%s\",\"taskID\":\"%s\",\"processID\":\"%d\",\"rankID\":\"%d\",\"threadID\":\"%d\"},\"phaseContext\":{\"computetime\":\"%d\",\"aggregation\":\"%d\",\"totaltime\":\"%d\",\"cpu\":\"%d\"}}}"
+#define NRM_THREADPHASEPAUSE_FORMAT "{\"threadPhasePause\":{\"downstreamThreadId\":{\"cmdID\":\"%s\",\"taskID\":\"%s\",\"processID\":\"%d\",\"rankID\":\"%d\",\"threadID\":\"%d\"}}}"

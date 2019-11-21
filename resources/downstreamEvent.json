@@ -72,29 +72,13 @@
                                     "type": "string"
                                 },
                                 "taskID": {
-                                    "required": [
-                                        "fromTaskID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "fromTaskID": {
-                                            "type": "string"
-                                        }
-                                    }
+                                    "type": "string"
                                 },
                                 "processID": {
                                     "type": "number"
                                 },
                                 "rankID": {
-                                    "required": [
-                                        "fromRankID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "fromRankID": {
-                                            "type": "number"
-                                        }
-                                    }
+                                    "type": "number"
                                 },
                                 "threadID": {
                                     "type": "number"
@@ -131,29 +115,13 @@
                                     "type": "string"
                                 },
                                 "taskID": {
-                                    "required": [
-                                        "fromTaskID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "fromTaskID": {
-                                            "type": "string"
-                                        }
-                                    }
+                                    "type": "string"
                                 },
                                 "processID": {
                                     "type": "number"
                                 },
                                 "rankID": {
-                                    "required": [
-                                        "fromRankID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "fromRankID": {
-                                            "type": "number"
-                                        }
-                                    }
+                                    "type": "number"
                                 },
                                 "threadID": {
                                     "type": "number"
@@ -191,29 +159,13 @@
                                     "type": "string"
                                 },
                                 "taskID": {
-                                    "required": [
-                                        "fromTaskID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "fromTaskID": {
-                                            "type": "string"
-                                        }
-                                    }
+                                    "type": "string"
                                 },
                                 "processID": {
                                     "type": "number"
                                 },
                                 "rankID": {
-                                    "required": [
-                                        "fromRankID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "fromRankID": {
-                                            "type": "number"
-                                        }
-                                    }
+                                    "type": "number"
                                 },
                                 "threadID": {
                                     "type": "number"
@@ -273,29 +225,13 @@
                                     "type": "string"
                                 },
                                 "taskID": {
-                                    "required": [
-                                        "fromTaskID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "fromTaskID": {
-                                            "type": "string"
-                                        }
-                                    }
+                                    "type": "string"
                                 },
                                 "processID": {
                                     "type": "number"
                                 },
                                 "rankID": {
-                                    "required": [
-                                        "fromRankID"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "fromRankID": {
-                                            "type": "number"
-                                        }
-                                    }
+                                    "type": "number"
                                 },
                                 "threadID": {
                                     "type": "number"
