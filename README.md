@@ -9,11 +9,8 @@ libnrm-instrumented applications can also be installed using `nix-env -f.  -iA s
 
 ### Documentation
 
-User documentation lies at
-[http://hnrm.readthedocs.io](http://hnrm.readthedocs.io).  
-
-Shared library documentation for the `master` branch lies at
-[https://hnrm.readthedocs.io/en/latest/_static/haddocks/](https://hnrm.readthedocs.io/en/latest/_static/haddocks/)
+- [User documentation](http://hnrm.readthedocs.io)
+- Shared library [haddocks](https://hnrm.readthedocs.io/en/latest/_static/haddocks/)
 
 ### Development
 
