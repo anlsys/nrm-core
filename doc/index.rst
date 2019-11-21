@@ -40,7 +40,5 @@ Indices and tables
 
 * :ref:`search`
 
- .. _website: https://www.mcs.anl.gov/research/projects/argo/overview/nrm/
-Get the latest news at `CNN`_.
-
+.. _website: https://www.mcs.anl.gov/research/projects/argo/overview/nrm/
 .. _haddock: http://hnrm.readthedocs.io/en/latest/_static/haddocks
