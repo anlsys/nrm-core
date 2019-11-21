@@ -27,34 +27,25 @@ import Generics.Generic.IsEnum (GIsEnum)
 import LMap.Map as LM
 import Protolude
 
-class
-  (Generic b, SG.GJSONSchema (Rep b), AG.GfromJson (Rep b), AG.GtoJson (Rep b), GIsEnum (Rep b), ConNames (Rep b)) =>
-  NRMMessage a b
-    | a -> b where
-
-  {-# MINIMAL fromJ, toJ #-}
-
-  fromJ :: b -> a
-
-  toJ :: a -> b
+class (Generic a, SG.GJSONSchema (Rep a), AG.GfromJson (Rep a), AG.GtoJson (Rep a), GIsEnum (Rep a), ConNames (Rep a)) => NRMMessage a where
 
   encodePretty :: a -> ByteString
-  encodePretty = toS . AP.encodePretty . AG.gtoJson . toJ
+  encodePretty = toS . AP.encodePretty . AG.gtoJson
 
   encode :: a -> ByteString
-  encode = toS . A.encode . AG.gtoJson . toJ
+  encode = toS . A.encode . AG.gtoJson
 
   decode :: ByteString -> Maybe a
-  decode = fmap fromJ . AT.parseMaybe AG.gparseJson <=< A.decodeStrict
+  decode = AT.parseMaybe AG.gparseJson <=< A.decodeStrict
 
   decodeT :: Text -> Maybe a
-  decodeT = fmap fromJ . AT.parseMaybe AG.gparseJson <=< A.decodeStrict . toS
+  decodeT = AT.parseMaybe AG.gparseJson <=< A.decodeStrict . toS
 
   encodeT :: a -> Text
-  encodeT = toS . A.encode . AG.gtoJson . toJ
+  encodeT = toS . A.encode . AG.gtoJson
 
   messageSchema :: Proxy a -> Schema
-  messageSchema (Proxy :: Proxy a) = SG.gSchema (Proxy :: Proxy b)
+  messageSchema = SG.gSchema
 
 newtype GenericJSON (a :: Type) = GenericJSON {unGenericJSON :: a}
 

@@ -55,7 +55,11 @@ def send(apiname=None):
         else:
 
             def send(self, msg):
-                self.socket.send(msg.encode())
+                try:
+                    m = msg.encode()
+                except Exception as e:
+                    m = msg
+                self.socket.send(m)
 
         setattr(cls, "send", send)
 
