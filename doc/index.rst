@@ -24,17 +24,16 @@ Note that the container runtime used by NRM to allocate slices is a
 system-installed dependency, regardless of whether Argo NodeOS or Singularity is used.
 
 The :doc:`quickstart <quickstart>` guide describes the use of `nrm` and `nrmd`.
-An important part of running tasks with `nrm` is the application :doc:`manifest
-<manifest>`, which you probably want to read about too.  Finally, please refer to the :doc:`libnrm <libnrm>` guide for
-application istrumentation.
+Please refer to the :doc:`libnrm <libnrm>` guide for application
+instrumentation. See the `haddock`_ documentation for the shared library API.
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    quickstart
-   manifest
    libnrm
+   nrm.so
 
 Indices and tables
 ==================
@@ -42,3 +41,6 @@ Indices and tables
 * :ref:`search`
 
  .. _website: https://www.mcs.anl.gov/research/projects/argo/overview/nrm/
+Get the latest news at `CNN`_.
+
+.. _haddock: http://hnrm.readthedocs.io/en/latest/_static/haddocks

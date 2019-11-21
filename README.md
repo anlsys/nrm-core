@@ -7,6 +7,14 @@ the NRM client and daemon can be installed in the user environment by running
 
 libnrm-instrumented applications can also be installed using `nix-env -f.  -iA stream`.
 
+### Documentation
+
+User documentation lies at
+[http://hnrm.readthedocs.io](http://hnrm.readthedocs.io).  
+
+Shared library documentation for the `master` branch lies at
+[https://hnrm.readthedocs.io/en/latest/_static/haddocks/](https://hnrm.readthedocs.io/en/latest/_static/haddocks/)
+
 ### Development
 
 from a local clone:

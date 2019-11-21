@@ -1,12 +1,12 @@
 stages:
   - source
-  - rawbuild
   - lib
   - bin-so
   - codegen
   - libnrm
   - linked
   - integration
+  - docs
 
 ormolu:
   stage: source
@@ -76,24 +76,6 @@ clang-format:
         if [ $RETURN -ne 0 ]; then exit 1; fi
       '
 
-raw-build-libnrm:
-  stage: rawbuild
-  tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell -E '
-        let pkgs = (import ./default.nix);
-        in pkgs.libnrm.overrideAttrs (o:{
-          preBuild="";
-        })
-      ' --run bash <<< '
-        cd libnrm
-        ./autogen.sh
-        ./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp
-        make
-      '
 
 
 nix-build-nrm.so:
@@ -121,12 +103,47 @@ check-vendored-resources:
     - "$(nix-build -A haskellPackages.nrmbin)/bin/codegen temp/"
     - diff -r temp resources
 
+check-vendored-documentation:
+  stage: docs
+  tags:
+    - kvm
+    - nix
+  script:
+    - |
+      nix-shell dev/default.nix -A hsnrm-hack --run bash <<< '
+        echo "check: is vendored documentation up to date?"
+        cd hsnrm
+        cabal v2-haddock nrm.so --haddock-hyperlink-source --builddir=../doc_tmp
+        diff -r ../doc_tmp/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/doc/html/hsnrm/nrm.so ../doc/nrm.so/haddocks
+        rm -rf ../doc_tmp
+      '
+
 nix-build-resources:
   stage: codegen
   tags:
     - kvm
     - nix
   script: nix-build -A resources --no-build-output
+
+
+raw-build-libnrm:
+  stage: libnrm
+  tags:
+    - kvm
+    - nix
+  script:
+    - |
+      nix-shell -E '
+        let pkgs = (import ./default.nix);
+        in pkgs.libnrm.overrideAttrs (o:{
+          preBuild="";
+        })
+      ' --run bash <<< '
+        cd libnrm
+        ./autogen.sh
+        ./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp
+        make
+      '
 
 nix-build-libnrm:
   stage: libnrm
@@ -206,3 +223,15 @@ dhrun-listen:
           "../resources/examples/"
         in all.listen
       '
+
+readthedocs:
+  stage: docs
+  when: on_success
+  only:
+    - master
+  tags:
+    - kvm
+    - nix
+  script:
+    - echo "token=$RTD_TOKEN"
+    - nix run nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hnrm/104604/
