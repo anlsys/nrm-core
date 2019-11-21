@@ -169,9 +169,9 @@ runshake as =
               [ "v2-haddock"
               , "nrm.so"
               , "--haddock-hyperlink-source"
-              , "--builddir=../.build"
+              , "--builddir=./.build"
               ]
           )
       putText $ toS out
       let path = Prelude.last $ Data.Text.lines $ toS out
-      liftIO (runProcess_ $ proc "cp" ["-r", dropFileName $ toS path, "html"])
+      liftIO (runProcess_ $ proc "cp" ["-r", dropFileName $ toS path, "doc/nrm.so/haddocks"])
