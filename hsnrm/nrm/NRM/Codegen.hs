@@ -55,9 +55,9 @@ main = do
   putText $ "  Writing libnrm header to " <> prefix <> "/nrm_messaging.h"
   writeFile (toS $ prefix <> "/nrm_messaging.h") $ toS (licenseC <> "\n\n" <> libnrmVars <> "\n\n" <> libnrmHeader)
   putText "Codegen: JSON schemas"
-  --verboseWriteSchema prefix "upstreamPub" upstreamPubSchema
-  --verboseWriteSchema prefix "upstreamRep" upstreamRepSchema
-  --verboseWriteSchema prefix "upstreamReq" upstreamReqSchema
+  verboseWriteSchema prefix "upstreamPub" upstreamPubSchema
+  verboseWriteSchema prefix "upstreamRep" upstreamRepSchema
+  verboseWriteSchema prefix "upstreamReq" upstreamReqSchema
   verboseWriteSchema prefix "downstreamEvent" downstreamEventSchema
   generateDefaultConfigurations prefix
   where

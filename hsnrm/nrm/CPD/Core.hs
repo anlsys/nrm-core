@@ -182,7 +182,8 @@ data OExpr
   | OSub OExpr OExpr
   | OMul OExpr OExpr
   | ODiv OExpr OExpr
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON OExpr
+  deriving (A.ToJSON, A.FromJSON) via GenericJSON OExpr
+  deriving (JSONSchema) via AnyJSON OExpr
   deriving (Show, Eq, Generic, Data, MessagePack, D.Interpret, D.Inject)
 
 prettyOExpr :: OExpr -> Text
