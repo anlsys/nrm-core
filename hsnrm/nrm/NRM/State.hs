@@ -16,9 +16,6 @@ module NRM.State
 
     -- * Removal
 
-    -- ** Slice removal
-    removeSlice,
-
     -- ** Command removal
     CmdKey (..),
     DeletionInfo (..),
@@ -87,23 +84,18 @@ initialState c time = do
     goRAPL m (pkgid, RAPLDir {..}) =
       LM.lookup pkgid m & \case
         Nothing -> m
-        Just oldPackage ->
-          LM.insert
-            pkgid
-            ( oldPackage
-                { rapl =
-                    Just
-                      ( Rapl
-                          { frequency = hz 3,
-                            raplPath = path,
-                            max = maxEnergy,
-                            discreteChoices = [uW 180, uW 200],
-                            lastTime = Nothing
-                          }
-                      )
+        Just oldPackage -> LM.insert pkgid newPackage m
+          where
+            newPackage =
+              oldPackage
+                { rapl = Just $ Rapl
+                    { frequency = hz 3,
+                      raplPath = path,
+                      max = maxEnergy,
+                      discreteChoices = [uW 180, uW 200],
+                      lastTime = Nothing
+                    }
                 }
-            )
-            m
 
 -- | Removes a slice from the state
 removeSlice :: SliceID -> NRMState -> (Maybe Slice, NRMState)

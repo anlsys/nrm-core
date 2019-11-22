@@ -65,145 +65,141 @@ behavior cfg st time event = execNRM (nrm time event) cfg st
 -- produces an associated behavior to be executed by the runtime. This contains the slice
 -- management logic, the sensor callback logic, the control loop callback logic. Works in the @NRM monad.
 nrm :: U.Time -> NRMEvent -> NRM ()
-nrm _callTime (DoOutput cmdID outputType content) = do
+nrm callTime event = do
   st <- get
-  let (bh, st') =
-        st
-          & _cmdID
-            cmdID
-            ( \case
-                Nothing -> (Log Error "No such command was found in the NRM state.", Nothing)
-                Just c -> content & \case
-                  "" ->
-                    let newPstate = outputType & \case
-                          URep.StdoutOutput -> (processState c) {stdoutFinished = True}
-                          URep.StderrOutput -> (processState c) {stderrFinished = True}
-                     in isDone newPstate & \case
-                          Just exc -> (mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc), Nothing)
-                          Nothing -> (Log Debug ("warning, empty content: " <> show content), Just (c & field @"processState" .~ newPstate))
-                  _ -> (respondContent content c cmdID outputType, Just c)
-            )
-  put st'
-  behave bh
-nrm _callTime (RegisterCmd cmdID cmdstatus) = do
-  st <- get
-  cmdstatus & \case
-    NotLaunched -> registerFailed cmdID st & \case
-      Just (st', _, _, cmdCore) ->
-        upstreamClientID cmdCore & \case
+  case event of
+    (DoOutput cmdID outputType content) -> behaveLens $ _cmdID cmdID go
+      where
+        go Nothing = (Log Error "No such command was found in the NRM state.", Nothing)
+        go (Just c) = case content of
+          "" ->
+            let newPstate = case outputType of
+                  URep.StdoutOutput -> (processState c) {stdoutFinished = True}
+                  URep.StderrOutput -> (processState c) {stderrFinished = True}
+             in isDone newPstate & \case
+                  Just exc ->
+                    ( mayRep c (URep.RepCmdEnded $ URep.CmdEnded exc),
+                      Nothing
+                    )
+                  Nothing ->
+                    ( Log
+                        Debug
+                        ( "warning, empty content: "
+                            <> show content
+                        ),
+                      Just (c & field @"processState" .~ newPstate)
+                    )
+          _ -> (respondContent content c cmdID outputType, Just c)
+    (RegisterCmd cmdID cmdstatus) -> case cmdstatus of
+      NotLaunched -> case registerFailed cmdID st of
+        Just (st', _, _, cmdCore) -> case upstreamClientID cmdCore of
           Just ucid -> do
             put st'
             rep ucid $ URep.RepStartFailure URep.StartFailure
           Nothing -> return ()
-      Nothing -> return ()
-    Launched pid -> registerLaunched cmdID pid st & \case
-      Left l -> log l
-      Right (st', sliceID, maybeClientID) -> do
-        put st'
-        maybeClientID & \case
-          Just clientID -> rep clientID $ URep.RepStart (URep.Start sliceID cmdID)
-          Nothing -> return ()
-nrm _callTime (Req clientid msg) = do
-  st <- get
-  c <- ask
-  msg & \case
-    UReq.ReqCPD _ -> rep clientid (URep.RepCPD $ NRMCPD.toCPD st)
-    UReq.ReqSliceList _ -> rep clientid (URep.RepList . URep.SliceList . LM.toList $ slices st)
-    UReq.ReqGetState _ -> rep clientid (URep.RepGetState $ URep.GetState st)
-    UReq.ReqGetConfig _ -> rep clientid (URep.RepGetConfig $ URep.GetConfig c)
-    UReq.ReqRun UReq.Run {..} -> do
-      cmdID <- lift CmdID.nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
-      let (runCmd, runArgs) =
-            (cmd spec, args spec)
-              & ( if Manifest.perfwrapper (Manifest.app manifest)
-                    /= Manifest.PerfwrapperDisabled
-                    then wrapCmd (Cfg.argo_perf_wrapper c)
-                    else identity
-                )
-      modify $
-        registerAwaiting
-          cmdID
-          (mkCmd spec manifest (if detachCmd then Nothing else Just clientid))
-          runSliceID
-          . createSlice runSliceID
-      behave
-        $ StartChild cmdID runCmd runArgs
-        $ (Env $ env spec & fromEnv & LM.insert cmdIDEnvVar (CmdID.toText cmdID))
-          & mayInjectLibnrmPreload c manifest
-    UReq.ReqKillSlice UReq.KillSlice {..} -> do
-      let (maybeSlice, st') = removeSlice killSliceID st
-      put st'
-      behave $
-        fromMaybe
-          (Rep clientid $ URep.RepNoSuchSlice URep.NoSuchSlice)
-          ( maybeSlice <&> \slice ->
+        Nothing -> return ()
+      Launched pid -> case registerLaunched cmdID pid st of
+        Left l -> log l
+        Right (st', sliceID, maybeClientID) -> do
+          put st'
+          maybeClientID & \case
+            Just clientID -> rep clientID $ URep.RepStart (URep.Start sliceID cmdID)
+            Nothing -> return ()
+    (Req clientid msg) -> do
+      c <- ask
+      msg & \case
+        UReq.ReqCPD _ -> rep clientid (URep.RepCPD $ NRMCPD.toCPD st)
+        UReq.ReqSliceList _ -> rep clientid (URep.RepList . URep.SliceList . LM.toList $ slices st)
+        UReq.ReqGetState _ -> rep clientid (URep.RepGetState $ URep.GetState st)
+        UReq.ReqGetConfig _ -> rep clientid (URep.RepGetConfig $ URep.GetConfig c)
+        UReq.ReqRun UReq.Run {..} -> do
+          cmdID <- lift CmdID.nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
+          let (runCmd, runArgs) =
+                (cmd spec, args spec)
+                  & ( if Manifest.perfwrapper (Manifest.app manifest)
+                        /= Manifest.PerfwrapperDisabled
+                        then wrapCmd (Cfg.argo_perf_wrapper c)
+                        else identity
+                    )
+          modify $
+            registerAwaiting
+              cmdID
+              (mkCmd spec manifest (if detachCmd then Nothing else Just clientid))
+              runSliceID
+              . createSlice runSliceID
+          behave
+            $ StartChild cmdID runCmd runArgs
+            $ (Env $ env spec & fromEnv & LM.insert cmdIDEnvVar (CmdID.toText cmdID))
+              & mayInjectLibnrmPreload c manifest
+        UReq.ReqKillSlice UReq.KillSlice {..} ->
+          behaveLens $ _sliceID killSliceID ((,Nothing) . go)
+          where
+            go Nothing = Rep clientid $ URep.RepNoSuchSlice URep.NoSuchSlice
+            go (Just slice) =
               KillChildren (LM.keys $ Ct.cmds slice) $
                 (clientid, URep.RepSliceKilled (URep.SliceKilled killSliceID))
                   : catMaybes
                     ( (upstreamClientID . cmdCore <$> LM.elems (Ct.cmds slice))
                         <&> fmap (,URep.RepThisCmdKilled URep.ThisCmdKilled)
                     )
-          )
-    UReq.ReqSetPower _ -> return ()
-    UReq.ReqKillCmd UReq.KillCmd {..} ->
-      removeCmd (KCmdID killCmdID) st & \case
-        Nothing -> rep clientid $ URep.RepNoSuchCmd URep.NoSuchCmd
-        Just (info, _, cmd, sliceID, st') -> do
-          put st'
-          behave
-            $ KillChildren
-              [killCmdID]
-            $ ( clientid,
-                info & \case
-                  CmdRemoved -> URep.RepCmdKilled (URep.CmdKilled killCmdID)
-                  SliceRemoved -> URep.RepSliceKilled (URep.SliceKilled sliceID)
-              )
-              : maybe
-                []
-                (\x -> [(x, URep.RepThisCmdKilled URep.ThisCmdKilled)])
-                (upstreamClientID . cmdCore $ cmd)
-nrm _callTime (ChildDied pid exitcode) = do
-  st <- get
-  lookupProcess pid st & \case
-    Nothing -> log "No such PID in NRM's state."
-    Just (cmdID, cmd, sliceID, slice) ->
-      let newPstate = (processState cmd) {ended = Just exitcode}
-       in isDone newPstate & \case
-            Just _ -> removeCmd (KProcessID pid) st & \case
-              Just (_, _, _, _, st') -> do
-                put st'
-                behave $
-                  ClearChild
-                    cmdID
-                    ( (,URep.RepCmdEnded (URep.CmdEnded exitcode))
-                        <$> (upstreamClientID . cmdCore $ cmd)
-                    )
-              Nothing -> log "Error during command removal from NRM state"
-            Nothing -> put $ insertSlice sliceID (Ct.insertCmd cmdID cmd {processState = newPstate} slice) st
-nrm callTime (DownstreamEvent clientid msg) =
-  nrmDownstreamEvent callTime clientid msg
-    <&> ( \case
-            OOk m -> Event callTime [m]
-            ONotFound -> NoEvent callTime
-            OAdjustment -> Reconfigure callTime
-        )
-    >>= doControl
-nrm callTime DoControl = doControl (NoEvent callTime)
-nrm callTime DoSensor = do
-  st <- get
-  (st', measurements) <- lift (foldM (folder callTime) (st, Just []) (DM.toList $ lenses st))
-  put st'
-  measurements & \case
-    Just [] ->
-      doControl (Event callTime [])
-    Just ms ->
-      pub (UPub.PubMeasurements callTime ms)
-        >> doControl (Event callTime ms)
-    Nothing ->
-      let cpd = NRMCPD.toCPD st'
-       in pub (UPub.PubCPD callTime cpd)
-            >> doControl (Reconfigure callTime)
-nrm _callTime DoShutdown = return ()
+        UReq.ReqSetPower _ -> return ()
+        UReq.ReqKillCmd UReq.KillCmd {..} ->
+          removeCmd (KCmdID killCmdID) st & \case
+            Nothing -> rep clientid $ URep.RepNoSuchCmd URep.NoSuchCmd
+            Just (info, _, cmd, sliceID, st') -> do
+              put st'
+              behave
+                $ KillChildren
+                  [killCmdID]
+                $ ( clientid,
+                    info & \case
+                      CmdRemoved -> URep.RepCmdKilled (URep.CmdKilled killCmdID)
+                      SliceRemoved -> URep.RepSliceKilled (URep.SliceKilled sliceID)
+                  )
+                  : maybe
+                    []
+                    (\x -> [(x, URep.RepThisCmdKilled URep.ThisCmdKilled)])
+                    (upstreamClientID . cmdCore $ cmd)
+    (ChildDied pid exitcode) ->
+      lookupProcess pid st & \case
+        Nothing -> log "No such PID in NRM's state."
+        Just (cmdID, cmd, sliceID, slice) ->
+          let newPstate = (processState cmd) {ended = Just exitcode}
+           in isDone newPstate & \case
+                Just _ -> removeCmd (KProcessID pid) st & \case
+                  Just (_, _, _, _, st') -> do
+                    put st'
+                    behave $
+                      ClearChild
+                        cmdID
+                        ( (,URep.RepCmdEnded (URep.CmdEnded exitcode))
+                            <$> (upstreamClientID . cmdCore $ cmd)
+                        )
+                  Nothing -> log "Error during command removal from NRM state"
+                Nothing -> put $ insertSlice sliceID (Ct.insertCmd cmdID cmd {processState = newPstate} slice) st
+    (DownstreamEvent clientid msg) ->
+      nrmDownstreamEvent callTime clientid msg
+        <&> ( \case
+                OOk m -> Event callTime [m]
+                ONotFound -> NoEvent callTime
+                OAdjustment -> Reconfigure callTime
+            )
+        >>= doControl
+    DoControl -> doControl (NoEvent callTime)
+    DoSensor -> do
+      (st', measurements) <- lift (foldM (folder callTime) (st, Just []) (DM.toList $ lenses st))
+      put st'
+      measurements & \case
+        Just [] ->
+          doControl (Event callTime [])
+        Just ms ->
+          pub (UPub.PubMeasurements callTime ms)
+            >> doControl (Event callTime ms)
+        Nothing ->
+          let cpd = NRMCPD.toCPD st'
+           in pub (UPub.PubCPD callTime cpd)
+                >> doControl (Reconfigure callTime)
+    DoShutdown -> return ()
 
 -- | doControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
@@ -223,6 +219,7 @@ doControl input = do
                 liftIO $ go (st ^. l) discreteValue
                 log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
 
+-- | Downstream event handler.
 nrmDownstreamEvent ::
   U.Time ->
   DC.DownstreamClientID ->
@@ -264,7 +261,9 @@ nrmDownstreamEvent callTime clientid = \case
               return ONotFound
             Just c -> registerDTT c downstreamThreadID
         OAdjustment -> return OAdjustment
-        OOk m -> pub (UPub.PubProgress callTime downstreamThreadID payload) >> return (OOk m)
+        OOk m ->
+          pub (UPub.PubProgress callTime downstreamThreadID payload)
+            >> return (OOk m)
   DEvent.ThreadPhaseContext downstreamThreadID phaseContext ->
     commonSP
       callTime
@@ -287,29 +286,51 @@ nrmDownstreamEvent callTime clientid = \case
               log "internal NRM state warning: phasecontext pub lookup failed"
                 >> return (OOk m)
             Just (_, sliceID, _) ->
-              pub (UPub.PubPhaseContext callTime downstreamThreadID sliceID phaseContext)
+              pub
+                ( UPub.PubPhaseContext
+                    callTime
+                    downstreamThreadID
+                    sliceID
+                    phaseContext
+                )
                 >> return (OOk m)
   DEvent.CmdPause cmdID -> DCmID.fromText (toS clientid) & \case
     Nothing -> log "couldn't decode clientID to UUID" >> return ONotFound
     Just downstreamCmdID -> zoom (_cmdID cmdID) $
       get >>= \case
         Nothing -> do
-          log $ "No corresponding command for this downstream" <> " cmd 'pause' request."
+          log $
+            "No corresponding command for this downstream"
+              <> " cmd 'pause' request."
           return ONotFound
         Just c -> do
-          put $ Just (c & field @"downstreamCmds" . at downstreamCmdID .~ Nothing)
+          put $
+            Just
+              ( c & field @"downstreamCmds"
+                  . at downstreamCmdID .~ Nothing
+              )
           log "downstream cmd un-registered."
           return OAdjustment
-  DEvent.ThreadPause downstreamThreadID -> zoom (_cmdID (cmdID downstreamThreadID)) $
-    get >>= \case
+  DEvent.ThreadPause downstreamThreadID -> zoom
+    (_cmdID (cmdID downstreamThreadID))
+    $ get >>= \case
       Nothing ->
-        log "No corresponding command for this downstream thread 'pause' request."
+        log
+          ( "No corresponding command for this downstream thread 'pause'"
+              <> " request."
+          )
           >> return ONotFound
       Just c -> do
-        put $ Just (c & field @"downstreamThreads" . at downstreamThreadID .~ Nothing)
+        put $
+          Just
+            ( c & field @"downstreamThreads"
+                . at downstreamThreadID .~ Nothing
+            )
         log "downstream thread un-registered."
         return ONotFound
-  DEvent.ThreadPhasePause _ -> log "unimplemented ThreadPhasePause handler" >> return ONotFound
+  DEvent.ThreadPhasePause _ ->
+    log "unimplemented ThreadPhasePause handler"
+      >> return ONotFound
   where
     registerDTT ::
       Cmd ->
@@ -322,7 +343,11 @@ nrmDownstreamEvent callTime clientid = \case
 
 data CommonOutcome a = OAdjustment | OOk a | ONotFound
 
-commonSP :: U.Time -> ActiveSensorKey -> Double -> NRM (CommonOutcome Measurement)
+commonSP ::
+  U.Time ->
+  ActiveSensorKey ->
+  Double ->
+  NRM (CommonOutcome Measurement)
 commonSP callTime key value = do
   cfg <- ask
   st <- get
@@ -344,7 +369,12 @@ mayRep :: Cmd -> URep.Rep -> Behavior
 mayRep c rp =
   (upstreamClientID . cmdCore) c & \case
     Just ucID -> Rep ucID rp
-    Nothing -> Log Error "This command does not have a registered upstream client."
+    Nothing ->
+      Log
+        Error
+        ( "This command does not have a registered"
+            <> " upstream client."
+        )
 
 respondContent :: Text -> Cmd -> CmdID -> URep.OutputType -> Behavior
 respondContent content cmd cmdID outputType = mayRep cmd $
@@ -356,7 +386,7 @@ respondContent content cmd cmdID outputType = mayRep cmd $
 
 folder ::
   U.Time ->
-  (NRMState, Maybe [CPD.Measurement]) -> -- if second value is Nothing, cpd changed.
+  (NRMState, Maybe [CPD.Measurement]) -> -- snd = Nothing <=> cpd changed.
   (PassiveSensorKey, ScopedLens NRMState PassiveSensor) ->
   IO (NRMState, Maybe [CPD.Measurement])
 folder time (s, ms) (k, ScopedLens l) = perform ps <&> doCase
@@ -389,3 +419,10 @@ mayInjectLibnrmPreload c manifest e =
                 Just x -> Just $ x <> " " <> path
             )
             "LD_PRELOAD"
+
+behaveLens ::
+  (NRMState -> (Behavior, NRMState)) ->
+  RWST Cfg [Behavior] NRMState IO ()
+behaveLens l = do
+  st <- get
+  l st & \(bh, st') -> put st' >> behave bh
