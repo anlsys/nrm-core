@@ -10,6 +10,7 @@
 module NRM.Classes.Messaging
   ( NRMMessage (..),
     GenericJSON (..),
+    AnyJSON (..),
     JSONSchema (..),
   )
 where
@@ -84,3 +85,8 @@ deriving via GenericJSON (LM.Map a b) instance (JSONSchema a, JSONSchema b) => J
 deriving via GenericJSON (LM.Map a b) instance (A.FromJSON a, A.FromJSON b) => A.FromJSON (LM.Map a b)
 
 deriving via GenericJSON (LM.Map a b) instance (A.ToJSON a, A.ToJSON b) => A.ToJSON (LM.Map a b)
+
+newtype AnyJSON (a :: Type) = AnyJSON {unAnyJSON :: a}
+
+instance S.JSONSchema (AnyJSON a) where
+  schema _ = S.Any
