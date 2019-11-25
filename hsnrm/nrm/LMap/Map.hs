@@ -9,6 +9,8 @@ module LMap.Map
   ( Map,
     LMap.Map.fromList,
     LMap.Map.toList,
+    LMap.Map.fromDataMap,
+    LMap.Map.toDataMap,
     LMap.Map.map,
     LMap.Map.empty,
     LMap.Map.null,
@@ -25,14 +27,15 @@ where
 
 import Control.Lens
 import Data.Data
-import qualified Data.Map as DM hiding (Map)
+import qualified Data.Map as DM
 import Data.MessagePack
+import Dhall hiding (maybe)
 import Protolude hiding (Map, toList)
 
 -- | Association list with Data.Map interface and Control.Lens.At
 -- instance. Useful to us because of the generic representation.
 newtype Map a b = Map [(a, b)]
-  deriving (Show, Generic, Data, MessagePack, Functor, Foldable)
+  deriving (Show, Generic, Data, MessagePack, Functor, Foldable, Inject, Interpret)
   deriving (Semigroup, Monoid) via [(a, b)]
 
 mapKV :: ((a, b) -> (c, d)) -> Map a b -> Map c d
@@ -44,6 +47,12 @@ empty = Map []
 null :: Map k a -> Bool
 null (Map []) = True
 null _ = False
+
+fromDataMap :: DM.Map k v -> Map k v
+fromDataMap = fromList . DM.toList
+
+toDataMap :: (Ord k) => Map k v -> DM.Map k v
+toDataMap = DM.fromList . toList
 
 fromList :: [(a, b)] -> Map a b
 fromList = Map

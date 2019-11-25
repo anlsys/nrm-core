@@ -11,7 +11,6 @@ module NRM.Slices.Class
 where
 
 import Data.Aeson
-import Data.Data
 import Data.MessagePack
 import NRM.Types.Cmd as Cmd
 import NRM.Types.CmdID as Cmd
@@ -22,7 +21,7 @@ import Protolude
 data ApplicationProcess
   = Registered Cmd.CmdID Process.ProcessID
   | Unregistered Cmd.CmdID
-  deriving (Ord, Eq, Show, Generic, Data, MessagePack, ToJSON, FromJSON)
+  deriving (Ord, Eq, Show, Generic, MessagePack, ToJSON, FromJSON)
 
 data AppStartConfig
   = AppStartConfig
@@ -30,7 +29,7 @@ data AppStartConfig
         arguments :: Arguments,
         cmdID :: Cmd.CmdID
       }
-  deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 class
   (MonadIO m) =>

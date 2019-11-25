@@ -17,6 +17,7 @@ let defexts =
       , types.Extension.OverloadedStrings True
       , types.Extension.ViewPatterns True
       , types.Extension.DeriveFunctor True
+      , types.Extension.DeriveTraversable True
       , types.Extension.TypeFamilies True
       , types.Extension.DeriveAnyClass True
       , types.Extension.DeriveGeneric True
@@ -110,6 +111,8 @@ let deps =
           nobound "hxt-xpath"
       , recursion-schemes =
           nobound "recursion-schemes"
+      , binary =
+          nobound "binary"
       , refined =
           nobound "refined"
       , generic-data =
@@ -250,6 +253,7 @@ let modules =
       , "NRM.Types.DownstreamCmd"
       , "NRM.Types.DownstreamCmdID"
       , "NRM.Types.State"
+      , "NRM.Types.MemBuffer"
       , "NRM.Types.UpstreamClient"
       , "NRM.Types.DownstreamClient"
       , "NRM.Classes.Messaging"
@@ -261,6 +265,8 @@ let modules =
       , "NRM.Orphans.UUID"
       , "NRM.Orphans.Dhall"
       , "NRM.Orphans.NonEmpty"
+      , "NRM.Orphans.ZeroOne"
+      , "NRM.Orphans.Refined"
       , "NRM.Types.Messaging.DownstreamEvent"
       , "NRM.Types.Messaging.UpstreamPub"
       , "NRM.Types.Messaging.UpstreamReq"
@@ -289,9 +295,33 @@ let extramodules =
       , "CPD.Values"
       , "CPD.Utils"
       , "CPD.Text"
+      , "Control.Monad.LPMonad.Internal"
+      , "Control.Monad.LPMonad.Supply.Class"
+      , "Control.Monad.LPMonad.Supply"
+      , "Control.Monad.LPMonad"
+      , "Data.LinearProgram"
+      , "Data.LinearProgram.Common"
+      , "Data.LinearProgram.GLPK"
+      , "Data.LinearProgram.GLPK.Common"
+      , "Data.LinearProgram.GLPK.Internal"
+      , "Data.LinearProgram.GLPK.IO.Internal"
+      , "Data.LinearProgram.GLPK.IO"
+      , "Data.LinearProgram.GLPK.Solver"
+      , "Data.LinearProgram.GLPK.Types"
+      , "Data.LinearProgram.LinExpr"
+      , "Data.LinearProgram.Spec"
+      , "Data.LinearProgram.Types"
+      , "Algebra.Classes"
       ]
 
-let banditmodules = [ "Bandit.Class", "Bandit.Exp3", "Bandit.EpsGreedy", "Bandit.Util" ]
+let banditmodules =
+      [ "HBandit.Class"
+      , "HBandit.Exp3"
+      , "HBandit.EpsGreedy"
+      , "HBandit.Util"
+      , "HBandit.Types"
+      , "HBandit.BwCR"
+      ]
 
 let allmodules = modules # extramodules # banditmodules
 
@@ -312,6 +342,7 @@ let libdep =
       , deps.generic-lens
       , deps.data-msgpack
       , deps.containers
+      , deps.binary
       , deps.unordered-containers
       , deps.mtl
       , deps.aeson
@@ -355,7 +386,8 @@ let libdep =
 
 in  { defexts =
         defexts
-    ,deps = deps
+    , deps =
+        deps
     , libdep =
         libdep
     , banditmodules =

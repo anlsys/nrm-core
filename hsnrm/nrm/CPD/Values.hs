@@ -13,7 +13,6 @@ where
 
 import CPD.Core
 import qualified Data.Aeson as A
-import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import Dhall
@@ -28,7 +27,7 @@ data Measurement
         sensorValue :: Double,
         time :: Time
       }
-  deriving (Show, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Measurement
 
 data Action
@@ -36,5 +35,5 @@ data Action
       { actuatorID :: ActuatorID,
         actuatorValue :: Discrete
       }
-  deriving (Show, Eq, Generic, Data, MessagePack, Interpret, Inject)
+  deriving (Show, Eq, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Action

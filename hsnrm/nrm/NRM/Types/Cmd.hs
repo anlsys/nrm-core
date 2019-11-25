@@ -27,7 +27,6 @@ where
 
 import Control.Lens
 import Data.Aeson as A
-import Data.Data
 import Data.Generics.Product
 import Data.JSON.Schema
 import Data.MessagePack
@@ -44,6 +43,7 @@ import NRM.Types.DownstreamCmdID
 import NRM.Types.DownstreamThread
 import NRM.Types.DownstreamThreadID
 import NRM.Types.Manifest as Manifest
+import NRM.Types.MemBuffer as MemBuffer
 import NRM.Types.Process
 import NRM.Types.Sensor
 import NRM.Types.Units
@@ -56,7 +56,7 @@ data CmdSpec
         args :: Arguments,
         env :: Env
       }
-  deriving (Show, Generic, Data, MessagePack)
+  deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdSpec
 
 data CmdCore
@@ -66,7 +66,7 @@ data CmdCore
         upstreamClientID :: Maybe UC.UpstreamClientID,
         manifest :: Manifest
       }
-  deriving (Show, Generic, Data, MessagePack)
+  deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdCore
 
 data Cmd
@@ -77,7 +77,7 @@ data Cmd
         downstreamCmds :: LM.Map DownstreamCmdID DownstreamCmd,
         downstreamThreads :: LM.Map DownstreamThreadID DownstreamThread
       }
-  deriving (Show, Generic, Data, MessagePack)
+  deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cmd
 
 mkCmd :: CmdSpec -> Manifest -> Maybe UC.UpstreamClientID -> CmdCore
@@ -107,6 +107,7 @@ addDownstreamCmdClient Cmd {..} downstreamCmdClientID =
               ( DownstreamCmd
                   (Manifest.perfLimit pw)
                   (Manifest.perfFreq pw)
+                  MemBuffer.empty
               )
               downstreamCmds,
           ..
@@ -125,6 +126,7 @@ addDownstreamThreadClient Cmd {..} downstreamThreadClientID =
             ( DownstreamThread
                 (1 & progress)
                 ratelimit
+                MemBuffer.empty
             )
             downstreamThreads,
         ..
@@ -143,14 +145,14 @@ removeDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
   }
 
 newtype Arg = Arg Text
-  deriving (Show, Generic, Data, MessagePack)
+  deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Arg
 
 instance StringConv Arg Text where
   strConv _ (Arg x) = toS x
 
 newtype Command = Command Text
-  deriving (Show, Eq, Generic, Data, MessagePack)
+  deriving (Show, Eq, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Command
   deriving (IsString, Interpret, Inject) via Text
 
@@ -158,11 +160,11 @@ instance StringConv Command Text where
   strConv _ (Command x) = toS x
 
 newtype Arguments = Arguments [Arg]
-  deriving (Show, Generic, Data, MessagePack)
+  deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Arguments
 
 newtype Env = Env {fromEnv :: LM.Map Text Text}
-  deriving (Show, Generic, Data, MessagePack)
+  deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Env
   deriving (Semigroup, Monoid) via LM.Map Text Text
 

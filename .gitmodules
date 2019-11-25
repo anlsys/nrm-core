@@ -1,0 +1,3 @@
+[submodule "hsnrm/hbandit"]
+	path = hsnrm/hbandit
+	url = ../hbandit.git

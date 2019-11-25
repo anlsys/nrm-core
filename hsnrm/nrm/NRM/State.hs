@@ -38,6 +38,7 @@ import NRM.Types.Cmd
 import NRM.Types.CmdID
 import NRM.Types.Configuration as Cfg
 import NRM.Types.Controller
+import NRM.Types.MemBuffer as MemBuffer
 import NRM.Types.Process
 import NRM.Types.Slice
 import NRM.Types.State
@@ -98,7 +99,9 @@ initialState c time = do
                             raplPath = path,
                             max = maxEnergy,
                             discreteChoices = [uW 180, uW 200],
-                            lastTime = Nothing
+                            defaultPower = uW 200,
+                            lastTime = Nothing,
+                            history = MemBuffer.empty
                           }
                       )
                 }

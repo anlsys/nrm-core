@@ -61,9 +61,10 @@ import Protolude hiding (log)
 behavior :: Cfg.Cfg -> NRMState -> U.Time -> NRMEvent -> IO (NRMState, [Behavior])
 behavior cfg st time event = execNRM (nrm time event) cfg st
 
--- | The nrm function contains the main logic of the NRM daemon. It changes the state and
--- produces an associated behavior to be executed by the runtime. This contains the slice
--- management logic, the sensor callback logic, the control loop callback logic. Works in the @NRM monad.
+-- | The nrm function contains the main logic of the NRM daemon. It changes
+-- the state and produces an associated behavior to be executed by the
+-- runtime. This contains the slice management logic, the sensor callback
+-- logic, the control loop callback logic. Works in the @NRM monad.
 nrm :: U.Time -> NRMEvent -> NRM ()
 nrm _callTime (DoOutput cmdID outputType content) = do
   st <- get
@@ -107,7 +108,7 @@ nrm _callTime (Req clientid msg) = do
   st <- get
   c <- ask
   msg & \case
-    UReq.ReqCPD _ -> rep clientid (URep.RepCPD $ NRMCPD.toCPD st)
+    UReq.ReqCPD _ -> rep clientid (URep.RepCPD $ maybe CPD.emptyProblem (`NRMCPD.toCPD` st) (controlCfg c))
     UReq.ReqSliceList _ -> rep clientid (URep.RepList . URep.SliceList . LM.toList $ slices st)
     UReq.ReqGetState _ -> rep clientid (URep.RepGetState $ URep.GetState st)
     UReq.ReqGetConfig _ -> rep clientid (URep.RepGetConfig $ URep.GetConfig c)
@@ -191,6 +192,7 @@ nrm callTime (DownstreamEvent clientid msg) =
 nrm callTime DoControl = doControl (NoEvent callTime)
 nrm callTime DoSensor = do
   st <- get
+  c <- ask <&> controlCfg
   (st', measurements) <- lift (foldM (folder callTime) (st, Just []) (DM.toList $ lenses st))
   put st'
   measurements & \case
@@ -200,28 +202,32 @@ nrm callTime DoSensor = do
       pub (UPub.PubMeasurements callTime ms)
         >> doControl (Event callTime ms)
     Nothing ->
-      let cpd = NRMCPD.toCPD st'
-       in pub (UPub.PubCPD callTime cpd)
-            >> doControl (Reconfigure callTime)
+      let mcpd = (`NRMCPD.toCPD` st') <$> c
+       in for_ mcpd $ \cpd ->
+            pub (UPub.PubCPD callTime cpd)
+              >> doControl (Reconfigure callTime)
 nrm _callTime DoShutdown = return ()
 
 -- | doControl checks the integrator state and triggers a control iteration if NRM is ready.
 doControl :: Controller.Input -> NRM ()
 doControl input = do
   st <- get
+  mccfg <- ask <&> controlCfg
   zoom (field @"controller" . _Just) $ do
     logInfo ("Control input:" <> show input)
-    banditCartesianProductControl (NRMCPD.toCPD st) input >>= \case
-      DoNothing -> return ()
-      Decision d -> forM_ d $ \(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->
-        fromCPDKey actuatorID & \case
-          Nothing -> log "couldn't decode actuatorID"
-          Just aKey ->
-            DM.lookup aKey (lenses st) & \case
-              Nothing -> log "NRM internal error: actuator not found."
-              Just (ScopedLens l) -> do
-                liftIO $ go (st ^. l) discreteValue
-                log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
+    mccfg & \case
+      Nothing -> return ()
+      Just ccfg -> banditCartesianProductControl ccfg (NRMCPD.toCPD ccfg st) input >>= \case
+        DoNothing -> return ()
+        Decision d -> forM_ d $ \(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->
+          fromCPDKey actuatorID & \case
+            Nothing -> log "couldn't decode actuatorID"
+            Just aKey ->
+              DM.lookup aKey (lenses st) & \case
+                Nothing -> log "NRM internal error: actuator not found."
+                Just (ScopedLens l) -> do
+                  liftIO $ go (st ^. l) discreteValue
+                  log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
 
 nrmDownstreamEvent ::
   U.Time ->

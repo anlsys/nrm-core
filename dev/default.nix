@@ -64,14 +64,16 @@ in pkgs // rec {
   patchedSrc = source: rename: dhallDir: dhallFileName:
     pkgs.runCommand "patchedSrc" { } ''
       mkdir -p $out
-      cp -r ${source}/ $out/${rename}
+      cp -r ${source}/${rename} $out/${rename}
+      cp -r ${source}/hbandit $out/hbandit
+      cp -r ${source}/glpk $out/glpk
       chmod -R +rw $out
       cp ${cabalFile dhallDir dhallFileName} $out/hsnrm.cabal
     '';
 
-  patchedSrcLib = patchedSrc ../hsnrm/nrm "nrm" ./cabal "lib.dhall";
+  patchedSrcLib = patchedSrc ../hsnrm "nrm" ./cabal "lib.dhall";
 
-  patchedSrcBin = patchedSrc ../hsnrm/bin "bin" ./cabal "bin.dhall";
+  patchedSrcBin = patchedSrc ../hsnrm "bin" ./cabal "bin.dhall";
 
   ormolu = let
     source = pkgs.fetchFromGitHub {
@@ -90,9 +92,13 @@ in pkgs // rec {
         regex = doJailbreak super.regex;
         json-schema = unbreak (doJailbreak super.json-schema);
         zeromq4-conduit = unbreak (dontCheck super.zeromq4-conduit);
-        nrmlib = self.callCabal2nix "hsnrm.cabal" patchedSrcLib { };
-        nrmbin =
-          self.callCabal2nix "hsnrm.cabal" patchedSrcBin { inherit nrmlib; };
+        nrmlib =
+          (self.callCabal2nix "hsnrm.cabal" patchedSrcLib { }).overrideAttrs
+          (o: { nativeBuildInputs = o.nativeBuildInputs ++ [ pkgs.glpk ]; });
+        nrmbin = (self.callCabal2nix "hsnrm.cabal" patchedSrcBin {
+          inherit nrmlib;
+        }).overrideAttrs
+          (o: { nativeBuildInputs = o.nativeBuildInputs ++ [ pkgs.glpk ]; });
         dhall = super.dhall_1_24_0;
         dhrun = (self.callCabal2nix "dhrun" (builtins.fetchGit {
           inherit (pkgs.stdenv.lib.importJSON ./pkgs/dhrun/pin.json) url rev;
@@ -150,6 +156,8 @@ in pkgs // rec {
       nrmPythonPackages.mypy
       nrmPythonPackages.pytype
       nrmPythonPackages.sphinx
+      nrmPythonPackages.nbformat
+      nrmPythonPackages.nbconvert
     ];
 
     shellHook = ''
@@ -161,16 +169,54 @@ in pkgs // rec {
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
+  jupyterWithBatteries = pkgs.jupyter.override rec {
+    python3 =
+      nrmPythonPackages.python.withPackages (ps: with ps; [ msgpack ]);
+    definitions = {
+      # This is the Python kernel we have defined above.
+      python3 = {
+        displayName = "Python 3";
+        argv = [
+          "${python3.interpreter}"
+          "-m"
+          "ipykernel_launcher"
+          "-f"
+          "{connection_file}"
+        ];
+        language = "python";
+        logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
+        logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
+      };
+    };
+  };
+
+  experiment = pkgs.symlinkJoin {
+    name = "nrmFull";
+    paths = [
+      haskellPackages.nrmbin
+      pynrm
+      resources
+      pkgs.linuxPackages.perf
+      pkgs.hwloc
+      pkgs.daemonize
+      jupyterWithBatteries
+    ];
+  };
+
   hack = pkgs.mkShell {
 
     CABALFILE = cabalFile ./cabal "dev.dhall"; # for easy manual vendoring
 
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
 
-    buildInputs = [ pkgs.hwloc ormolu haskellPackages.dhrun ];
+    buildInputs =
+      [ pkgs.hwloc ormolu haskellPackages.dhrun jupyterWithBatteries ];
 
     shellHook = ''
       # path for NRM dev experimentation
+      export PYNRMSO=${
+        builtins.toPath ../.
+      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
       export NRMSO=${
         builtins.toPath ../.
       }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so

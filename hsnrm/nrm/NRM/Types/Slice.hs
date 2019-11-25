@@ -18,7 +18,6 @@ where
 
 import Control.Lens
 import Data.Aeson
-import Data.Data
 import Data.Generics.Product
 import Data.JSON.Schema
 import Data.MessagePack
@@ -40,7 +39,7 @@ data Slice
         -- | map of commands awaiting to be registered as running by the runtime
         awaiting :: LM.Map CmdID CmdCore
       }
-  deriving (Show, Generic, Data, MessagePack)
+  deriving (Show, Generic, MessagePack)
   deriving (ToJSON, FromJSON, JSONSchema) via GenericJSON Slice
 
 -- | Constructor for an empty slice.
@@ -55,7 +54,7 @@ insertCmd :: CmdID -> Cmd -> Slice -> Slice
 insertCmd cmdID cmd slice = slice {cmds = LM.insert cmdID cmd (cmds slice)}
 
 data SliceID = SliceID U.UUID | Name Text
-  deriving (Show, Eq, Ord, Generic, Data, FromJSONKey, ToJSONKey, MessagePack)
+  deriving (Show, Eq, Ord, Generic, FromJSONKey, ToJSONKey, MessagePack)
   deriving (ToJSON, FromJSON, JSONSchema) via GenericJSON SliceID
 
 nextSliceID :: IO (Maybe SliceID)

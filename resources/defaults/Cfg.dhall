@@ -41,5 +41,18 @@
 , hwmonCfg =
     { hwmonEnabled = True, hwmonPath = "/sys/class/hwmon" }
 , controlCfg =
-    None { minimumControlInterval : { fromuS : Double } }
+    None
+    { minimumControlInterval :
+        { fromuS : Double }
+    , learnCfg :
+        < LagrangeConstraints :
+            { _1 : { _1 : Double } }
+        | KnapsackConstraints :
+            { _1 : { _1 : Double } }
+        >
+    , speedThreshold :
+        Double
+    , referenceMeasurementRoundInterval :
+        Integer
+    }
 }

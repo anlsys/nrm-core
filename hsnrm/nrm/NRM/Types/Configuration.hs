@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
+{-# OPTIONS_GHC -fno-warn-incomplete-patterns #-}
 
 -- |
 -- Module      : NRM.Types.Configuration
@@ -25,11 +26,15 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
 import Dhall
+import HBandit.Types
 import NRM.Classes.Messaging
 import NRM.Orphans.Dhall ()
 import qualified NRM.Types.Cmd as Cmd
+import NRM.Types.Controller
 import NRM.Types.Units
 import Protolude
+import Refined
+import Refined.Unsafe
 
 data SliceRuntime = Singularity | Nodeos | Dummy
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
@@ -62,9 +67,12 @@ data Cfg
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
 
-newtype ControlCfg
+data ControlCfg
   = ControlCfg
-      { minimumControlInterval :: Time
+      { minimumControlInterval :: Time,
+        learnCfg :: LearnConfig,
+        speedThreshold :: ZeroOne Double,
+        referenceMeasurementRoundInterval :: Refined (GreaterThan 5) Int
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ControlCfg
@@ -103,8 +111,14 @@ data UpstreamCfg
 
 instance Default ControlCfg where
   def = ControlCfg
-    { minimumControlInterval = 0.1 & seconds
+    { minimumControlInterval = 0.1 & seconds,
+      speedThreshold = fe (refine 0.9),
+      learnCfg = LagrangeConstraints (LagrangeMultiplier 0.5),
+      referenceMeasurementRoundInterval = unsafeRefine 6
     }
+    where
+      fe :: Either e (ZeroOne Double) -> ZeroOne Double
+      fe (Right e) = e
 
 instance Default HwmonCfg where
   def = HwmonCfg

@@ -29,8 +29,7 @@ module CPD.Core
     -- ** Definitions
     Actuator (..),
 
-    -- * Objective
-    Objective,
+    -- * Objective/Constraint Epxression language
     OExpr (..),
 
     -- * Objective contstructor helpers
@@ -43,12 +42,11 @@ module CPD.Core
 
     -- * Pretty printers
     prettyCPD,
-    prettyObj,
+    prettyExpr,
   )
 where
 
 import qualified Data.Aeson as A
-import Data.Data
 import Data.JSON.Schema
 import qualified Data.Map as DM
 import Data.MessagePack
@@ -56,6 +54,7 @@ import Data.String (IsString (..))
 import qualified Dhall as D
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
+import NRM.Orphans.ZeroOne ()
 import qualified NRM.Types.Units as Units
 import NeatInterpolation
 import Numeric.Interval as I hiding (elem)
@@ -67,7 +66,6 @@ newtype Discrete = DiscreteDouble Double
     ( Show,
       Eq,
       Generic,
-      Data,
       MessagePack,
       D.Interpret,
       D.Inject
@@ -78,16 +76,17 @@ data Problem
   = Problem
       { sensors :: Map SensorID Sensor,
         actuators :: Map ActuatorID Actuator,
-        objective :: Objective
+        objectives :: [(Double, OExpr)],
+        constraints :: [(Interval Double, OExpr)]
       }
-  deriving (Show, Generic, Data, MessagePack, D.Interpret, D.Inject)
+  deriving (Show, Generic, MessagePack, D.Interpret, D.Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
 
 emptyProblem :: Problem
-emptyProblem = Problem DM.empty DM.empty emptyObjective
+emptyProblem = Problem DM.empty DM.empty [] []
 
 data Sensor = Sensor {range :: Interval Double, maxFrequency :: Units.Frequency}
-  deriving (Show, Generic, Data, MessagePack, D.Interpret, D.Inject)
+  deriving (Show, Generic, MessagePack, D.Interpret, D.Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Sensor
 
 deriving instance MessagePack (Interval Double)
@@ -103,7 +102,7 @@ deriving via GenericJSON (Interval Double) instance A.ToJSON (Interval Double)
 deriving via GenericJSON (Interval Double) instance A.FromJSON (Interval Double)
 
 newtype Admissible = Admissible {admissibleValues :: [Discrete]}
-  deriving (Show, Generic, Data, MessagePack, D.Interpret, D.Inject)
+  deriving (Show, Generic, MessagePack, D.Interpret, D.Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Admissible
 
 -------- SENSORS
@@ -114,7 +113,6 @@ newtype SensorID = SensorID {sensorID :: Text}
       Eq,
       Show,
       Generic,
-      Data,
       MessagePack,
       A.ToJSONKey,
       A.FromJSONKey,
@@ -134,7 +132,6 @@ newtype ActuatorID = ActuatorID {actuatorID :: Text}
       Show,
       Read,
       Generic,
-      Data,
       MessagePack,
       A.ToJSONKey,
       A.FromJSONKey,
@@ -144,19 +141,19 @@ newtype ActuatorID = ActuatorID {actuatorID :: Text}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorID
 
 instance IsString ActuatorID where
-  fromString x = fromMaybe (panic "couldn't decode ActuatorID in FromString instance") (A.decode $ toS x)
+  fromString x =
+    fromMaybe
+      ( panic
+          "couldn't decode ActuatorID in FromString instance"
+      )
+      (A.decode $ toS x)
 
 newtype Actuator = Actuator {actions :: [Discrete]}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator
-  deriving (Show, Generic, Data, MessagePack)
+  deriving (Show, Generic, MessagePack)
   deriving (D.Interpret, D.Inject) via [Discrete]
 
 ------- OBJECTIVE
-type Objective = Maybe OExpr
-
-emptyObjective :: Objective
-emptyObjective = Nothing
-
 sID :: SensorID -> OExpr
 sID = OValue
 
@@ -184,30 +181,28 @@ data OExpr
   | ODiv OExpr OExpr
   deriving (A.ToJSON, A.FromJSON) via GenericJSON OExpr
   deriving (JSONSchema) via AnyJSON OExpr
-  deriving (Show, Eq, Generic, Data, MessagePack, D.Interpret, D.Inject)
+  deriving (Show, Eq, Generic, MessagePack, D.Interpret, D.Inject)
 
-prettyOExpr :: OExpr -> Text
-prettyOExpr = \case
+prettyExpr :: OExpr -> Text
+prettyExpr = \case
   OValue (SensorID id) -> "\"" <> id <> "\""
   OScalar d -> show d
-  OAdd a b -> prettyOExpr a <> "+" <> prettyOExpr b
-  OSub a b -> "(" <> prettyOExpr a <> "-" <> prettyOExpr b <> ")"
-  OMul (OScalar d) b -> show d <> "*(" <> prettyOExpr b <> ")"
-  OMul a b -> "(" <> prettyOExpr a <> ")*(" <> prettyOExpr b <> ")"
-  ODiv a b -> "(" <> prettyOExpr a <> ")/(" <> prettyOExpr b <> ")"
-
-prettyObj :: Objective -> Text
-prettyObj Nothing = "No objective"
-prettyObj (Just o) = prettyOExpr o
+  OAdd a b -> prettyExpr a <> "+" <> prettyExpr b
+  OSub a b -> "(" <> prettyExpr a <> "-" <> prettyExpr b <> ")"
+  OMul (OScalar d) b -> show d <> "*(" <> prettyExpr b <> ")"
+  OMul a b -> "(" <> prettyExpr a <> ")*(" <> prettyExpr b <> ")"
+  ODiv a b -> "(" <> prettyExpr a <> ")/(" <> prettyExpr b <> ")"
 
 prettyCPD :: Problem -> Text
-prettyCPD (Problem sensors actuators objective) =
+prettyCPD (Problem sensors actuators objectives constraints) =
   [text|
   Sensors : $s
   Actuators : $a
-  Objective : $o
+  Objectives : $objs
+  Constraints : $csts
   |]
   where
     s = show sensors
     a = show actuators
-    o = prettyObj objective
+    objs = mconcat . intersperse " " $ objectives <&> \(w, o) -> show w <> prettyExpr o
+    csts = mconcat . intersperse " " $ constraints <&> \(w, c) -> show w <> prettyExpr c

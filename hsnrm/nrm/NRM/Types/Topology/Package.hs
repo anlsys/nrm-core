@@ -14,7 +14,6 @@ where
 
 import Control.Lens hiding ((...))
 import Data.Aeson
-import Data.Data
 import Data.Generics.Product
 import Data.Map as DM
 import Data.Maybe (fromJust)
@@ -23,6 +22,7 @@ import LensMap.Core
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Actuator as A
+import NRM.Types.MemBuffer
 import qualified NRM.Types.Sensor as S
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
@@ -36,12 +36,14 @@ data Rapl
         max :: MaxEnergy,
         frequency :: Frequency,
         discreteChoices :: [Power],
-        lastTime :: Maybe (Time, Energy)
+        defaultPower :: Power,
+        lastTime :: Maybe (Time, Energy),
+        history :: MemBuffer Double
       }
-  deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 newtype Package = Package {rapl :: Maybe Rapl}
-  deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 unsafeJAA _ = Just
 
@@ -55,17 +57,19 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
           ( ScopedLens
               ( _2 . field @"rapl"
                   . lens fromJust unsafeJAA
-                  . lens getter setter --TODO refactor for -fwarn-uni-patterns
+                  . lens getter setter -- TODO refactor for -fwarn-uni-patterns
               )
           )
     where
-      getter (Rapl path (MaxEnergy _maxEnergy) _freq discreteChoices _last) =
+      getter (Rapl path (MaxEnergy _maxEnergy) _freq discreteChoices defaultPower _last _history) =
         Actuator
           { actions = discreteChoices <&> fromuW,
+            referenceAction = fromuW defaultPower,
             go = setRAPLPowercap path . RAPLCommand . uW
           }
-      setter rapl (Actuator actions _go) =
+      setter rapl (Actuator actions referenceAction _go) =
         rapl & field @"discreteChoices" .~ fmap uW actions
+          & field @"defaultPower" .~ uW referenceAction
 
 instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor where
   lenses (packageID, package) =
@@ -81,13 +85,19 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
               )
           )
     where
-      getter (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices last) =
+      getter (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices _defaultPower last history) =
         S.PassiveSensor
-          { passiveTags = S.Tag S.Minimize [S.Power, S.Rapl],
-            passiveRange = 0 ... fromuJ maxEnergy,
+          { passiveMeta = S.SensorMeta
+              { tags = [S.Minimize, S.Power, S.Rapl],
+                range = 0 ... fromuJ maxEnergy,
+                S.lastReferenceMeasurements = history
+              },
             frequency = freq,
             perform = measureRAPLDir path <&> fmap (fromuJ . energy),
             last = last <&> fmap fromuJ
           }
       setter rapl passiveSensor =
-        rapl & field @"max" .~ MaxEnergy (uJ (sup $ S.passiveRange passiveSensor))
+        rapl & field @"max"
+          .~ MaxEnergy (uJ (sup $ S.range $ S.meta passiveSensor))
+            & field @"history"
+          .~ S.lastReferenceMeasurements (S.meta passiveSensor)

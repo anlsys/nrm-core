@@ -74,6 +74,7 @@ library nrmlib
         NRM.Types.DownstreamCmd
         NRM.Types.DownstreamCmdID
         NRM.Types.State
+        NRM.Types.MemBuffer
         NRM.Types.UpstreamClient
         NRM.Types.DownstreamClient
         NRM.Classes.Messaging
@@ -85,6 +86,8 @@ library nrmlib
         NRM.Orphans.UUID
         NRM.Orphans.Dhall
         NRM.Orphans.NonEmpty
+        NRM.Orphans.ZeroOne
+        NRM.Orphans.Refined
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.UpstreamPub
         NRM.Types.Messaging.UpstreamReq
@@ -110,21 +113,41 @@ library nrmlib
         CPD.Values
         CPD.Utils
         CPD.Text
-        Bandit.Class
-        Bandit.Exp3
-        Bandit.EpsGreedy
-        Bandit.Util
-    hs-source-dirs: nrm bin
+        Control.Monad.LPMonad.Internal
+        Control.Monad.LPMonad.Supply.Class
+        Control.Monad.LPMonad.Supply
+        Control.Monad.LPMonad
+        Data.LinearProgram
+        Data.LinearProgram.Common
+        Data.LinearProgram.GLPK
+        Data.LinearProgram.GLPK.Common
+        Data.LinearProgram.GLPK.Internal
+        Data.LinearProgram.GLPK.IO.Internal
+        Data.LinearProgram.GLPK.IO
+        Data.LinearProgram.GLPK.Solver
+        Data.LinearProgram.GLPK.Types
+        Data.LinearProgram.LinExpr
+        Data.LinearProgram.Spec
+        Data.LinearProgram.Types
+        Algebra.Classes
+        HBandit.Class
+        HBandit.Exp3
+        HBandit.EpsGreedy
+        HBandit.Util
+        HBandit.Types
+        HBandit.BwCR
+    hs-source-dirs: nrm bin hbandit/src
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
+                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
+                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
+                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -153,6 +176,7 @@ library nrmlib
         generic-lens -any,
         data-msgpack -any,
         containers -any,
+        binary -any,
         unordered-containers -any,
         mtl -any,
         aeson -any,
@@ -195,21 +219,24 @@ library nrmlib
 
 library banditlib
     exposed-modules:
-        Bandit.Class
-        Bandit.Exp3
-        Bandit.EpsGreedy
-        Bandit.Util
+        HBandit.Class
+        HBandit.Exp3
+        HBandit.EpsGreedy
+        HBandit.Util
+        HBandit.Types
+        HBandit.BwCR
     hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
+                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
+                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
+                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -238,6 +265,7 @@ library banditlib
         generic-lens -any,
         data-msgpack -any,
         containers -any,
+        binary -any,
         unordered-containers -any,
         mtl -any,
         aeson -any,
@@ -280,7 +308,9 @@ library banditlib
 
 executable nrm.so
     main-is: Export.hs
-    hs-source-dirs: bin nrm
+    c-sources:
+        glpk/glpk.c
+    hs-source-dirs: bin nrm hbandit/src
     other-modules:
         NRM.Slices
         NRM.Slices.Class
@@ -329,6 +359,7 @@ executable nrm.so
         NRM.Types.DownstreamCmd
         NRM.Types.DownstreamCmdID
         NRM.Types.State
+        NRM.Types.MemBuffer
         NRM.Types.UpstreamClient
         NRM.Types.DownstreamClient
         NRM.Classes.Messaging
@@ -340,6 +371,8 @@ executable nrm.so
         NRM.Orphans.UUID
         NRM.Orphans.Dhall
         NRM.Orphans.NonEmpty
+        NRM.Orphans.ZeroOne
+        NRM.Orphans.Refined
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.UpstreamPub
         NRM.Types.Messaging.UpstreamReq
@@ -365,20 +398,42 @@ executable nrm.so
         CPD.Values
         CPD.Utils
         CPD.Text
-        Bandit.Class
-        Bandit.Exp3
-        Bandit.EpsGreedy
-        Bandit.Util
+        Control.Monad.LPMonad.Internal
+        Control.Monad.LPMonad.Supply.Class
+        Control.Monad.LPMonad.Supply
+        Control.Monad.LPMonad
+        Data.LinearProgram
+        Data.LinearProgram.Common
+        Data.LinearProgram.GLPK
+        Data.LinearProgram.GLPK.Common
+        Data.LinearProgram.GLPK.Internal
+        Data.LinearProgram.GLPK.IO.Internal
+        Data.LinearProgram.GLPK.IO
+        Data.LinearProgram.GLPK.Solver
+        Data.LinearProgram.GLPK.Types
+        Data.LinearProgram.LinExpr
+        Data.LinearProgram.Spec
+        Data.LinearProgram.Types
+        Algebra.Classes
+        HBandit.Class
+        HBandit.Exp3
+        HBandit.EpsGreedy
+        HBandit.Util
+        HBandit.Types
+        HBandit.BwCR
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
+                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
+                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
+                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        UndecidableInstances
+    extra-libraries:
+        glpk
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -408,6 +463,205 @@ executable nrm.so
         generic-lens -any,
         data-msgpack -any,
         containers -any,
+        binary -any,
+        unordered-containers -any,
+        mtl -any,
+        aeson -any,
+        dhall -any,
+        conduit -any,
+        conduit-extra -any,
+        resourcet -any,
+        intervals -any,
+        neat-interpolation -any,
+        generic-aeson -any,
+        aeson-pretty -any,
+        pretty-simple -any,
+        typed-process -any,
+        hxt -any,
+        recursion-schemes -any,
+        hxt-xpath -any,
+        json-schema -any,
+        yaml -any,
+        data-default -any,
+        flat -any,
+        refined -any,
+        vector -any,
+        optparse-applicative -any,
+        directory -any,
+        regex -any,
+        units -any,
+        unix -any,
+        generic-deriving -any,
+        uuid -any,
+        async -any,
+        text -any,
+        units-defs -any,
+        storable-endian -any,
+        template-haskell -any,
+        mtl -any,
+        brick -any,
+        filepath -any,
+        lens -any,
+        editor-open -any
+
+executable pynrm.so
+    main-is: PyExport.hs
+    c-sources:
+        glpk/glpk.c
+    hs-source-dirs: bin nrm hbandit/src
+    other-modules:
+        NRM.Slices
+        NRM.Slices.Class
+        NRM.Slices.Nodeos
+        NRM.Slices.Singularity
+        NRM.Slices.Dummy
+        NRM.Node.Hwloc
+        NRM.Node.Sysfs
+        NRM.Control
+        NRM.Codegen
+        NRM.Export
+        NRM.ExportIO
+        NRM.Client
+        NRM.Daemon
+        NRM.CPD
+        NRM.Optparse
+        NRM.Behavior
+        NRM.Version
+        NRM.Sensors
+        NRM.Actuators
+        NRM.Messaging
+        NRM.Processes
+        NRM.State
+        NRM.Node.Sysfs.Internal
+        NRM.Optparse.Client
+        NRM.Optparse.Daemon
+        NRM.Types.Topology
+        NRM.Types.Topology.Package
+        NRM.Types.Topology.Core
+        NRM.Types.Topology.PU
+        NRM.Types.Topology.PackageID
+        NRM.Types.Topology.CoreID
+        NRM.Types.Topology.PUID
+        NRM.Types.Units
+        NRM.Types.Controller
+        NRM.Types.Actuator
+        NRM.Types.Sensor
+        NRM.Types.Behavior
+        NRM.Types.Slice
+        NRM.Types.Cmd
+        NRM.Types.CmdID
+        NRM.Types.NRM
+        NRM.Types.Process
+        NRM.Types.DownstreamThread
+        NRM.Types.DownstreamThreadID
+        NRM.Types.DownstreamCmd
+        NRM.Types.DownstreamCmdID
+        NRM.Types.State
+        NRM.Types.MemBuffer
+        NRM.Types.UpstreamClient
+        NRM.Types.DownstreamClient
+        NRM.Classes.Messaging
+        NRM.Classes.Sensors
+        NRM.Classes.Actuators
+        NRM.Classes.Topology
+        NRM.Classes.Examples
+        NRM.Orphans.ExitCode
+        NRM.Orphans.UUID
+        NRM.Orphans.Dhall
+        NRM.Orphans.NonEmpty
+        NRM.Orphans.ZeroOne
+        NRM.Orphans.Refined
+        NRM.Types.Messaging.DownstreamEvent
+        NRM.Types.Messaging.UpstreamPub
+        NRM.Types.Messaging.UpstreamReq
+        NRM.Types.Messaging.UpstreamRep
+        NRM.Types.Messaging.Protocols
+        NRM.Types.Configuration
+        NRM.Types.Configuration.Yaml
+        NRM.Configuration.Examples
+        NRM.Types.Manifest
+        NRM.Types.Manifest.Yaml
+        NRM.Manifest.Examples
+        NRM.Types.Manifest.Dhall
+        FFI.TypeUncurry
+        FFI.TypeUncurry.Msgpack
+        FFI.TypeUncurry.DataKinds
+        Codegen.Schema
+        Codegen.Dhall
+        Codegen.CHeader
+        LensMap.Core
+        LMap.Map
+        CPD.Core
+        CPD.Integrated
+        CPD.Values
+        CPD.Utils
+        CPD.Text
+        Control.Monad.LPMonad.Internal
+        Control.Monad.LPMonad.Supply.Class
+        Control.Monad.LPMonad.Supply
+        Control.Monad.LPMonad
+        Data.LinearProgram
+        Data.LinearProgram.Common
+        Data.LinearProgram.GLPK
+        Data.LinearProgram.GLPK.Common
+        Data.LinearProgram.GLPK.Internal
+        Data.LinearProgram.GLPK.IO.Internal
+        Data.LinearProgram.GLPK.IO
+        Data.LinearProgram.GLPK.Solver
+        Data.LinearProgram.GLPK.Types
+        Data.LinearProgram.LinExpr
+        Data.LinearProgram.Spec
+        Data.LinearProgram.Types
+        Algebra.Classes
+        HBandit.Class
+        HBandit.Exp3
+        HBandit.EpsGreedy
+        HBandit.Util
+        HBandit.Types
+        HBandit.BwCR
+    default-language: Haskell2010
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        ExistentialQuantification RecordWildCards TypeSynonymInstances
+                        StandaloneDeriving FlexibleInstances TupleSections
+                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
+                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
+                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
+                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
+                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        UndecidableInstances
+    extra-libraries:
+        glpk
+    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
+                 -Wmissing-home-modules -Widentities -Wredundant-constraints
+                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
+                 -fwarn-missing-signatures -fwarn-name-shadowing
+                 -fprint-potential-instances -Wmissing-export-lists
+                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns -Wincomplete-record-updates
+                 -Wmonomorphism-restriction -Wimplicit-prelude
+                 -Wmissing-local-signatures -Wmissing-exported-signatures
+                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wpartial-fields -fPIC -shared -no-hs-main
+                 -dynamic
+    build-depends:
+        base -any,
+        protolude -any,
+        enclosed-exceptions -any,
+        MonadRandom -any,
+        mtl-compat -any,
+        vcs-revision -any,
+        transformers -any,
+        generic-data -any,
+        bytestring -any,
+        random -any,
+        prettyprinter -any,
+        zeromq4-haskell -any,
+        zeromq4-conduit -any,
+        generic-lens -any,
+        data-msgpack -any,
+        containers -any,
+        binary -any,
         unordered-containers -any,
         mtl -any,
         aeson -any,
@@ -450,7 +704,7 @@ executable nrm.so
 
 executable nrmstatic
     main-is: Hnrm.hs
-    hs-source-dirs: bin nrm
+    hs-source-dirs: bin nrm hbandit/src
     other-modules:
         NRM.Slices
         NRM.Slices.Class
@@ -499,6 +753,7 @@ executable nrmstatic
         NRM.Types.DownstreamCmd
         NRM.Types.DownstreamCmdID
         NRM.Types.State
+        NRM.Types.MemBuffer
         NRM.Types.UpstreamClient
         NRM.Types.DownstreamClient
         NRM.Classes.Messaging
@@ -510,6 +765,8 @@ executable nrmstatic
         NRM.Orphans.UUID
         NRM.Orphans.Dhall
         NRM.Orphans.NonEmpty
+        NRM.Orphans.ZeroOne
+        NRM.Orphans.Refined
         NRM.Types.Messaging.DownstreamEvent
         NRM.Types.Messaging.UpstreamPub
         NRM.Types.Messaging.UpstreamReq
@@ -535,20 +792,40 @@ executable nrmstatic
         CPD.Values
         CPD.Utils
         CPD.Text
-        Bandit.Class
-        Bandit.Exp3
-        Bandit.EpsGreedy
-        Bandit.Util
+        Control.Monad.LPMonad.Internal
+        Control.Monad.LPMonad.Supply.Class
+        Control.Monad.LPMonad.Supply
+        Control.Monad.LPMonad
+        Data.LinearProgram
+        Data.LinearProgram.Common
+        Data.LinearProgram.GLPK
+        Data.LinearProgram.GLPK.Common
+        Data.LinearProgram.GLPK.Internal
+        Data.LinearProgram.GLPK.IO.Internal
+        Data.LinearProgram.GLPK.IO
+        Data.LinearProgram.GLPK.Solver
+        Data.LinearProgram.GLPK.Types
+        Data.LinearProgram.LinExpr
+        Data.LinearProgram.Spec
+        Data.LinearProgram.Types
+        Algebra.Classes
+        HBandit.Class
+        HBandit.Exp3
+        HBandit.EpsGreedy
+        HBandit.Util
+        HBandit.Types
+        HBandit.BwCR
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
+                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
+                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
+                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -577,6 +854,7 @@ executable nrmstatic
         generic-lens -any,
         data-msgpack -any,
         containers -any,
+        binary -any,
         unordered-containers -any,
         mtl -any,
         aeson -any,
@@ -624,11 +902,12 @@ executable nrm
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
+                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
+                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
+                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -650,11 +929,12 @@ executable nrmddep
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
+                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
+                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
+                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -676,11 +956,12 @@ executable codegen
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
+                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
+                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
+                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports

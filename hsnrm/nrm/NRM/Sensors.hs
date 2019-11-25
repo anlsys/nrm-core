@@ -60,7 +60,7 @@ process _cfg time st sensorKey value =
     Just (ScopedLens sl) ->
       view sl st & \s ->
         CPD.validateMeasurement
-          (range . snd $ toCPDSensor (sensorKey, s))
+          (CPD.range . snd $ toCPDSensor (sensorKey, s))
           value
           & \case
             MeasurementOk ->
@@ -72,7 +72,7 @@ process _cfg time st sensorKey value =
                       time = time
                     }
                 )
-            AdjustInterval r -> Adjusted (st & sl . field @"activeRange" .~ r)
+            AdjustInterval r -> Adjusted (st & sl . field @"activeMeta" . field @"range" .~ r)
 
 data ProcessPassiveSensorOutput
   = IllegalValueRemediation PassiveSensor
@@ -84,13 +84,13 @@ processPassiveSensor ::
   SensorID ->
   Double ->
   ProcessPassiveSensorOutput
-processPassiveSensor ps@(passiveRange -> i) time sensorID value
+processPassiveSensor ps@(S.range . meta -> i) time sensorID value
   | value < inf i =
     IllegalValueRemediation $
-      ps {last = Nothing, passiveRange = 2 * value - sup i ... sup i}
+      ps {last = Nothing, passiveMeta = (meta ps) {S.range = 2 * value - sup i ... sup i}}
   | sup i < value =
     IllegalValueRemediation $
-      ps {last = Nothing, passiveRange = inf i ... 2 * value - inf i}
+      ps {last = Nothing, passiveMeta = (meta ps) {S.range = inf i ... 2 * value - inf i}}
   | otherwise =
     LegalMeasurement
       (ps & field @"last" ?~ (time, value))
