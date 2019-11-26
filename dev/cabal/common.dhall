@@ -284,6 +284,7 @@ let extramodules =
       , "Codegen.CHeader"
       , "LensMap.Core"
       , "LMap.Map"
+      , "LMap.NonEmpty"
       , "CPD.Core"
       , "CPD.Integrated"
       , "CPD.Values"

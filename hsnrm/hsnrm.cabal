@@ -105,6 +105,7 @@ library nrmlib
         Codegen.CHeader
         LensMap.Core
         LMap.Map
+        LMap.NonEmpty
         CPD.Core
         CPD.Integrated
         CPD.Values
@@ -360,6 +361,7 @@ executable nrm.so
         Codegen.CHeader
         LensMap.Core
         LMap.Map
+        LMap.NonEmpty
         CPD.Core
         CPD.Integrated
         CPD.Values
@@ -530,6 +532,7 @@ executable nrmstatic
         Codegen.CHeader
         LensMap.Core
         LMap.Map
+        LMap.NonEmpty
         CPD.Core
         CPD.Integrated
         CPD.Values
