@@ -87,7 +87,7 @@ let nobound = λ(p : Text) → { bounds = prelude.anyVersion, package = p }
 
 let deps = { base = nobound "base", protolude = nobound "protolude" }
 
-let allmodules = [ "HBandit" ]
+let allmodules = [ "BwCR", "Class", "EpsGreedy", "Exp3", "Types", "Util"]
 
 let libdep = [ deps.base, deps.protolude ]
 
@@ -120,7 +120,7 @@ in    prelude.defaults.Package
       , category =
           "tools"
       , description =
-          "Very opinionated haskell hbandit"
+          "hbandit"
       , sub-libraries =
           [ { library =
                   λ(config : types.Config)
