@@ -1,0 +1,5 @@
+skeleton.cabal
+result*
+dhall-to-cabal
+.ghc*
+dist*
