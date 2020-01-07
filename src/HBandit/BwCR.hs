@@ -1,7 +1,7 @@
 {-# LANGUAGE DerivingVia #-}
 
 -- |
--- Module      : Bandit.BwCR
+-- Module      : HBandit.BwCR
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
@@ -26,7 +26,7 @@
 --
 -- - [1] Bandits with Global Convex Constraints and Objective,
 --   Shipra Agrawal, Nikhil R.Devanur. https://pubsonline.informs.org/doi/abs/10.1287/opre.2019.1840
-module Bandit.BwCR
+module HBandit.BwCR
   ( BwCR (..),
     BwCRHyper (..),
     ScreeningBwCR (..),
@@ -37,8 +37,8 @@ module Bandit.BwCR
   )
 where
 
-import Bandit.Class
-import Bandit.Types
+import HBandit.Class
+import HBandit.Types
 import Numeric.Interval
 import Protolude
 --import System.Random

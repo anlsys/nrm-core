@@ -1,14 +1,14 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- |
--- Module      : Bandit.Class
+-- Module      : HBandit.Class
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
 --
 -- This module implements the common interface for instanciating
 -- and interacting with Multi-Armed Bandit algoritms.
-module Bandit.Class
+module HBandit.Class
   ( -- * Generalized Bandit
     Bandit (..),
 

@@ -2,16 +2,16 @@
 {-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
 
 -- |
--- Module      : Bandit.Util
+-- Module      : HBandit.Util
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
 --
 -- Utility functions for MAB algorithms.
-module Bandit.Types
+module HBandit.Types
   ( ZeroOne,
-    Bandit.Types.zero,
-    Bandit.Types.one,
+    HBandit.Types.zero,
+    HBandit.Types.one,
     normalize,
     normalizedSum,
   )

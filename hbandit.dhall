@@ -85,11 +85,44 @@ let copts =
 
 let nobound = λ(p : Text) → { bounds = prelude.anyVersion, package = p }
 
-let deps = { base = nobound "base", protolude = nobound "protolude" }
+let deps =
+      { base =
+          nobound "base"
+      , protolude =
+          nobound "protolude"
+      , random =
+          nobound "random"
+      , refined =
+          nobound "refined"
+      , intervals =
+          nobound "intervals"
+      , monadRandom =
+          nobound "MonadRandom"
+      , lens =
+          nobound "lens"
+      , generic-lens =
+          nobound "generic-lens"
+      }
 
-let allmodules = [ "BwCR", "Class", "EpsGreedy", "Exp3", "Types", "Util"]
+let allmodules =
+      [ "HBandit.BwCR"
+      , "HBandit.Class"
+      , "HBandit.EpsGreedy"
+      , "HBandit.Exp3"
+      , "HBandit.Types"
+      , "HBandit.Util"
+      ]
 
-let libdep = [ deps.base, deps.protolude ]
+let libdep =
+      [ deps.base
+      , deps.protolude
+      , deps.random
+      , deps.refined
+      , deps.intervals
+      , deps.monadRandom
+      , deps.lens
+      , deps.generic-lens
+      ]
 
 let common =
       { defexts =
@@ -160,8 +193,7 @@ in    prelude.defaults.Package
       , maintainer =
           "mail@server.ext"
       , source-repos =
-          [   prelude.defaults.SourceRepo
-          ]
+          [ prelude.defaults.SourceRepo ]
       , synopsis =
           "hbandit"
       }

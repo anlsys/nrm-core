@@ -2,7 +2,7 @@
 {-# LANGUAGE TypeApplications #-}
 
 -- |
--- Module      : Bandit.Exp3
+-- Module      : HBandit.Exp3
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
@@ -11,7 +11,7 @@
 --
 -- - [1] Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems,
 --   Sebastien Bubeck and Nicolo Cesa-Bianchi. http://arxiv.org/abs/1204.5721
-module Bandit.Exp3
+module HBandit.Exp3
   ( -- * State
     Exp3 (..),
 
@@ -22,9 +22,9 @@ module Bandit.Exp3
   )
 where
 
-import Bandit.Class
-import Bandit.Util
-import Bandit.Types
+import HBandit.Class
+import HBandit.Util
+import HBandit.Types
 import Control.Lens
 import Data.Generics.Product
 import Protolude

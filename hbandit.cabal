@@ -25,12 +25,12 @@ source-repository head
 
 library hbanditlib
     exposed-modules:
-        BwCR
-        Class
-        EpsGreedy
-        Exp3
-        Types
-        Util
+        HBandit.BwCR
+        HBandit.Class
+        HBandit.EpsGreedy
+        HBandit.Exp3
+        HBandit.Types
+        HBandit.Util
     hs-source-dirs: src
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
@@ -54,7 +54,13 @@ library hbanditlib
                  -Wredundant-constraints -Wpartial-fields
     build-depends:
         base -any,
-        protolude -any
+        protolude -any,
+        random -any,
+        refined -any,
+        intervals -any,
+        MonadRandom -any,
+        lens -any,
+        generic-lens -any
 
 executable hbandit
     main-is: bin/Main.hs
