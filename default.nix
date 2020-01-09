@@ -57,7 +57,8 @@ let
       export LANG=en_US.UTF-8
       cp ${dhallSpec} cabal.dhall
       substituteInPlace cabal.dhall --replace "= ./dhall-to-cabal" "= ${dhall-to-cabal-resources}"
-      ${haskellPackages.dhall-to-cabal}/bin/dhall-to-cabal <<< ./cabal.dhall --output-stdout > $out
+      GHCVERSION=$(${haskellPackages.ghc}/bin/ghc --numeric-version)
+      ${haskellPackages.dhall-to-cabal}/bin/dhall-to-cabal <<< "./cabal.dhall \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
     '';
 
   patchedSrc = source: dhallFile:
@@ -73,10 +74,32 @@ let
     overrides = self: super:
       with pkgs.haskell.lib; rec {
         dhall = super.dhall_1_24_0;
-        hbandit = self.callCabal2nix "hbandit.cabal"
-          (patchedSrc ./. ./hbandit.dhall) { };
+        hbandit =
+          self.callCabal2nix "hbandit.cabal" (patchedSrc ./. ./hbandit.dhall)
+          { };
       };
   };
+
+  jupyterWithBatteries = pkgs.jupyter.override rec {
+    python3 = pkgs.python3.withPackages (ps: with ps; [ msgpack ]);
+    definitions = {
+      # This is the Python kernel we have defined above.
+      python3 = {
+        displayName = "Python 3";
+        argv = [
+          "${python3.interpreter}"
+          "-m"
+          "ipykernel_launcher"
+          "-f"
+          "{connection_file}"
+        ];
+        language = "python";
+        logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
+        logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
+      };
+    };
+  };
+
 in {
   hbandit = haskellPackages.hbandit;
 
@@ -86,8 +109,16 @@ in {
       (haskellPackages.callPackage hs-tools { })
     ];
     withHoogle = true;
-    #buildInputs = [ ];
+    buildInputs = [
+      (pkgs.rWrapper.override {
+        packages = with pkgs.rPackages; [ ggplot2 dplyr msgpackR knitr ];
+      })
+      jupyterWithBatteries
+    ];
     shellHook = ''
+      export SHELLSO=${
+        builtins.toPath ./.
+      }/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/x/hbandit/build/hbandit/hbandit
       export NIX_GHC="${haskellPackages.hbandit.env.NIX_GHC}"
       export NIX_GHCPKG="${haskellPackages.hbandit.env.NIX_GHCPKG}"
       export NIX_GHC_DOCDIR="${haskellPackages.hbandit.env.NIX_GHC_DOCDIR}"
