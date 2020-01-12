@@ -1,7 +1,19 @@
 # hbandit
 
-WIP, unmaintained.
+Warning: Unmaintained (but [Nix](https://nixos.org)-pinned).
 
-Multi-Armed Bandit implementation: UCB & EXP family of algorithms, BwCR.
+Multi-Armed Bandit implementations: UCB & EXP family of algorithms, BwCR.
 
-Deps: hackage packages + glpk
+## Install
+
+Provision using your Cabal or Nix toolchain. Both cabal file and nix packages
+are provided in the repository.
+
+Dependencies: hackage packages, glpk
+
+## Tests
+
+Provision using Nix (`nix-shell`) and run notebook
+[validation/benchmark.ipynb](validation/benchmark.ipynb).
+ 
+Dependencies: Install dependencies + SMPyBandits
