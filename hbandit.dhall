@@ -213,7 +213,7 @@ in    λ ( ghcPath
                         "bin/Shared.hs"
                     , build-depends =
                           common.libdep
-                        # [ common.nobound "hbanditlib", common.nobound "ffi" ]
+                        # [ common.nobound "hbanditlib", common.nobound "ffi", deps.data-msgpack ]
                     }
                   ⫽ common.copts
                     [ "-fPIC"

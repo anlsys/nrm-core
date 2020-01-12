@@ -1,1 +1,1 @@
-(import ./default.nix {}).hack
+(import nix/default.nix {}).hack

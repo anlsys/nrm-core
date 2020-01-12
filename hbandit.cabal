@@ -128,5 +128,6 @@ executable hbandit
         lens -any,
         generic-lens -any,
         hbanditlib -any,
-        ffi -any
+        ffi -any,
+        data-msgpack -any
 
