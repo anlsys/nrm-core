@@ -4,6 +4,8 @@
 
 , pkgs ? import (fetched ./pin.json) { }
 
+, useGhcide ? true
+
 }:
 with pkgs.lib;
 let
@@ -27,17 +29,9 @@ let
       pname = "dummy";
       version = "";
       src = "";
-      libraryHaskellDepends = [
-        cabal-install
-        dhall
-        ormolu
-        hlint
-        ghcide
-        ghcid
-        shake
-        Glob
-        typed-process
-      ];
+      libraryHaskellDepends =
+        [ cabal-install dhall ormolu hlint ghcid shake Glob typed-process ]
+        ++ (optional useGhcide ghcide);
       description = "";
       license = stdenv.lib.licenses.mit;
     };
@@ -157,4 +151,12 @@ in rec {
     '';
     CABALFILE = cabalFile ../hbandit.dhall;
   };
+
+  validation = pkgs.mkShell {
+    name = "validation";
+    buildInputs = [ hbandit jupyterWithBatteries ];
+    SHELLSO="${hbandit}/bin/hbandit";
+    NOTEBOOKS = ../validation;
+  };
+
 }
