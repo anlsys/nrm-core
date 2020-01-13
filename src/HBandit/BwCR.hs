@@ -41,6 +41,7 @@ import HBandit.Class
 import HBandit.Types
 import Numeric.Interval
 import Protolude
+
 --import System.Random
 
 newtype T = T Double deriving (Generic, Eq)
@@ -93,7 +94,7 @@ mkHyper ::
   BwCRHyper a [ZeroOne Double]
 mkHyper delta (T totalRounds) arms@(Arms nelarms) constraints objectiveWeights =
   BwCRHyper
-    { gamma = log (totalRounds * fromIntegral ( length $ toList nelarms) * fromIntegral ( length objectiveWeights) / delta),
+    { gamma = log (totalRounds * fromIntegral (length $ toList nelarms) * fromIntegral (length objectiveWeights) / delta),
       ..
     }
 

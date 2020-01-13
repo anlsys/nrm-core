@@ -22,11 +22,11 @@ module HBandit.Exp3
   )
 where
 
-import HBandit.Class
-import HBandit.Util
-import HBandit.Types
 import Control.Lens
 import Data.Generics.Product
+import HBandit.Class
+import HBandit.Types
+import HBandit.Util
 import Protolude
 import qualified Refined as R
 import System.Random

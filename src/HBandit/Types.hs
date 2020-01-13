@@ -17,9 +17,9 @@ module HBandit.Types
   )
 where
 
-import Refined.Unsafe
 import Protolude
 import Refined
+import Refined.Unsafe
 
 -- | type alias for a $[0,1]$ refined value.
 type ZeroOne l = (Refined (FromTo 0 1) l)
