@@ -68,16 +68,9 @@ dhall-format:
         if [ $RETURN -ne 0 ]; then exit 1; fi
       '
 
-nix-build-sharedlib:
+nix-build:
   stage: lib
   tags:
     - kvm
     - nix
   script: nix-build -A haskellPackages.hbandit --no-build-output
-
-nix-build-hslib:
-  stage: lib
-  tags:
-    - kvm
-    - nix
-  script: nix-build -A haskellPackages.nrmbin --no-build-output
