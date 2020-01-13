@@ -116,7 +116,7 @@ let
 
 in rec {
 
-  inherit (pkgs) fd mkShell hlint;
+  inherit (pkgs) fd mkShell;
   inherit haskellPackages;
   inherit pythonPackages;
   inherit ormolu;
