@@ -55,9 +55,10 @@ class WrapEither(object):
 
         return eitherwrap
 
-""" Loads the haskell shared library """
+
 @contextmanager
 def Lib(library, exportPattern="{name}Export"):
+    """ Loads the haskell shared library """
     hdll = LibraryLoader(HSO)
     hdll.exportPattern = exportPattern
     lib = hdll.LoadLibrary(library)
@@ -65,10 +66,11 @@ def Lib(library, exportPattern="{name}Export"):
     yield WrapEither(lib)
     lib.hs_exit()
 
-""" Unsafe version of Lib (no exit via context manager) """
+
 def UnsafeLib(library, exportPattern="{name}Export"):
+    """ Unsafe version of Lib (no exit via context manager) """
     hdll = LibraryLoader(HSO)
     hdll.exportPattern = exportPattern
     lib = hdll.LoadLibrary(library)
     lib.hs_init(0, 0)
-    return(WrapEither(lib))
+    return WrapEither(lib)

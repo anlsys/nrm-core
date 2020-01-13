@@ -45,7 +45,7 @@ black:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
+      nix-shell --pure -p '(import ./.).pythonPackages.black' --run bash <<< '
         black validation/*.py --check
       '
 

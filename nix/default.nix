@@ -82,6 +82,7 @@ let
 
   hBanditPythonPackages = pkgs.python37Packages.override {
     overrides = self: super: rec {
+      black = super.black.overridePythonAttrs (o: { doCheck = false; });
       SMPyBandits =
         pkgs.callPackage ./pkgs/SMPyBandits { pythonPackages = self; };
     };
@@ -108,7 +109,7 @@ let
     };
   };
 
-in pkgs // {
+in pkgs // rec {
 
   pythonPackages = hBanditPythonPackages;
 
@@ -125,6 +126,7 @@ in pkgs // {
         packages = with pkgs.rPackages; [ ggplot2 dplyr msgpackR knitr ];
       })
       jupyterWithBatteries
+      pythonPackages.black
     ];
     shellHook = ''
       export SHELLSO=${
