@@ -19,7 +19,7 @@ ormolu:
         }
       ' --run bash <<< '
         RETURN=0
-        cd hsnrm
+        cd src
         for F in $(fd -e hs); do
           ormolu -o -XTypeApplications -m check $F
           if [ $? -ne 0 ]; then
