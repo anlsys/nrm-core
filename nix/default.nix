@@ -116,10 +116,13 @@ let
 
 in rec {
 
+  inherit (pkgs) fd mkShell hlint;
   inherit haskellPackages;
   inherit pythonPackages;
   inherit ormolu;
 
+
+  hlint = haskellPackages.hlint;
   hbandit = haskellPackages.hbandit;
 
   hack = pkgs.haskellPackages.shellFor {
