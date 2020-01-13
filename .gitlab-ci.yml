@@ -84,7 +84,7 @@ check-vendored-documentation:
     - nix
   script:
     - |
-      nix-shell nix/default.nix -A hack --run bash <<< '
+      nix-shell nix/default.nix -A hack --run bash --arg useGhcide false <<< '
         echo "check: is vendored documentation up to date?"
         cp -r doc/ doc2
         ./shake doc
