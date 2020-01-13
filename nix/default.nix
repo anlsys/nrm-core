@@ -114,6 +114,7 @@ in pkgs // rec {
 
   inherit haskellPackages;
   inherit pythonPackages;
+  inherit ormolu;
 
   hbandit = haskellPackages.hbandit;
 
@@ -129,7 +130,6 @@ in pkgs // rec {
       })
       jupyterWithBatteries
       pythonPackages.black
-      ormolu
     ];
     shellHook = ''
       export SHELLSO=${
