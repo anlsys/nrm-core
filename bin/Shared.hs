@@ -34,7 +34,10 @@ foreign export ccall initExp3Export :: Ex
 foreign export ccall stepExp3Export :: Ex
 
 exp3 :: Exportable (Exp3 Int) Int Int Double
-exp3 = exportBandit (\count -> Right $ Arms (nub $ fromList [1 .. count])) refine
+exp3 =
+  exportBandit
+    (\count -> Right $ Arms (nub $ fromList [1 .. count]))
+    refine
 
 initExp3Export = exportIO (initExportable exp3)
 
@@ -68,7 +71,11 @@ data Exportable b hyper a loss
         stepExportable :: b -> loss -> IO (b, a)
       }
 
-exportBandit :: (Bandit b hyper a loss) => (hyper' -> Either e1 hyper) -> (loss' -> Either e2 loss) -> Exportable b hyper' a loss'
+exportBandit ::
+  (Bandit b hyper a loss) =>
+  (hyper' -> Either e1 hyper) ->
+  (loss' -> Either e2 loss) ->
+  Exportable b hyper' a loss'
 exportBandit hyperBuilder lossBuilder =
   Exportable
     { initExportable = \hyper' -> hyperBuilder hyper' & \case
