@@ -108,7 +108,7 @@ let
     };
   };
 
-in {
+in pkgs // {
 
   pythonPackages = hBanditPythonPackages;
 
