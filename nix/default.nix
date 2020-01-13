@@ -111,6 +111,8 @@ let
 
 in pkgs // rec {
 
+  inherit haskellPackages;
+
   pythonPackages = hBanditPythonPackages;
 
   hbandit = haskellPackages.hbandit;
