@@ -73,4 +73,4 @@ nix-build:
   tags:
     - kvm
     - nix
-  script: nix-build -A haskellPackages.hbandit --no-build-output
+  script: nix-build -A hbandit --no-build-output

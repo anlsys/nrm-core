@@ -208,13 +208,22 @@ in    λ(ghcPath : Text)
                     λ(config : types.Config)
                   →   prelude.defaults.Executable
                     ⫽ { main-is =
-                          "bin/Shared.hs"
+                          "Shared.hs"
+                      , other-modules = allmodules #
+                          [ "FFI.TypeUncurry"
+                          , "FFI.TypeUncurry.DataKinds"
+                          , "FFI.TypeUncurry.Msgpack"
+                          ]
                       , build-depends =
                             common.libdep
-                          # [ common.nobound "hbanditlib"
-                            , common.nobound "ffi"
+                          # [ deps.data-msgpack
+                            , deps.bytestring
+                            , deps.enclosed-exceptions
                             , deps.data-msgpack
+                            , deps.storable-endian
                             ]
+                      , hs-source-dirs =
+                          [ "bin", "src" ]
                       }
                     ⫽ common.copts
                       [ "-fPIC"

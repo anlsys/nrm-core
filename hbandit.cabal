@@ -95,7 +95,18 @@ library ffi
         storable-endian -any
 
 executable hbandit
-    main-is: bin/Shared.hs
+    main-is: Shared.hs
+    hs-source-dirs: bin src
+    other-modules:
+        HBandit.BwCR
+        HBandit.Class
+        HBandit.EpsGreedy
+        HBandit.Exp3
+        HBandit.Types
+        HBandit.Util
+        FFI.TypeUncurry
+        FFI.TypeUncurry.DataKinds
+        FFI.TypeUncurry.Msgpack
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
@@ -127,7 +138,9 @@ executable hbandit
         MonadRandom -any,
         lens -any,
         generic-lens -any,
-        hbanditlib -any,
-        ffi -any,
-        data-msgpack -any
+        data-msgpack -any,
+        bytestring -any,
+        enclosed-exceptions -any,
+        data-msgpack -any,
+        storable-endian -any
 
