@@ -22,14 +22,6 @@ let
       ghcide = (import (builtins.fetchTarball
         "https://github.com/hercules-ci/ghcide-nix/tarball/master")
         { }).ghcide-ghc865;
-      ormolu = let
-        source = pkgs.fetchFromGitHub {
-          owner = "tweag";
-          repo = "ormolu";
-          rev = "f83f6fd1dab5ccbbdf55ee1653b24595c1d653c2";
-          sha256 = "1hs7ayq5d15m9kxwfmdac3p2i3s6b0cn58cm4rrqc4d447yl426y";
-        };
-      in (import source { }).ormolu;
 
     in mkDerivation {
       pname = "dummy";
@@ -70,6 +62,15 @@ let
       chmod +rw $out/hbandit.cabal
     '';
 
+  ormolu = let
+    source = pkgs.fetchFromGitHub {
+      owner = "tweag";
+      repo = "ormolu";
+      rev = "f83f6fd1dab5ccbbdf55ee1653b24595c1d653c2";
+      sha256 = "1hs7ayq5d15m9kxwfmdac3p2i3s6b0cn58cm4rrqc4d447yl426y";
+    };
+  in (import source { }).ormolu;
+
   haskellPackages = pkgs.haskellPackages.override {
     overrides = self: super:
       with pkgs.haskell.lib; rec {
@@ -80,7 +81,7 @@ let
       };
   };
 
-  hBanditPythonPackages = pkgs.python37Packages.override {
+  pythonPackages = pkgs.python37Packages.override {
     overrides = self: super: rec {
       black = super.black.overridePythonAttrs (o: { doCheck = false; });
       SMPyBandits =
@@ -89,8 +90,8 @@ let
   };
 
   jupyterWithBatteries = pkgs.jupyter.override rec {
-    python3 =
-      hBanditPythonPackages.python.withPackages (ps: with ps; [ msgpack hBanditPythonPackages.SMPyBandits ipywidgets]);
+    python3 = pythonPackages.python.withPackages
+      (ps: with ps; [ msgpack pythonPackages.SMPyBandits ipywidgets ]);
     definitions = {
       # This is the Python kernel we have defined above.
       python3 = {
@@ -112,8 +113,7 @@ let
 in pkgs // rec {
 
   inherit haskellPackages;
-
-  pythonPackages = hBanditPythonPackages;
+  inherit pythonPackages;
 
   hbandit = haskellPackages.hbandit;
 
@@ -129,6 +129,7 @@ in pkgs // rec {
       })
       jupyterWithBatteries
       pythonPackages.black
+      ormolu
     ];
     shellHook = ''
       export SHELLSO=${
