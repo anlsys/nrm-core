@@ -33,26 +33,12 @@ foreign export ccall initExp3Export :: Ex
 
 foreign export ccall stepExp3Export :: Ex
 
-initExp3Export = exportIO initExp3
+exp3 :: Exportable (Exp3 Int) Int Int Double
+exp3 = exportBandit (\count -> Right $ Arms (nub $ fromList [1 .. count])) refine
 
-stepExp3Export = exportIO stepExp3
+initExp3Export = exportIO (initExportable exp3)
 
-initExp3 :: Int -> IO (Exp3 Int, Int)
-initExp3 hyper = do
-  g <- liftIO getStdGen
-  let (b, a, g') = HBandit.Class.init g (Arms (nub $ fromList [1 .. hyper]))
-  liftIO $ setStdGen g'
-  return (b, a)
-
-stepExp3 :: Exp3 Int -> Double -> IO (Exp3 Int, Int)
-stepExp3 b l =
-  refine l & \case
-    Left _ -> fail "loss not in [0,1]"
-    Right loss -> do
-      g <- liftIO getStdGen
-      let ((a, g'), b') = runState (HBandit.Class.step g loss) b
-      liftIO $ setStdGen g'
-      return (b', a)
+stepExp3Export = exportIO (stepExportable exp3)
 
 deriving instance MessagePack (Arms Int)
 
@@ -73,3 +59,31 @@ instance (MessagePack a) => MessagePack (NonEmpty a) where
       case nonEmpty y of
         Nothing -> fail "NonEmpty error in msgpack message"
         Just t -> return t
+
+----- typeclass based exporting functions
+
+data Exportable b hyper a loss
+  = Exportable
+      { initExportable :: hyper -> IO (b, a),
+        stepExportable :: b -> loss -> IO (b, a)
+      }
+
+exportBandit :: (Bandit b hyper a loss) => (hyper' -> Either e1 hyper) -> (loss' -> Either e2 loss) -> Exportable b hyper' a loss'
+exportBandit hyperBuilder lossBuilder =
+  Exportable
+    { initExportable = \hyper' -> hyperBuilder hyper' & \case
+        Left _ -> fail "hyperparameter refinement failed"
+        Right hyper -> do
+          g <- liftIO getStdGen
+          let (b, a, g') = HBandit.Class.init g hyper
+          liftIO $ setStdGen g'
+          return (b, a),
+      stepExportable = \b loss' ->
+        lossBuilder loss' & \case
+          Left _ -> fail "loss refinement failed"
+          Right loss -> do
+            g <- liftIO getStdGen
+            let ((a, g'), b') = runState (HBandit.Class.step g loss) b
+            liftIO $ setStdGen g'
+            return (b', a)
+    }
