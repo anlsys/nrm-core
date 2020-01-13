@@ -12,11 +12,10 @@ Dependencies: hackage packages, glpk
 ## Notebooks
 
 Provision using Nix (`nix-shell`) and run notebook
-[validation/benchmark.ipynb](validation/benchmark.ipynb):
-(Dependencies: Install dependencies + SMPyBandits)
+[validation/benchmark.ipynb](validation/benchmark.ipynb). Nix one-liner:
 
 ```
-nix-shell "https://xgitlab.cels.anl.gov/argo/hbandit/-/archive/master/hbandit-master.tar.gz" --pure -A validation --arg useGhcide false -run 'jupyter-notebook $NOTEBOOKS/benchmark.ipynb'
+nix-shell "https://xgitlab.cels.anl.gov/argo/hbandit/-/archive/master/hbandit-master.tar.gz" --pure -A validation --arg useGhcide false --run 'jupyter-notebook $NOTEBOOKS/benchmark.ipynb'
 ```
  
 
