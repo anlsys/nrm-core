@@ -15,3 +15,7 @@ Provision using Nix (`nix-shell`) and run notebook
 [validation/benchmark.ipynb](validation/benchmark.ipynb).
  
 Dependencies: Install dependencies + SMPyBandits
+
+## Doc
+
+[haddocks](https://hbandit.readthedocs.io/en/latest/_static/haddocks/)
