@@ -147,76 +147,77 @@ let common =
           nobound
       }
 
-in    λ ( ghcPath
-        : Text
-        )
+in    λ(ghcPath : Text)
     → λ(ghcNumericVersion : Text)
     →   prelude.defaults.Package
-    ⫽ { name =
-          "hbandit"
-      , version =
-          prelude.v "1.0.0"
-      , author =
-          "Name Lastname"
-      , build-type =
-          Some types.BuildType.Simple
-      , cabal-version =
-          prelude.v "2.0"
-      , category =
-          "algorithms"
-      , description =
-          "hbandit"
-      , sub-libraries =
-          [ { library =
-                  λ(config : types.Config)
-                →   prelude.defaults.Library
-                  ⫽ { build-depends =
-                        common.libdep
-                    , hs-source-dirs =
-                        [ "src" ]
-                    , exposed-modules =
-                        common.allmodules
-                    }
-                  ⫽ common.copts ([] : List Text)
-            , name =
-                "hbanditlib"
-            }
-          , { library =
-                  λ(config : types.Config)
-                →   prelude.defaults.Library
-                  ⫽ { build-depends =
-                        [ deps.protolude
-                        , deps.base
-                        , deps.bytestring
-                        , deps.enclosed-exceptions
-                        , deps.data-msgpack
-                        , deps.storable-endian
-                        ]
-                    , hs-source-dirs =
-                        [ "src" ]
-                    , exposed-modules =
-                        [ "FFI.TypeUncurry"
-                        , "FFI.TypeUncurry.DataKinds"
-                        , "FFI.TypeUncurry.Msgpack"
-                        ]
-                    }
-                  ⫽ common.copts ([] : List Text)
-            , name =
-                "ffi"
-            }
-          ]
-      , executables =
-          [ { executable =
-                  λ(config : types.Config)
-                →   prelude.defaults.Executable
-                  ⫽ { main-is =
-                        "bin/Shared.hs"
-                    , build-depends =
+      ⫽ { name =
+            "hbandit"
+        , version =
+            prelude.v "1.0.0"
+        , author =
+            "Name Lastname"
+        , build-type =
+            Some types.BuildType.Simple
+        , cabal-version =
+            prelude.v "2.0"
+        , category =
+            "algorithms"
+        , description =
+            "hbandit"
+        , sub-libraries =
+            [ { library =
+                    λ(config : types.Config)
+                  →   prelude.defaults.Library
+                    ⫽ { build-depends =
                           common.libdep
-                        # [ common.nobound "hbanditlib", common.nobound "ffi", deps.data-msgpack ]
-                    }
-                  ⫽ common.copts
-                    [ "-fPIC"
+                      , hs-source-dirs =
+                          [ "src" ]
+                      , exposed-modules =
+                          common.allmodules
+                      }
+                    ⫽ common.copts ([] : List Text)
+              , name =
+                  "hbanditlib"
+              }
+            , { library =
+                    λ(config : types.Config)
+                  →   prelude.defaults.Library
+                    ⫽ { build-depends =
+                          [ deps.protolude
+                          , deps.base
+                          , deps.bytestring
+                          , deps.enclosed-exceptions
+                          , deps.data-msgpack
+                          , deps.storable-endian
+                          ]
+                      , hs-source-dirs =
+                          [ "src" ]
+                      , exposed-modules =
+                          [ "FFI.TypeUncurry"
+                          , "FFI.TypeUncurry.DataKinds"
+                          , "FFI.TypeUncurry.Msgpack"
+                          ]
+                      }
+                    ⫽ common.copts ([] : List Text)
+              , name =
+                  "ffi"
+              }
+            ]
+        , executables =
+            [ { executable =
+                    λ(config : types.Config)
+                  →   prelude.defaults.Executable
+                    ⫽ { main-is =
+                          "bin/Shared.hs"
+                      , build-depends =
+                            common.libdep
+                          # [ common.nobound "hbanditlib"
+                            , common.nobound "ffi"
+                            , deps.data-msgpack
+                            ]
+                      }
+                    ⫽ common.copts
+                      [ "-fPIC"
                       , "-shared"
                       , "-no-hs-main"
                       , "-dynamic"
@@ -227,20 +228,20 @@ in    λ ( ghcPath
                         ++  ghcNumericVersion
                         ++  "/rts/"
                       ]
-            , name =
-                "hbandit"
-            }
-          ]
-      , extra-source-files =
-          [] : List Text
-      , license =
-          types.License.BSD3
-      , license-files =
-          [] : List Text
-      , maintainer =
-          "mail@server.ext"
-      , source-repos =
-          [ prelude.defaults.SourceRepo ]
-      , synopsis =
-          "hbandit"
-      }
+              , name =
+                  "hbandit"
+              }
+            ]
+        , extra-source-files =
+            [] : List Text
+        , license =
+            types.License.BSD3
+        , license-files =
+            [] : List Text
+        , maintainer =
+            "mail@server.ext"
+        , source-repos =
+            [ prelude.defaults.SourceRepo ]
+        , synopsis =
+            "hbandit"
+        }
