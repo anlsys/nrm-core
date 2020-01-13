@@ -61,7 +61,7 @@ dhall-format:
         for F in $(fd -e dhall); do
           dhall format < $F | cmp -s $F -
           if [ $? -ne 0 ]; then
-            echo "[!] $F does not pass clang-format format check." >&2
+            echo "[!] $F does not pass dhall-format format check." >&2
             RETURN=1
           fi
         done
