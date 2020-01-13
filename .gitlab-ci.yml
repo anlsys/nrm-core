@@ -1,6 +1,7 @@
 stages:
   - source
   - lib
+  - docs
 
 ormolu:
   stage: source
