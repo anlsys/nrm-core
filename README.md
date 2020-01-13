@@ -16,7 +16,7 @@ Provision using Nix (`nix-shell`) and run notebook
 (Dependencies: Install dependencies + SMPyBandits)
 
 ```
-nix-shell "file:///home/fre/workspace/hbandit.tgz" --pure -A validation --arg useGhcide false -run 'jupyter-notebook $NOTEBOOKS/benchmark.ipynb'
+nix-shell "https://xgitlab.cels.anl.gov/argo/hbandit/-/archive/master/hbandit-master.tar.gz" --pure -A validation --arg useGhcide false -run 'jupyter-notebook $NOTEBOOKS/benchmark.ipynb'
 ```
  
 
