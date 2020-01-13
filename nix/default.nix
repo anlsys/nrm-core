@@ -120,7 +120,7 @@ let
     };
   };
 
-in pkgs // rec {
+in rec {
 
   inherit haskellPackages;
   inherit pythonPackages;
