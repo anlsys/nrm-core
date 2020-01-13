@@ -4,11 +4,11 @@
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
 --
--- This module implements the fixed rate \(\Epsilon\)-Greedy MAB algorithm.
+-- This module implements the fixed rate \(\epsilon\)-Greedy MAB algorithm.
 --
--- The E\(\Epsilon\)-Greedy algorithm selects a random action with
--- probability \(\Epsilon\), or select the action with best average
--- with probability \(1-\Epsilon\).
+-- The E\(\epsilon\)-Greedy algorithm selects a random action with
+-- probability \(\epsilon\), or select the action with best average
+-- with probability \(1-\epsilon\).
 module HBandit.EpsGreedy
   ( EpsGreedy (..),
     Weight (..),
@@ -67,7 +67,7 @@ data EpsGreedyHyper a
         arms :: Arms a
       }
 
--- | The fixed rate Epsilon-Greedy MAB algorithm.
+-- | The fixed rate \(\epsilon\)-Greedy MAB algorithm.
 -- Offers no interesting guarantees, works well in practice.
 instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
 
@@ -138,8 +138,7 @@ pickAction ExploreExploitGreedy {..} =
     w2tuple :: Weight b -> (Double, b)
     w2tuple (Weight avgloss _hits action) = (avgloss, action)
 
--- | This is a rudimentary online mean accumulator. Its numerical properties
--- are probably bad, but we don't need much more here.
+-- | rudimentary online mean accumulator.
 updateAvgLoss :: Double -> Weight a -> Weight a
 updateAvgLoss l (Weight avgloss hits action) =
   Weight

@@ -21,7 +21,7 @@ import Protolude
 import Refined
 import Refined.Unsafe
 
--- | type alias for a $[0,1]$ refined value.
+-- | Type alias for a \(\mathbb{L}=[0,1]\) refined value.
 type ZeroOne l = (Refined (FromTo 0 1) l)
 
 -- | 0
@@ -32,11 +32,12 @@ zero = unsafeRefine 0
 one :: (Ord a, Num a) => ZeroOne a
 one = unsafeRefine 1
 
--- | normalizedSum does what you'd expect.
+-- | @normalizedSum@ sums the `fst` from the tuple list using weights
+-- in the`snd`. The result is normalized against the list of `snd`s.
 normalizedSum :: (Ord a, Num a) => [(a, ZeroOne a)] -> ZeroOne a
 normalizedSum l = unsafeRefine (sum $ l <&> \(w, v) -> w * unrefine v)
 
--- | @normalize x xMax@ normalizes @x@ using @xMax@. Returns @Nothing@
+-- | @normalize x xm@ normalizes @x@ using @xm@. Returns @Nothing@
 -- in case the resulting value is not contained in $[0,1]$ .
 normalize :: Double -> Double -> Maybe (ZeroOne Double)
 normalize v m = refine (v / m) & \case
