@@ -116,7 +116,7 @@ let
 
 in rec {
 
-  inherit (pkgs) fd mkShell;
+  inherit (pkgs) fd mkShell glibcLocales;
   inherit haskellPackages;
   inherit pythonPackages;
   inherit ormolu;
