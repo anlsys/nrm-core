@@ -27,7 +27,17 @@ let
       pname = "dummy";
       version = "";
       src = "";
-      libraryHaskellDepends = [ cabal-install dhall ormolu hlint ghcide ghcid ];
+      libraryHaskellDepends = [
+        cabal-install
+        dhall
+        ormolu
+        hlint
+        ghcide
+        ghcid
+        shake
+        Glob
+        typed-process
+      ];
       description = "";
       license = stdenv.lib.licenses.mit;
     };

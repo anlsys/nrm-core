@@ -9,3 +9,5 @@ result*
 dhall-to-cabal
 .ghc*
 dist*
+.build
+.shake

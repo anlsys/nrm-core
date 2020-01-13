@@ -74,3 +74,18 @@ nix-build:
     - kvm
     - nix
   script: nix-build -A hbandit --no-build-output
+
+
+check-vendored-documentation:
+  stage: docs
+  tags:
+    - kvm
+    - nix
+  script:
+    - |
+      nix-shell dev/default.nix -A hack --run bash <<< '
+        echo "check: is vendored documentation up to date?"
+        cp -r doc/ doc2
+        ./shake doc
+        diff -r doc doc2
+        '
