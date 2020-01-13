@@ -209,11 +209,12 @@ in    λ(ghcPath : Text)
                   →   prelude.defaults.Executable
                     ⫽ { main-is =
                           "Shared.hs"
-                      , other-modules = allmodules #
-                          [ "FFI.TypeUncurry"
-                          , "FFI.TypeUncurry.DataKinds"
-                          , "FFI.TypeUncurry.Msgpack"
-                          ]
+                      , other-modules =
+                            allmodules
+                          # [ "FFI.TypeUncurry"
+                            , "FFI.TypeUncurry.DataKinds"
+                            , "FFI.TypeUncurry.Msgpack"
+                            ]
                       , build-depends =
                             common.libdep
                           # [ deps.data-msgpack
