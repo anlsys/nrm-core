@@ -155,7 +155,7 @@ in rec {
   validation = pkgs.mkShell {
     name = "validation";
     buildInputs = [ hbandit jupyterWithBatteries ];
-    SHELLSO="${hbandit}/bin/hbandit";
+    SHELLSO = "${hbandit}/bin/hbandit";
     NOTEBOOKS = ../validation;
   };
 

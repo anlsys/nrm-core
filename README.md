@@ -9,12 +9,16 @@ are provided in the repository.
 
 Dependencies: hackage packages, glpk
 
-## Tests
+## Notebooks
 
 Provision using Nix (`nix-shell`) and run notebook
-[validation/benchmark.ipynb](validation/benchmark.ipynb).
+[validation/benchmark.ipynb](validation/benchmark.ipynb):
+(Dependencies: Install dependencies + SMPyBandits)
+
+```
+nix-shell "file:///home/fre/workspace/hbandit.tgz" --pure -A validation --arg useGhcide false -run 'jupyter-notebook $NOTEBOOKS/benchmark.ipynb'
+```
  
-Dependencies: Install dependencies + SMPyBandits
 
 ## Doc
 
