@@ -162,6 +162,7 @@ check-vendored-documentation:
         echo "check: is vendored documentation up to date?"
         cp -r doc/ doc2
         ./shake.sh doc
+        ./shake.sh build
         ./shake.sh notebooks
         diff -r doc doc2
         '
