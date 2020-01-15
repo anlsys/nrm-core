@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+nix-shell --run '
+  rm -rf doc/hbandit/haddocks
+  cp -r $(cabal new-haddock | tail -1 | xargs dirname) doc/hbandit/haddocks
+'
+nix-shell --pure -E '
+  let pkgs = (import ./.);
+  in pkgs.mkShell {
+    buildInputs = [pkgs.fd pkgs.ormolu];
+    shellHook =
+      "export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive \n" +
+      "export LANG=en_US.UTF-8";
+  }
+' --run bash <<< '
+  for F in $(fd  -e hs); do
+    ormolu -o -XTypeApplications -m inplace $F
+  done
+'
+nix-shell --pure -p '(import ./.).fd' '(import ./.).haskellPackages.dhall' --run bash <<< '
+  for F in $(fd -e dhall); do
+    dhall format --inplace $F
+  done
+'
