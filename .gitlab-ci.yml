@@ -90,3 +90,16 @@ check-vendored-documentation:
         ./shake doc
         diff -r doc doc2
         '
+
+readthedocs:
+  stage: docs
+  when: on_success
+  only:
+    - master
+    - staging
+  tags:
+    - kvm
+    - nix
+  script:
+    - echo "token=$RTD_TOKEN"
+    - nix run nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hbandit/109499/
