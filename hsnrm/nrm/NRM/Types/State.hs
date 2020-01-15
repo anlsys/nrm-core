@@ -66,7 +66,7 @@ data NRMState
         nodeosRuntime :: Maybe NodeosRuntime,
         controller :: Maybe Controller
       }
-  deriving (Show, Generic, Data, MessagePack, ToJSON, FromJSON)
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 instance HasLensMap NRMState ActuatorKey Actuator where
   lenses s =

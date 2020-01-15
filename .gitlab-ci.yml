@@ -1,3 +1,6 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 stages:
   - source
   - lib
@@ -25,8 +28,7 @@ ormolu:
         }
       ' --run bash <<< '
         RETURN=0
-        cd hsnrm
-        for F in $(fd -e hs); do
+        for F in $(fd -E hsnrm/hbandit -e hs); do
           ormolu -o -XTypeApplications -m check $F
           if [ $? -ne 0 ]; then
             echo "[!] $F does not pass ormolu haskell format check." >&2
@@ -42,7 +44,11 @@ hlint:
     - kvm
     - nix
   script:
-    - nix-shell --pure -p '(import ./.).hlint' --run bash <<< 'hlint hsnrm/ --hint=./.hlint.yaml'
+    - |
+      nix-shell --pure -p '(import ./.).hlint' --run bash <<< '
+        hlint hsnrm/nrm/ --hint=./.hlint.yaml
+        hlint hsnrm/bin/ --hint=./.hlint.yaml
+      '
 
 black:
   stage: source
@@ -65,8 +71,7 @@ clang-format:
     - |
       nix-shell --pure -p '(import ./.).fd' '(import ./.).clang-tools' --run bash <<< '
         RETURN=0
-        cd libnrm
-        for F in $(fd -e c); do
+        for F in $(fd -E hsnrm/hbandit -e c); do
           clang-format < $F | cmp -s $F -
           if [ $? -ne 0 ]; then
             echo "[!] $F does not pass clang-format format check." >&2
@@ -76,7 +81,24 @@ clang-format:
         if [ $RETURN -ne 0 ]; then exit 1; fi
       '
 
-
+dhall-format:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script:
+    - |
+      nix-shell --pure -p '(import ./.).fd' '(import ./.).haskellPackages.dhall' --run bash <<< '
+        RETURN=0
+        for F in $(fd -E hsnrm/hbandit -e dhall); do
+          dhall format < $F | cmp -s $F -
+          if [ $? -ne 0 ]; then
+            echo "[!] $F does not pass clang-format format check." >&2
+            RETURN=1
+          fi
+        done
+        if [ $RETURN -ne 0 ]; then exit 1; fi
+      '
 
 nix-build-nrm.so:
   stage: lib
@@ -110,13 +132,13 @@ check-vendored-documentation:
     - nix
   script:
     - |
-      nix-shell dev/default.nix -A hsnrm-hack --run bash <<< '
+      nix-shell dev/default.nix -A hack --run bash <<< '
         echo "check: is vendored documentation up to date?"
-        cd hsnrm
-        cabal v2-haddock nrm.so --haddock-hyperlink-source --builddir=../doc_tmp
-        diff -r ../doc_tmp/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/doc/html/hsnrm/nrm.so ../doc/nrm.so/haddocks
-        rm -rf ../doc_tmp
-      '
+        cp -r doc/ doc2
+        ./shake doc
+        ./shake notebooks
+        diff -r doc doc2
+        '
 
 nix-build-resources:
   stage: codegen
@@ -229,6 +251,7 @@ readthedocs:
   when: on_success
   only:
     - master
+    - staging
   tags:
     - kvm
     - nix

@@ -9,7 +9,14 @@ module NRM.Optparse.Daemon
 where
 
 import qualified Data.ByteString as B (getContents)
+import Data.Default
+import qualified Data.Text.Prettyprint.Doc as Pretty
+import qualified Data.Text.Prettyprint.Doc.Render.Text as Pretty
 import Dhall
+import qualified Dhall.Core as Dhall
+import qualified Dhall.Lint as Lint
+import qualified Dhall.Src as Dhall
+import qualified Dhall.TypeCheck as Dhall
 import NRM.Types.Configuration
 import qualified NRM.Types.Configuration as C
 import qualified NRM.Types.Configuration.Yaml as Y
@@ -20,9 +27,16 @@ import System.FilePath.Posix
 import Text.Editor
 import qualified Prelude (print)
 
+prettyOpts :: Pretty.LayoutOptions
+prettyOpts =
+  Pretty.defaultLayoutOptions
+    { Pretty.layoutPageWidth = Pretty.AvailablePerLine 80 1.0
+    }
+
 data MainCfg
   = MainCfg
-      { inputfile :: Maybe Text,
+      { useStdin :: Bool,
+        inputfile :: Maybe Text,
         stdinType :: SourceType,
         edit :: Bool
       }
@@ -30,7 +44,11 @@ data MainCfg
 commonParser :: Parser MainCfg
 commonParser =
   MainCfg
-    <$> optional
+    <$> flag
+      False
+      True
+      (long "stdin" <> short 'i' <> help "Read configuration on stdin.")
+    <*> optional
       ( strArgument
           ( metavar "CONFIG"
               <> help
@@ -55,32 +73,63 @@ opts = (load <$> commonParser) <**> helper
 data SourceType = Dhall | Yaml
   deriving (Eq)
 
-data FinallySource = NoExt Text | FinallyArg SourceType Text | FinallyStdin SourceType
+data FinallySource = UseDefault | NoExt | FinallyFile SourceType Text | FinallyStdin SourceType
 
-ext :: SourceType -> Maybe Text -> FinallySource
-ext _ (Just ct)
-  | xt `elem` [".dh", ".dhall"] = FinallyArg Dhall ct
-  | xt `elem` [".yml", ".yaml"] = FinallyArg Yaml ct
-  | otherwise = NoExt ct
+ext :: Bool -> SourceType -> Maybe Text -> FinallySource
+ext _ _ (Just fn)
+  | xt `elem` [".dh", ".dhall"] = FinallyFile Dhall fn
+  | xt `elem` [".yml", ".yaml"] = FinallyFile Yaml fn
+  | otherwise = NoExt
   where
-    xt = takeExtension $ toS ct
-ext st Nothing = FinallyStdin st
+    xt = takeExtension $ toS fn
+ext useStdin st Nothing = if useStdin then FinallyStdin st else UseDefault
 
 load :: MainCfg -> IO Cfg
 load MainCfg {..} =
-  (if edit then editing else return) =<< case ext stdinType inputfile of
-    (FinallyArg Dhall content) ->
-      detailed $ C.inputCfg (toS content)
-    (FinallyArg Yaml filename) ->
+  (if edit then editing else return) =<< case ext useStdin stdinType inputfile of
+    (FinallyFile Dhall filename) ->
+      detailed $
+        C.inputCfg
+          =<< toS
+          <$> makeAbsolute (toS filename)
+    (FinallyFile Yaml filename) ->
       Y.decodeCfgFile =<< toS <$> makeAbsolute (toS filename)
     (FinallyStdin Yaml) ->
       B.getContents <&> Y.decodeCfg >>= \case
         Left e -> Prelude.print e >> die "yaml parsing exception."
-        Right cfg -> return cfg
-    (FinallyStdin Dhall) -> B.getContents >>= C.inputCfg . toS
-    NoExt content -> do
-      putText "couldn't figure out extension for input file. defaulting to dhall normalization"
-      detailed $ C.inputCfg (toS content)
+        Right manifest -> return manifest
+    (FinallyStdin Dhall) ->
+      B.getContents >>= C.inputCfg
+        . ( \s ->
+              Pretty.renderStrict
+                ( Pretty.layoutSmart
+                    prettyOpts
+                    ( Pretty.pretty
+                        ( Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) (def :: Cfg) ::
+                            Dhall.Expr Dhall.Src Dhall.Import
+                        )
+                    )
+                )
+                <> " // "
+                <> toS s
+          )
+    UseDefault -> return def
+    NoExt ->
+      case inputfile of
+        Nothing -> return def
+        Just s ->
+          C.inputCfg $
+            Pretty.renderStrict
+              ( Pretty.layoutSmart
+                  prettyOpts
+                  ( Pretty.pretty
+                      ( Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) (def :: Cfg) ::
+                          Dhall.Expr Dhall.Src Dhall.Import
+                      )
+                  )
+              )
+              <> " // "
+              <> toS s
 
 editing :: Cfg -> IO Cfg
 editing c =

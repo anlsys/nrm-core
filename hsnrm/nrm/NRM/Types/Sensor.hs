@@ -8,12 +8,11 @@
 -- Maintainer  : fre@freux.fr
 module NRM.Types.Sensor
   ( -- * Internal representation
-    Sensor (..),
     Tag (..),
-    Direction (..),
-    OptimizationSemantics (..),
     ActiveSensor (..),
     PassiveSensor (..),
+    SensorMeta (..),
+    HasMeta (..),
 
     -- * Keys for LensMap
     ActiveSensorKey (..),
@@ -29,49 +28,53 @@ import qualified CPD.Core as CPD
 import NRM.Classes.Sensors
 import NRM.Types.DownstreamCmdID
 import NRM.Types.DownstreamThreadID
+import NRM.Types.MemBuffer
 import NRM.Types.Topology.PackageID
 import qualified NRM.Types.Units as U
 import Numeric.Interval
 import Protolude
 
-data Direction = Minimize | Maximize
-  deriving (Eq)
-
--- | This datatype will evolve  and be used as leaf in a configuration
--- language.
-data OptimizationSemantics
+-- | Sensor tags - used to build objectives and constraints.
+data Tag
   = Power
   | Rapl
   | DownstreamThreadSignal
   | DownstreamCmdSignal
+  | Minimize
+  | Maximize
   deriving (Eq, Show)
-
-data Tag
-  = Tag
-      { standardDirection :: Direction,
-        preciseSemantics :: [OptimizationSemantics]
-      }
-
-data Sensor
-  = Passive PassiveSensor
-  | Active ActiveSensor
 
 data PassiveSensor
   = PassiveSensor
       { perform :: IO (Maybe Double),
-        passiveTags :: Tag,
         frequency :: U.Frequency,
-        passiveRange :: Interval Double,
-        last :: Maybe (U.Time, Double)
+        last :: Maybe (U.Time, Double),
+        passiveMeta :: SensorMeta
       }
   deriving (Generic)
 
 data ActiveSensor
   = ActiveSensor
       { maxFrequency :: U.Frequency,
-        activeTags :: Tag,
         process :: Double -> Double,
-        activeRange :: Interval Double
+        activeMeta :: SensorMeta
+      }
+  deriving (Generic)
+
+class HasMeta a where
+  meta :: a -> SensorMeta
+
+instance HasMeta ActiveSensor where
+  meta = activeMeta
+
+instance HasMeta PassiveSensor where
+  meta = passiveMeta
+
+data SensorMeta
+  = SensorMeta
+      { tags :: [Tag],
+        range :: Interval Double,
+        lastReferenceMeasurements :: MemBuffer Double
       }
   deriving (Generic)
 
@@ -94,7 +97,7 @@ instance ToCPDSensor ActiveSensorKey ActiveSensor where
   toCPDSensor (id, ActiveSensor {..}) =
     ( toS id,
       CPD.Sensor
-        activeRange
+        (range activeMeta)
         maxFrequency
     )
 
@@ -102,6 +105,6 @@ instance ToCPDSensor PassiveSensorKey PassiveSensor where
   toCPDSensor (id, PassiveSensor {..}) =
     ( toS id,
       CPD.Sensor
-        passiveRange
+        (range passiveMeta)
         frequency
     )

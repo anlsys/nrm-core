@@ -10,7 +10,6 @@ module CPD.Utils
     validateMeasurement,
     MeasurementValidation (..),
     ActionValidation (..),
-    combine,
     evalNum,
     eval,
     evalRange,
@@ -38,12 +37,6 @@ validateAction :: Admissible -> Action -> ActionValidation
 validateAction (Admissible ds) (Action _actuator d)
   | d `elem` ds = ActionOk
   | otherwise = InvalidAction
-
--- | Combines problems by adding sensor lists and actuator lists
-combine :: Problem -> Problem -> Maybe Problem
-combine (Problem a b goal) (Problem c d goal')
-  | goal == goal' = Just $ Problem (a <> c) (b <> d) goal
-  | otherwise = Nothing
 
 -- | Standard object evaluation on Num instances.
 evalNum ::

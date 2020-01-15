@@ -61,11 +61,70 @@
                         {
                             "required": [
                                 "sensors",
-                                "actuators"
+                                "actuators",
+                                "objectives",
+                                "constraints"
                             ],
                             "type": "object",
                             "properties": {
-                                "objective": {},
+                                "objectives": {
+                                    "uniqueItems": false,
+                                    "items": {
+                                        "items": [
+                                            {
+                                                "type": "number"
+                                            },
+                                            {}
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
+                                "constraints": {
+                                    "uniqueItems": false,
+                                    "items": {
+                                        "items": [
+                                            {
+                                                "oneOf": [
+                                                    {
+                                                        "required": [
+                                                            "i"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "i": {
+                                                                "items": [
+                                                                    {
+                                                                        "type": "number"
+                                                                    },
+                                                                    {
+                                                                        "type": "number"
+                                                                    }
+                                                                ],
+                                                                "type": "array"
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "required": [
+                                                            "empty"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "empty": {
+                                                                "type": "object",
+                                                                "properties": {}
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {}
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
                                 "sensors": {
                                     "additionalProperties": {
                                         "required": [

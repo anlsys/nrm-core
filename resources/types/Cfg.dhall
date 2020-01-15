@@ -41,5 +41,18 @@
 , hwmonCfg :
     { hwmonEnabled : Bool, hwmonPath : Text }
 , controlCfg :
-    Optional { minimumControlInterval : { fromuS : Double } }
+    Optional
+    { minimumControlInterval :
+        { fromuS : Double }
+    , learnCfg :
+        < LagrangeConstraints :
+            { _1 : { _1 : Double } }
+        | KnapsackConstraints :
+            { _1 : { _1 : Double } }
+        >
+    , speedThreshold :
+        Double
+    , referenceMeasurementRoundInterval :
+        Integer
+    }
 }

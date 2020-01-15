@@ -25,7 +25,8 @@ system-installed dependency, regardless of whether Argo NodeOS or Singularity is
 
 The :doc:`quickstart <quickstart>` guide describes the use of `nrm` and `nrmd`.
 Please refer to the :doc:`libnrm <libnrm>` guide for application
-instrumentation. See the `haddock`_ documentation for the shared library API.
+instrumentation. See the `haddock`_ documentation for the shared library API,
+and the `notebooks`_ for python upstream client use.
 
 .. toctree::
    :maxdepth: 2
@@ -34,6 +35,7 @@ instrumentation. See the `haddock`_ documentation for the shared library API.
    quickstart
    libnrm
    nrm.so
+   notebooks
 
 Indices and tables
 ==================
@@ -42,3 +44,4 @@ Indices and tables
 
 .. _website: https://www.mcs.anl.gov/research/projects/argo/overview/nrm/
 .. _haddock: http://hnrm.readthedocs.io/en/latest/_static/haddocks
+.. _notebooks: http://hnrm.readthedocs.io/en/latest/_static/notebooks

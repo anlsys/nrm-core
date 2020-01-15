@@ -303,7 +303,8 @@
                                                                             {
                                                                                 "required": [
                                                                                     "maxValue",
-                                                                                    "ratelimit"
+                                                                                    "ratelimit",
+                                                                                    "dtLastReferenceMeasurements"
                                                                                 ],
                                                                                 "type": "object",
                                                                                 "properties": {
@@ -312,6 +313,13 @@
                                                                                     },
                                                                                     "maxValue": {
                                                                                         "type": "number"
+                                                                                    },
+                                                                                    "dtLastReferenceMeasurements": {
+                                                                                        "uniqueItems": false,
+                                                                                        "items": {
+                                                                                            "type": "number"
+                                                                                        },
+                                                                                        "type": "array"
                                                                                     }
                                                                                 }
                                                                             }
@@ -614,7 +622,8 @@
                                                                             {
                                                                                 "required": [
                                                                                     "maxValue",
-                                                                                    "ratelimit"
+                                                                                    "ratelimit",
+                                                                                    "dtLastReferenceMeasurements"
                                                                                 ],
                                                                                 "type": "object",
                                                                                 "properties": {
@@ -623,6 +632,13 @@
                                                                                     },
                                                                                     "maxValue": {
                                                                                         "type": "number"
+                                                                                    },
+                                                                                    "dtLastReferenceMeasurements": {
+                                                                                        "uniqueItems": false,
+                                                                                        "items": {
+                                                                                            "type": "number"
+                                                                                        },
+                                                                                        "type": "array"
                                                                                     }
                                                                                 }
                                                                             }
@@ -658,11 +674,70 @@
                 "repCPD": {
                     "required": [
                         "sensors",
-                        "actuators"
+                        "actuators",
+                        "objectives",
+                        "constraints"
                     ],
                     "type": "object",
                     "properties": {
-                        "objective": {},
+                        "objectives": {
+                            "uniqueItems": false,
+                            "items": {
+                                "items": [
+                                    {
+                                        "type": "number"
+                                    },
+                                    {}
+                                ],
+                                "type": "array"
+                            },
+                            "type": "array"
+                        },
+                        "constraints": {
+                            "uniqueItems": false,
+                            "items": {
+                                "items": [
+                                    {
+                                        "oneOf": [
+                                            {
+                                                "required": [
+                                                    "i"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "i": {
+                                                        "items": [
+                                                            {
+                                                                "type": "number"
+                                                            },
+                                                            {
+                                                                "type": "number"
+                                                            }
+                                                        ],
+                                                        "type": "array"
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "required": [
+                                                    "empty"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "empty": {
+                                                        "type": "object",
+                                                        "properties": {}
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {}
+                                ],
+                                "type": "array"
+                            },
+                            "type": "array"
+                        },
                         "sensors": {
                             "additionalProperties": {
                                 "required": [
@@ -1097,10 +1172,45 @@
                                 },
                                 "controlCfg": {
                                     "required": [
-                                        "minimumControlInterval"
+                                        "minimumControlInterval",
+                                        "learnCfg",
+                                        "speedThreshold",
+                                        "referenceMeasurementRoundInterval"
                                     ],
                                     "type": "object",
                                     "properties": {
+                                        "referenceMeasurementRoundInterval": {
+                                            "type": "number"
+                                        },
+                                        "learnCfg": {
+                                            "oneOf": [
+                                                {
+                                                    "required": [
+                                                        "lagrangeConstraints"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "lagrangeConstraints": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "required": [
+                                                        "knapsackConstraints"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "knapsackConstraints": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "speedThreshold": {
+                                            "type": "number"
+                                        },
                                         "minimumControlInterval": {
                                             "type": "number"
                                         }

@@ -14,7 +14,7 @@ libnrm-instrumented applications can also be installed using `nix-env -f.  -iA s
 
 ### Development
 
-from a local clone:
+from a local clone, *with submodules initialized and updated*:
 
 ##### read internal haddock documentation: 
 
@@ -53,3 +53,21 @@ your latest local commit.
 ##### install NRM to a (Nix-enabled) remote system user environment:
 
 `./deploy nrm user@host`
+
+##### jupyter notebooks:
+
+Tutorial Notebooks:
+* Unexecuted: [`notebooks/raw`](notebooks/raw)
+* Executed: [`notebooks/executed`](notebooks/executed)
+
+Exploratory Notebooks:
+* Unexecuted: [`notebooks/exploratory`](notebooks/exploratory)
+
+* Running the notebooks in development mode:
+
+```
+./shake build
+./shake client
+./shake pyclient
+nix-shell --run "jupyter-notebook <notebook file>"
+```

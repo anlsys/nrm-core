@@ -3,57 +3,71 @@
 -- Copyright   : (c) UChicago Argonne, 2019
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
+--
+-- This module is responsible for runtime generation of the concrete CPD
+-- description to be optimized by the control loop.
 module NRM.CPD
   ( toCPD,
+    throughputConstrained,
+    addAll,
+    maybeMinus,
   )
 where
 
 import CPD.Core
-import Control.Lens
+import Control.Lens hiding ((...))
 import qualified Data.Map as DM
 import LensMap.Core
 import NRM.Actuators
 import NRM.Sensors
+import NRM.Types.Configuration
 import NRM.Types.Sensor as S
 import NRM.Types.State
+import Numeric.Interval hiding (elem)
 import Protolude
+import Refined (unrefine)
 
-toCPD :: NRMState -> Problem
-toCPD = do
+toCPD :: ControlCfg -> NRMState -> Problem
+toCPD cfg = do
   sensors <- cpdSensors
   actuators <- cpdActuators
-  objective <- defaultObjective
+  (objectives, constraints) <- throughputConstrained cfg
   return $ Problem {..}
 
-defaultObjective :: NRMState -> Objective
-defaultObjective st = addAll toMinimize `maybeMinus` addAll toMaximize
+throughputConstrained ::
+  ControlCfg ->
+  NRMState ->
+  ( [(Double, OExpr)],
+    [(Interval Double, OExpr)]
+  )
+throughputConstrained cfg st =
+  ( DM.toList toMinimize <&> \(i, _) -> (1, sID i),
+    DM.toList constrained <&> \(i, _) -> (0 ... unrefine (speedThreshold cfg), sID i)
+  )
   where
-    toMinimize :: [SensorID]
-    toMinimize = DM.keys (DM.filterWithKey (\_ v -> v == Minimize) directionMap)
-    toMaximize :: [SensorID]
-    toMaximize = DM.keys (DM.filterWithKey (\_ v -> v == Maximize) directionMap)
-    directionMap :: Map SensorID S.Direction
-    directionMap =
+    toMinimize :: Map SensorID SensorMeta
+    toMinimize = DM.filterWithKey (\_ m -> Power `elem` tags m) allSensorMeta
+    constrained :: Map SensorID SensorMeta
+    constrained = DM.filterWithKey (\_ m -> DownstreamCmdSignal `elem` tags m) allSensorMeta
+    allSensorMeta :: Map SensorID S.SensorMeta
+    allSensorMeta =
       DM.fromList
-        ( (bimap toS (\(ScopedLens l) -> (S.standardDirection . activeTags) (st ^. l)) <$> lA)
-            <> (bimap toS (\(ScopedLens l) -> (S.standardDirection . passiveTags) (st ^. l)) <$> lP)
+        ( (bimap toS (\(ScopedLens l) -> meta (st ^. l)) <$> lA)
+            <> (bimap toS (\(ScopedLens l) -> meta (st ^. l)) <$> lP)
         )
     lA = DM.toList (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor)
-    lP =
-      DM.toList (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor)
+    lP = DM.toList (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor)
 
 -- | produces a sum objective normalized by #sensors
-addAll :: [SensorID] -> Objective
-addAll [] = Nothing
-addAll (s : ss) =
-  Just $
-    sumExpr \/ (scalar . fromIntegral $ length ss + 1)
+addAll :: NonEmpty SensorID -> OExpr
+addAll (s :| ss) =
+  sumExpr \/ (scalar . fromIntegral $ length ss + 1)
   where
     sumExpr = foldl (\+) (sID s) (sID <$> ss)
 
 -- | Subtract two objectives, defaulting to either of them
 -- if one is absent.
-maybeMinus :: Objective -> Objective -> Objective
+maybeMinus :: Maybe OExpr -> Maybe OExpr -> Maybe OExpr
 maybeMinus (Just x) (Just y) = Just $ x \- y
 maybeMinus x Nothing = x
 maybeMinus Nothing (Just x) = Just $ scalar 0 \- x

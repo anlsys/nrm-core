@@ -20,6 +20,7 @@ import Protolude
 data Actuator
   = Actuator
       { actions :: [Double],
+        referenceAction :: Double,
         go :: Double -> IO ()
       }
 
