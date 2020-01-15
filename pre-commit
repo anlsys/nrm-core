@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 
-nix-shell --run '
-  rm -rf doc/hbandit/haddocks
-  cp -r $(cabal new-haddock | tail -1 | xargs dirname) doc/hbandit/haddocks
-'
+./shake doc
 nix-shell --pure -E '
   let pkgs = (import ./.);
   in pkgs.mkShell {

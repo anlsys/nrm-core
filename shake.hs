@@ -9,7 +9,7 @@ License     : MIT
 Maintainer  : fre@freux.fr
 -}
 import Control.Monad
-import Data.Text (dropEnd, strip, lines)
+import Data.Text (dropEnd, splitOn, strip, lines)
 import Development.Shake hiding (getEnv)
 import Development.Shake.FilePath
 import Options.Applicative as OA
@@ -147,6 +147,7 @@ runshake as =
               ]
           )
       putText $ toS out
-      let path = Prelude.last $ Data.Text.lines $ toS out
-      liftIO (runProcess_ . shell $ "cp -r " <> dropFileName (toS path) <> "/* doc/hbandit/haddocks")
+      let path = Prelude.last $ splitOn " " (Prelude.last $ Data.Text.lines $ toS out)
+      liftIO (runProcess_ . shell $ "rm -rf doc/hbandit/haddocks")
+      liftIO (runProcess_ . shell $ "cp -r " <> (dropFileName $ toS path) <> " doc/hbandit/haddocks")
       putText "documentation generated in doc/hbandit/haddocks"
