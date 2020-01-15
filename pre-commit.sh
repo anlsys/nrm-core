@@ -3,6 +3,7 @@
 
 ./shake.sh doc
 ./shake.sh codegen
+./shake.sh build
 ./shake.sh notebooks
 
 nix-shell --pure -E '
