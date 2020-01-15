@@ -1,6 +1,5 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE PackageImports #-}
 
 {-|
 Module      : shake.hs
@@ -10,8 +9,7 @@ License     : MIT
 Maintainer  : fre@freux.fr
 -}
 import Control.Monad
-import Data.Text (dropEnd, strip)
-import Data.Text (lines)
+import Data.Text (dropEnd, strip, lines)
 import Development.Shake hiding (getEnv)
 import Development.Shake.FilePath
 import Options.Applicative as OA
@@ -150,5 +148,5 @@ runshake as =
           )
       putText $ toS out
       let path = Prelude.last $ Data.Text.lines $ toS out
-      liftIO (runProcess_ . shell $ "cp -r " <> (dropFileName $ toS path) <> "/* doc/hbandit/haddocks")
-      putText $ "documentation generated in doc/hbandit/haddocks"
+      liftIO (runProcess_ . shell $ "cp -r " <> dropFileName (toS path) <> "/* doc/hbandit/haddocks")
+      putText "documentation generated in doc/hbandit/haddocks"
