@@ -155,7 +155,7 @@ in pkgs // rec {
       nrmPythonPackages.black
       nrmPythonPackages.mypy
       nrmPythonPackages.pytype
-      nrmPythonPackages.sphinx
+      #nrmPythonPackages.sphinx
       nrmPythonPackages.nbformat
       nrmPythonPackages.nbconvert
     ];
