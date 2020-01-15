@@ -27,11 +27,33 @@ ormolu:
             "export LANG=en_US.UTF-8";
         }
       ' --run bash <<< '
+        set -e
         RETURN=0
         for F in $(fd -E hsnrm/hbandit -e hs); do
           ormolu -o -XTypeApplications -m check $F
           if [ $? -ne 0 ]; then
             echo "[!] $F does not pass ormolu haskell format check." >&2
+            RETURN=1
+          fi
+        done
+        if [ $RETURN -ne 0 ]; then exit 1; fi
+      '
+
+shellcheck:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script:
+    - |
+      nix-shell --pure -p '(import ./.).fd' -p '(import ./.).shellcheck' --run bash <<< '
+        set -e
+        RETURN=0
+        files=$(fd -e sh)
+        for F in $files; do
+          shellcheck -s bash $F
+          if [ $? -ne 0 ]; then
+            echo "[!] $F does not pass shellcheck." >&2
             RETURN=1
           fi
         done
@@ -58,6 +80,7 @@ black:
   script:
     - |
       nix-shell --pure -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
+        set -e
         black pynrm/bin/* --check
         black pynrm/nrm/*.py --check
       '
@@ -70,6 +93,7 @@ clang-format:
   script:
     - |
       nix-shell --pure -p '(import ./.).fd' '(import ./.).clang-tools' --run bash <<< '
+        set -e
         RETURN=0
         for F in $(fd -E hsnrm/hbandit -e c); do
           clang-format < $F | cmp -s $F -
@@ -89,6 +113,7 @@ dhall-format:
   script:
     - |
       nix-shell --pure -p '(import ./.).fd' '(import ./.).haskellPackages.dhall' --run bash <<< '
+        set -e
         RETURN=0
         for F in $(fd -E hsnrm/hbandit -e dhall); do
           dhall format < $F | cmp -s $F -
@@ -133,10 +158,11 @@ check-vendored-documentation:
   script:
     - |
       nix-shell dev/default.nix -A hack --run bash <<< '
+        set -e
         echo "check: is vendored documentation up to date?"
         cp -r doc/ doc2
-        ./shake doc
-        ./shake notebooks
+        ./shake.sh doc
+        ./shake.sh notebooks
         diff -r doc doc2
         '
 
@@ -161,6 +187,7 @@ raw-build-libnrm:
           preBuild="";
         })
       ' --run bash <<< '
+        set -e
         cd libnrm
         ./autogen.sh
         ./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp

@@ -38,8 +38,8 @@ nix-shell
 
 then:
 
-- use `$ ./shake build` to build the `nrm.so` shared library
-- use `$ ./shake client` to build the `nrm` client
+- use `$ ./shake.sh build` to build the `nrm.so` shared library
+- use `$ ./shake.sh client` to build the `nrm` client
 - the appropriate Nix `shellHooks` are in place for you to use `nrm` and `nrmd`.
 
 ##### run CI jobs locally: 
@@ -66,8 +66,8 @@ Exploratory Notebooks:
 * Running the notebooks in development mode:
 
 ```
-./shake build
-./shake client
-./shake pyclient
+./shake.sh build
+./shake.sh client
+./shake.sh pyclient
 nix-shell --run "jupyter-notebook <notebook file>"
 ```
