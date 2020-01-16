@@ -1,0 +1,23 @@
+# ******************************************************************************
+#  Copyright 2019 UChicago Argonne, LLC.
+#  (c.f. AUTHORS, LICENSE)
+#
+#  SPDX-License-Identifier: BSD-3-Clause
+# ******************************************************************************
+#
+#     this file is generated, modifications will be erased.
+#
+hwbind: false
+app:
+  scheduler:
+    fIFO: {}
+  power:
+    slowdown: 1
+    profile: false
+    policy: noPowerPolicy
+  perfwrapper:
+    perfwrapperDisabled: {}
+  slice:
+    cpus: 1
+    mems: 1
+name: default

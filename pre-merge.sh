@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016
 
-./shake doc
-./shake codegen
-./shake notebooks
+./shake.sh doc
+./shake.sh codegen
+./shake.sh build
+./shake.sh notebooks
 
 nix-shell --pure -E '
   let pkgs = (import ./.);
@@ -21,5 +23,11 @@ nix-shell --pure -E '
 nix-shell --pure -p '(import ./.).fd' '(import ./.).haskellPackages.dhall' --run bash <<< '
   for F in $(fd -E hsnrm/hbandit -e dhall); do
     dhall format --inplace $F
+  done
+'
+
+nix-shell --pure -p '(import ./.).fd' '(import ./.).shellcheck' --run bash <<< '
+  for F in $(fd -E hsnrm/hbandit -e sh); do
+    shellcheck -s bash $F
   done
 '

@@ -11,6 +11,7 @@ module NRM.Codegen
     upstreamReqSchema,
     upstreamRepSchema,
     downstreamEventSchema,
+    manifestSchema,
     libnrmHeader,
     licenseC,
     licenseDhall,
@@ -23,8 +24,13 @@ import qualified CPD.Values
 import Codegen.CHeader
 import Codegen.Dhall
 import Codegen.Schema (generatePretty)
+import Codegen.Schema as CS
+import Data.Aeson as A
+import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import Data.Default
+import Data.JSON.Schema as S
 import qualified Data.Map as DM
+import Data.Yaml as Y
 import Dhall
 import qualified Dhall.Core as Dhall
 import qualified Dhall.Lint as Lint
@@ -59,6 +65,7 @@ main = do
   verboseWriteSchema prefix "upstreamRep" upstreamRepSchema
   verboseWriteSchema prefix "upstreamReq" upstreamReqSchema
   verboseWriteSchema prefix "downstreamEvent" downstreamEventSchema
+  verboseWriteSchema prefix "manifestSchema" manifestSchema
   generateDefaultConfigurations prefix
   where
     verboseWriteSchema :: Text -> Text -> Text -> IO ()
@@ -83,6 +90,10 @@ upstreamPubSchema = generatePretty (Proxy :: Proxy Pub)
 -- | The downstream Event schema.
 downstreamEventSchema :: Text
 downstreamEventSchema = generatePretty (Proxy :: Proxy Event)
+
+-- | The manifest schema.
+manifestSchema :: Text
+manifestSchema = toS $ AP.encodePretty $ CS.toAeson $ S.schema (Proxy :: Proxy MI.Manifest)
 
 -- | The libnrm C header.
 libnrmHeader :: Text
@@ -189,13 +200,17 @@ generateDefaultConfigurations prefix = do
   putText "Codegen: Manifest examples."
   for_ (DM.toList (Examples.examples :: Map Text MI.Manifest)) $ \(defName, defValue) -> do
     let dest = toS prefix <> "examples/" <> defName <> ".dhall"
+    let destJ = toS prefix <> "examples/" <> defName <> ".json"
+    let destY = toS prefix <> "examples/" <> defName <> ".yaml"
     putText $ "  Writing default for " <> defName <> " to " <> dest <> "."
     createDirectoryIfMissing True (takeDirectory $ toS dest)
     writeOutput
       licenseDhall
       (toS dest)
       (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
-  putText "Codegen: YAMl example files."
+    writeFile (toS destY) $ licenseYaml <> toS (Y.encode $ Y.toJSON defValue)
+    writeFile (toS destJ) $ toS (A.encode $ A.toJSON defValue)
+  putText "Codegen: YAML example files."
   for_ [minBound .. maxBound] $ \t -> do
     let yaml = yamlType t
         dest = toS prefix <> yamlFile t
