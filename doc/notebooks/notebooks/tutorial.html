@@ -13116,7 +13116,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="NRM-python-client-library-tutorial">NRM python client library tutorial<a class="anchor-link" href="#NRM-python-client-library-tutorial">&#182;</a></h1><p>This tutorial covers the use of NRM's python upstream client library, in the context of running an externalized resource management strategy. The next cell imports the upstream client library and configures the remote.</p>
+<h1 id="NRM-python-upstream-client-library-tutorial">NRM python upstream client library tutorial<a class="anchor-link" href="#NRM-python-upstream-client-library-tutorial">&#182;</a></h1><p>This tutorial covers the use of NRM's python upstream client library, in the context of running an external resource management strategy. The next cell imports the upstream client library. and configures hosts.</p>
 
 </div>
 </div>
@@ -13126,20 +13126,29 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">nrmlib</span> <span class="k">import</span> <span class="n">Host</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">nrm.upstreamclient</span> <span class="k">import</span> <span class="n">Local</span><span class="p">,</span><span class="n">Remote</span>
 </pre></div>
 
     </div>
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This notebook will start <code>nrmd</code> on the same machine as the notebok, but the same interface should be available for remote execution:</p>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">=</span><span class="n">Host</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">=</span><span class="n">Local</span><span class="p">()</span>
+<span class="c1">#host=Remote( target=&quot;cc@129.114.108.201&quot;)</span>
 </pre></div>
 
     </div>
@@ -13147,13 +13156,44 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Note that the two classes offer the same method to start nrmd and interact via blocking message passing primitives. The following cell should show their docstrings and code when executed interactively.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">experiments</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="p">(</span><span class="s1">&#39;</span><span class="se">\&#39;</span><span class="s1">{logfile=&quot;/tmp/logfile2&quot;}</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">,</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Local??</span>
+<span class="c1"># Remote??</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The next cell defines some dode (<code>nrmd</code>) daemon configurations as dictionaries:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">daemonCfgs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;redirected_log&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;logfile&quot;</span> <span class="p">:</span> <span class="s2">&quot;/tmp/logfile_experiment1&quot;</span><span class="p">},</span>
+    <span class="c1">#&quot;other&quot;:&#39;todo&#39;</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -13162,19 +13202,33 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>A workload need a command, some arguments, and a manifest, also represented as a python dictionary.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">configuration</span><span class="p">,</span> <span class="n">scenario</span> <span class="ow">in</span> <span class="n">experiments</span><span class="p">:</span>
-    <span class="n">host</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">(</span><span class="n">configuration</span><span class="p">)</span>
-    <span class="c1">#expe_1 = host.start_experiment(scenario) #check reachability &amp; state, start expe</span>
-    <span class="c1">#while not expe_1.finished():</span>
-    <span class="c1">#    message1=host.recv()</span>
-        <span class="c1">#todo</span>
-    <span class="c1">#    host.send(message2)</span>
-    <span class="c1">#print(expe_1.exit_status())</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">workloads</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;dummy&quot;</span><span class="p">:{</span> <span class="s2">&quot;cmd&quot;</span><span class="p">:</span><span class="s2">&quot;sleep&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;333&quot;</span><span class="p">]</span> <span class="p">,</span>
+              <span class="s2">&quot;sliceID&quot;</span><span class="p">:</span> <span class="s2">&quot;toto&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;manifest&quot;</span><span class="p">:{</span><span class="s2">&quot;app&quot;</span><span class="p">:</span> <span class="p">{</span>
+                              <span class="s2">&quot;slice&quot;</span><span class="p">:</span> <span class="p">{</span>
+                                  <span class="s2">&quot;cpus&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+                                  <span class="s2">&quot;mems&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="p">}</span> 
+                                       <span class="p">},</span>
+                          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;default&quot;</span>
+                         <span class="p">},</span>
+            <span class="p">},</span>
+    <span class="c1">#&quot;other&quot;:todo</span>
+<span class="p">}</span>
 </pre></div>
 
     </div>
@@ -13182,12 +13236,20 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Manifest options are documented in schema file <a href="../../resources/manifestSchema.json">resources/manifestSchema.json</a> . Clicking this link should open a useful tab - modern web browsers have JSON data explorers. Example manifest files are in <a href="../../resources/examples">resources/examples</a> in JSON/YAML/Dhall format. For instance, the manifest file <a href="../../resources/examples/perfwrap.json">resources/examples/perfwrap.json</a> enables enables performance monitoring:</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">check_daemon</span><span class="p">())</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cat</span> <span class="o">../../</span><span class="n">resources</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">perfwrap</span><span class="o">.</span><span class="n">json</span> <span class="o">|</span> <span class="n">jq</span>
 </pre></div>
 
     </div>
@@ -13204,7 +13266,7 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>True
+<pre>cat: ../../resources/examples/perfwrap.json: No such file or directory
 </pre>
 </div>
 </div>
@@ -13213,12 +13275,61 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Under-specified manifests like the one in our <code>workloads</code> above (with missing optional fields from the schema) fill missing values with defaults, which can be seen in file <a href="../../resources/examples/default.json">resources/examples/default.json</a>:</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cat</span> <span class="o">../../</span><span class="n">resources</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">default</span><span class="o">.</span><span class="n">json</span> <span class="o">|</span> <span class="n">jq</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>cat: ../../resources/examples/default.json: No such file or directory
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The next cell defines some experiments:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">experiments</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;example&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">daemonCfgs</span><span class="p">[</span><span class="s1">&#39;redirected_log&#39;</span><span class="p">],</span> <span class="n">workloads</span><span class="p">[</span><span class="s2">&quot;dummy&quot;</span><span class="p">]),</span>
+                <span class="c1">#&quot;other&quot;: todo</span>
+              <span class="p">}</span>
 </pre></div>
 
     </div>
@@ -13226,6 +13337,55 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">(</span><span class="n">daemonCfgs</span><span class="p">[</span><span class="s1">&#39;redirected_log&#39;</span><span class="p">])</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">check_daemon</span><span class="p">())</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span>
+<span class="k">assert</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">check_daemon</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>We now are ready to run an external resource management strategy. Using the low-level message passing interface:</p>
+
+</div>
+</div>
+</div>for name, (daemonCfg, workload) in experiments.items():
+    #starting the daemon (does act as silent restart)
+    host.start_daemon(daemonCfg)
+    #running the workload
+    workloadHandler = host.run_workload(workload)
+    #message passing exchange: 
+    while not workloadHandler.finished():
+        measurement_message = host.recv()
+        #insert your code here
+        host.send(command_message)
+    print(workloadHandler.exit_status())
+    print(host.check_daemon())
+    
+host.stop_daemon()
     </div>
   </div>
 </body>
