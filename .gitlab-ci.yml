@@ -154,6 +154,7 @@ check-vendored-documentation:
   script:
     - |
       nix-shell dev/default.nix -A hack --run bash <<< '
+        set -e
         echo "check: is vendored documentation up to date?"
         cp -r doc/ doc2
         ./shake.sh doc
