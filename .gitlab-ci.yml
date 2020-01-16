@@ -163,6 +163,7 @@ check-vendored-documentation:
         cp -r doc/ doc2
         ./shake.sh doc
         ./shake.sh pyclient
+        ./shake.sh build
         ./shake.sh notebooks
         diff -r doc doc2
         '

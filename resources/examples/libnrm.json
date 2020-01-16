@@ -1,0 +1,1 @@
+{"hwbind":false,"app":{"scheduler":{"fIFO":{}},"instrumentation":{"ratelimit":1000000},"power":{"slowdown":1,"profile":false,"policy":"noPowerPolicy"},"perfwrapper":{"perfwrapperDisabled":{}},"slice":{"cpus":1,"mems":1}},"name":"default"}

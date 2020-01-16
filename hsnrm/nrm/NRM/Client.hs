@@ -6,6 +6,7 @@
 module NRM.Client
   ( main,
     reqrep,
+    processReq,
     dispatchProtocol,
   )
 where
@@ -60,18 +61,21 @@ main =
           ZMQ.subscribe s BS.empty
           ZMQ.connect s $ toS (pubAddress common)
           subClient l s common
-      Right req -> do
-        when (C.verbose common == C.Verbose) (print $ encode req)
-        uuid <-
-          UC.nextUpstreamClientID <&> \case
-            Nothing -> panic "couldn't generate next client ID"
-            Just c ->
-              restrict (toS $ UC.toText c) ::
-                Restricted (N1, N254) BS.ByteString
-        ZMQ.runZMQ $ do
-          s <- ZMQ.socket ZMQ.Dealer
-          connectWithOptions uuid common s
-          reqrepClient s req common
+      Right req -> processReq common req
+
+processReq :: C.CommonOpts -> UReq.Req -> IO ()
+processReq common req = do
+  when (C.verbose common == C.Verbose) (print $ encode req)
+  uuid <-
+    UC.nextUpstreamClientID <&> \case
+      Nothing -> panic "couldn't generate next client ID"
+      Just c ->
+        restrict (toS $ UC.toText c) ::
+          Restricted (N1, N254) BS.ByteString
+  ZMQ.runZMQ $ do
+    s <- ZMQ.socket ZMQ.Dealer
+    connectWithOptions uuid common s
+    reqrepClient s req common
 
 subClient ::
   C.Listen ->

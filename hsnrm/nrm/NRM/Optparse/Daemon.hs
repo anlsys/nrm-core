@@ -36,8 +36,8 @@ prettyOpts =
 data MainCfg
   = MainCfg
       { useStdin :: Bool,
-        inputfile :: Maybe Text,
-        stdinType :: SourceType,
+        input :: Maybe Text,
+        configType :: SourceType,
         edit :: Bool
       }
 
@@ -60,7 +60,7 @@ commonParser =
       Yaml
       ( long "yaml" <> short 'y'
           <> help
-            "Assume stdin to be yaml instead of dhall."
+            "Assume configuration to be yaml instead of dhall."
       )
     <*> flag
       False
@@ -86,7 +86,7 @@ ext useStdin st Nothing = if useStdin then FinallyStdin st else UseDefault
 
 load :: MainCfg -> IO Cfg
 load MainCfg {..} =
-  (if edit then editing else return) =<< case ext useStdin stdinType inputfile of
+  (if edit then editing else return) =<< case ext useStdin configType input of
     (FinallyFile Dhall filename) ->
       detailed $
         C.inputCfg
@@ -99,37 +99,30 @@ load MainCfg {..} =
         Left e -> Prelude.print e >> die "yaml parsing exception."
         Right manifest -> return manifest
     (FinallyStdin Dhall) ->
-      B.getContents >>= C.inputCfg
-        . ( \s ->
-              Pretty.renderStrict
-                ( Pretty.layoutSmart
-                    prettyOpts
-                    ( Pretty.pretty
-                        ( Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) (def :: Cfg) ::
-                            Dhall.Expr Dhall.Src Dhall.Import
-                        )
-                    )
-                )
-                <> " // "
-                <> toS s
-          )
+      B.getContents >>= C.inputCfg . dhallTrick
     UseDefault -> return def
     NoExt ->
-      case inputfile of
+      input & \case
         Nothing -> return def
-        Just s ->
-          C.inputCfg $
-            Pretty.renderStrict
-              ( Pretty.layoutSmart
-                  prettyOpts
-                  ( Pretty.pretty
-                      ( Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) (def :: Cfg) ::
-                          Dhall.Expr Dhall.Src Dhall.Import
-                      )
-                  )
-              )
-              <> " // "
-              <> toS s
+        Just s -> configType & \case
+          Dhall -> C.inputCfg $ dhallTrick s
+          Yaml -> Y.decodeCfg (toS s) & \case
+            Left e -> Prelude.print e >> die "yaml parsing exception."
+            Right cfg -> return cfg
+  where
+    dhallTrick :: (StringConv s Text) => s -> Text
+    dhallTrick s =
+      Pretty.renderStrict
+        ( Pretty.layoutSmart
+            prettyOpts
+            ( Pretty.pretty
+                ( Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) (def :: Cfg) ::
+                    Dhall.Expr Dhall.Src Dhall.Import
+                )
+            )
+        )
+        <> " // "
+        <> toS s
 
 editing :: Cfg -> IO Cfg
 editing c =

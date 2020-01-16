@@ -1,5 +1,6 @@
 import nrm.sharedlib
 import os
+import yaml
 import subprocess
 import shutil
 
@@ -53,9 +54,12 @@ class Local(object):
         """ start nrmd """
         if self.check_daemon():
             self.stop_daemon()
-        return subprocess.check_call(
-            ["daemonize", shutil.which("nrmd"), configuration], stderr=subprocess.STDOUT
+        subprocess.Popen(
+            ["daemonize", shutil.which("nrmd"), "-y", yaml.dump(configuration)],
+            stderr=subprocess.STDOUT,
+            stdin=subprocess.PIPE,
         )
+        return
 
     def check_daemon(self):
         """ checks if nrmd is alive """
