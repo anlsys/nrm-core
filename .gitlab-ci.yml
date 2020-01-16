@@ -27,7 +27,6 @@ ormolu:
             "export LANG=en_US.UTF-8";
         }
       ' --run bash <<< '
-        set -e
         RETURN=0
         for F in $(fd -E hsnrm/hbandit -e hs); do
           ormolu -o -XTypeApplications -m check $F
@@ -47,7 +46,6 @@ shellcheck:
   script:
     - |
       nix-shell --pure -p '(import ./.).fd' -p '(import ./.).shellcheck' --run bash <<< '
-        set -e
         RETURN=0
         files=$(fd -e sh)
         for F in $files; do
@@ -93,7 +91,6 @@ clang-format:
   script:
     - |
       nix-shell --pure -p '(import ./.).fd' '(import ./.).clang-tools' --run bash <<< '
-        set -e
         RETURN=0
         for F in $(fd -E hsnrm/hbandit -e c); do
           clang-format < $F | cmp -s $F -
@@ -113,7 +110,6 @@ dhall-format:
   script:
     - |
       nix-shell --pure -p '(import ./.).fd' '(import ./.).haskellPackages.dhall' --run bash <<< '
-        set -e
         RETURN=0
         for F in $(fd -E hsnrm/hbandit -e dhall); do
           dhall format < $F | cmp -s $F -
@@ -158,7 +154,6 @@ check-vendored-documentation:
   script:
     - |
       nix-shell dev/default.nix -A hack --run bash <<< '
-        set -e
         echo "check: is vendored documentation up to date?"
         cp -r doc/ doc2
         ./shake.sh doc
