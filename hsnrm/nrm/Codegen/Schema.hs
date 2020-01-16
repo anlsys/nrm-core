@@ -6,7 +6,7 @@
 module Codegen.Schema
   ( NSchema (..),
     generatePretty,
-    toAeson
+    toAeson,
   )
 where
 

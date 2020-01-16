@@ -26,11 +26,11 @@ import Codegen.Dhall
 import Codegen.Schema (generatePretty)
 import Codegen.Schema as CS
 import Data.Aeson as A
-import Data.Yaml as Y
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import Data.Default
 import Data.JSON.Schema as S
 import qualified Data.Map as DM
+import Data.Yaml as Y
 import Dhall
 import qualified Dhall.Core as Dhall
 import qualified Dhall.Lint as Lint
