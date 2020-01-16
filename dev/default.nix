@@ -210,7 +210,7 @@ in pkgs // rec {
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
 
     buildInputs =
-      [ pkgs.hwloc ormolu haskellPackages.dhrun jupyterWithBatteries daemonize ];
+      [ pkgs.hwloc ormolu haskellPackages.dhrun jupyterWithBatteries pkgs.daemonize ];
 
     shellHook = ''
       # path for NRM dev experimentation
