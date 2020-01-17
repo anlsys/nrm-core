@@ -13116,7 +13116,12 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="NRM-python-upstream-client-library-tutorial">NRM python upstream client library tutorial<a class="anchor-link" href="#NRM-python-upstream-client-library-tutorial">&#182;</a></h1><p>This tutorial covers the use of NRM's python upstream client library, in the context of running an external resource management strategy. The next cell imports the upstream client library. and configures hosts.</p>
+<h1 id="NRM-python-upstream-client-library-tutorial">NRM python upstream client library tutorial<a class="anchor-link" href="#NRM-python-upstream-client-library-tutorial">&#182;</a></h1><p>This tutorial covers the use of NRM's python upstream client library, in the context of running an external resource management strategy. Its cell's output are deterministic, and the executed version that is vendored in the source tree is checked by the project's CI, so its behavior should always be up-to-date with the latest version of the software. No cells should be throwing exceptions, as</p>
+<p>This notebook uses <code>nrm</code>'s python library bindings and needs the <code>nrmd</code> daemon in the <code>$PATH</code>. Assuming the project is cloned (and the code unmodified), one therefore needs to run the following from the root of the project before running it:</p>
+<div class="highlight"><pre><span></span>./shake.sh build
+./shake.sh pyclient
+</pre></div>
+<p>The next cell sets the working directory of the notebook at the root of the project.</p>
 
 </div>
 </div>
@@ -13124,6 +13129,28 @@ div#notebook {
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
+<span class="n">cd</span> <span class="o">..</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The next cell imports the upstream client library. and configures hosts.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">nrm.upstreamclient</span> <span class="k">import</span> <span class="n">Local</span><span class="p">,</span><span class="n">Remote</span>
@@ -13144,7 +13171,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">=</span><span class="n">Local</span><span class="p">()</span>
@@ -13166,7 +13193,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="c1"># Local??</span>
@@ -13188,7 +13215,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">daemonCfgs</span> <span class="o">=</span> <span class="p">{</span>
@@ -13212,7 +13239,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">workloads</span> <span class="o">=</span> <span class="p">{</span>
@@ -13239,17 +13266,17 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Manifest options are documented in schema file <a href="../../resources/manifestSchema.json">resources/manifestSchema.json</a> . Clicking this link should open a useful tab - modern web browsers have JSON data explorers. Example manifest files are in <a href="../../resources/examples">resources/examples</a> in JSON/YAML/Dhall format. For instance, the manifest file <a href="../../resources/examples/perfwrap.json">resources/examples/perfwrap.json</a> enables enables performance monitoring:</p>
+<p>Manifest options are documented in schema file <a href="../resources/manifestSchema.json">resources/manifestSchema.json</a> . Clicking this link should open a useful tab - modern web browsers have JSON data explorers. Example manifest files are in <a href="../resources/examples">resources/examples</a> in JSON/YAML/Dhall format. For instance, the manifest file <a href="../resources/examples/perfwrap.json">resources/examples/perfwrap.json</a> enables enables performance monitoring:</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cat</span> <span class="o">../../</span><span class="n">resources</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">perfwrap</span><span class="o">.</span><span class="n">json</span> <span class="o">|</span> <span class="n">jq</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cat</span> <span class="n">resources</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">perfwrap</span><span class="o">.</span><span class="n">json</span> <span class="o">|</span> <span class="n">jq</span>
 </pre></div>
 
     </div>
@@ -13266,7 +13293,70 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>cat: ../../resources/examples/perfwrap.json: No such file or directory
+<pre><span class="ansi-bold">{
+  </span><span class="ansi-blue-intense-fg ansi-bold">&#34;hwbind&#34;</span><span class="ansi-bold">: </span>false<span class="ansi-bold">,
+  </span><span class="ansi-blue-intense-fg ansi-bold">&#34;app&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+    </span><span class="ansi-blue-intense-fg ansi-bold">&#34;scheduler&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;fIFO&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{}</span><span class="ansi-bold">
+    </span><span class="ansi-bold">}</span><span class="ansi-bold">,
+    </span><span class="ansi-blue-intense-fg ansi-bold">&#34;power&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;slowdown&#34;</span><span class="ansi-bold">: </span>1<span class="ansi-bold">,
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;profile&#34;</span><span class="ansi-bold">: </span>false<span class="ansi-bold">,
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;policy&#34;</span><span class="ansi-bold">: </span><span class="ansi-green-fg">&#34;noPowerPolicy&#34;</span><span class="ansi-bold">
+    </span><span class="ansi-bold">}</span><span class="ansi-bold">,
+    </span><span class="ansi-blue-intense-fg ansi-bold">&#34;perfwrapper&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;perfwrapper&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+        </span><span class="ansi-blue-intense-fg ansi-bold">&#34;perfLimit&#34;</span><span class="ansi-bold">: </span>100000<span class="ansi-bold">,
+        </span><span class="ansi-blue-intense-fg ansi-bold">&#34;perfFreq&#34;</span><span class="ansi-bold">: </span>1<span class="ansi-bold">
+      </span><span class="ansi-bold">}</span><span class="ansi-bold">
+    </span><span class="ansi-bold">}</span><span class="ansi-bold">,
+    </span><span class="ansi-blue-intense-fg ansi-bold">&#34;slice&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;cpus&#34;</span><span class="ansi-bold">: </span>1<span class="ansi-bold">,
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;mems&#34;</span><span class="ansi-bold">: </span>1<span class="ansi-bold">
+    </span><span class="ansi-bold">}</span><span class="ansi-bold">
+  </span><span class="ansi-bold">}</span><span class="ansi-bold">,
+  </span><span class="ansi-blue-intense-fg ansi-bold">&#34;name&#34;</span><span class="ansi-bold">: </span><span class="ansi-green-fg">&#34;default&#34;</span><span class="ansi-bold">
+</span><span class="ansi-bold">}</span>
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Remember that those are one little step away from being Python dictionaries:</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;resources/examples/perfwrap.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span> <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>{&#39;hwbind&#39;: False, &#39;app&#39;: {&#39;scheduler&#39;: {&#39;fIFO&#39;: {}}, &#39;power&#39;: {&#39;slowdown&#39;: 1, &#39;profile&#39;: False, &#39;policy&#39;: &#39;noPowerPolicy&#39;}, &#39;perfwrapper&#39;: {&#39;perfwrapper&#39;: {&#39;perfLimit&#39;: 100000, &#39;perfFreq&#39;: 1}}, &#39;slice&#39;: {&#39;cpus&#39;: 1, &#39;mems&#39;: 1}}, &#39;name&#39;: &#39;default&#39;}
 </pre>
 </div>
 </div>
@@ -13285,10 +13375,10 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cat</span> <span class="o">../../</span><span class="n">resources</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">default</span><span class="o">.</span><span class="n">json</span> <span class="o">|</span> <span class="n">jq</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cat</span> <span class="n">resources</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">default</span><span class="o">.</span><span class="n">json</span> <span class="o">|</span> <span class="n">jq</span>
 </pre></div>
 
     </div>
@@ -13305,7 +13395,27 @@ div#notebook {
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>cat: ../../resources/examples/default.json: No such file or directory
+<pre><span class="ansi-bold">{
+  </span><span class="ansi-blue-intense-fg ansi-bold">&#34;hwbind&#34;</span><span class="ansi-bold">: </span>false<span class="ansi-bold">,
+  </span><span class="ansi-blue-intense-fg ansi-bold">&#34;app&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+    </span><span class="ansi-blue-intense-fg ansi-bold">&#34;scheduler&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;fIFO&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{}</span><span class="ansi-bold">
+    </span><span class="ansi-bold">}</span><span class="ansi-bold">,
+    </span><span class="ansi-blue-intense-fg ansi-bold">&#34;power&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;slowdown&#34;</span><span class="ansi-bold">: </span>1<span class="ansi-bold">,
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;profile&#34;</span><span class="ansi-bold">: </span>false<span class="ansi-bold">,
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;policy&#34;</span><span class="ansi-bold">: </span><span class="ansi-green-fg">&#34;noPowerPolicy&#34;</span><span class="ansi-bold">
+    </span><span class="ansi-bold">}</span><span class="ansi-bold">,
+    </span><span class="ansi-blue-intense-fg ansi-bold">&#34;perfwrapper&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;perfwrapperDisabled&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{}</span><span class="ansi-bold">
+    </span><span class="ansi-bold">}</span><span class="ansi-bold">,
+    </span><span class="ansi-blue-intense-fg ansi-bold">&#34;slice&#34;</span><span class="ansi-bold">: </span><span class="ansi-bold">{
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;cpus&#34;</span><span class="ansi-bold">: </span>1<span class="ansi-bold">,
+      </span><span class="ansi-blue-intense-fg ansi-bold">&#34;mems&#34;</span><span class="ansi-bold">: </span>1<span class="ansi-bold">
+    </span><span class="ansi-bold">}</span><span class="ansi-bold">
+  </span><span class="ansi-bold">}</span><span class="ansi-bold">,
+  </span><span class="ansi-blue-intense-fg ansi-bold">&#34;name&#34;</span><span class="ansi-bold">: </span><span class="ansi-green-fg">&#34;default&#34;</span><span class="ansi-bold">
+</span><span class="ansi-bold">}</span>
 </pre>
 </div>
 </div>
@@ -13324,7 +13434,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">experiments</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;example&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">daemonCfgs</span><span class="p">[</span><span class="s1">&#39;redirected_log&#39;</span><span class="p">],</span> <span class="n">workloads</span><span class="p">[</span><span class="s2">&quot;dummy&quot;</span><span class="p">]),</span>
@@ -13337,9 +13447,17 @@ div#notebook {
 </div>
 
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The next two cells show how to start and stop the daemon. A failure in either of them indicates a problem with NRM's setup.</p>
+
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">(</span><span class="n">daemonCfgs</span><span class="p">[</span><span class="s1">&#39;redirected_log&#39;</span><span class="p">])</span>
@@ -13353,7 +13471,7 @@ div#notebook {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span>
