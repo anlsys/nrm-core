@@ -195,7 +195,6 @@ runshake as =
               ]
         )
     phony "doc" $ do
-      liftIO $ runProcess_ $ setWorkingDir "doc" $ shell $ "doxygen"
       (exitCode, out) <-
         liftIO
           ( readProcessStdout $ setWorkingDir "hsnrm" $
