@@ -49,7 +49,7 @@ class Remote(object):
         pass
 
     def workload_finished(self):
-        return(True)
+        return True
 
     def workload_recv(self):
         pass
@@ -93,7 +93,7 @@ class Local(object):
         pass
 
     def workload_finished(self):
-        return(True)
+        return True
 
     def workload_recv(self):
         pass
