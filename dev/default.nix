@@ -155,10 +155,7 @@ in pkgs // rec {
       nrmPythonPackages.black
       nrmPythonPackages.mypy
       nrmPythonPackages.pytype
-      #nrmPythonPackages.sphinx
-      pkgs.doxygen
       nrmPythonPackages.nbformat
-      nrmPythonPackages.breathe
       nrmPythonPackages.nbconvert
     ];
 
