@@ -27,18 +27,20 @@ type Ex = CString -> IO CString
 
 foreign export ccall showStateExport :: Ex
 
+foreign export ccall runExport :: Ex
+
 showStateExport = exportIO E.showState
 
 runExport = exportIO run
 
-run :: Int -> Text -> Manifest -> CmdSpec -> SliceID -> IO ()
-run port addr manifest spec runSliceID = processReq common req
+run :: Text -> Manifest -> CmdSpec -> SliceID -> IO ()
+run addr manifest spec runSliceID = processReq common req
   where
     common = CommonOpts
       { verbose = Normal,
         jsonPrint = False,
         color = False,
-        pubPort = port,
+        pubPort = pub,
         rpcPort = rpc,
         upstreamBindAddress = addr
       }
@@ -47,3 +49,4 @@ run port addr manifest spec runSliceID = processReq common req
         ..
       }
     rpc = Cfg.rpcPort . Cfg.upstreamCfg $ def
+    pub = Cfg.pubPort . Cfg.upstreamCfg $ def

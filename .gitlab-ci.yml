@@ -3,13 +3,10 @@ variables:
 
 stages:
   - source
-  - lib
-  - bin-so
-  - codegen
-  - libnrm
-  - linked
+  - build
   - integration
-  - docs
+  - vendoring
+  - deploy
 
 ormolu:
   stage: source
@@ -121,59 +118,119 @@ dhall-format:
         if [ $RETURN -ne 0 ]; then exit 1; fi
       '
 
-nix-build-nrm.so:
-  stage: lib
+nix:nrm.so:
+  stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A haskellPackages.nrmlib --no-build-output
 
-nix-build-binaries:
-  stage: bin-so
+nix:hs-nrmbin:
+  stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A haskellPackages.nrmbin --no-build-output
 
-check-vendored-resources:
-  stage: codegen
+vendoring:copy:
+  stage: source
+  artifacts:
+    paths:
+      - tmpdoc
+      - tmpresources
   tags:
     - kvm
     - nix
   script:
-    - "echo 'check: are vendored resources up to date?'"
-    - mkdir temp
-    - "$(nix-build -A haskellPackages.nrmbin)/bin/codegen temp/"
-    - diff -r temp resources
+    - cp -r doc/ tmpdoc
+    - cp -r resources/ tmpresources
 
-check-vendored-documentation:
-  stage: docs
+codegen:
+  stage: build
+  artifacts:
+    paths:
+      - resources
   tags:
     - kvm
     - nix
   script:
-    - |
-      nix-shell dev/default.nix -A hack --run bash <<< '
-        set -e
-        echo "check: is vendored documentation up to date?"
-        cp -r doc/ doc2
-        ./shake.sh doc
-        ./shake.sh pyclient
-        ./shake.sh build
-        ./shake.sh notebooks
-        diff -r doc doc2
-        '
+    - ./shake.sh codegen
 
-nix-build-resources:
-  stage: codegen
+doc:
+  stage: build
+  artifacts:
+    paths:
+      - doc
+  tags:
+    - kvm
+    - nix
+  script:
+    - ./shake.sh doc
+
+pyclient:
+  stage: build
+  artifacts:
+    paths:
+      - .build
+  tags:
+    - kvm
+    - nix
+  script:
+    - ./shake.sh pyclient
+
+build:
+  stage: build
+  artifacts:
+    paths:
+      - .build
+  tags:
+    - kvm
+    - nix
+  script:
+    - ./shake.sh build
+
+notebooks:
+  stage: integration
+  artifacts:
+    paths:
+      - doc
+  tags:
+    - kvm
+    - nix
+  script:
+    - ./shake.sh notebooks
+
+vendoring:documentation:
+  stage: vendoring
+  dependencies:
+    - vendoring:copy
+    - notebooks
+  tags:
+    - kvm
+    - nix
+  script:
+    - diff -r doc tmpdoc
+
+vendoring:resources:
+  stage: vendoring
+  dependencies:
+    - vendoring:copy
+    - codegen
+  tags:
+    - kvm
+    - nix
+  script:
+    - diff -r resources tmpresources
+
+nix:resources:
+  stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A resources --no-build-output
 
-
-raw-build-libnrm:
-  stage: libnrm
+libnrm:
+  stage: build
   tags:
     - kvm
     - nix
@@ -192,41 +249,41 @@ raw-build-libnrm:
         make
       '
 
-nix-build-libnrm:
-  stage: libnrm
+nix:libnrm:
+  stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A libnrm --no-build-output
 
-nix-build-pynrm:
-  stage: linked
+nix:pynrm:
+  stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A pynrm --no-build-output
 
-nix-build-app-stream:
-  stage: linked
+nix:app-stream:
+  stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A stream --no-build-output
 
-nix-build-app-stream-raw:
-  stage: linked
+nix:app-stream-raw:
+  stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A stream-raw --no-build-output
 
-nix-build-nrmFull:
-  stage: linked
+nix:nrmFull:
+  stage: build
   tags:
     - integration
   script: nix-build -A nrm --no-build-output
 
-dhrun-hello:
+dhrun:hello:
   stage: integration
   tags:
     - kvm
@@ -241,7 +298,7 @@ dhrun-hello:
         in all.hello
       '
 
-dhrun-exitcode:
+dhrun:exitcode:
   stage: integration
   tags:
     - kvm
@@ -256,7 +313,7 @@ dhrun-exitcode:
         in all.exitcode
       '
 
-dhrun-listen:
+dhrun:listen:
   stage: integration
   tags:
     - kvm
@@ -272,7 +329,7 @@ dhrun-listen:
       '
 
 readthedocs:
-  stage: docs
+  stage: deploy
   when: on_success
   only:
     - master

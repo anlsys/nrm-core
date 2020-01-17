@@ -46,18 +46,23 @@ class Remote(object):
         subprocess.check_call(["ssh", "%s" % self.target, "pkill nrmd"])
 
     def run_workload(self, workload):
+        """ Runs a workload via NRM. The `nrmd` daemon must be running. """
         pass
 
-    def workload_finished(self):
+    def workloads_finished(self):
+        """ Checks NRM to see whether all tasks are finished. """
         return True
 
     def workload_recv(self):
+        """ Receive a message from NRM's upstream API. """
         pass
 
     def workload_send(self, message):
+        """ Send a message to NRM's upstream API. """
         pass
 
     def workload_exit_status(self):
+        """ Check the workload's exit status. """
         pass
 
 
@@ -90,16 +95,21 @@ class Local(object):
             raise (Exception)
 
     def run_workload(self, workload):
-        pass
+        """ Runs a workload via NRM. The `nrmd` daemon must be running. """
+        lib.run(workload["cmd"],workload["args"],workload["sliceID"],workload["manifest"])
 
-    def workload_finished(self):
+    def workloads_finished(self):
+        """ Checks NRM to see whether all tasks are finished. """
         return True
 
     def workload_recv(self):
+        """ Receive a message from NRM's upstream API. """
         pass
 
     def workload_send(self, message):
+        """ Send a message to NRM's upstream API. """
         pass
 
     def workload_exit_status(self):
+        """ Check the workload's exit status. """
         pass
