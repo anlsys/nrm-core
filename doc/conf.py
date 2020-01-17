@@ -16,9 +16,15 @@
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
 
-# import os
-# import sys
+import os
+import sys
 import subprocess
+
+read_the_docs = os.environ.get('READTHEDOCS', None) == 'True'
+if read_the_docs:
+    subprocess.call('doxygen', shell=True)
+    # Readthedocs doxygen version is too old to copy images when building xml
+    subprocess.call('cp img/*png build-doxygen/xml/', shell=True)
 
 # -- Project information -----------------------------------------------------
 
@@ -41,7 +47,7 @@ release = u''
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = ["breathe"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -76,7 +82,10 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+if read_the_docs:
+    html_theme = 'default'
+else:
+    html_theme = "sphinx_rtd_theme"
 
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -156,3 +165,7 @@ texinfo_documents = [
      author, 'NRM', 'One line description of project.',
      'Miscellaneous'),
 ]
+
+
+breathe_projects = {"aml": "build-doxygen/xml"}
+breathe_default_project = "aml"

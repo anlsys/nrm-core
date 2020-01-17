@@ -155,7 +155,6 @@ in pkgs // rec {
       nrmPythonPackages.black
       nrmPythonPackages.mypy
       nrmPythonPackages.pytype
-      #nrmPythonPackages.sphinx
       nrmPythonPackages.nbformat
       nrmPythonPackages.nbconvert
     ];
@@ -170,8 +169,7 @@ in pkgs // rec {
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
   jupyterWithBatteries = pkgs.jupyter.override rec {
-    python3 =
-      nrmPythonPackages.python.withPackages (ps: with ps; [ msgpack ]);
+    python3 = nrmPythonPackages.python.withPackages (ps: with ps; [ msgpack ]);
     definitions = {
       # This is the Python kernel we have defined above.
       python3 = {
@@ -209,8 +207,13 @@ in pkgs // rec {
 
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
 
-    buildInputs =
-      [ pkgs.hwloc ormolu haskellPackages.dhrun jupyterWithBatteries pkgs.daemonize ];
+    buildInputs = [
+      pkgs.hwloc
+      ormolu
+      haskellPackages.dhrun
+      jupyterWithBatteries
+      pkgs.daemonize
+    ];
 
     shellHook = ''
       # path for NRM dev experimentation

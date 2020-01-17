@@ -31,3 +31,8 @@ nix-shell --pure -p '(import ./.).fd' '(import ./.).shellcheck' --run bash <<< '
     shellcheck -s bash $F
   done
 '
+
+nix-shell --pure -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
+  black pynrm/bin/*
+  black pynrm/nrm/*.py
+'

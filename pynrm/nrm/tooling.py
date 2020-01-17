@@ -45,6 +45,21 @@ class Remote(object):
         """ stops nrmd """
         subprocess.check_call(["ssh", "%s" % self.target, "pkill nrmd"])
 
+    def run_workload(self, workload):
+        pass
+
+    def workload_finished(self):
+        return True
+
+    def workload_recv(self):
+        pass
+
+    def workload_send(self, message):
+        pass
+
+    def workload_exit_status(self):
+        pass
+
 
 class Local(object):
     def __init__(self):
@@ -73,3 +88,18 @@ class Local(object):
             _exitCodeBool(["pkill", "-f", "nrmd"]) or _exitCodeBool(["pkill", "nrmd"])
         ):
             raise (Exception)
+
+    def run_workload(self, workload):
+        pass
+
+    def workload_finished(self):
+        return True
+
+    def workload_recv(self):
+        pass
+
+    def workload_send(self, message):
+        pass
+
+    def workload_exit_status(self):
+        pass

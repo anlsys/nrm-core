@@ -10,9 +10,8 @@ C/C++ and Fortran interface for NRM.
 Install
 =======
 
-The libnrm code can be installed for source::
+The libnrm code can be installed from source::
 
- git clone https://xgitlab.cels.anl.gov/argo/libnrm.git
  cd libnrm
  ./autogen.sh
  ./configure
@@ -21,26 +20,7 @@ The libnrm code can be installed for source::
 API
 ===
 
-**nrm_ctxt_create(void)**
-
-This function creates a context and returns it.
-
-**nrm_init(struct nrm_context *, const char *)**
-
-This funciton starts the connection with NRM and gives all the application's
-communications a label.
-
-**`nrm_send_progress(struct nrm_context *, unsigned long progress)**
-
-This funciton sends the progress of the application to NRM.
-
-**nrm_fini(struct nrm_context *)**
-
-This function close the connection to NRM.
-
-**nrm_ctxt_delete(struct nrm_context *)**
-
-This functions deletes the NRM context.
+.. doxygengroup:: nrm
 
 Using libnrm in your C/ C++ application
 =======================================
