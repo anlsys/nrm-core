@@ -56,18 +56,14 @@ your latest local commit.
 
 ##### jupyter notebooks:
 
-Tutorial Notebooks:
-* Unexecuted: [`notebooks/raw`](notebooks/raw)
-* Executed: [`notebooks/executed`](notebooks/executed)
-
-Exploratory Notebooks:
-* Unexecuted: [`notebooks/exploratory`](notebooks/exploratory)
+* Unexecuted: [`notebooks/`](notebooks/)
+* Executed and vendored (CI checked for being up-to-date an not throwing errors): [`doc/notebooks/notebooks`](doc/notebooks/notebooks)
+* HTML: [`doc/notebooks/notebooks`](doc/notebooks/notebooks)
 
 * Running the notebooks in development mode:
 
 ```
 ./shake.sh build
-./shake.sh client
 ./shake.sh pyclient
 nix-shell --run "jupyter-notebook <notebook file>"
 ```
