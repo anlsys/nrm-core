@@ -63,7 +63,8 @@ your latest local commit.
 * Running the notebooks in development mode:
 
 ```
-./shake.sh build
-./shake.sh pyclient
-nix-shell --run "jupyter-notebook <notebook file>"
+$ nix-shell
+nix-shell$ ./shake.sh build
+nix-shell$ ./shake.sh pyclient
+nix-shell$ jupyter-notebook <notebook file>
 ```
