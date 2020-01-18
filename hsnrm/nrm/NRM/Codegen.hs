@@ -12,6 +12,7 @@ module NRM.Codegen
     upstreamRepSchema,
     downstreamEventSchema,
     manifestSchema,
+    configurationSchema,
     libnrmHeader,
     licenseC,
     licenseDhall,
@@ -66,6 +67,7 @@ main = do
   verboseWriteSchema prefix "upstreamReq" upstreamReqSchema
   verboseWriteSchema prefix "downstreamEvent" downstreamEventSchema
   verboseWriteSchema prefix "manifestSchema" manifestSchema
+  verboseWriteSchema prefix "configurationSchema" manifestSchema
   generateDefaultConfigurations prefix
   where
     verboseWriteSchema :: Text -> Text -> Text -> IO ()
@@ -94,6 +96,10 @@ downstreamEventSchema = generatePretty (Proxy :: Proxy Event)
 -- | The manifest schema.
 manifestSchema :: Text
 manifestSchema = toS $ AP.encodePretty $ CS.toAeson $ S.schema (Proxy :: Proxy MI.Manifest)
+
+-- | The configuration schema.
+configurationSchema :: Text
+configurationSchema = toS $ AP.encodePretty $ CS.toAeson $ S.schema (Proxy :: Proxy C.Cfg)
 
 -- | The libnrm C header.
 libnrmHeader :: Text
@@ -158,6 +164,16 @@ dhallType =
     Cfg -> Dhall.expected (Dhall.auto :: Dhall.Type C.Cfg)
     Manifest -> Dhall.expected (Dhall.auto :: Dhall.Type MI.Manifest)
 
+ktDefYaml :: KnownType -> Text
+ktDefYaml = \case
+  Cfg -> toS (Y.encode $ Y.toJSON (def :: C.Cfg))
+  Manifest -> toS (Y.encode $ Y.toJSON (def :: MI.Manifest))
+
+ktDefJson :: KnownType -> Text
+ktDefJson = \case
+  Cfg -> toS (A.encode $ A.toJSON (def :: C.Cfg))
+  Manifest -> toS (A.encode $ A.toJSON (def :: MI.Manifest))
+
 yamlType :: KnownType -> ByteString
 yamlType Cfg = CI.encodeDCfg (def :: C.Cfg)
 yamlType Manifest = MI.encodeManifest (def :: MI.Manifest)
@@ -168,8 +184,8 @@ sandwich a b x = a <> x <> b
 yamlFile :: KnownType -> FilePath
 yamlFile = sandwich "yaml/" ".yaml" . show
 
-defaultFile :: KnownType -> FilePath
-defaultFile = sandwich "defaults/" ".dhall" . show
+defaultFile :: Text -> KnownType -> FilePath
+defaultFile ext = sandwich "defaults/" (toS ext) . show
 
 typeFile :: KnownType -> FilePath
 typeFile = sandwich "types/" ".dhall" . show
@@ -191,13 +207,17 @@ generateDefaultConfigurations prefix = do
     putText $ "  Writing type for " <> show t <> " to " <> toS dest
     createDirectoryIfMissing True (takeDirectory dest)
     writeOutput licenseDhall dest (dhallType t)
-  putText "Codegen: Dhall defaults."
+  putText "Codegen: defaults."
   for_ [minBound .. maxBound] $ \defaultType -> do
-    let dest = toS prefix <> defaultFile defaultType
+    let dest = toS prefix <> defaultFile ".dhall" defaultType
+        destY = toS prefix <> defaultFile ".yaml" defaultType
+        destJ = toS prefix <> defaultFile ".json" defaultType
     putStrLn $ "  Writing default for " <> show defaultType <> " to " <> dest <> "."
     createDirectoryIfMissing True (takeDirectory dest)
     writeOutput licenseDhall dest (Lint.lint $ getDefault defaultType)
-  putText "Codegen: Manifest examples."
+    writeFile (toS destY) $ licenseYaml <> ktDefYaml defaultType
+    writeFile (toS destJ) $ ktDefJson defaultType
+  putText "Codegen: examples."
   for_ (DM.toList (Examples.examples :: Map Text MI.Manifest)) $ \(defName, defValue) -> do
     let dest = toS prefix <> "examples/" <> defName <> ".dhall"
     let destJ = toS prefix <> "examples/" <> defName <> ".json"

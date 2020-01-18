@@ -110,7 +110,7 @@ data ImageType = Sif | Docker
 data Image
   = Image
       { path :: Text,
-        magetype :: ImageType,
+        imagetype :: ImageType,
         binds :: Maybe [Text]
       }
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)

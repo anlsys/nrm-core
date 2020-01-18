@@ -41,5 +41,5 @@
     Bool
 , image :
     Optional
-    { path : Text, magetype : < Sif | Docker >, binds : Optional (List Text) }
+    { path : Text, imagetype : < Sif | Docker >, binds : Optional (List Text) }
 }

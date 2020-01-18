@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2016
 
-./shake.sh doc
-./shake.sh codegen
-./shake.sh build
-./shake.sh notebooks
-
 nix-shell --pure -E '
   let pkgs = (import ./.);
   in pkgs.mkShell {
@@ -36,3 +31,8 @@ nix-shell --pure -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
   black pynrm/bin/*
   black pynrm/nrm/*.py
 '
+./shake.sh doc
+./shake.sh codegen
+./shake.sh build
+./shake.sh pyclient
+./shake.sh notebooks

@@ -1,6 +1,7 @@
 import nrm.sharedlib
 import os
 import yaml
+import json
 import subprocess
 import shutil
 
@@ -49,7 +50,7 @@ class Remote(object):
         """ Runs a workload via NRM. The `nrmd` daemon must be running. """
         pass
 
-    def workloads_finished(self):
+    def workload_finished(self):
         """ Checks NRM to see whether all tasks are finished. """
         return True
 
@@ -68,7 +69,7 @@ class Remote(object):
 
 class Local(object):
     def __init__(self):
-        pass
+        self.commonOpts = lib.defaultCommonOpts()
 
     def start_daemon(self, configuration):
         """ start nrmd """
@@ -94,13 +95,19 @@ class Local(object):
         ):
             raise (Exception)
 
-    def run_workload(self, workload):
+    def run_workload(self, workloads):
         """ Runs a workload via NRM. The `nrmd` daemon must be running. """
-        lib.run(workload["cmd"],workload["args"],workload["sliceID"],workload["manifest"])
+        for w in workloads:
+            lib.run(
+                self.commonOpts,
+                lib.simpleRun(
+                    w["cmd"], w["args"], [], yaml.dump(w["manifest"]), w["sliceID"]
+                ),
+            )
 
-    def workloads_finished(self):
+    def workload_finished(self):
         """ Checks NRM to see whether all tasks are finished. """
-        return True
+        return lib.finished(self.commonOpts)
 
     def workload_recv(self):
         """ Receive a message from NRM's upstream API. """

@@ -8,13 +8,11 @@ module NRM.Client
     reqrep,
     processReq,
     dispatchProtocol,
+    connectWithOptions,
   )
 where
 
-{-import qualified NRM.Types.Messaging.UpstreamReq as -}
 import qualified CPD.Core as CPD
---import qualified CPD.Text as CPD
-
 import CPD.Core (prettyCPD)
 import qualified Data.Aeson as A
 import Data.Aeson.Encode.Pretty as AP (encodePretty)

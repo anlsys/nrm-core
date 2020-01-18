@@ -49,6 +49,16 @@ in pkgs // rec {
     };
   };
 
+  nb_black = pkgs.callPackage ./pkgs/nb_black {
+    src = pkgs.fetchFromGitHub {
+      owner = "dnanhkhoa";
+      repo = "nb_black";
+      rev = "cf4a07f83ab4fbfa2a2728fdb8a0605704c830dd";
+      sha256 = "11qapvda8jk8pagbk7nipr137jm58i68nr45yar8qg8p3cvanjzf";
+    };
+    pythonPackages = nrmPythonPackages;
+  };
+
   #this needs to be seriously cleaned.
   cabalFile = dhallDir: dhallFileName:
     pkgs.runCommand "cabalFile" { } ''
@@ -100,6 +110,8 @@ in pkgs // rec {
         }).overrideAttrs
           (o: { nativeBuildInputs = o.nativeBuildInputs ++ [ pkgs.glpk ]; });
         dhall = super.dhall_1_24_0;
+        dhall-json =
+          super.dhall-json_1_3_0.overrideAttrs (o: { doCheck = false; });
         dhrun = (self.callCabal2nix "dhrun" (builtins.fetchGit {
           inherit (pkgs.stdenv.lib.importJSON ./pkgs/dhrun/pin.json) url rev;
         })) { };
@@ -140,7 +152,7 @@ in pkgs // rec {
   hsnrm-hack = pkgs.haskellPackages.shellFor {
     packages = p: [
       haskellPackages.nrmlib
-      (pkgs.haskellPackages.callPackage ./pkgs/hs-tools { })
+      (haskellPackages.callPackage ./pkgs/hs-tools { })
     ];
     withHoogle = true;
     buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq ];
@@ -157,6 +169,7 @@ in pkgs // rec {
       nrmPythonPackages.pytype
       nrmPythonPackages.nbformat
       nrmPythonPackages.nbconvert
+      nb_black
     ];
 
     shellHook = ''
@@ -169,7 +182,8 @@ in pkgs // rec {
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
   jupyterWithBatteries = pkgs.jupyter.override rec {
-    python3 = nrmPythonPackages.python.withPackages (ps: with ps; [ msgpack ]);
+    python3 =
+      nrmPythonPackages.python.withPackages (ps: with ps; [ msgpack nb_black ]);
     definitions = {
       # This is the Python kernel we have defined above.
       python3 = {

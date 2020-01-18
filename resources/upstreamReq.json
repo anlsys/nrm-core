@@ -66,7 +66,7 @@
                                 "image": {
                                     "required": [
                                         "path",
-                                        "magetype"
+                                        "imagetype"
                                     ],
                                     "type": "object",
                                     "properties": {
@@ -80,7 +80,7 @@
                                         "path": {
                                             "type": "string"
                                         },
-                                        "magetype": {
+                                        "imagetype": {
                                             "oneOf": [
                                                 {
                                                     "const": "\"sif\""

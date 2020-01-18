@@ -16,6 +16,8 @@ import qualified Data.ByteString as B
   ( getContents,
   )
 import Data.Default
+import Data.Default
+import Data.MessagePack
 import Dhall
 import LMap.Map as LM
 import qualified NRM.Types.Cmd as Cmd
@@ -46,9 +48,17 @@ data CommonOpts
         rpcPort :: Int,
         upstreamBindAddress :: Text
       }
+  deriving (Generic, MessagePack)
+
+instance Default CommonOpts where
+  def = CommonOpts Normal False False pub rpc addr
+    where
+      rpc = Cfg.rpcPort . Cfg.upstreamCfg $ def
+      pub = Cfg.pubPort . Cfg.upstreamCfg $ def
+      addr = "localhost" :: Text
 
 data ClientVerbosity = Normal | Verbose
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic, MessagePack)
 
 parserCommon :: Parser CommonOpts
 parserCommon =
@@ -86,9 +96,9 @@ parserCommon =
           <> value addr
       )
   where
-    rpc = Cfg.rpcPort . Cfg.upstreamCfg $ def
-    pub = Cfg.pubPort . Cfg.upstreamCfg $ def
-    addr = "localhost" :: Text
+    rpc = pubPort def
+    pub = rpcPort def
+    addr = upstreamBindAddress def
 
 data RunCfg
   = RunCfg
