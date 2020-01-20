@@ -9,6 +9,8 @@ module NRM.Client
     processReq,
     dispatchProtocol,
     connectWithOptions,
+    pubAddress,
+    rpcAddress
   )
 where
 

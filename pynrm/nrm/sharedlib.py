@@ -1,7 +1,6 @@
 import struct
 from contextlib import contextmanager
 from ctypes import CDLL, POINTER, LibraryLoader, c_char
-
 import msgpack
 import logging
 
@@ -50,8 +49,12 @@ class WrapEither(object):
             (success, content) = r(*args)
             if success:
                 return content
+            elif content == "ExitSuccess":
+                raise SystemExit
+            elif content == "ExitError":
+                raise SystemError
             else:
-                raise Exception(".so library call raised exception: %s" + content)
+                raise Exception(".so library call raised exception: %s" % content)
 
         return eitherwrap
 
@@ -63,8 +66,10 @@ def Lib(library, exportPattern="{name}Export"):
     hdll.exportPattern = exportPattern
     lib = hdll.LoadLibrary(library)
     lib.hs_init(0, 0)
-    yield WrapEither(lib)
-    lib.hs_exit()
+    try:
+        yield WrapEither(lib)
+    finally:
+        lib.hs_exit()
 
 
 def UnsafeLib(library, exportPattern="{name}Export"):

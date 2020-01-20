@@ -5,8 +5,45 @@
 , pkgs ? import (fetched ./pkgs.json) { }
 
 }:
-with pkgs.lib;
+
 let
+  python = let
+    packageOverrides = pself: psuper: {
+      cffi = psuper.cffi.overridePythonAttrs (o: { doCheck = false; });
+      sqlalchemy =
+        psuper.sqlalchemy.overridePythonAttrs (o: { doCheck = false; });
+      requests = psuper.requests.overridePythonAttrs (o: { doCheck = false; });
+      sphinx = psuper.sphinx.overridePythonAttrs (o: { doCheck = false; });
+      cryptography =
+        psuper.cryptography.overridePythonAttrs (o: { doCheck = false; });
+      cython = psuper.cython.overridePythonAttrs (o: { doCheck = false; });
+      hypothesis =
+        psuper.hypothesis.overridePythonAttrs (o: { doCheck = false; });
+      black = psuper.black.overridePythonAttrs (o: { doCheck = false; });
+      pytest = psuper.pytest.overridePythonAttrs (o: { doCheck = false; });
+      networkx = psuper.networkx.overridePythonAttrs (o: { doCheck = false; });
+      importlab = pkgs.callPackage ./pkgs/importlab { pythonPackages = pself; };
+      pyzmq = psuper.pyzmq.override { zeromq = pkgs.zeromq; };
+      pytype = pkgs.callPackage ./pkgs/pytype {
+        src = fetched ./pkgs/pytype/pin.json;
+        pythonPackages = pself;
+      };
+      nb_black = pkgs.callPackage ./pkgs/nb_black {
+        src = pkgs.fetchFromGitHub {
+          owner = "dnanhkhoa";
+          repo = "nb_black";
+          rev = "cf4a07f83ab4fbfa2a2728fdb8a0605704c830dd";
+          sha256 = "11qapvda8jk8pagbk7nipr137jm58i68nr45yar8qg8p3cvanjzf";
+        };
+        pythonPackages = pself;
+      };
+    };
+  in pkgs.python37.override {
+    inherit packageOverrides;
+    self = python;
+  };
+  pythonPackages = python.passthru.pkgs;
+
   hslib = rec {
     filter = path:
       builtins.filterSource (path: _:
@@ -17,46 +54,14 @@ let
   unbreak = x:
     x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
   callPackage = pkgs.lib.callPackageWith pkgs;
-in pkgs // rec {
+
+in with pkgs;
+pkgs // rec {
 
   dhall-to-cabal-resources = pkgs.stdenv.mkDerivation {
     name = "dhall-to-cabal-resources";
     src = pkgs.haskellPackages.dhall-to-cabal.src;
     installPhase = "cp -r dhall $out";
-  };
-
-  nrmPythonPackages = pkgs.python37Packages.override {
-    overrides = self: super: rec {
-      cffi = super.cffi.overridePythonAttrs (o: { doCheck = false; });
-      sqlalchemy =
-        super.sqlalchemy.overridePythonAttrs (o: { doCheck = false; });
-      requests = super.requests.overridePythonAttrs (o: { doCheck = false; });
-      sphinx = super.sphinx.overridePythonAttrs (o: { doCheck = false; });
-      cryptography =
-        super.cryptography.overridePythonAttrs (o: { doCheck = false; });
-      cython = super.cython.overridePythonAttrs (o: { doCheck = false; });
-      hypothesis =
-        super.hypothesis.overridePythonAttrs (o: { doCheck = false; });
-      black = super.black.overridePythonAttrs (o: { doCheck = false; });
-      pytest = super.pytest.overridePythonAttrs (o: { doCheck = false; });
-      networkx = super.networkx.overridePythonAttrs (o: { doCheck = false; });
-      importlab = pkgs.callPackage ./pkgs/importlab { pythonPackages = self; };
-      pyzmq = super.pyzmq.override { zeromq = pkgs.zeromq; };
-      pytype = pkgs.callPackage ./pkgs/pytype {
-        src = fetched ./pkgs/pytype/pin.json;
-        pythonPackages = self;
-      };
-    };
-  };
-
-  nb_black = pkgs.callPackage ./pkgs/nb_black {
-    src = pkgs.fetchFromGitHub {
-      owner = "dnanhkhoa";
-      repo = "nb_black";
-      rev = "cf4a07f83ab4fbfa2a2728fdb8a0605704c830dd";
-      sha256 = "11qapvda8jk8pagbk7nipr137jm58i68nr45yar8qg8p3cvanjzf";
-    };
-    pythonPackages = nrmPythonPackages;
   };
 
   #this needs to be seriously cleaned.
@@ -133,7 +138,7 @@ in pkgs // rec {
 
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     inherit resources;
-    pythonPackages = nrmPythonPackages;
+    pythonPackages = pythonPackages;
     src = ../pynrm;
     hsnrm = haskellPackages.nrmbin;
   };
@@ -160,17 +165,10 @@ in pkgs // rec {
 
   pynrm-hack = pynrm.overrideAttrs (o: {
     propagatedBuildInputs =
-      (lists.remove haskellPackages.nrmbin o.propagatedBuildInputs);
-    buildInputs = (lists.remove haskellPackages.nrmbin o.buildInputs) ++ [
-      nrmPythonPackages.flake8
-      nrmPythonPackages.autopep8
-      nrmPythonPackages.black
-      nrmPythonPackages.mypy
-      nrmPythonPackages.pytype
-      nrmPythonPackages.nbformat
-      nrmPythonPackages.nbconvert
-      nb_black
-    ];
+      (pkgs.lib.lists.remove haskellPackages.nrmbin o.propagatedBuildInputs);
+    buildInputs = with pythonPackages;
+      (pkgs.lib.lists.remove haskellPackages.nrmbin o.buildInputs)
+      ++ [ flake8 autopep8 black mypy pytype nbformat nbconvert nb_black ];
 
     shellHook = ''
       export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
@@ -181,54 +179,69 @@ in pkgs // rec {
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
-  jupyterWithBatteries = pkgs.jupyter.override rec {
-    python3 =
-      nrmPythonPackages.python.withPackages (ps: with ps; [ msgpack nb_black ]);
-    definitions = {
-      # This is the Python kernel we have defined above.
-      python3 = {
-        displayName = "Python 3";
-        argv = [
-          "${python3.interpreter}"
-          "-m"
-          "ipykernel_launcher"
-          "-f"
-          "{connection_file}"
-        ];
-        language = "python";
-        logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
-        logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
-      };
-    };
-  };
+  jupyter = import (/home/fre/sandbox/jupyterWith) { };
 
-  experiment = pkgs.symlinkJoin {
-    name = "nrmFull";
-    paths = [
-      haskellPackages.nrmbin
-      pynrm
-      resources
-      pkgs.linuxPackages.perf
-      pkgs.hwloc
-      pkgs.daemonize
-      jupyterWithBatteries
-    ];
-  };
-
-  hack = pkgs.mkShell {
-
-    CABALFILE = cabalFile ./cabal "dev.dhall"; # for easy manual vendoring
-
-    inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
-
+  jupyterLabEnvironment = (jupyter.jupyterlabWith {
     buildInputs = [
       pkgs.hwloc
       ormolu
       haskellPackages.dhrun
-      jupyterWithBatteries
+      pkgs.daemonize
+      pkgs.linuxPackages.perf
+    ];
+    inputsFrom = with pkgs; [ hsnrm-hack libnrm-hack ];
+    shellHook = ''
+      # path for NRM dev experimentation
+      export PYNRMSO=${
+        builtins.toPath ../.
+      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
+      export NRMSO=${
+        builtins.toPath ../.
+      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
+      export PATH=${builtins.toPath ../.}/dev/:${
+        builtins.toPath ../.
+      }/pynrm/bin:${
+        builtins.toPath ../.
+      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
+      export PYTHONPATH=${builtins.toPath ../.}/pynrm/:${
+        pythonPackages.makePythonPath [ ]
+      }:$PYTHONPATH
+      export JUPYTER_PATH=$JUPYTER_PATH:${builtins.toPath ../.}/pynrm/
+      # exports for `ghcide` use
+      export NIX_GHC="${haskellPackages.nrmlib.env.NIX_GHC}"
+      export NIX_GHCPKG="${haskellPackages.nrmlib.env.NIX_GHCPKG}"
+      export NIX_GHC_DOCDIR="${haskellPackages.nrmlib.env.NIX_GHC_DOCDIR}"
+      export NIX_GHC_LIBDIR="${haskellPackages.nrmlib.env.NIX_GHC_LIBDIR}"
+      export LC_ALL="en_US.UTF-8";
+      export LOCALE_ARCHIVE="${pkgs.glibcLocales}/lib/locale/locale-archive";
+      export CABALFILE=${cabalFile ./cabal "dev.dhall"} # for easy manual vendoring
+      cp $CABALFILE hsnrm/hsnrm.cabal
+      chmod +rw hsnrm/hsnrm.cabal
+    '';
+    extraJupyterPath = "${builtins.toPath ../.}/pynrm/:${
+        pythonPackages.makePythonPath
+        (with pythonPackages; [ nb_black msgpack warlock pyzmq ])
+      }:";
+    kernels = [
+      (import ./jupyterWith/ipython.nix {
+        inherit (pkgs) stdenv writeScriptBin;
+        name = "Nix";
+        packages = p: [ p.nb_black p.msgpack p.warlock p.pyzmq ];
+        python3 = python;
+      })
+    ];
+  }).env;
+
+  hack = pkgs.mkShell {
+    CABALFILE = cabalFile ./cabal "dev.dhall"; # for easy manual vendoring
+    inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
+    buildInputs = [
+      pkgs.hwloc
+      ormolu
+      haskellPackages.dhrun
+      #jupyterWithBatteries
       pkgs.daemonize
     ];
-
     shellHook = ''
       # path for NRM dev experimentation
       export PYNRMSO=${
@@ -243,6 +256,7 @@ in pkgs // rec {
         builtins.toPath ../.
       }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
       export PYTHONPATH=${builtins.toPath ../.}/pynrm/:$PYTHONPATH
+      export JUPYTER_PATH=$JUPYTER_PATH:${builtins.toPath ../.}/pynrm/
       # exports for `ghcide` use
       export NIX_GHC="${haskellPackages.nrmlib.env.NIX_GHC}"
       export NIX_GHCPKG="${haskellPackages.nrmlib.env.NIX_GHCPKG}"
@@ -251,9 +265,7 @@ in pkgs // rec {
       cp $CABALFILE hsnrm/hsnrm.cabal
       chmod +rw hsnrm/hsnrm.cabal
     '';
-
     LC_ALL = "en_US.UTF-8";
-
     LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
   };
 

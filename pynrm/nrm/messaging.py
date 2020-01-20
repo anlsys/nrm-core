@@ -216,7 +216,7 @@ class UpstreamPubClient(object):
         self.zmq_context = zmq.Context.instance()
         self.socket = self.zmq_context.socket(zmq.SUB)
         self.socket.setsockopt(zmq.RCVHWM, 0)
-        self.socket.setsockopt(zmq.SUBSCRIBE, "")
+        self.socket.setsockopt_string(zmq.SUBSCRIBE, "")
 
     def connect(self, wait=True):
         """Creates a monitor socket and wait for the connect event."""

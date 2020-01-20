@@ -4,6 +4,7 @@ import yaml
 import json
 import subprocess
 import shutil
+import nrm.messaging
 
 lib = nrm.sharedlib.UnsafeLib(os.environ["PYNRMSO"])
 
@@ -71,15 +72,24 @@ class Local(object):
     def __init__(self):
         self.commonOpts = lib.defaultCommonOpts()
 
-    def start_daemon(self, configuration):
+    def start_daemon(self, configuration, outfile="/tmp/nrmd_out"):
         """ start nrmd """
         if self.check_daemon():
             self.stop_daemon()
         subprocess.Popen(
-            ["daemonize", shutil.which("nrmd"), "-y", yaml.dump(configuration)],
+            [
+                "daemonize",
+                "-o",
+                outfile,
+                shutil.which("nrmd"),
+                "-y",
+                yaml.dump(configuration),
+            ],
             stderr=subprocess.STDOUT,
             stdin=subprocess.PIPE,
         )
+        self.upstreampub = nrm.messaging.UpstreamPubClient(lib.pubAddress(self.commonOpts))
+        self.upstreampub.connect(wait=False)
         return
 
     def check_daemon(self):
@@ -101,7 +111,11 @@ class Local(object):
             lib.run(
                 self.commonOpts,
                 lib.simpleRun(
-                    w["cmd"], w["args"], [], yaml.dump(w["manifest"]), w["sliceID"]
+                    w["cmd"],
+                    w["args"],
+                    list(dict(os.environ).items()),
+                    yaml.dump(w["manifest"]),
+                    w["sliceID"],
                 ),
             )
 
@@ -111,7 +125,7 @@ class Local(object):
 
     def workload_recv(self):
         """ Receive a message from NRM's upstream API. """
-        pass
+        return self.upstreampub.recv()
 
     def workload_send(self, message):
         """ Send a message to NRM's upstream API. """

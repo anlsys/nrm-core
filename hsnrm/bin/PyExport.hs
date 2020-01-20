@@ -10,6 +10,8 @@ module PyExport
     runExport,
     simpleRunExport,
     defaultCommonOptsExport,
+    pubAddressExport,
+    rpcAddressExport,
   )
 where
 
@@ -21,6 +23,7 @@ import Foreign.C
 import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Client
+import NRM.Client (pubAddress, rpcAddress)
 import qualified NRM.ExportIO as E
 import NRM.Optparse.Client
 import NRM.Types.Cmd
@@ -42,6 +45,8 @@ foreign export ccall simpleRunExport :: Ex
 
 foreign export ccall runExport :: Ex
 
+foreign export ccall pubAddressExport :: Ex
+
 foreign export ccall finishedExport :: Ex
 
 showStateExport = exportIO E.showState
@@ -54,6 +59,12 @@ simpleRunExport = exportIO simpleRun
 
 runExport :: Ex
 runExport = exportIO run
+
+pubAddressExport :: Ex
+pubAddressExport = exportIO ((return :: a -> IO a) . pubAddress)
+
+rpcAddressExport :: Ex
+rpcAddressExport = exportIO ((return :: a -> IO a) . rpcAddress)
 
 finishedExport :: Ex
 finishedExport = exportIO finished

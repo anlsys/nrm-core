@@ -84,3 +84,6 @@ pynrm/venv/
 # documentation
 pynrm/docs/_build
 pynrm/docs/manifest.rst
+*/.ipynb_checkpoints
+.ipynb_checkpoints
+**/notebook_cookie_secret
