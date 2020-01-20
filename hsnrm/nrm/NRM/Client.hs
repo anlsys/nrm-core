@@ -10,7 +10,7 @@ module NRM.Client
     dispatchProtocol,
     connectWithOptions,
     pubAddress,
-    rpcAddress
+    rpcAddress,
   )
 where
 

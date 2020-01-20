@@ -88,8 +88,12 @@ class Local(object):
             stderr=subprocess.STDOUT,
             stdin=subprocess.PIPE,
         )
-        self.upstreampub = nrm.messaging.UpstreamPubClient(lib.pubAddress(self.commonOpts))
+        self.upstreampub = nrm.messaging.UpstreamPubClient(
+            lib.pubAddress(self.commonOpts)
+        )
+        print("connecting")
         self.upstreampub.connect(wait=False)
+        print("connected to %s" % lib.pubAddress(self.commonOpts))
         return
 
     def check_daemon(self):
@@ -108,6 +112,7 @@ class Local(object):
     def run_workload(self, workloads):
         """ Runs a workload via NRM. The `nrmd` daemon must be running. """
         for w in workloads:
+            print(yaml.dump(w["manifest"]))
             lib.run(
                 self.commonOpts,
                 lib.simpleRun(
@@ -125,6 +130,7 @@ class Local(object):
 
     def workload_recv(self):
         """ Receive a message from NRM's upstream API. """
+        print("receiving")
         return self.upstreampub.recv()
 
     def workload_send(self, message):

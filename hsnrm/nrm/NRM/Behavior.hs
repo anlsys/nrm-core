@@ -110,7 +110,7 @@ nrm _callTime (Req clientid msg) = do
   st <- get
   c <- ask
   msg & \case
-    UReq.ReqCPD _ -> rep clientid (URep.RepCPD $ maybe CPD.emptyProblem (`NRMCPD.toCPD` st) (controlCfg c))
+    UReq.ReqCPD _ -> rep clientid (URep.RepCPD $ maybe CPD.emptyProblem (`NRMCPD.toCPD` st) (controlCfg c)) -- TODO should return CPD even if control is disabled.
     UReq.ReqSliceList _ -> rep clientid (URep.RepList . URep.SliceList . LM.toList $ slices st)
     UReq.ReqGetState _ -> rep clientid (URep.RepGetState $ URep.GetState st)
     UReq.ReqGetConfig _ -> rep clientid (URep.RepGetConfig $ URep.GetConfig c)

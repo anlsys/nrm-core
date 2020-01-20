@@ -16,7 +16,6 @@ import qualified Data.ByteString as B
   ( getContents,
   )
 import Data.Default
-import Data.Default
 import Data.MessagePack
 import Dhall
 import LMap.Map as LM
@@ -96,8 +95,8 @@ parserCommon =
           <> value addr
       )
   where
-    rpc = pubPort def
-    pub = rpcPort def
+    pub = pubPort def
+    rpc = rpcPort def
     addr = upstreamBindAddress def
 
 data RunCfg
