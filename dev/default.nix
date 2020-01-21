@@ -7,6 +7,20 @@
 }:
 
 let
+  hslib = rec {
+    filter = path:
+      builtins.filterSource (path: _:
+        (baseNameOf path != ".hdevtools.sock") && (baseNameOf path != ".ghc.*")
+        && (baseNameOf path != "result") && (baseNameOf path != "README")
+        && (baseNameOf path != "dist")) path;
+  };
+  unbreak = x:
+    x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
+  callPackage = pkgs.lib.callPackageWith pkgs;
+
+in with pkgs;
+pkgs // rec {
+
   python = let
     packageOverrides = pself: psuper: {
       cffi = psuper.cffi.overridePythonAttrs (o: { doCheck = false; });
@@ -43,20 +57,6 @@ let
     self = python;
   };
   pythonPackages = python.passthru.pkgs;
-
-  hslib = rec {
-    filter = path:
-      builtins.filterSource (path: _:
-        (baseNameOf path != ".hdevtools.sock") && (baseNameOf path != ".ghc.*")
-        && (baseNameOf path != "result") && (baseNameOf path != "README")
-        && (baseNameOf path != "dist")) path;
-  };
-  unbreak = x:
-    x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
-  callPackage = pkgs.lib.callPackageWith pkgs;
-
-in with pkgs;
-pkgs // rec {
 
   dhall-to-cabal-resources = pkgs.stdenv.mkDerivation {
     name = "dhall-to-cabal-resources";
@@ -214,7 +214,9 @@ pkgs // rec {
       export NIX_GHC_LIBDIR="${haskellPackages.nrmlib.env.NIX_GHC_LIBDIR}"
       export LC_ALL="en_US.UTF-8";
       export LOCALE_ARCHIVE="${pkgs.glibcLocales}/lib/locale/locale-archive";
-      export CABALFILE=${cabalFile ./cabal "dev.dhall"} # for easy manual vendoring
+      export CABALFILE=${
+        cabalFile ./cabal "dev.dhall"
+      } # for easy manual vendoring
       cp $CABALFILE hsnrm/hsnrm.cabal
       chmod +rw hsnrm/hsnrm.cabal
     '';
