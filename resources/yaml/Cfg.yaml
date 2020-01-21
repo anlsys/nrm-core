@@ -7,4 +7,6 @@
 #
 #     this file is generated, modifications will be erased.
 #
-{}
+raplCfg:
+  raplFrequency: 1
+  raplPath: /sys/devices/virtual/powercap/intel-rapl

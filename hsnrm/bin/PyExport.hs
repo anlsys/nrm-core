@@ -1,3 +1,4 @@
+{-# LANGUAGE ScopedTypeVariables #-}
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 -- |
@@ -15,6 +16,7 @@ module PyExport
   )
 where
 
+import CPD.Core (Problem)
 import qualified Data.ByteString as BS
 import Data.Default
 import Data.Restricted
@@ -49,6 +51,8 @@ foreign export ccall pubAddressExport :: Ex
 
 foreign export ccall finishedExport :: Ex
 
+foreign export ccall cpdExport :: Ex
+
 showStateExport = exportIO E.showState
 
 defaultCommonOptsExport :: Ex
@@ -69,6 +73,9 @@ rpcAddressExport = exportIO ((return :: a -> IO a) . rpcAddress)
 finishedExport :: Ex
 finishedExport = exportIO finished
 
+cpdExport :: Ex
+cpdExport = exportIO cpd
+
 defaultCommonOpts :: IO CommonOpts
 defaultCommonOpts = return def
 
@@ -86,12 +93,26 @@ simpleRun cmd args env manifest sliceID = decodeManifest (toS manifest) & \case
       detachCmd = True
     }
 
-run :: CommonOpts -> Run -> IO ()
-run common runreq = processReq common (ReqRun runreq)
+run :: CommonOpts -> Run -> IO Rep.Start
+run common runreq = doReqRep common (ReqRun runreq) $ \case
+  (RepStart start) -> start
+  (RepStartFailure StartFailure) -> panic "command start failed."
+  _ -> panic "command run failed"
 
 finished :: CommonOpts -> IO Bool
-finished common = do
-  let req = (ReqSliceList Req.SliceList)
+finished common = doReqRep common (ReqSliceList Req.SliceList) $ \case
+  (RepList (Rep.SliceList l)) -> l & \case
+    [] -> True
+    _ -> False
+  _ -> panic "command 'slicelist' failed"
+
+cpd :: CommonOpts -> IO Problem
+cpd common = doReqRep common (ReqCPD Req.CPD) $ \case
+  (RepCPD problem) -> problem
+  _ -> panic "reply wasn't in protocol"
+
+doReqRep :: CommonOpts -> Req -> (Rep.Rep -> a) -> IO a
+doReqRep common req f = do
   uuid <-
     UC.nextUpstreamClientID <&> \case
       Nothing -> panic "couldn't generate next client ID"
@@ -104,7 +125,4 @@ finished common = do
     ZMQ.send s [] (toS $ encode req)
     ZMQ.receive s <&> decodeT . toS >>= \case
       Nothing -> panic "Couldn't decode reply"
-      Just (RepList (Rep.SliceList l)) -> l & \case
-        [] -> return True
-        _ -> return False
-      _ -> panic "reply wasn't in protocol"
+      Just x -> return (f x)

@@ -110,7 +110,11 @@ nrm _callTime (Req clientid msg) = do
   st <- get
   c <- ask
   msg & \case
-    UReq.ReqCPD _ -> rep clientid (URep.RepCPD $ maybe CPD.emptyProblem (`NRMCPD.toCPD` st) (controlCfg c)) -- TODO should return CPD even if control is disabled.
+    UReq.ReqCPD _ ->
+      rep
+        clientid
+        $ URep.RepCPD
+        $ NRMCPD.toCPD (controlCfg c) st
     UReq.ReqSliceList _ -> rep clientid (URep.RepList . URep.SliceList . LM.toList $ slices st)
     UReq.ReqGetState _ -> rep clientid (URep.RepGetState $ URep.GetState st)
     UReq.ReqGetConfig _ -> rep clientid (URep.RepGetConfig $ URep.GetConfig c)
@@ -203,7 +207,7 @@ nrm callTime DoSensor = do
       pub (UPub.PubMeasurements callTime ms)
         >> doControl (Event callTime ms)
     Nothing ->
-      let mcpd = (`NRMCPD.toCPD` st') <$> c
+      let mcpd = (`NRMCPD.toCPD` st') <$> Just c
        in for_ mcpd $ \cpd ->
             pub (UPub.PubCPD callTime cpd)
               >> doControl (Reconfigure callTime)
@@ -218,7 +222,7 @@ doControl input = do
     logInfo ("Control input:" <> show input)
     mccfg & \case
       Nothing -> return ()
-      Just ccfg -> banditCartesianProductControl ccfg (NRMCPD.toCPD ccfg st) input >>= \case
+      Just ccfg -> banditCartesianProductControl ccfg (NRMCPD.toCPD (Just ccfg) st) input >>= \case
         DoNothing -> return ()
         Decision d -> forM_ d $ \(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->
           fromCPDKey actuatorID & \case

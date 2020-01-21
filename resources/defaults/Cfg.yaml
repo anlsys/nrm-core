@@ -22,6 +22,9 @@ downstreamCfg:
   downstreamBindAddress: ipc:///tmp/nrm-downstream-event
 nodeos: false
 hwloc: hwloc
+raplCfg:
+  raplFrequency: 1
+  raplPath: /sys/devices/virtual/powercap/intel-rapl
 dummy: true
 slice_runtime: dummy
 hwmonCfg:

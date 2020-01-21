@@ -112,7 +112,6 @@ class Local(object):
     def run_workload(self, workloads):
         """ Runs a workload via NRM. The `nrmd` daemon must be running. """
         for w in workloads:
-            print(yaml.dump(w["manifest"]))
             lib.run(
                 self.commonOpts,
                 lib.simpleRun(

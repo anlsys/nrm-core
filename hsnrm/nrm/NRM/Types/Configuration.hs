@@ -150,7 +150,7 @@ instance Default Cfg where
       slice_runtime = Dummy,
       downstreamCfg = def,
       upstreamCfg = def,
-      raplCfg = def,
+      raplCfg = Just def,
       hwmonCfg = def,
       verbose = NRM.Types.Configuration.Error,
       controlCfg = Nothing

@@ -27,12 +27,12 @@ import Numeric.Interval hiding (elem)
 import Protolude
 import Refined (unrefine)
 
-toCPD :: ControlCfg -> NRMState -> Problem
-toCPD cfg = do
-  sensors <- cpdSensors
-  actuators <- cpdActuators
-  (objectives, constraints) <- throughputConstrained cfg
-  return $ Problem {..}
+toCPD :: Maybe ControlCfg -> NRMState -> Problem
+toCPD cfg st = Problem {..}
+  where
+    sensors = cpdSensors st
+    actuators = cpdActuators st
+    (objectives, constraints) = fromMaybe ([], []) (throughputConstrained <$> cfg <*> Just st)
 
 throughputConstrained ::
   ControlCfg ->
