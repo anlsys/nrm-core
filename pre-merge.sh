@@ -27,10 +27,11 @@ nix-shell --pure -p '(import ./.).fd' '(import ./.).shellcheck' --run bash <<< '
   done
 '
 
-nix-shell --pure -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
+nix-shell --pure -p '(import ./.).pythonPackages.black' --run bash <<< '
   black pynrm/bin/*
   black pynrm/nrm/*.py
 '
+
 ./shake.sh doc
 ./shake.sh codegen
 ./shake.sh build

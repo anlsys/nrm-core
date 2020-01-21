@@ -1102,15 +1102,7 @@
             "type": "object",
             "properties": {
                 "repGetState": {
-                    "required": [
-                        "state"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "state": {
-                            "type": "string"
-                        }
-                    }
+                    "type": "string"
                 }
             }
         },

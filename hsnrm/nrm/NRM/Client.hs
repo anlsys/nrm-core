@@ -181,7 +181,7 @@ reqrep s opts = \case
       msg <- ZMQ.receive s <&> toS
       case decodeT msg of
         Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepGetState (URep.GetState st)) ->
+        Just (URep.RepGetState st) ->
           putText $ pShowOpts opts st
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout

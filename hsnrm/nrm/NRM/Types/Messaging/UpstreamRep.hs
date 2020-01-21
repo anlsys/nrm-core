@@ -25,7 +25,6 @@ module NRM.Types.Messaging.UpstreamRep
     ThisCmdKilled (..),
     GetPower (..),
     GetConfig (..),
-    GetState (..),
   )
 where
 
@@ -72,7 +71,7 @@ data Rep
   | -- | Power query response
     RepGetPower GetPower
   | -- | State query response
-    RepGetState GetState
+    RepGetState NRMState
   | -- | Configuration query response
     RepGetConfig GetConfig
   deriving (Show, Generic, MessagePack, NRMMessage)
@@ -166,13 +165,6 @@ newtype GetPower
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON GetPower
-
-newtype GetState
-  = GetState
-      { state :: S.NRMState
-      }
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON GetState
 
 newtype GetConfig
   = GetConfig

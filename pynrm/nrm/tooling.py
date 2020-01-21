@@ -21,6 +21,22 @@ def _exitCodeBool(*args, **kwargs):
     return _doesntThrow(subprocess.check_call, *args, **kwargs)
 
 
+class CPD(object):
+    def __init__(self, cpd):
+        self.cpd = cpd
+
+    def __str__(self):
+        return lib.showCpd(self.cpd)
+
+
+class NRMState(object):
+    def __init__(self, cpd):
+        self.state = cpd
+
+    def __str__(self):
+        return lib.showState(self.state)
+
+
 class Remote(object):
     def __init__(self, target):
         self.target = target
@@ -49,6 +65,9 @@ class Remote(object):
 
     def run_workload(self, workload):
         """ Runs a workload via NRM. The `nrmd` daemon must be running. """
+        pass
+
+    def get_cpd(self):
         pass
 
     def workload_finished(self):
@@ -114,7 +133,7 @@ class Local(object):
         for w in workloads:
             lib.run(
                 self.commonOpts,
-                lib.simpleRun(
+                lib.mkSimpleRun(
                     w["cmd"],
                     w["args"],
                     list(dict(os.environ).items()),
@@ -122,6 +141,14 @@ class Local(object):
                     w["sliceID"],
                 ),
             )
+
+    def get_cpd(self):
+        """ Obtain the current Control Problem Description """
+        return CPD(lib.cpd(self.commonOpts))
+
+    def get_state(self):
+        """ Obtain the current daemon state """
+        return NRMState(lib.state(self.commonOpts))
 
     def workload_finished(self):
         """ Checks NRM to see whether all tasks are finished. """

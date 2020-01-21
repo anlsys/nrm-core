@@ -2,7 +2,7 @@
 <html>
 <head><meta charset="utf-8" />
 
-<title>tutorial</title>
+<title>configuration</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -13116,8 +13116,7 @@ div#notebook {
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="NRM-python-upstream-client-library-tutorial">NRM python upstream client library tutorial<a class="anchor-link" href="#NRM-python-upstream-client-library-tutorial">&#182;</a></h1><p>This tutorial covers the use of NRM's python upstream client library, in the context of running an external resource management strategy. Its cell's output are deterministic, and the executed version that is vendored in the source tree is checked by the project's CI, so its behavior should always be up-to-date with the latest version of the software, and no cells should be throwing exceptions.</p>
-<p>The next few cells are for setup purposes.</p>
+<h1 id="NRM-Configuration/Manifest-guide">NRM Configuration/Manifest guide<a class="anchor-link" href="#NRM-Configuration/Manifest-guide">&#182;</a></h1><p>This notebook documents NRM's configuration and manifest format. The two next cells are for setup purposes.</p>
 
 </div>
 </div>
@@ -13160,10 +13159,10 @@ div#notebook {
 
 
 
-<div id="da43b775-72c8-44c6-895a-b60b8f2bec52"></div>
+<div id="1503211b-04db-4765-b82b-6215e2acda5b"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#da43b775-72c8-44c6-895a-b60b8f2bec52');
+var element = $('#1503211b-04db-4765-b82b-6215e2acda5b');
 
             setTimeout(function() {
                 var nbb_cell_id = 2;
@@ -13192,8 +13191,14 @@ var element = $('#da43b775-72c8-44c6-895a-b60b8f2bec52');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Setup">Setup<a class="anchor-link" href="#Setup">&#182;</a></h2><p>This notebook uses <code>nrm</code>'s python library bindings and needs the <code>nrmd</code> daemon in the <code>$PATH</code>.</p>
-<p>Assuming the project is cloned <strong>with submodules updated</strong> (and the code unmodified), one needs to run the following from the root of the project before running it:</p>
+<h2 id="Daemon-configuration">Daemon configuration<a class="anchor-link" href="#Daemon-configuration">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><code>nrmd</code>'s configuration can be defined in the json/yaml/<a href="https://dhall-lang.org/">Dhall</a> formats. Admissible values are defined in file <a href="./resources/configurationSchema.json">resources/configurationSchema.json</a>, and alternatively available as a Dhall type in <a href="resources/types/Configuration.dhall">resources/types/Cfg.dhall</a>. Schema files get large, so the next cells shows the Dhall Configuration type as a more readable alternative.</p>
 
 </div>
 </div>
@@ -13203,11 +13208,8 @@ var element = $('#da43b775-72c8-44c6-895a-b60b8f2bec52');
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
-<span class="o">%%</span><span class="n">bash</span>
-<span class="o">./</span><span class="n">shake</span><span class="o">.</span><span class="n">sh</span> <span class="n">build</span> <span class="c1"># for the daemon </span>
-<span class="o">./</span><span class="n">shake</span><span class="o">.</span><span class="n">sh</span> <span class="n">client</span> <span class="c1"># for the upstream client</span>
-<span class="o">./</span><span class="n">shake</span><span class="o">.</span><span class="n">sh</span> <span class="n">pyclient</span> <span class="c1"># for the shared client library</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="k">script</span> dhall resolve
+./resources/defaults/Cfg.dhall
 </pre></div>
 
     </div>
@@ -13223,18 +13225,81 @@ var element = $('#da43b775-72c8-44c6-895a-b60b8f2bec52');
     <div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>{ argo_nodeos_config =
+    &#34;argo_nodeos_config&#34;
+, argo_perf_wrapper =
+    &#34;nrm-perfwrapper&#34;
+, controlCfg =
+    None
+    { learnCfg :
+        &lt; KnapsackConstraints :
+            { _1 : { _1 : Double } }
+        | LagrangeConstraints :
+            { _1 : { _1 : Double } }
+        &gt;
+    , minimumControlInterval :
+        { fromuS : Double }
+    , referenceMeasurementRoundInterval :
+        Integer
+    , speedThreshold :
+        Double
+    }
+, downstreamCfg =
+    { downstreamBindAddress = &#34;ipc:///tmp/nrm-downstream-event&#34; }
+, dummy =
+    True
+, hwloc =
+    &#34;hwloc&#34;
+, hwmonCfg =
+    { hwmonEnabled = True, hwmonPath = &#34;/sys/class/hwmon&#34; }
+, libnrmPath =
+    None Text
+, logfile =
+    &#34;/tmp/nrm.log&#34;
+, nodeos =
+    False
+, perf =
+    &#34;perf&#34;
+, pmpi_lib =
+    &#34;pmpi_lib&#34;
+, raplCfg =
+    Some
+    { raplFrequency =
+        { fromHz = 1.0 }
+    , raplPath =
+        &#34;/sys/devices/virtual/powercap/intel-rapl&#34;
+    }
+, singularity =
+    False
+, slice_runtime =
+    &lt; Dummy | Nodeos | Singularity &gt;.Dummy
+, upstreamCfg =
+    { pubPort = +2345, rpcPort = +3456, upstreamBindAddress = &#34;*&#34; }
+, verbose =
+    &lt; Debug | Error | Info &gt;.Error
+}
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
 
 
 
-<div id="81e3ec73-6642-4a46-a325-54bee0c1211e"></div>
+
+
+<div id="d75b2683-4066-4f8d-97da-3e54b227ee6d"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#81e3ec73-6642-4a46-a325-54bee0c1211e');
+var element = $('#d75b2683-4066-4f8d-97da-3e54b227ee6d');
 
             setTimeout(function() {
                 var nbb_cell_id = 3;
-                var nbb_unformatted_code = "%%capture\n%%bash\n./shake.sh build # for the daemon \n./shake.sh client # for the upstream client\n./shake.sh pyclient # for the shared client library";
-                var nbb_formatted_code = "%%capture\n%%bash\n./shake.sh build # for the daemon \n./shake.sh client # for the upstream client\n./shake.sh pyclient # for the shared client library";
+                var nbb_unformatted_code = "%%script dhall resolve\n./resources/defaults/Cfg.dhall";
+                var nbb_formatted_code = "%%script dhall resolve\n./resources/defaults/Cfg.dhall";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13258,7 +13323,7 @@ var element = $('#81e3ec73-6642-4a46-a325-54bee0c1211e');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>This allows to use the command-line daemon and client in the working directory, should you need to for debugging purposes. Those should be available in the jupyter-lab terminal.</p>
+<p>Optional values are filled using defaults that can be found in <a href="resources/defaults/Configuration.json">resources/defaults/Cfg.json</a> (also available in the Dhall format):</p>
 
 </div>
 </div>
@@ -13269,7 +13334,7 @@ var element = $('#81e3ec73-6642-4a46-a325-54bee0c1211e');
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span>%%bash
-nrmd --help
+cat ./resources/defaults/Cfg.json <span class="p">|</span> jq
 </pre></div>
 
     </div>
@@ -13286,19 +13351,35 @@ nrmd --help
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>nrmd
-
-Usage: &lt;unknown&gt; [-i|--stdin] [CONFIG] [-y|--yaml] [-e|--edit]
-  NRM Daemon
-
-Available options:
-  -h,--help                Show this help text
-  -i,--stdin               Read configuration on stdin.
-  CONFIG                   Input configuration with .yml/.yaml/.dh/.dhall
-                           extension. Leave void for stdin (dhall) input.
-  -y,--yaml                Assume configuration to be yaml instead of dhall.
-  -e,--edit                Edit yaml in $EDITOR before running the NRM daemon.
-  -h,--help                Show this help text
+<pre>{
+  &#34;pmpi_lib&#34;: &#34;pmpi_lib&#34;,
+  &#34;verbose&#34;: &#34;error&#34;,
+  &#34;logfile&#34;: &#34;/tmp/nrm.log&#34;,
+  &#34;singularity&#34;: false,
+  &#34;argo_nodeos_config&#34;: &#34;argo_nodeos_config&#34;,
+  &#34;upstreamCfg&#34;: {
+    &#34;upstreamBindAddress&#34;: &#34;*&#34;,
+    &#34;rpcPort&#34;: 3456,
+    &#34;pubPort&#34;: 2345
+  },
+  &#34;perf&#34;: &#34;perf&#34;,
+  &#34;argo_perf_wrapper&#34;: &#34;nrm-perfwrapper&#34;,
+  &#34;downstreamCfg&#34;: {
+    &#34;downstreamBindAddress&#34;: &#34;ipc:///tmp/nrm-downstream-event&#34;
+  },
+  &#34;nodeos&#34;: false,
+  &#34;hwloc&#34;: &#34;hwloc&#34;,
+  &#34;raplCfg&#34;: {
+    &#34;raplFrequency&#34;: 1,
+    &#34;raplPath&#34;: &#34;/sys/devices/virtual/powercap/intel-rapl&#34;
+  },
+  &#34;dummy&#34;: true,
+  &#34;slice_runtime&#34;: &#34;dummy&#34;,
+  &#34;hwmonCfg&#34;: {
+    &#34;hwmonPath&#34;: &#34;/sys/class/hwmon&#34;,
+    &#34;hwmonEnabled&#34;: true
+  }
+}
 </pre>
 </div>
 </div>
@@ -13311,15 +13392,15 @@ Available options:
 
 
 
-<div id="2e00abb9-0eba-46b7-897d-b28cb0f05663"></div>
+<div id="cda761da-7094-41b8-9ec0-02c0eaa30539"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#2e00abb9-0eba-46b7-897d-b28cb0f05663');
+var element = $('#cda761da-7094-41b8-9ec0-02c0eaa30539');
 
             setTimeout(function() {
                 var nbb_cell_id = 4;
-                var nbb_unformatted_code = "%%bash\nnrmd --help";
-                var nbb_formatted_code = "%%bash\nnrmd --help";
+                var nbb_unformatted_code = "%%bash\ncat ./resources/defaults/Cfg.json | jq";
+                var nbb_formatted_code = "%%bash\ncat ./resources/defaults/Cfg.json | jq";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13339,6 +13420,21 @@ var element = $('#2e00abb9-0eba-46b7-897d-b28cb0f05663');
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Manifest-configuration">Manifest configuration<a class="anchor-link" href="#Manifest-configuration">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Example manifest files are in <a href="../resources/examples">resources/examples</a> in JSON/YAML/Dhall format. For instance, the manifest file <a href="../resources/examples/perfwrap.json">resources/examples/perfwrap.json</a> enables enables performance monitoring:</p>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -13346,7 +13442,7 @@ var element = $('#2e00abb9-0eba-46b7-897d-b28cb0f05663');
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span>%%bash
-nrm --help
+cat resources/examples/perfwrap.json <span class="p">|</span> jq
 </pre></div>
 
     </div>
@@ -13363,27 +13459,30 @@ nrm --help
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>nrm
-
-Usage: nrm COMMAND
-  NRM Client
-
-Available options:
-  -h,--help                Show this help text
-  COMMAND                  Choice of operation.
-
-Available commands:
-  run                      Run the application via NRM
-  killcmd                  Kill cmd
-  killslice                Kill slice
-  setpower                 Set power limit
-  cpd                      Show current CPD
-  list                     List existing slices
-  state                    Show NRM state
-  config                   Show NRM configuration
-  listen-raw               Listen to raw NRM upstream pub messages
-  listen-cpd               Listen to CPD messages
-  listen-all               Listen to all upstream pub messages
+<pre>{
+  &#34;hwbind&#34;: false,
+  &#34;app&#34;: {
+    &#34;scheduler&#34;: {
+      &#34;fIFO&#34;: {}
+    },
+    &#34;power&#34;: {
+      &#34;slowdown&#34;: 1,
+      &#34;profile&#34;: false,
+      &#34;policy&#34;: &#34;noPowerPolicy&#34;
+    },
+    &#34;perfwrapper&#34;: {
+      &#34;perfwrapper&#34;: {
+        &#34;perfLimit&#34;: 100000,
+        &#34;perfFreq&#34;: 1
+      }
+    },
+    &#34;slice&#34;: {
+      &#34;cpus&#34;: 1,
+      &#34;mems&#34;: 1
+    }
+  },
+  &#34;name&#34;: &#34;default&#34;
+}
 </pre>
 </div>
 </div>
@@ -13396,15 +13495,15 @@ Available commands:
 
 
 
-<div id="37bff09d-6a9d-4048-8b6b-3dbf510c30bf"></div>
+<div id="01b4eb9b-7834-443d-98f2-83f9a62df74e"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#37bff09d-6a9d-4048-8b6b-3dbf510c30bf');
+var element = $('#01b4eb9b-7834-443d-98f2-83f9a62df74e');
 
             setTimeout(function() {
                 var nbb_cell_id = 5;
-                var nbb_unformatted_code = "%%bash\nnrm --help";
-                var nbb_formatted_code = "%%bash\nnrm --help";
+                var nbb_unformatted_code = "%%bash\ncat resources/examples/perfwrap.json | jq";
+                var nbb_formatted_code = "%%bash\ncat resources/examples/perfwrap.json | jq";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13428,144 +13527,18 @@ var element = $('#37bff09d-6a9d-4048-8b6b-3dbf510c30bf');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Defining-experiments">Defining experiments<a class="anchor-link" href="#Defining-experiments">&#182;</a></h2><p>Now that the daemon is properly set-up, we will configure and run some experiments using the python interface.</p>
-<p>The next cell imports the upstream client library. and configures hosts.</p>
+<p>Manifest options are documented in schema file <a href="../resources/manifestSchema.json">resources/manifestSchema.json</a>. The next cell shows the corresponding <a href="https://dhall-lang.org/">Dhall</a> type.</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">nrm.tooling</span> <span class="k">import</span> <span class="n">Local</span><span class="p">,</span> <span class="n">Remote</span><span class="p">,</span> <span class="n">NRMState</span><span class="p">,</span> <span class="n">CPD</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
-<div id="6b6c0174-efcc-4e6a-8738-7acf29b4b4b1"></div>
-<div class="output_subarea output_javascript ">
-<script type="text/javascript">
-var element = $('#6b6c0174-efcc-4e6a-8738-7acf29b4b4b1');
-
-            setTimeout(function() {
-                var nbb_cell_id = 14;
-                var nbb_unformatted_code = "from nrm.tooling import Local, Remote, NRMState, CPD";
-                var nbb_formatted_code = "from nrm.tooling import Local, Remote, NRMState, CPD";
-                var nbb_cells = Jupyter.notebook.get_cells();
-                for (var i = 0; i < nbb_cells.length; ++i) {
-                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
-                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
-                             nbb_cells[i].set_text(nbb_formatted_code);
-                        }
-                        break;
-                    }
-                }
-            }, 500);
-            
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>This notebook will start <code>nrmd</code> on the same machine as the notebok, but the same interface should be available for remote execution:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[15]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span> <span class="o">=</span> <span class="n">Local</span><span class="p">()</span>
-<span class="c1"># host=Remote( target=&quot;cc@129.114.108.201&quot;)</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
-<div id="2dbe839d-271b-4144-ab22-f09c36eaa6cb"></div>
-<div class="output_subarea output_javascript ">
-<script type="text/javascript">
-var element = $('#2dbe839d-271b-4144-ab22-f09c36eaa6cb');
-
-            setTimeout(function() {
-                var nbb_cell_id = 15;
-                var nbb_unformatted_code = "host = Local()\n# host=Remote( target=\"cc@129.114.108.201\")";
-                var nbb_formatted_code = "host = Local()\n# host=Remote( target=\"cc@129.114.108.201\")";
-                var nbb_cells = Jupyter.notebook.get_cells();
-                for (var i = 0; i < nbb_cells.length; ++i) {
-                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
-                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
-                             nbb_cells[i].set_text(nbb_formatted_code);
-                        }
-                        break;
-                    }
-                }
-            }, 500);
-            
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Note that the two classes (<code>Local</code> and <code>Remote</code>) offer the same methods to start nrmd and interact via blocking message passing primitives. The supported methods are the following:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">inspect</span>
-
-<span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getmembers</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">predicate</span><span class="o">=</span><span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">):</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="k">script</span> dhall resolve
+./resources/types/Manifest.dhall
 </pre></div>
 
     </div>
@@ -13582,17 +13555,41 @@ var element = $('#2dbe839d-271b-4144-ab22-f09c36eaa6cb');
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>__init__: None
-check_daemon:  checks if nrmd is alive 
-get_cpd:  Obtain the current Control Problem Description 
-get_state:  Obtain the current daemon state 
-run_workload:  Runs a workload via NRM. The `nrmd` daemon must be running. 
-start_daemon:  start nrmd 
-stop_daemon:  stops nrmd 
-workload_exit_status:  Check the workload&#39;s exit status. 
-workload_finished:  Checks NRM to see whether all tasks are finished. 
-workload_recv:  Receive a message from NRM&#39;s upstream API. 
-workload_send:  Send a message to NRM&#39;s upstream API. 
+<pre>{ app :
+    { instrumentation :
+        Optional { ratelimit : { fromHz : Double } }
+    , perfwrapper :
+        &lt; Perfwrapper :
+            { _1 :
+                { perfFreq :
+                    { fromHz : Double }
+                , perfLimit :
+                    { fromOps : Integer }
+                }
+            }
+        | PerfwrapperDisabled
+        &gt;
+    , power :
+        { policy :
+            &lt; Combined | DDCM | DVFS | NoPowerPolicy &gt;
+        , profile :
+            Bool
+        , slowdown :
+            Integer
+        }
+    , scheduler :
+        &lt; FIFO | HPC | Other : { _1 : Integer } &gt;
+    , slice :
+        { cpus : Integer, mems : Integer }
+    }
+, hwbind :
+    Bool
+, image :
+    Optional
+    { binds : Optional (List Text), imagetype : &lt; Docker | Sif &gt;, path : Text }
+, name :
+    Text
+}
 </pre>
 </div>
 </div>
@@ -13605,15 +13602,15 @@ workload_send:  Send a message to NRM&#39;s upstream API.
 
 
 
-<div id="cca7733f-d1c8-4c08-94ce-00c52a1ba2ef"></div>
+<div id="748868c5-7568-433d-9add-dc9a86493241"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#cca7733f-d1c8-4c08-94ce-00c52a1ba2ef');
+var element = $('#748868c5-7568-433d-9add-dc9a86493241');
 
             setTimeout(function() {
-                var nbb_cell_id = 16;
-                var nbb_unformatted_code = "import inspect\n\nfor a, x in inspect.getmembers(host, predicate=inspect.ismethod):\n    print(\"%s: %s\" % (a, x.__doc__))";
-                var nbb_formatted_code = "import inspect\n\nfor a, x in inspect.getmembers(host, predicate=inspect.ismethod):\n    print(\"%s: %s\" % (a, x.__doc__))";
+                var nbb_cell_id = 6;
+                var nbb_unformatted_code = "%%script dhall resolve\n./resources/types/Manifest.dhall";
+                var nbb_formatted_code = "%%script dhall resolve\n./resources/types/Manifest.dhall";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13637,172 +13634,18 @@ var element = $('#cca7733f-d1c8-4c08-94ce-00c52a1ba2ef');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The next cell defines some node experimental node (<code>nrmd</code>) daemon configurations and some workloads. Please see notebook <a href="notebooks/configuration.ipynb">notebooks/configuration.ipynb</a> for an overview of <code>nrmd</code>'s and the "Manifest"'s configuration format.</p>
+<p>Under-specified manifests like the one in our <code>workloads</code> above (with missing optional fields from the schema) fill missing values with defaults, which are located in file <a href="../../resources/examples/default.json">resources/defaults/Manifest.json</a>:</p>
 
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">daemonCfgs</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;redirected_log&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;logfile&quot;</span><span class="p">:</span> <span class="s2">&quot;/tmp/logfile_experiment2&quot;</span><span class="p">,</span> <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">},</span>
-    <span class="c1"># &quot;other&quot;:your code</span>
-<span class="p">}</span>
-
-<span class="n">workloads</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;dummy&quot;</span><span class="p">:[{</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span><span class="s2">&quot;sleep&quot;</span><span class="p">,</span>
-              <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;60&quot;</span><span class="p">]</span> <span class="p">,</span>
-              <span class="s2">&quot;sliceID&quot;</span><span class="p">:</span> <span class="s2">&quot;toto&quot;</span><span class="p">,</span>
-              <span class="s2">&quot;manifest&quot;</span><span class="p">:{</span>
-                  <span class="s2">&quot;app&quot;</span><span class="p">:</span> <span class="p">{</span>
-                              <span class="s2">&quot;slice&quot;</span><span class="p">:</span> <span class="p">{</span>
-                                 <span class="s2">&quot;cpus&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                                 <span class="s2">&quot;mems&quot;</span><span class="p">:</span> <span class="mi">1</span> 
-                              <span class="p">},</span>    
-                              <span class="s2">&quot;perfwrapper&quot;</span><span class="p">:</span> <span class="p">{</span>
-                                 <span class="s2">&quot;perfwrapper&quot;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s2">&quot;perfLimit&quot;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span>
-                                    <span class="s2">&quot;perfFreq&quot;</span><span class="p">:</span> <span class="mi">1</span>
-                                  <span class="p">}</span>
-                              <span class="p">}</span>
-                         <span class="p">},</span>
-                          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;perfwrap&quot;</span><span class="p">,</span>
-                         <span class="p">}</span>
-            <span class="p">}</span>
-            <span class="p">],</span>
-    <span class="c1">#&quot;other&quot;:your code</span>
-<span class="p">}</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
-<div id="1b66bd6d-c61a-4caf-8b5f-6685ee2feab5"></div>
-<div class="output_subarea output_javascript ">
-<script type="text/javascript">
-var element = $('#1b66bd6d-c61a-4caf-8b5f-6685ee2feab5');
-
-            setTimeout(function() {
-                var nbb_cell_id = 17;
-                var nbb_unformatted_code = "daemonCfgs = {\n    \"redirected_log\": {\"logfile\": \"/tmp/logfile_experiment2\", \"verbose\": \"info\"},\n    # \"other\":your code\n}\n\nworkloads = {\n    \"dummy\":[{\"cmd\":\"sleep\",\n              \"args\": [\"60\"] ,\n              \"sliceID\": \"toto\",\n              \"manifest\":{\n                  \"app\": {\n                              \"slice\": {\n                                 \"cpus\": 1,\n                                 \"mems\": 1 \n                              },    \n                              \"perfwrapper\": {\n                                 \"perfwrapper\": {\n                                    \"perfLimit\": 100000,\n                                    \"perfFreq\": 1\n                                  }\n                              }\n                         },\n                          \"name\": \"perfwrap\",\n                         }\n            }\n            ],\n    #\"other\":your code\n}";
-                var nbb_formatted_code = "daemonCfgs = {\n    \"redirected_log\": {\"logfile\": \"/tmp/logfile_experiment2\", \"verbose\": \"info\"},\n    # \"other\":your code\n}\n\nworkloads = {\n    \"dummy\": [\n        {\n            \"cmd\": \"sleep\",\n            \"args\": [\"60\"],\n            \"sliceID\": \"toto\",\n            \"manifest\": {\n                \"app\": {\n                    \"slice\": {\"cpus\": 1, \"mems\": 1},\n                    \"perfwrapper\": {\n                        \"perfwrapper\": {\"perfLimit\": 100000, \"perfFreq\": 1}\n                    },\n                },\n                \"name\": \"perfwrap\",\n            },\n        }\n    ],\n    # \"other\":your code\n}";
-                var nbb_cells = Jupyter.notebook.get_cells();
-                for (var i = 0; i < nbb_cells.length; ++i) {
-                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
-                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
-                             nbb_cells[i].set_text(nbb_formatted_code);
-                        }
-                        break;
-                    }
-                }
-            }, 500);
-            
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>The next cell defines some experiments:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">experiments</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;example&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">daemonCfgs</span><span class="p">[</span><span class="s2">&quot;redirected_log&quot;</span><span class="p">],</span> <span class="n">workloads</span><span class="p">[</span><span class="s2">&quot;dummy&quot;</span><span class="p">]),</span>
-    <span class="c1"># &quot;other&quot;: your code</span>
-<span class="p">}</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
-<div id="b7e03e9f-026b-4f94-8c80-d4fcc142c518"></div>
-<div class="output_subarea output_javascript ">
-<script type="text/javascript">
-var element = $('#b7e03e9f-026b-4f94-8c80-d4fcc142c518');
-
-            setTimeout(function() {
-                var nbb_cell_id = 18;
-                var nbb_unformatted_code = "experiments = {\n    \"example\": (daemonCfgs[\"redirected_log\"], workloads[\"dummy\"]),\n    # \"other\": your code\n}";
-                var nbb_formatted_code = "experiments = {\n    \"example\": (daemonCfgs[\"redirected_log\"], workloads[\"dummy\"]),\n    # \"other\": your code\n}";
-                var nbb_cells = Jupyter.notebook.get_cells();
-                for (var i = 0; i < nbb_cells.length; ++i) {
-                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
-                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
-                             nbb_cells[i].set_text(nbb_formatted_code);
-                        }
-                        break;
-                    }
-                }
-            }, 500);
-            
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Running-experiments">Running experiments<a class="anchor-link" href="#Running-experiments">&#182;</a></h2><p>The next cell shows how to start the daemon and obtain the current control description problem.</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">(</span><span class="n">daemonCfgs</span><span class="p">[</span><span class="s2">&quot;redirected_log&quot;</span><span class="p">])</span>
-<span class="k">assert</span> <span class="n">host</span><span class="o">.</span><span class="n">check_daemon</span><span class="p">()</span>
-<span class="n">cpd</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">get_cpd</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The control problem description is:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cpd</span><span class="p">)</span>
+<div class=" highlight hl-ipython3"><pre><span></span>%%bash
+cat resources/defaults/Manifest.json <span class="p">|</span> jq
 </pre></div>
 
     </div>
@@ -13819,15 +13662,27 @@ var element = $('#b7e03e9f-026b-4f94-8c80-d4fcc142c518');
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>connecting
-connected to tcp://localhost:2345
-The control problem description is:
- Problem 
-    <span class="ansi-cyan-intense-fg ansi-bold">{</span> sensors = fromList <span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">]</span>
-    <span class="ansi-cyan-intense-fg ansi-bold">,</span> actuators = fromList <span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">]</span>
-    <span class="ansi-cyan-intense-fg ansi-bold">,</span> objectives = <span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">]</span>
-    <span class="ansi-cyan-intense-fg ansi-bold">,</span> constraints = <span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">]</span>
-    <span class="ansi-cyan-intense-fg ansi-bold">}</span> 
+<pre>{
+  &#34;hwbind&#34;: false,
+  &#34;app&#34;: {
+    &#34;scheduler&#34;: {
+      &#34;fIFO&#34;: {}
+    },
+    &#34;power&#34;: {
+      &#34;slowdown&#34;: 1,
+      &#34;profile&#34;: false,
+      &#34;policy&#34;: &#34;noPowerPolicy&#34;
+    },
+    &#34;perfwrapper&#34;: {
+      &#34;perfwrapperDisabled&#34;: {}
+    },
+    &#34;slice&#34;: {
+      &#34;cpus&#34;: 1,
+      &#34;mems&#34;: 1
+    }
+  },
+  &#34;name&#34;: &#34;default&#34;
+}
 </pre>
 </div>
 </div>
@@ -13840,15 +13695,15 @@ The control problem description is:
 
 
 
-<div id="9e241cf3-dbf4-407f-ae54-953dbfd076f1"></div>
+<div id="d1615e2f-577e-4ef5-8623-7f03c2b181b1"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#9e241cf3-dbf4-407f-ae54-953dbfd076f1');
+var element = $('#d1615e2f-577e-4ef5-8623-7f03c2b181b1');
 
             setTimeout(function() {
-                var nbb_cell_id = 22;
-                var nbb_unformatted_code = "host.start_daemon(daemonCfgs[\"redirected_log\"])\nassert host.check_daemon()\ncpd=host.get_cpd()\nprint(\"The control problem description is:\\n %s\" % cpd)";
-                var nbb_formatted_code = "host.start_daemon(daemonCfgs[\"redirected_log\"])\nassert host.check_daemon()\ncpd = host.get_cpd()\nprint(\"The control problem description is:\\n %s\" % cpd)";
+                var nbb_cell_id = 7;
+                var nbb_unformatted_code = "%%bash\ncat resources/defaults/Manifest.json | jq";
+                var nbb_formatted_code = "%%bash\ncat resources/defaults/Manifest.json | jq";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13868,88 +13723,99 @@ var element = $('#9e241cf3-dbf4-407f-ae54-953dbfd076f1');
 </div>
 </div>
 
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The <code>dhall</code> and <code>dhall-to-json</code> utilities are available as convenience in this environment should you need them. Dhall is useful as a configuration language in itself.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="k">script</span> dhall-to-json
+let Manifest = ./resources/types/Manifest.dhall 
+let appendName = \(m: Manifest) -&gt; m // {name = m.name ++ &quot;-appended&quot; }
+in appendName ./resources/defaults/Manifest.dhall
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>{&#34;image&#34;:null,&#34;hwbind&#34;:false,&#34;app&#34;:{&#34;scheduler&#34;:&#34;FIFO&#34;,&#34;instrumentation&#34;:null,&#34;power&#34;:{&#34;slowdown&#34;:1,&#34;profile&#34;:false,&#34;policy&#34;:&#34;NoPowerPolicy&#34;},&#34;perfwrapper&#34;:&#34;PerfwrapperDisabled&#34;,&#34;slice&#34;:{&#34;cpus&#34;:1,&#34;mems&#34;:1}},&#34;name&#34;:&#34;default-appended&#34;}
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="73b63941-92f1-4937-8c52-72cb27434da6"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#73b63941-92f1-4937-8c52-72cb27434da6');
+
+            setTimeout(function() {
+                var nbb_cell_id = 8;
+                var nbb_unformatted_code = "%%script dhall-to-json\nlet Manifest = ./resources/types/Manifest.dhall \nlet appendName = \\(m: Manifest) -> m // {name = m.name ++ \"-appended\" }\nin appendName ./resources/defaults/Manifest.dhall";
+                var nbb_formatted_code = "%%script dhall-to-json\nlet Manifest = ./resources/types/Manifest.dhall \nlet appendName = \\(m: Manifest) -> m // {name = m.name ++ \"-appended\" }\nin appendName ./resources/defaults/Manifest.dhall";
+                var nbb_cells = Jupyter.notebook.get_cells();
+                for (var i = 0; i < nbb_cells.length; ++i) {
+                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
+                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
+                             nbb_cells[i].set_text(nbb_formatted_code);
+                        }
+                        break;
+                    }
+                }
+            }, 500);
+            
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Remember that any json document is one little step away from being a Python dictionaryy:</p>
+
+</div>
+</div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span>
-<span class="k">assert</span> <span class="n">host</span><span class="o">.</span><span class="n">check_daemon</span><span class="p">()</span> <span class="o">==</span> <span class="kc">False</span>
-</pre></div>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
 
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
-<div id="ba91a395-0fc2-4cbf-932e-a04d1abfd6ae"></div>
-<div class="output_subarea output_javascript ">
-<script type="text/javascript">
-var element = $('#ba91a395-0fc2-4cbf-932e-a04d1abfd6ae');
-
-            setTimeout(function() {
-                var nbb_cell_id = 9;
-                var nbb_unformatted_code = "host.stop_daemon()\nassert host.check_daemon() == False";
-                var nbb_formatted_code = "host.stop_daemon()\nassert host.check_daemon() == False";
-                var nbb_cells = Jupyter.notebook.get_cells();
-                for (var i = 0; i < nbb_cells.length; ++i) {
-                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
-                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
-                             nbb_cells[i].set_text(nbb_formatted_code);
-                        }
-                        break;
-                    }
-                }
-            }, 500);
-            
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Dummy-experiment:-printing-measurements">Dummy experiment: printing measurements<a class="anchor-link" href="#Dummy-experiment:-printing-measurements">&#182;</a></h3><p>We now are ready to run an external resource management strategy. Using the low-level message passing interface:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">daemonCfg</span><span class="p">,</span> <span class="n">workload</span><span class="p">)</span> <span class="ow">in</span> <span class="n">experiments</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="c1"># starting the daemon (does act as silent restart)</span>
-    <span class="n">host</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">(</span><span class="n">daemonCfg</span><span class="p">)</span>
-    <span class="c1"># running the workload</span>
-    <span class="n">host</span><span class="o">.</span><span class="n">run_workload</span><span class="p">(</span><span class="n">workload</span><span class="p">)</span>
-    <span class="c1"># message passting exchange:</span>
-    <span class="k">while</span> <span class="ow">not</span> <span class="n">host</span><span class="o">.</span><span class="n">workload_finished</span><span class="p">():</span>
-        <span class="n">measurement_message</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">workload_recv</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">measurement_message</span><span class="p">)</span>
-        <span class="n">command_message</span> <span class="o">=</span> <span class="s2">&quot;insert your code here&quot;</span>
-        <span class="n">host</span><span class="o">.</span><span class="n">workload_send</span><span class="p">(</span><span class="n">command_message</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">check_daemon</span><span class="p">())</span>
-
-<span class="n">host</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;resources/examples/perfwrap.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -13966,271 +13832,44 @@ var element = $('#ba91a395-0fc2-4cbf-932e-a04d1abfd6ae');
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>connecting
-connected to tcp://localhost:2345
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674497067603e15,[{&#34;time&#34;:1.5795674497067603e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674497067603e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567450707249,[{&#34;time&#34;:1579567450707249,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567450707249,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567451707780,[{&#34;time&#34;:1579567451707780,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567451707780,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674527079468e15,[{&#34;time&#34;:1.5795674527079468e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674527079468e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567453708443,[{&#34;time&#34;:1579567453708443,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567453708443,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674547088825e15,[{&#34;time&#34;:1.5795674547088825e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674547088825e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674557096588e15,[{&#34;time&#34;:1.5795674557096588e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674557096588e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674567100435e15,[{&#34;time&#34;:1.5795674567100435e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674567100435e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674577106218e15,[{&#34;time&#34;:1.5795674577106218e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674577106218e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674587100693e15,[{&#34;time&#34;:1.5795674587100693e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674587100693e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674597106133e15,[{&#34;time&#34;:1.5795674597106133e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674597106133e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674607106363e15,[{&#34;time&#34;:1.5795674607106363e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674607106363e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674617106885e15,[{&#34;time&#34;:1.5795674617106885e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674617106885e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674627116338e15,[{&#34;time&#34;:1.5795674627116338e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674627116338e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674637110445e15,[{&#34;time&#34;:1.5795674637110445e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674637110445e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567464711338,[{&#34;time&#34;:1579567464711338,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567464711338,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674657118565e15,[{&#34;time&#34;:1.5795674657118565e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674657118565e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674667125665e15,[{&#34;time&#34;:1.5795674667125665e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674667125665e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674677127833e15,[{&#34;time&#34;:1.5795674677127833e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674677127833e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674687132063e15,[{&#34;time&#34;:1.5795674687132063e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674687132063e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674697134615e15,[{&#34;time&#34;:1.5795674697134615e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674697134615e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674707136543e15,[{&#34;time&#34;:1.5795674707136543e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674707136543e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674717138838e15,[{&#34;time&#34;:1.5795674717138838e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674717138838e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674727145108e15,[{&#34;time&#34;:1.5795674727145108e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674727145108e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674737147948e15,[{&#34;time&#34;:1.5795674737147948e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674737147948e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567474715511,[{&#34;time&#34;:1579567474715511,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567474715511,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674757153543e15,[{&#34;time&#34;:1.5795674757153543e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674757153543e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674767157295e15,[{&#34;time&#34;:1.5795674767157295e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674767157295e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674777161305e15,[{&#34;time&#34;:1.5795674777161305e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674777161305e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567478716300,[{&#34;time&#34;:1579567478716300,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567478716300,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567479716404,[{&#34;time&#34;:1579567479716404,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567479716404,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567480716933,[{&#34;time&#34;:1579567480716933,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567480716933,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674817174278e15,[{&#34;time&#34;:1.5795674817174278e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674817174278e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674827179995e15,[{&#34;time&#34;:1.5795674827179995e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674827179995e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674837183885e15,[{&#34;time&#34;:1.5795674837183885e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674837183885e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674847185225e15,[{&#34;time&#34;:1.5795674847185225e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674847185225e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567485719268,[{&#34;time&#34;:1579567485719268,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567485719268,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674867194063e15,[{&#34;time&#34;:1.5795674867194063e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674867194063e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674877194208e15,[{&#34;time&#34;:1.5795674877194208e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674877194208e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567488719980,[{&#34;time&#34;:1579567488719980,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567488719980,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674897203003e15,[{&#34;time&#34;:1.5795674897203003e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674897203003e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674907207408e15,[{&#34;time&#34;:1.5795674907207408e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674907207408e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674917212695e15,[{&#34;time&#34;:1.5795674917212695e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674917212695e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674927217428e15,[{&#34;time&#34;:1.5795674927217428e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674927217428e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674937222093e15,[{&#34;time&#34;:1.5795674937222093e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674937222093e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674947224958e15,[{&#34;time&#34;:1.5795674947224958e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674947224958e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567495722554,[{&#34;time&#34;:1579567495722554,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567495722554,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567496722778,[{&#34;time&#34;:1579567496722778,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567496722778,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567497722997,[{&#34;time&#34;:1579567497722997,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567497722997,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674987232353e15,[{&#34;time&#34;:1.5795674987232353e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674987232353e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795674997244655e15,[{&#34;time&#34;:1.5795674997244655e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795674997244655e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795675007236035e15,[{&#34;time&#34;:1.5795675007236035e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795675007236035e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795675017239345e15,[{&#34;time&#34;:1.5795675017239345e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795675017239345e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795675027239998e15,[{&#34;time&#34;:1.5795675027239998e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795675027239998e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795675037243365e15,[{&#34;time&#34;:1.5795675037243365e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795675037243365e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567504725238,[{&#34;time&#34;:1579567504725238,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567504725238,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1.5795675057251598e15,[{&#34;time&#34;:1.5795675057251598e15,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1.5795675057251598e15,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
-b&#39;{&#34;pubMeasurements&#34;:[1579567506725228,[{&#34;time&#34;:1579567506725228,&#34;sensorValue&#34;:0,&#34;sensorID&#34;:{&#34;sensorID&#34;:&#34;DownstreamCmdKey (DownstreamCmdID f56a7eba-c4df-4591-a91b-d828b12ba09f)&#34;}}]]}&#39;
-receiving
-b&#39;{&#34;pubPerformance&#34;:[1579567506725228,&#34;216e0ec8-3be7-11ea-8001-8c1645edb774&#34;,0]}&#39;
-receiving
+<pre>{&#39;hwbind&#39;: False, &#39;app&#39;: {&#39;scheduler&#39;: {&#39;fIFO&#39;: {}}, &#39;power&#39;: {&#39;slowdown&#39;: 1, &#39;profile&#39;: False, &#39;policy&#39;: &#39;noPowerPolicy&#39;}, &#39;perfwrapper&#39;: {&#39;perfwrapper&#39;: {&#39;perfLimit&#39;: 100000, &#39;perfFreq&#39;: 1}}, &#39;slice&#39;: {&#39;cpus&#39;: 1, &#39;mems&#39;: 1}}, &#39;name&#39;: &#39;default&#39;}
 </pre>
 </div>
 </div>
 
-</div>
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="e5e47754-81c5-49dc-ba1d-6fd7c3626b25"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#e5e47754-81c5-49dc-ba1d-6fd7c3626b25');
+
+            setTimeout(function() {
+                var nbb_cell_id = 9;
+                var nbb_unformatted_code = "import json\n\nwith open(\"resources/examples/perfwrap.json\") as f:\n    print(json.load(f))";
+                var nbb_formatted_code = "import json\n\nwith open(\"resources/examples/perfwrap.json\") as f:\n    print(json.load(f))";
+                var nbb_cells = Jupyter.notebook.get_cells();
+                for (var i = 0; i < nbb_cells.length; ++i) {
+                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
+                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
+                             nbb_cells[i].set_text(nbb_formatted_code);
+                        }
+                        break;
+                    }
+                }
+            }, 500);
+            
+</script>
 </div>
 
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
 
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
 </div>
 </div>
 

@@ -12,10 +12,11 @@ where
 import qualified CPD.Core as CPD
 import qualified NRM.Types.Messaging.UpstreamRep as Rep
 import qualified NRM.Types.Messaging.UpstreamReq as Req
+import qualified NRM.Types.State
 
 data ReqRep req rep where
   SliceList :: ReqRep Req.SliceList Rep.SliceList
-  GetState :: ReqRep Req.GetState Rep.GetState
+  GetState :: ReqRep Req.GetState NRM.Types.State.NRMState
   GetConfig :: ReqRep Req.GetConfig Rep.GetConfig
   SetPower :: ReqRep Req.SetPower Rep.GetPower
   KillSlice :: ReqRep Req.KillSlice Rep.SliceKilled

@@ -116,7 +116,7 @@ nrm _callTime (Req clientid msg) = do
         $ URep.RepCPD
         $ NRMCPD.toCPD (controlCfg c) st
     UReq.ReqSliceList _ -> rep clientid (URep.RepList . URep.SliceList . LM.toList $ slices st)
-    UReq.ReqGetState _ -> rep clientid (URep.RepGetState $ URep.GetState st)
+    UReq.ReqGetState _ -> rep clientid (URep.RepGetState st)
     UReq.ReqGetConfig _ -> rep clientid (URep.RepGetConfig $ URep.GetConfig c)
     UReq.ReqRun UReq.Run {..} -> do
       cmdID <- lift CmdID.nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")

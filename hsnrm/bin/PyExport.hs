@@ -8,11 +8,6 @@
 -- Maintainer  : fre@freux.fr
 module PyExport
   ( Ex,
-    runExport,
-    simpleRunExport,
-    defaultCommonOptsExport,
-    pubAddressExport,
-    rpcAddressExport,
   )
 where
 
@@ -26,43 +21,59 @@ import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Client
 import NRM.Client (pubAddress, rpcAddress)
-import qualified NRM.ExportIO as E
 import NRM.Optparse.Client
 import NRM.Types.Cmd
 import NRM.Types.Manifest.Yaml
 import NRM.Types.Messaging.UpstreamRep as Rep
 import NRM.Types.Messaging.UpstreamReq as Req
 import NRM.Types.Slice
+import NRM.Types.State
 import qualified NRM.Types.UpstreamClient as UC
 import Protolude
 import qualified System.ZMQ4.Monadic as ZMQ
+import Text.Pretty.Simple
 
 type Ex = CString -> IO CString
 
 foreign export ccall showStateExport :: Ex
 
+foreign export ccall showCpdExport :: Ex
+
 foreign export ccall defaultCommonOptsExport :: Ex
 
-foreign export ccall simpleRunExport :: Ex
+foreign export ccall mkSimpleRunExport :: Ex
 
 foreign export ccall runExport :: Ex
 
 foreign export ccall pubAddressExport :: Ex
 
+foreign export ccall rpcAddressExport :: Ex
+
 foreign export ccall finishedExport :: Ex
 
 foreign export ccall cpdExport :: Ex
 
-showStateExport = exportIO E.showState
+foreign export ccall stateExport :: Ex
 
 defaultCommonOptsExport :: Ex
-defaultCommonOptsExport = exportIO defaultCommonOpts
+defaultCommonOptsExport = exportIO (return def :: IO CommonOpts)
 
-simpleRunExport :: Ex
-simpleRunExport = exportIO simpleRun
-
-runExport :: Ex
-runExport = exportIO run
+mkSimpleRunExport :: Ex
+mkSimpleRunExport = exportIO mkSimpleRun
+  where
+    mkSimpleRun :: Text -> [Text] -> [(Text, Text)] -> Text -> Text -> IO Run
+    mkSimpleRun cmd args env manifest sliceID = decodeManifest (toS manifest) & \case
+      Left _ -> panic "manifest decoding error."
+      Right m -> return $ Run
+        { manifest = m,
+          spec = CmdSpec
+            { cmd = Command cmd,
+              args = Arguments (Arg <$> args),
+              env = Env $ LM.fromList env
+            },
+          runSliceID = parseSliceID sliceID,
+          detachCmd = True
+        }
 
 pubAddressExport :: Ex
 pubAddressExport = exportIO ((return :: a -> IO a) . pubAddress)
@@ -70,44 +81,32 @@ pubAddressExport = exportIO ((return :: a -> IO a) . pubAddress)
 rpcAddressExport :: Ex
 rpcAddressExport = exportIO ((return :: a -> IO a) . rpcAddress)
 
-finishedExport :: Ex
-finishedExport = exportIO finished
+showStateExport :: Ex
+showStateExport = exportIO (return . toS . pShow :: NRMState -> IO Text)
 
-cpdExport :: Ex
-cpdExport = exportIO cpd
+showCpdExport :: Ex
+showCpdExport = exportIO (return . toS . pShow :: Problem -> IO Text)
 
-defaultCommonOpts :: IO CommonOpts
-defaultCommonOpts = return def
-
-simpleRun :: Text -> [Text] -> [(Text, Text)] -> Text -> Text -> IO Run
-simpleRun cmd args env manifest sliceID = decodeManifest (toS manifest) & \case
-  Left _ -> panic "manifest decoding error."
-  Right m -> return $ Run
-    { manifest = m,
-      spec = CmdSpec
-        { cmd = Command cmd,
-          args = Arguments (Arg <$> args),
-          env = Env $ LM.fromList env
-        },
-      runSliceID = parseSliceID sliceID,
-      detachCmd = True
-    }
-
-run :: CommonOpts -> Run -> IO Rep.Start
-run common runreq = doReqRep common (ReqRun runreq) $ \case
+runExport :: Ex
+runExport = exportIO $ \c runreq -> doReqRep c (ReqRun runreq) $ \case
   (RepStart start) -> start
   (RepStartFailure StartFailure) -> panic "command start failed."
   _ -> panic "command run failed"
 
-finished :: CommonOpts -> IO Bool
-finished common = doReqRep common (ReqSliceList Req.SliceList) $ \case
+stateExport :: Ex
+stateExport = exportIO $ \c -> doReqRep c (ReqGetState Req.GetState) $ \case
+  (RepGetState st) -> st
+  _ -> panic "reply wasn't in protocol"
+
+finishedExport :: Ex
+finishedExport = exportIO $ \common -> doReqRep common (ReqSliceList Req.SliceList) $ \case
   (RepList (Rep.SliceList l)) -> l & \case
     [] -> True
     _ -> False
   _ -> panic "command 'slicelist' failed"
 
-cpd :: CommonOpts -> IO Problem
-cpd common = doReqRep common (ReqCPD Req.CPD) $ \case
+cpdExport :: Ex
+cpdExport = exportIO $ \c -> doReqRep c (ReqCPD Req.CPD) $ \case
   (RepCPD problem) -> problem
   _ -> panic "reply wasn't in protocol"
 
