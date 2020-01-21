@@ -20,7 +20,6 @@ import Foreign.C
 import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Client
-import NRM.Client (pubAddress, rpcAddress)
 import NRM.Optparse.Client
 import NRM.Types.Cmd
 import NRM.Types.Manifest.Yaml

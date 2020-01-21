@@ -74,7 +74,7 @@ black:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./.).nrmPythonPackages.black' --run bash <<< '
+      nix-shell --pure -p '(import ./.).pythonPackages.black' --run bash <<< '
         set -e
         black pynrm/bin/* --check
         black pynrm/nrm/*.py --check

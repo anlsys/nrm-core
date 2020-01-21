@@ -66,7 +66,7 @@ behavior cfg st time event = execNRM (nrm time event) cfg st
 -- runtime. This contains the slice management logic, the sensor callback
 -- logic, the control loop callback logic. Works in the @NRM monad.
 nrm :: U.Time -> NRMEvent -> NRM ()
-nrm _callTime (DoOutput cmdID outputType content) = do
+nrm _callTime (DoOutput cmdID outputType content) =
   behaveLens $ _cmdID cmdID go
   where
     go Nothing = (Log Error "No such command was found in the NRM state.", Nothing)
@@ -137,7 +137,7 @@ nrm _callTime (Req clientid msg) = do
         $ StartChild cmdID runCmd runArgs
         $ (Env $ env spec & fromEnv & LM.insert cmdIDEnvVar (CmdID.toText cmdID))
           & mayInjectLibnrmPreload c manifest
-    UReq.ReqKillSlice UReq.KillSlice {..} -> do
+    UReq.ReqKillSlice UReq.KillSlice {..} ->
       behaveLens $ _sliceID killSliceID go
       where
         go Nothing = (Rep clientid $ URep.RepNoSuchSlice URep.NoSuchSlice, Nothing)
