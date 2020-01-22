@@ -94,12 +94,9 @@ library nrmlib
         NRM.Types.Messaging.UpstreamRep
         NRM.Types.Messaging.Protocols
         NRM.Types.Configuration
-        NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
-        NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
-        NRM.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -182,6 +179,7 @@ library nrmlib
         mtl -any,
         aeson -any,
         dhall -any,
+        dhall-json -any,
         conduit -any,
         conduit-extra -any,
         resourcet -any,
@@ -271,6 +269,7 @@ library banditlib
         mtl -any,
         aeson -any,
         dhall -any,
+        dhall-json -any,
         conduit -any,
         conduit-extra -any,
         resourcet -any,
@@ -380,12 +379,9 @@ executable nrm.so
         NRM.Types.Messaging.UpstreamRep
         NRM.Types.Messaging.Protocols
         NRM.Types.Configuration
-        NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
-        NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
-        NRM.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -470,6 +466,7 @@ executable nrm.so
         mtl -any,
         aeson -any,
         dhall -any,
+        dhall-json -any,
         conduit -any,
         conduit-extra -any,
         resourcet -any,
@@ -579,12 +576,9 @@ executable pynrm.so
         NRM.Types.Messaging.UpstreamRep
         NRM.Types.Messaging.Protocols
         NRM.Types.Configuration
-        NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
-        NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
-        NRM.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -669,6 +663,7 @@ executable pynrm.so
         mtl -any,
         aeson -any,
         dhall -any,
+        dhall-json -any,
         conduit -any,
         conduit-extra -any,
         resourcet -any,
@@ -776,12 +771,9 @@ executable nrmstatic
         NRM.Types.Messaging.UpstreamRep
         NRM.Types.Messaging.Protocols
         NRM.Types.Configuration
-        NRM.Types.Configuration.Yaml
         NRM.Configuration.Examples
         NRM.Types.Manifest
-        NRM.Types.Manifest.Yaml
         NRM.Manifest.Examples
-        NRM.Types.Manifest.Dhall
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -863,6 +855,7 @@ executable nrmstatic
         mtl -any,
         aeson -any,
         dhall -any,
+        dhall-json -any,
         conduit -any,
         conduit-extra -any,
         resourcet -any,

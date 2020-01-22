@@ -19,12 +19,11 @@ import Data.Default
 import Data.MessagePack
 import Dhall
 import LMap.Map as LM
+import NRM.Optparse.Daemon hiding (opts)
 import qualified NRM.Types.Cmd as Cmd
 import NRM.Types.CmdID
 import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Manifest
-import qualified NRM.Types.Manifest.Dhall as D
-import qualified NRM.Types.Manifest.Yaml as Y
 import NRM.Types.Messaging.UpstreamReq
 import NRM.Types.Slice
 import qualified NRM.Types.Units as U
@@ -32,11 +31,6 @@ import Options.Applicative
 import Protolude hiding (All)
 import System.Directory
 import System.Environment
-import System.FilePath.Posix
-import Text.Editor
-import qualified Prelude
-  ( print,
-  )
 
 data CommonOpts
   = CommonOpts
@@ -104,7 +98,6 @@ data RunCfg
       { useStdin :: Bool,
         stdinType :: SourceType,
         detach :: Bool,
-        edit :: Bool,
         inputfile :: Maybe Text,
         sliceName :: Maybe Text,
         cmd :: Text,
@@ -129,10 +122,6 @@ parserRun =
       False
       True
       (long "detach" <> short 'd' <> help "Detach the command.")
-    <*> flag
-      False
-      True
-      (long "edit" <> short 'e' <> help "Edit manifest yaml in $EDITOR before running the NRM client.")
     <*> optional
       ( strOption
           ( long "manifest"
@@ -276,49 +265,19 @@ opts =
       <> help
         "Choice of operation."
 
-data SourceType = Dhall | Yaml
-  deriving (Eq)
-
-data FinallySource = UseDefault | NoExt | FinallyFile SourceType Text | FinallyStdin SourceType
-
-ext :: Bool -> SourceType -> Maybe Text -> FinallySource
-ext _ _ (Just fn)
-  | xt `elem` [".dh", ".dhall"] = FinallyFile Dhall fn
-  | xt `elem` [".yml", ".yaml"] = FinallyFile Yaml fn
-  | otherwise = NoExt
-  where
-    xt = takeExtension $ toS fn
-ext useStdin st Nothing = if useStdin then FinallyStdin st else UseDefault
-
 load :: RunCfg -> IO Manifest
 load RunCfg {..} =
-  (if edit then editing else return) =<< case ext useStdin stdinType inputfile of
-    (FinallyFile Dhall filename) ->
-      detailed $
-        D.inputManifest
-          =<< toS
-          <$> makeAbsolute (toS filename)
-    (FinallyFile Yaml filename) ->
-      Y.decodeManifestFile =<< toS <$> makeAbsolute (toS filename)
-    (FinallyStdin Yaml) ->
-      B.getContents <&> Y.decodeManifest >>= \case
-        Left e -> Prelude.print e >> die "yaml parsing exception."
-        Right manifest -> return manifest
-    (FinallyStdin Dhall) -> B.getContents >>= D.inputManifest . toS
+  case ext useStdin stdinType inputfile of
     UseDefault -> return def
-    NoExt ->
-      die
-        ( "couldn't figure out extension for input file. "
-            <> "Please use something in {.yml,.yaml,.dh,.dhall} ."
-        )
-
-editing :: Manifest -> IO Manifest
-editing c =
-  runUserEditorDWIM yt (Y.encodeManifest c) <&> Y.decodeManifest >>= \case
-    Left e -> Prelude.print e >> die "yaml parsing exception."
-    Right manifest -> return manifest
+    (FinallyFile sourceType filename) ->
+      makeAbsolute (toS filename) >>= readFile >>= (process sourceType . toS)
+    (FinallyStdin sourceType) ->
+      B.getContents >>= process sourceType
+    NoExt -> inputfile & \case
+      Nothing -> return def
+      Just s -> process stdinType (toS s)
   where
-    yt = mkTemplate "yaml"
+    process = processType (Proxy :: Proxy Manifest)
 
 run :: RunCfg -> CommonOpts -> IO Opts
 run rc common = do

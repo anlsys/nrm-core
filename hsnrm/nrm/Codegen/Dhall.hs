@@ -1,3 +1,6 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE ViewPatterns #-}
+
 -- |
 -- Module      : Codegen.Dhall
 -- Copyright   : Copyright (c) 2018 Oliver Charles.
@@ -8,12 +11,21 @@ module Codegen.Dhall
   ( writeOutput,
     relativeTo,
     takeDirectory,
+    typeToExpr,
+    defaultToExpr,
+    valueToExpr,
+    exprToText,
   )
 where
 
+import Data.Default
 import qualified Data.Text.Prettyprint.Doc as Pretty
 import qualified Data.Text.Prettyprint.Doc.Render.Text as Pretty
-import qualified Dhall.Core
+import Dhall
+import Dhall.Core as Dhall
+import Dhall.Parser as Dhall
+import Dhall.Pretty as Dhall
+import Dhall.TypeCheck as Dhall
 import Protolude
 import System.FilePath
   ( dropTrailingPathSeparator,
@@ -24,15 +36,15 @@ import System.FilePath
   )
 import qualified System.IO
 
-writeOutput :: Text -> FilePath -> Dhall.Core.Expr s Dhall.Core.Import -> IO ()
-writeOutput header dest expr =
+writeOutput :: Text -> FilePath -> Expr s Import -> IO ()
+writeOutput header dest e =
   System.IO.withFile dest System.IO.WriteMode $ \hnd -> do
     System.IO.hPutStrLn hnd (toS header)
     Pretty.renderIO
       hnd
       $ Pretty.layoutSmart
         prettyOpts
-        (Pretty.pretty expr)
+        (Pretty.pretty e)
     System.IO.hPutStr hnd "\n"
 
 prettyOpts :: Pretty.LayoutOptions
@@ -63,3 +75,24 @@ relativeTo =
       | otherwise = (".." <$ (a : as)) ++ (b : bs)
     go [] bs = bs
     go as [] = ".." <$ as
+
+typeToExpr :: Interpret x => Proxy x -> Expr Src b
+typeToExpr (Proxy :: Proxy x) =
+  fmap Dhall.absurd $ Dhall.expected (Dhall.auto :: Dhall.Type x)
+
+defaultToExpr :: (Inject x, Default x) => Proxy x -> Expr Src b
+defaultToExpr (Proxy :: Proxy x) =
+  Dhall.absurd
+    <$> embed
+      (injectWith defaultInterpretOptions)
+      (def :: x)
+
+valueToExpr :: (Inject x) => x -> Expr Src X
+valueToExpr x =
+  Dhall.absurd
+    <$> embed
+      (injectWith defaultInterpretOptions)
+      (x)
+
+exprToText :: (Pretty.Pretty a) => Expr Src a -> Text
+exprToText = show . Dhall.prettyExpr

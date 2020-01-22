@@ -21,8 +21,9 @@ import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Client
 import NRM.Optparse.Client
+import NRM.Optparse.Daemon
 import NRM.Types.Cmd
-import NRM.Types.Manifest.Yaml
+import NRM.Types.Manifest
 import NRM.Types.Messaging.UpstreamRep as Rep
 import NRM.Types.Messaging.UpstreamReq as Req
 import NRM.Types.Slice
@@ -61,9 +62,9 @@ mkSimpleRunExport :: Ex
 mkSimpleRunExport = exportIO mkSimpleRun
   where
     mkSimpleRun :: Text -> [Text] -> [(Text, Text)] -> Text -> Text -> IO Run
-    mkSimpleRun cmd args env manifest sliceID = decodeManifest (toS manifest) & \case
-      Left _ -> panic "manifest decoding error."
-      Right m -> return $ Run
+    mkSimpleRun cmd args env manifest sliceID = do
+      m <- processType (Proxy :: Proxy Manifest) Json (toS manifest)
+      return $ Run
         { manifest = m,
           spec = CmdSpec
             { cmd = Command cmd,

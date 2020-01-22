@@ -183,6 +183,8 @@ let deps =
           nobound "resourcet"
       , async =
           nobound "async"
+      , dhall-json =
+          nobound "dhall-json"
       , lens =
           nobound "lens"
       , mtl =
@@ -273,12 +275,9 @@ let modules =
       , "NRM.Types.Messaging.UpstreamRep"
       , "NRM.Types.Messaging.Protocols"
       , "NRM.Types.Configuration"
-      , "NRM.Types.Configuration.Yaml"
       , "NRM.Configuration.Examples"
       , "NRM.Types.Manifest"
-      , "NRM.Types.Manifest.Yaml"
       , "NRM.Manifest.Examples"
-      , "NRM.Types.Manifest.Dhall"
       ]
 
 let extramodules =
@@ -348,6 +347,7 @@ let libdep =
       , deps.mtl
       , deps.aeson
       , deps.dhall
+      , deps.dhall-json
       , deps.conduit
       , deps.conduit-extra
       , deps.resourcet

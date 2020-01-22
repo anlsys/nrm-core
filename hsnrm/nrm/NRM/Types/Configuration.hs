@@ -16,7 +16,6 @@ module NRM.Types.Configuration
     RaplCfg (..),
     HwmonCfg (..),
     jsonOptions,
-    inputCfg,
   )
 where
 
@@ -165,10 +164,3 @@ instance Default UpstreamCfg where
 
 jsonOptions :: Options
 jsonOptions = defaultOptions {omitNothingFields = True}
-
-inputCfg :: (MonadIO m) => Text -> m Cfg
-inputCfg fn =
-  liftIO $
-    try (input (Dhall.auto :: Dhall.Type Cfg) fn) >>= \case
-      Right d -> return d
-      Left e -> throwError e

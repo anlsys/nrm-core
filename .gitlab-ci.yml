@@ -200,7 +200,7 @@ notebooks:
   script:
     - ./shake.sh notebooks
 
-vendoring:documentation:
+vendoring:haddock:
   stage: vendoring
   dependencies:
     - vendoring:copy
@@ -209,7 +209,7 @@ vendoring:documentation:
     - kvm
     - nix
   script:
-    - diff -r doc tmpdoc
+    - diff -r doc/nrm.so tmpdoc/nrm.so
 
 vendoring:resources:
   stage: vendoring

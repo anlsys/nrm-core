@@ -20,7 +20,6 @@ module NRM.Codegen
   )
 where
 
---import qualified CPD.Core
 import qualified CPD.Values
 import Codegen.CHeader
 import Codegen.Dhall
@@ -41,9 +40,7 @@ import qualified NRM.Classes.Examples as Examples
 import qualified NRM.Manifest.Examples ()
 import NRM.Messaging
 import qualified NRM.Types.Configuration as C
-import qualified NRM.Types.Configuration.Yaml as CI (encodeDCfg)
 import qualified NRM.Types.Manifest as MI
-import qualified NRM.Types.Manifest.Yaml as MI (encodeManifest)
 import NRM.Types.Messaging.DownstreamEvent
 import qualified NRM.Types.Messaging.DownstreamEvent as Down (Event (..))
 import NRM.Types.Messaging.UpstreamPub
@@ -175,8 +172,8 @@ ktDefJson = \case
   Manifest -> toS (A.encode $ A.toJSON (def :: MI.Manifest))
 
 yamlType :: KnownType -> ByteString
-yamlType Cfg = CI.encodeDCfg (def :: C.Cfg)
-yamlType Manifest = MI.encodeManifest (def :: MI.Manifest)
+yamlType Cfg = toS . exprToText $ valueToExpr (def :: C.Cfg)
+yamlType Manifest = toS . exprToText $ valueToExpr (def :: MI.Manifest)
 
 sandwich :: Semigroup a => a -> a -> a -> a
 sandwich a b x = a <> x <> b
