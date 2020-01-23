@@ -8,14 +8,16 @@
 #     this file is generated, modifications will be erased.
 #
 pmpi_lib: pmpi_lib
-verbose: error
+verbose: Error
 logfile: /tmp/nrm.log
 singularity: false
 argo_nodeos_config: argo_nodeos_config
+controlCfg: null
 upstreamCfg:
   upstreamBindAddress: '*'
   rpcPort: 3456
   pubPort: 2345
+libnrmPath: null
 perf: perf
 argo_perf_wrapper: nrm-perfwrapper
 downstreamCfg:
@@ -23,10 +25,11 @@ downstreamCfg:
 nodeos: false
 hwloc: hwloc
 raplCfg:
-  raplFrequency: 1
+  raplFrequency:
+    fromHz: 1
   raplPath: /sys/devices/virtual/powercap/intel-rapl
 dummy: true
-slice_runtime: dummy
+slice_runtime: Dummy
 hwmonCfg:
   hwmonPath: /sys/class/hwmon
   hwmonEnabled: true

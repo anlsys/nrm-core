@@ -36,7 +36,7 @@ import System.FilePath
   )
 import qualified System.IO
 
-writeOutput :: Text -> FilePath -> Expr s Import -> IO ()
+writeOutput :: (Pretty.Pretty a) => Text -> FilePath -> Expr s a -> IO ()
 writeOutput header dest e =
   System.IO.withFile dest System.IO.WriteMode $ \hnd -> do
     System.IO.hPutStrLn hnd (toS header)

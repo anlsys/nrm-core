@@ -1,1 +1,1 @@
-{"hwbind":false,"app":{"scheduler":{"fIFO":{}},"power":{"slowdown":1,"profile":false,"policy":"noPowerPolicy"},"perfwrapper":{"perfwrapperDisabled":{}},"slice":{"cpus":1,"mems":1}},"name":"default"}
+{"image":null,"hwbind":false,"app":{"scheduler":"FIFO","instrumentation":null,"power":{"slowdown":1,"profile":false,"policy":"NoPowerPolicy"},"perfwrapper":"PerfwrapperDisabled","slice":{"cpus":1,"mems":1}},"name":"default"}

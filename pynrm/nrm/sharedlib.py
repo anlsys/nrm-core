@@ -51,7 +51,7 @@ class WrapEither(object):
                 return content
             elif content == "ExitSuccess":
                 raise SystemExit
-            elif content == "ExitError":
+            elif content in ["ExitError", "ExitFailure 1"]:
                 raise SystemError
             else:
                 raise Exception(".so library call raised exception: %s" % content)

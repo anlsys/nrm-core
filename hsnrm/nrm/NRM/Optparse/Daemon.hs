@@ -16,11 +16,13 @@ where
 
 import Codegen.Dhall
 import qualified Data.Aeson as J
+import Data.Aeson.Extra.Merge
 import qualified Data.ByteString as B (getContents)
 import Data.Default
 import qualified Data.Yaml as Y
 import qualified Dhall
 import qualified Dhall.Core as Dhall
+import Dhall.JSON as DJ
 import Dhall.JSONToDhall as JSONToDhall
 import qualified Dhall.Src as Dhall
 import qualified Dhall.TypeCheck as Dhall
@@ -108,20 +110,28 @@ toExpr proxy (Json) s = sourceValueToExpr proxy $ J.eitherDecode' (toS s)
 sourceValueToExpr :: (Proxy x) -> Either e Y.Value -> IO (Dhall.Expr Dhall.Src Dhall.X)
 sourceValueToExpr (Proxy :: Proxy x) = \case
   Left _ -> die "yaml parsing exception"
-  Right v -> JSONToDhall.dhallFromJSON
-    JSONToDhall.defaultConversion
-    (typeToExpr (Proxy :: Proxy Cfg))
-    v
-    & \case
-      Left _ -> die "yaml -> dhall compilation error"
-      Right expr -> return expr
+  Right v -> do
+    let exprType = (typeToExpr (Proxy :: Proxy Cfg))
+    let exprValue = (valueToExpr (def :: Cfg))
+    DJ.dhallToJSON exprValue & \case
+      Left e -> die $ "horrible internal dhall error in cli parsing: " <> show e
+      Right jsonValue ->
+        JSONToDhall.dhallFromJSON
+          JSONToDhall.defaultConversion
+          exprType
+          (lodashMerge jsonValue v)
+          & \case
+            Left e -> die ("yaml -> dhall compilation error" <> show e)
+            Right expr -> return expr
 
 mergeAndExtract :: (Dhall.Interpret x, Dhall.Inject x) => x -> Dhall.Expr Dhall.Src Dhall.X -> IO x
 mergeAndExtract x expr = Dhall.extract
   Dhall.auto
-  ( Dhall.Prefer
-      (valueToExpr x)
-      expr
+  ( Dhall.normalize
+      ( Dhall.Prefer
+          (valueToExpr x)
+          expr
+      )
   )
   & \case
     Nothing -> die "dhall extraction error"

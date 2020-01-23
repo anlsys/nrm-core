@@ -7,18 +7,18 @@
 #
 #     this file is generated, modifications will be erased.
 #
+image: null
 hwbind: false
 app:
-  scheduler:
-    fIFO: {}
+  scheduler: FIFO
   instrumentation:
-    ratelimit: 1000000
+    ratelimit:
+      fromHz: 1000000
   power:
     slowdown: 1
     profile: false
-    policy: noPowerPolicy
-  perfwrapper:
-    perfwrapperDisabled: {}
+    policy: NoPowerPolicy
+  perfwrapper: PerfwrapperDisabled
   slice:
     cpus: 1
     mems: 1

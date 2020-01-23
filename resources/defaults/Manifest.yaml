@@ -7,16 +7,16 @@
 #
 #     this file is generated, modifications will be erased.
 #
+image: null
 hwbind: false
 app:
-  scheduler:
-    fIFO: {}
+  scheduler: FIFO
+  instrumentation: null
   power:
     slowdown: 1
     profile: false
-    policy: noPowerPolicy
-  perfwrapper:
-    perfwrapperDisabled: {}
+    policy: NoPowerPolicy
+  perfwrapper: PerfwrapperDisabled
   slice:
     cpus: 1
     mems: 1

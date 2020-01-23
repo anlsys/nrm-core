@@ -33,6 +33,8 @@ import qualified Data.Map as DM
 import Data.Yaml as Y
 import Dhall
 import qualified Dhall.Core as Dhall
+import Dhall.Import as Dhall
+import Dhall.JSON as DJ
 import qualified Dhall.Lint as Lint
 import qualified Dhall.Parser
 import qualified Dhall.TypeCheck as Dhall
@@ -65,7 +67,7 @@ main = do
   verboseWriteSchema prefix "downstreamEvent" downstreamEventSchema
   verboseWriteSchema prefix "manifestSchema" manifestSchema
   verboseWriteSchema prefix "configurationSchema" manifestSchema
-  generateDefaultConfigurations prefix
+  generateResources prefix
   where
     verboseWriteSchema :: Text -> Text -> Text -> IO ()
     verboseWriteSchema prefix desc sch = do
@@ -155,34 +157,14 @@ data KnownType
   | Manifest
   deriving (Bounded, Enum, Eq, Ord, Read, Show)
 
-dhallType :: KnownType -> Dhall.Expr Dhall.Parser.Src a
+dhallType :: KnownType -> Dhall.Expr Dhall.Parser.Src Dhall.Import
 dhallType =
   fmap Dhall.absurd <$> \case
     Cfg -> Dhall.expected (Dhall.auto :: Dhall.Type C.Cfg)
     Manifest -> Dhall.expected (Dhall.auto :: Dhall.Type MI.Manifest)
 
-ktDefYaml :: KnownType -> Text
-ktDefYaml = \case
-  Cfg -> toS (Y.encode $ Y.toJSON (def :: C.Cfg))
-  Manifest -> toS (Y.encode $ Y.toJSON (def :: MI.Manifest))
-
-ktDefJson :: KnownType -> Text
-ktDefJson = \case
-  Cfg -> toS (A.encode $ A.toJSON (def :: C.Cfg))
-  Manifest -> toS (A.encode $ A.toJSON (def :: MI.Manifest))
-
-yamlType :: KnownType -> ByteString
-yamlType Cfg = toS . exprToText $ valueToExpr (def :: C.Cfg)
-yamlType Manifest = toS . exprToText $ valueToExpr (def :: MI.Manifest)
-
 sandwich :: Semigroup a => a -> a -> a -> a
 sandwich a b x = a <> x <> b
-
-yamlFile :: KnownType -> FilePath
-yamlFile = sandwich "yaml/" ".yaml" . show
-
-defaultFile :: Text -> KnownType -> FilePath
-defaultFile ext = sandwich "defaults/" (toS ext) . show
 
 typeFile :: KnownType -> FilePath
 typeFile = sandwich "types/" ".dhall" . show
@@ -193,8 +175,8 @@ getDefault x =
     Cfg -> embed (injectWith defaultInterpretOptions) (def :: C.Cfg)
     Manifest -> embed (injectWith defaultInterpretOptions) (def :: MI.Manifest)
 
-generateDefaultConfigurations :: Text -> IO ()
-generateDefaultConfigurations prefix = do
+generateResources :: Text -> IO ()
+generateResources prefix = do
   putText "Codegen: Dhall types."
   typeToFile (Proxy :: Proxy [CPD.Values.Measurement]) $ toS prefix <> "/types/CPDMeasurements.dhall"
   typeToFile (Proxy :: Proxy [CPD.Values.Action]) $ toS prefix <> "/types/CPDActions.dhall"
@@ -205,37 +187,35 @@ generateDefaultConfigurations prefix = do
     createDirectoryIfMissing True (takeDirectory dest)
     writeOutput licenseDhall dest (dhallType t)
   putText "Codegen: defaults."
-  for_ [minBound .. maxBound] $ \defaultType -> do
-    let dest = toS prefix <> defaultFile ".dhall" defaultType
-        destY = toS prefix <> defaultFile ".yaml" defaultType
-        destJ = toS prefix <> defaultFile ".json" defaultType
-    putStrLn $ "  Writing default for " <> show defaultType <> " to " <> dest <> "."
-    createDirectoryIfMissing True (takeDirectory dest)
-    writeOutput licenseDhall dest (Lint.lint $ getDefault defaultType)
-    writeFile (toS destY) $ licenseYaml <> ktDefYaml defaultType
-    writeFile (toS destJ) $ ktDefJson defaultType
+  for_ [minBound .. maxBound] $ \defaultType ->
+    Dhall.load (Lint.lint (getDefault defaultType))
+      >>= exprToDir "defaults/" (show defaultType)
   putText "Codegen: examples."
   for_ (DM.toList (Examples.examples :: Map Text MI.Manifest)) $ \(defName, defValue) -> do
-    let dest = toS prefix <> "examples/" <> defName <> ".dhall"
-    let destJ = toS prefix <> "examples/" <> defName <> ".json"
-    let destY = toS prefix <> "examples/" <> defName <> ".yaml"
-    putText $ "  Writing default for " <> defName <> " to " <> dest <> "."
-    createDirectoryIfMissing True (takeDirectory $ toS dest)
-    writeOutput
-      licenseDhall
-      (toS dest)
-      (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
-    writeFile (toS destY) $ licenseYaml <> toS (Y.encode $ Y.toJSON defValue)
-    writeFile (toS destJ) $ toS (A.encode $ A.toJSON defValue)
-  putText "Codegen: YAML example files."
-  for_ [minBound .. maxBound] $ \t -> do
-    let yaml = yamlType t
-        dest = toS prefix <> yamlFile t
-    putText $ "  Writing yaml for " <> show t <> " to " <> toS dest
-    createDirectoryIfMissing True (takeDirectory dest)
-    writeFile dest $ licenseYaml <> toS yaml
+    Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
+      >>= exprToDir "examples/" defName
+  where
+    exprToDir dir defName expr = do
+      let (dest, destJ, destY) = mkPaths dir defName
+      DJ.dhallToJSON expr & \case
+        Left e -> die $ "horrible internal dhall error: " <> show e
+        Right jsonValue -> do
+          putText $ "  Writing default for " <> defName <> " to " <> dest <> "."
+          createDirectoryIfMissing True (takeDirectory $ toS dest)
+          writeOutput
+            licenseDhall
+            (toS dest)
+            expr
+          writeFile (toS destJ) $ toS (A.encode jsonValue)
+          writeFile (toS destY) $ licenseYaml <> toS (Y.encode jsonValue)
+    resourcePath dir defName x = toS prefix <> dir <> defName <> x
+    mkPaths dir defName =
+      ( resourcePath dir defName ".dhall",
+        resourcePath dir defName ".json",
+        resourcePath dir defName ".yaml"
+      )
 
-typeToFile :: Interpret x => Proxy x -> String -> IO ()
+typeToFile :: (Interpret x) => Proxy x -> String -> IO ()
 typeToFile (Proxy :: Proxy x) fp = do
   let destCPD = fp
   putText $ "  Writing types for CPD format. " <> " to " <> toS destCPD
@@ -243,8 +223,4 @@ typeToFile (Proxy :: Proxy x) fp = do
   writeOutput
     licenseDhall
     destCPD
-    ( fmap
-        Dhall.absurd
-        ( Dhall.expected (Dhall.auto :: Dhall.Type x)
-        )
-    )
+    (Dhall.expected (Dhall.auto :: Dhall.Type x))
