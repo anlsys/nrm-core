@@ -17,11 +17,10 @@ app:
     profile: false
     policy: NoPowerPolicy
   perfwrapper:
-    _1:
-      perfLimit:
-        fromOps: 100000
-      perfFreq:
-        fromHz: 1
+    perfLimit:
+      fromOps: 100000
+    perfFreq:
+      fromHz: 1
   slice:
     cpus: 1
     mems: 1

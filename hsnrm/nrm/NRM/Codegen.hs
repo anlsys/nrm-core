@@ -207,7 +207,7 @@ generateResources prefix = do
             licenseDhall
             (toS dest)
             expr
-          writeFile (toS destJ) $ toS (A.encode jsonValue)
+          writeFile (toS destJ) $ toS (AP.encodePretty jsonValue)
           writeFile (toS destY) $ licenseYaml <> toS (Y.encode jsonValue)
     resourcePath dir defName x = toS prefix <> dir <> defName <> x
     mkPaths dir defName =

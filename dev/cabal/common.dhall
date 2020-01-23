@@ -101,6 +101,8 @@ let deps =
           nobound "typed-process"
       , optparse-applicative =
           nobound "optparse-applicative"
+      , aeson-pretty =
+          nobound "aeson-pretty"
       , random =
           nobound "random"
       , intervals =
@@ -197,8 +199,6 @@ let deps =
           nobound "aeson-extra"
       , conduit-extra =
           nobound "conduit-extra"
-      , aeson-pretty =
-          nobound "aeson-pretty"
       , generic-aeson =
           nobound "generic-aeson"
       , vector =

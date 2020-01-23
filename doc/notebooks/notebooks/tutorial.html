@@ -13160,10 +13160,10 @@ div#notebook {
 
 
 
-<div id="042c0b91-44bf-4cce-9d8e-31433b76dfd9"></div>
+<div id="67d1d2e8-6999-4b58-9a47-02015580f0a7"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#042c0b91-44bf-4cce-9d8e-31433b76dfd9');
+var element = $('#67d1d2e8-6999-4b58-9a47-02015580f0a7');
 
             setTimeout(function() {
                 var nbb_cell_id = 2;
@@ -13226,10 +13226,10 @@ var element = $('#042c0b91-44bf-4cce-9d8e-31433b76dfd9');
 
 
 
-<div id="c6f1b02a-2912-45f2-8f26-b323c7088947"></div>
+<div id="f2202a00-c38d-4896-88ab-1f65bb529dfc"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#c6f1b02a-2912-45f2-8f26-b323c7088947');
+var element = $('#f2202a00-c38d-4896-88ab-1f65bb529dfc');
 
             setTimeout(function() {
                 var nbb_cell_id = 3;
@@ -13288,7 +13288,7 @@ nrmd --help
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>nrmd
 
-Usage: &lt;unknown&gt; [-i|--stdin] [CONFIG] [-y|--yaml] [-e|--edit]
+Usage: &lt;unknown&gt; [-i|--stdin] [CONFIG] [-y|--yaml]
   NRM Daemon
 
 Available options:
@@ -13296,8 +13296,8 @@ Available options:
   -i,--stdin               Read configuration on stdin.
   CONFIG                   Input configuration with .yml/.yaml/.dh/.dhall
                            extension. Leave void for stdin (dhall) input.
-  -y,--yaml                Assume configuration to be yaml instead of dhall.
-  -e,--edit                Edit yaml in $EDITOR before running the NRM daemon.
+  -y,--yaml                Assume configuration to be yaml(json is valid yaml)
+                           instead of dhall.
   -h,--help                Show this help text
 </pre>
 </div>
@@ -13311,10 +13311,10 @@ Available options:
 
 
 
-<div id="8578e9ce-feef-48f6-a23a-3f2b9101258d"></div>
+<div id="9f64d095-0b28-4d4c-bfb5-6f66aa463c4e"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#8578e9ce-feef-48f6-a23a-3f2b9101258d');
+var element = $('#9f64d095-0b28-4d4c-bfb5-6f66aa463c4e');
 
             setTimeout(function() {
                 var nbb_cell_id = 4;
@@ -13396,10 +13396,10 @@ Available commands:
 
 
 
-<div id="b65a9c60-064e-4334-bd04-f391f6d4a004"></div>
+<div id="7965a8b2-9573-4afb-889b-78316bc2ed36"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#b65a9c60-064e-4334-bd04-f391f6d4a004');
+var element = $('#7965a8b2-9573-4afb-889b-78316bc2ed36');
 
             setTimeout(function() {
                 var nbb_cell_id = 5;
@@ -13429,7 +13429,7 @@ var element = $('#b65a9c60-064e-4334-bd04-f391f6d4a004');
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Defining-experiments">Defining experiments<a class="anchor-link" href="#Defining-experiments">&#182;</a></h2><p>Now that the daemon is properly set-up, we will configure and run some experiments using the python interface.</p>
-<p>The next cell imports the upstream client library. and configures hosts.</p>
+<p>The next cell imports the upstream client library:</p>
 
 </div>
 </div>
@@ -13439,7 +13439,7 @@ var element = $('#b65a9c60-064e-4334-bd04-f391f6d4a004');
 <div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">nrm.tooling</span> <span class="k">import</span> <span class="n">Local</span><span class="p">,</span> <span class="n">Remote</span><span class="p">,</span> <span class="n">NRMState</span><span class="p">,</span> <span class="n">CPD</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">nrm.tooling</span>
 </pre></div>
 
     </div>
@@ -13458,15 +13458,15 @@ var element = $('#b65a9c60-064e-4334-bd04-f391f6d4a004');
 
 
 
-<div id="dcfc4a0f-0684-4192-9eeb-d1293122b6ed"></div>
+<div id="ba572fd4-e58f-4f35-8c7c-0d6032a418d8"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#dcfc4a0f-0684-4192-9eeb-d1293122b6ed');
+var element = $('#ba572fd4-e58f-4f35-8c7c-0d6032a418d8');
 
             setTimeout(function() {
                 var nbb_cell_id = 6;
-                var nbb_unformatted_code = "from nrm.tooling import Local, Remote, NRMState, CPD";
-                var nbb_formatted_code = "from nrm.tooling import Local, Remote, NRMState, CPD";
+                var nbb_unformatted_code = "import nrm.tooling";
+                var nbb_formatted_code = "import nrm.tooling";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13497,10 +13497,10 @@ var element = $('#dcfc4a0f-0684-4192-9eeb-d1293122b6ed');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span> <span class="o">=</span> <span class="n">Local</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span> <span class="o">=</span> <span class="n">nrm</span><span class="o">.</span><span class="n">tooling</span><span class="o">.</span><span class="n">Local</span><span class="p">()</span>
 <span class="c1"># host=Remote( target=&quot;cc@129.114.108.201&quot;)</span>
 </pre></div>
 
@@ -13520,15 +13520,15 @@ var element = $('#dcfc4a0f-0684-4192-9eeb-d1293122b6ed');
 
 
 
-<div id="89ab25d8-5278-4b37-9178-4bc7cd51b879"></div>
+<div id="9216e135-1886-46fe-a6d9-b13c1df2187d"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#89ab25d8-5278-4b37-9178-4bc7cd51b879');
+var element = $('#9216e135-1886-46fe-a6d9-b13c1df2187d');
 
             setTimeout(function() {
-                var nbb_cell_id = 7;
-                var nbb_unformatted_code = "host = Local()\n# host=Remote( target=\"cc@129.114.108.201\")";
-                var nbb_formatted_code = "host = Local()\n# host=Remote( target=\"cc@129.114.108.201\")";
+                var nbb_cell_id = 15;
+                var nbb_unformatted_code = "host = nrm.tooling.Local()\n# host=Remote( target=\"cc@129.114.108.201\")";
+                var nbb_formatted_code = "host = nrm.tooling.Local()\n# host=Remote( target=\"cc@129.114.108.201\")";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13605,10 +13605,10 @@ workload_send:  Send a message to NRM&#39;s upstream API.
 
 
 
-<div id="ada48963-6d73-4e6a-9f9d-364d1273f926"></div>
+<div id="2e2eb2e9-6d28-4825-8be9-43618a5e7348"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#ada48963-6d73-4e6a-9f9d-364d1273f926');
+var element = $('#2e2eb2e9-6d28-4825-8be9-43618a5e7348');
 
             setTimeout(function() {
                 var nbb_cell_id = 8;
@@ -13644,11 +13644,11 @@ var element = $('#ada48963-6d73-4e6a-9f9d-364d1273f926');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">daemonCfgs</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;redirected_log&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;logfile&quot;</span><span class="p">:</span> <span class="s2">&quot;/tmp/logfile_experiment2&quot;</span><span class="p">,</span> <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="s2">&quot;info&quot;</span><span class="p">},</span>
+    <span class="s2">&quot;redirected_log&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;logfile&quot;</span><span class="p">:</span> <span class="s2">&quot;/tmp/logfile_experiment2&quot;</span><span class="p">,</span> <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="s2">&quot;Info&quot;</span><span class="p">},</span>
     <span class="c1"># &quot;other&quot;:your code</span>
 <span class="p">}</span>
 
@@ -13657,17 +13657,11 @@ var element = $('#ada48963-6d73-4e6a-9f9d-364d1273f926');
               <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;60&quot;</span><span class="p">]</span> <span class="p">,</span>
               <span class="s2">&quot;sliceID&quot;</span><span class="p">:</span> <span class="s2">&quot;toto&quot;</span><span class="p">,</span>
               <span class="s2">&quot;manifest&quot;</span><span class="p">:{</span>
-                  <span class="s2">&quot;app&quot;</span><span class="p">:</span> <span class="p">{</span>
-                              <span class="s2">&quot;slice&quot;</span><span class="p">:</span> <span class="p">{</span>
+                  <span class="s2">&quot;app&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;slice&quot;</span><span class="p">:</span> <span class="p">{</span>
                                  <span class="s2">&quot;cpus&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                                  <span class="s2">&quot;mems&quot;</span><span class="p">:</span> <span class="mi">1</span> 
-                              <span class="p">},</span>    
-                              <span class="s2">&quot;perfwrapper&quot;</span><span class="p">:</span> <span class="p">{</span>
-                                 <span class="s2">&quot;perfwrapper&quot;</span><span class="p">:</span> <span class="p">{</span>
-                                    <span class="s2">&quot;perfLimit&quot;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">,</span>
-                                    <span class="s2">&quot;perfFreq&quot;</span><span class="p">:</span> <span class="mi">1</span>
-                                  <span class="p">}</span>
-                              <span class="p">}</span>
+                           <span class="p">},</span>  
+                           <span class="s2">&quot;perfwrapper&quot;</span><span class="p">:{</span><span class="s2">&quot;perfLimit&quot;</span><span class="p">:{</span><span class="s2">&quot;fromOps&quot;</span><span class="p">:</span><span class="mi">100000</span><span class="p">},</span><span class="s2">&quot;perfFreq&quot;</span><span class="p">:{</span><span class="s2">&quot;fromHz&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">}}</span>
                          <span class="p">},</span>
                           <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;perfwrap&quot;</span><span class="p">,</span>
                          <span class="p">}</span>
@@ -13690,18 +13684,29 @@ var element = $('#ada48963-6d73-4e6a-9f9d-364d1273f926');
     <div class="prompt"></div>
 
 
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>{&#39;dummy&#39;: [{&#39;cmd&#39;: &#39;sleep&#39;, &#39;args&#39;: [&#39;60&#39;], &#39;sliceID&#39;: &#39;toto&#39;, &#39;manifest&#39;: {&#39;app&#39;: {&#39;slice&#39;: {&#39;cpus&#39;: 1, &#39;mems&#39;: 1}, &#39;perfwrapper&#39;: {&#39;perfLimit&#39;: {&#39;fromOps&#39;: 100000}, &#39;perfFreq&#39;: {&#39;fromHz&#39;: 1}}}, &#39;name&#39;: &#39;perfwrap&#39;}}]}
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
 
 
 
-<div id="2a77d3b3-b8a3-49a0-9b67-bf879cf0da87"></div>
+
+
+<div id="9b945bd0-340c-41f4-84ae-7e6d6d143310"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#2a77d3b3-b8a3-49a0-9b67-bf879cf0da87');
+var element = $('#9b945bd0-340c-41f4-84ae-7e6d6d143310');
 
             setTimeout(function() {
-                var nbb_cell_id = 9;
-                var nbb_unformatted_code = "daemonCfgs = {\n    \"redirected_log\": {\"logfile\": \"/tmp/logfile_experiment2\", \"verbose\": \"info\"},\n    # \"other\":your code\n}\n\nworkloads = {\n    \"dummy\":[{\"cmd\":\"sleep\",\n              \"args\": [\"60\"] ,\n              \"sliceID\": \"toto\",\n              \"manifest\":{\n                  \"app\": {\n                              \"slice\": {\n                                 \"cpus\": 1,\n                                 \"mems\": 1 \n                              },    \n                              \"perfwrapper\": {\n                                 \"perfwrapper\": {\n                                    \"perfLimit\": 100000,\n                                    \"perfFreq\": 1\n                                  }\n                              }\n                         },\n                          \"name\": \"perfwrap\",\n                         }\n            }\n            ],\n    #\"other\":your code\n}";
-                var nbb_formatted_code = "daemonCfgs = {\n    \"redirected_log\": {\"logfile\": \"/tmp/logfile_experiment2\", \"verbose\": \"info\"},\n    # \"other\":your code\n}\n\nworkloads = {\n    \"dummy\": [\n        {\n            \"cmd\": \"sleep\",\n            \"args\": [\"60\"],\n            \"sliceID\": \"toto\",\n            \"manifest\": {\n                \"app\": {\n                    \"slice\": {\"cpus\": 1, \"mems\": 1},\n                    \"perfwrapper\": {\n                        \"perfwrapper\": {\"perfLimit\": 100000, \"perfFreq\": 1}\n                    },\n                },\n                \"name\": \"perfwrap\",\n            },\n        }\n    ],\n    # \"other\":your code\n}";
+                var nbb_cell_id = 13;
+                var nbb_unformatted_code = "daemonCfgs = {\n    \"redirected_log\": {\"logfile\": \"/tmp/logfile_experiment2\", \"verbose\": \"Info\"},\n    # \"other\":your code\n}\n\nworkloads = {\n    \"dummy\":[{\"cmd\":\"sleep\",\n              \"args\": [\"60\"] ,\n              \"sliceID\": \"toto\",\n              \"manifest\":{\n                  \"app\": { \"slice\": {\n                                 \"cpus\": 1,\n                                 \"mems\": 1 \n                           },  \n                           \"perfwrapper\":{\"perfLimit\":{\"fromOps\":100000},\"perfFreq\":{\"fromHz\":1}}\n                         },\n                          \"name\": \"perfwrap\",\n                         }\n            }\n            ],\n    #\"other\":your code\n}\nprint(workloads)";
+                var nbb_formatted_code = "daemonCfgs = {\n    \"redirected_log\": {\"logfile\": \"/tmp/logfile_experiment2\", \"verbose\": \"Info\"},\n    # \"other\":your code\n}\n\nworkloads = {\n    \"dummy\": [\n        {\n            \"cmd\": \"sleep\",\n            \"args\": [\"60\"],\n            \"sliceID\": \"toto\",\n            \"manifest\": {\n                \"app\": {\n                    \"slice\": {\"cpus\": 1, \"mems\": 1},\n                    \"perfwrapper\": {\n                        \"perfLimit\": {\"fromOps\": 100000},\n                        \"perfFreq\": {\"fromHz\": 1},\n                    },\n                },\n                \"name\": \"perfwrap\",\n            },\n        }\n    ],\n    # \"other\":your code\n}\nprint(workloads)";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13757,10 +13762,10 @@ var element = $('#2a77d3b3-b8a3-49a0-9b67-bf879cf0da87');
 
 
 
-<div id="3ad8b280-8bda-40cb-b1ba-cd307ae7d65d"></div>
+<div id="b3f53fa1-fc5e-43fc-987b-1bef4a38561e"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#3ad8b280-8bda-40cb-b1ba-cd307ae7d65d');
+var element = $('#b3f53fa1-fc5e-43fc-987b-1bef4a38561e');
 
             setTimeout(function() {
                 var nbb_cell_id = 10;
@@ -13796,7 +13801,7 @@ var element = $('#3ad8b280-8bda-40cb-b1ba-cd307ae7d65d');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">(</span><span class="n">daemonCfgs</span><span class="p">[</span><span class="s2">&quot;redirected_log&quot;</span><span class="p">])</span>
@@ -13823,8 +13828,26 @@ var element = $('#3ad8b280-8bda-40cb-b1ba-cd307ae7d65d');
 connected to tcp://localhost:2345
 The control problem description is:
  Problem 
-    <span class="ansi-cyan-intense-fg ansi-bold">{</span> sensors = fromList <span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">]</span>
-    <span class="ansi-cyan-intense-fg ansi-bold">,</span> actuators = fromList <span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">]</span>
+    <span class="ansi-cyan-intense-fg ansi-bold">{</span> sensors = fromList 
+        <span class="ansi-yellow-intense-fg ansi-bold">[</span> 
+            <span class="ansi-magenta-fg">(</span> SensorID <span class="ansi-cyan-fg">{</span> sensorID = <span class="ansi-white-intense-fg ansi-bold">&#34;</span><span class="ansi-blue-intense-fg ansi-bold">RaplKey (PackageID 0)</span><span class="ansi-white-intense-fg ansi-bold">&#34;</span> <span class="ansi-cyan-fg">}</span>
+            <span class="ansi-magenta-fg">,</span> Sensor 
+                <span class="ansi-cyan-fg">{</span> range = 0.0 ... 2.6214332885e11
+                <span class="ansi-cyan-fg">,</span> maxFrequency = 3.0
+                <span class="ansi-cyan-fg">}</span> 
+            <span class="ansi-magenta-fg">)</span> 
+        <span class="ansi-yellow-intense-fg ansi-bold">]</span>
+    <span class="ansi-cyan-intense-fg ansi-bold">,</span> actuators = fromList 
+        <span class="ansi-yellow-intense-fg ansi-bold">[</span> 
+            <span class="ansi-magenta-fg">(</span> ActuatorID <span class="ansi-cyan-fg">{</span> actuatorID = <span class="ansi-white-intense-fg ansi-bold">&#34;</span><span class="ansi-blue-intense-fg ansi-bold">RaplKey (PackageID 0)</span><span class="ansi-white-intense-fg ansi-bold">&#34;</span> <span class="ansi-cyan-fg">}</span>
+            <span class="ansi-magenta-fg">,</span> Actuator 
+                <span class="ansi-cyan-fg">{</span> actions = 
+                    <span class="ansi-yellow-fg">[</span> DiscreteDouble 180.0
+                    <span class="ansi-yellow-fg">,</span> DiscreteDouble 200.0
+                    <span class="ansi-yellow-fg">]</span> 
+                <span class="ansi-cyan-fg">}</span>
+            <span class="ansi-magenta-fg">)</span> 
+        <span class="ansi-yellow-intense-fg ansi-bold">]</span>
     <span class="ansi-cyan-intense-fg ansi-bold">,</span> objectives = <span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">]</span>
     <span class="ansi-cyan-intense-fg ansi-bold">,</span> constraints = <span class="ansi-yellow-intense-fg ansi-bold">[</span><span class="ansi-yellow-intense-fg ansi-bold">]</span>
     <span class="ansi-cyan-intense-fg ansi-bold">}</span> 
@@ -13840,13 +13863,13 @@ The control problem description is:
 
 
 
-<div id="59c237f0-bb52-45fb-9bd1-2c02d8b7823a"></div>
+<div id="b8b69925-2fd9-43d8-ab6e-d1dada0d19b8"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#59c237f0-bb52-45fb-9bd1-2c02d8b7823a');
+var element = $('#b8b69925-2fd9-43d8-ab6e-d1dada0d19b8');
 
             setTimeout(function() {
-                var nbb_cell_id = 11;
+                var nbb_cell_id = 16;
                 var nbb_unformatted_code = "host.start_daemon(daemonCfgs[\"redirected_log\"])\nassert host.check_daemon()\ncpd=host.get_cpd()\nprint(\"The control problem description is:\\n %s\" % cpd)";
                 var nbb_formatted_code = "host.start_daemon(daemonCfgs[\"redirected_log\"])\nassert host.check_daemon()\ncpd = host.get_cpd()\nprint(\"The control problem description is:\\n %s\" % cpd)";
                 var nbb_cells = Jupyter.notebook.get_cells();
@@ -13894,10 +13917,10 @@ var element = $('#59c237f0-bb52-45fb-9bd1-2c02d8b7823a');
 
 
 
-<div id="e07ab16f-bf92-40a1-9d59-7e618803efbb"></div>
+<div id="1ef45d1d-50e2-4dd2-a245-577029dbb825"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#e07ab16f-bf92-40a1-9d59-7e618803efbb');
+var element = $('#1ef45d1d-50e2-4dd2-a245-577029dbb825');
 
             setTimeout(function() {
                 var nbb_cell_id = 12;
@@ -13933,23 +13956,24 @@ var element = $('#e07ab16f-bf92-40a1-9d59-7e618803efbb');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">daemonCfg</span><span class="p">,</span> <span class="n">workload</span><span class="p">)</span> <span class="ow">in</span> <span class="n">experiments</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">imp</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">daemonCfg</span><span class="p">,</span> <span class="n">workload</span><span class="p">)</span> <span class="ow">in</span> <span class="n">experiments</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="c1"># starting the daemon (does act as silent restart)</span>
     <span class="n">host</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">(</span><span class="n">daemonCfg</span><span class="p">)</span>
     <span class="c1"># running the workload</span>
     <span class="n">host</span><span class="o">.</span><span class="n">run_workload</span><span class="p">(</span><span class="n">workload</span><span class="p">)</span>
     <span class="c1"># message passting exchange:</span>
-    <span class="k">while</span> <span class="ow">not</span> <span class="n">host</span><span class="o">.</span><span class="n">workload_finished</span><span class="p">():</span>
+    <span class="k">while</span> <span class="n">host</span><span class="o">.</span><span class="n">check_daemon</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">host</span><span class="o">.</span><span class="n">workload_finished</span><span class="p">():</span>
         <span class="n">measurement_message</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">workload_recv</span><span class="p">()</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">measurement_message</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">measurement_message</span><span class="p">))</span>
         <span class="n">command_message</span> <span class="o">=</span> <span class="s2">&quot;insert your code here&quot;</span>
         <span class="n">host</span><span class="o">.</span><span class="n">workload_send</span><span class="p">(</span><span class="n">command_message</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">check_daemon</span><span class="p">())</span>
 
-<span class="n">host</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span><span class="n">KJ</span>
+<span class="n">host</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span>
 </pre></div>
 
     </div>
@@ -13968,17 +13992,71 @@ var element = $('#e07ab16f-bf92-40a1-9d59-7e618803efbb');
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>connecting
 connected to tcp://localhost:2345
+receiving
 </pre>
 </div>
 </div>
 
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------</span>
+<span class="ansi-red-fg">NameError</span>Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-18-e26904da5be5&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      7</span>     <span class="ansi-green-fg">while</span> host<span class="ansi-blue-fg">.</span>check_daemon<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">and</span> <span class="ansi-green-fg">not</span> host<span class="ansi-blue-fg">.</span>workload_finished<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">      8</span>         measurement_message <span class="ansi-blue-fg">=</span> host<span class="ansi-blue-fg">.</span>workload_recv<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-fg">----&gt; 9</span><span class="ansi-red-fg">         </span>print<span class="ansi-blue-fg">(</span>json<span class="ansi-blue-fg">.</span>loads<span class="ansi-blue-fg">(</span>measurement_message<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     10</span>         command_message <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">&#34;insert your code here&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">     11</span>         host<span class="ansi-blue-fg">.</span>workload_send<span class="ansi-blue-fg">(</span>command_message<span class="ansi-blue-fg">)</span>
+
+<span class="ansi-red-fg">NameError</span>: name &#39;json&#39; is not defined</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="2a4bcc92-8704-4eee-92b8-f48b9b4963f6"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#2a4bcc92-8704-4eee-92b8-f48b9b4963f6');
+
+            setTimeout(function() {
+                var nbb_cell_id = 18;
+                var nbb_unformatted_code = "for name, (daemonCfg, workload) in experiments.items():\n    # starting the daemon (does act as silent restart)\n    host.start_daemon(daemonCfg)\n    # running the workload\n    host.run_workload(workload)\n    # message passting exchange:\n    while host.check_daemon() and not host.workload_finished():\n        measurement_message = host.workload_recv()\n        print(json.loads(measurement_message))\n        command_message = \"insert your code here\"\n        host.workload_send(command_message)\n    print(host.check_daemon())\n\nhost.stop_daemon()";
+                var nbb_formatted_code = "for name, (daemonCfg, workload) in experiments.items():\n    # starting the daemon (does act as silent restart)\n    host.start_daemon(daemonCfg)\n    # running the workload\n    host.run_workload(workload)\n    # message passting exchange:\n    while host.check_daemon() and not host.workload_finished():\n        measurement_message = host.workload_recv()\n        print(json.loads(measurement_message))\n        command_message = \"insert your code here\"\n        host.workload_send(command_message)\n    print(host.check_daemon())\n\nhost.stop_daemon()";
+                var nbb_cells = Jupyter.notebook.get_cells();
+                for (var i = 0; i < nbb_cells.length; ++i) {
+                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
+                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
+                             nbb_cells[i].set_text(nbb_formatted_code);
+                        }
+                        break;
+                    }
+                }
+            }, 500);
+            
+</script>
+</div>
+
+</div>
+
 </div>
 </div>
 
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[29]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span> 
@@ -13988,16 +14066,122 @@ connected to tcp://localhost:2345
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[29]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>((0, False, False), 2345, 3456, &#39;localhost&#39;)</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="5684fc09-8579-4549-ac71-c3ae27988f62"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#5684fc09-8579-4549-ac71-c3ae27988f62');
+
+            setTimeout(function() {
+                var nbb_cell_id = 29;
+                var nbb_unformatted_code = "host.commonOpts";
+                var nbb_formatted_code = "host.commonOpts";
+                var nbb_cells = Jupyter.notebook.get_cells();
+                for (var i = 0; i < nbb_cells.length; ++i) {
+                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
+                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
+                             nbb_cells[i].set_text(nbb_formatted_code);
+                        }
+                        break;
+                    }
+                }
+            }, 500);
+            
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nrm</span><span class="o">.</span><span class="n">tooling</span><span class="o">.</span><span class="n">lib</span><span class="o">.</span><span class="n">pubAddress</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">commonOpts</span><span class="p">)</span>
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt output_prompt">Out[30]:</div>
+
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&#39;tcp://localhost:2345&#39;</pre>
+</div>
+
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+
+
+
+<div id="66f9251e-43e0-49e4-a7c1-8d6d51a0306d"></div>
+<div class="output_subarea output_javascript ">
+<script type="text/javascript">
+var element = $('#66f9251e-43e0-49e4-a7c1-8d6d51a0306d');
+
+            setTimeout(function() {
+                var nbb_cell_id = 30;
+                var nbb_unformatted_code = "nrm.tooling.lib.pubAddress(host.commonOpts)";
+                var nbb_formatted_code = "nrm.tooling.lib.pubAddress(host.commonOpts)";
+                var nbb_cells = Jupyter.notebook.get_cells();
+                for (var i = 0; i < nbb_cells.length; ++i) {
+                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
+                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
+                             nbb_cells[i].set_text(nbb_formatted_code);
+                        }
+                        break;
+                    }
+                }
+            }, 500);
+            
+</script>
+</div>
+
+</div>
+
 </div>
 </div>
 

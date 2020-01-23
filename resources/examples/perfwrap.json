@@ -1,1 +1,26 @@
-{"image":null,"hwbind":false,"app":{"scheduler":"FIFO","instrumentation":null,"power":{"slowdown":1,"profile":false,"policy":"NoPowerPolicy"},"perfwrapper":{"_1":{"perfLimit":{"fromOps":100000},"perfFreq":{"fromHz":1}}},"slice":{"cpus":1,"mems":1}},"name":"default"}
+{
+    "image": null,
+    "hwbind": false,
+    "app": {
+        "scheduler": "FIFO",
+        "instrumentation": null,
+        "power": {
+            "slowdown": 1,
+            "profile": false,
+            "policy": "NoPowerPolicy"
+        },
+        "perfwrapper": {
+            "perfLimit": {
+                "fromOps": 100000
+            },
+            "perfFreq": {
+                "fromHz": 1
+            }
+        },
+        "slice": {
+            "cpus": 1,
+            "mems": 1
+        }
+    },
+    "name": "default"
+}

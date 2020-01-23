@@ -72,7 +72,7 @@ mkSimpleRunExport = exportIO mkSimpleRun
               env = Env $ LM.fromList env
             },
           runSliceID = parseSliceID sliceID,
-          detachCmd = True
+          detachCmd = False
         }
 
 pubAddressExport :: Ex

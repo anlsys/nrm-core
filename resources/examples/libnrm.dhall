@@ -18,12 +18,10 @@
     , perfwrapper =
         < PerfwrapperDisabled
         | Perfwrapper :
-            { _1 :
-                { perfFreq :
-                    { fromHz : Double }
-                , perfLimit :
-                    { fromOps : Integer }
-                }
+            { perfFreq :
+                { fromHz : Double }
+            , perfLimit :
+                { fromOps : Integer }
             }
         >.PerfwrapperDisabled
     , power =

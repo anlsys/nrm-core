@@ -18,17 +18,13 @@
     , perfwrapper =
         < PerfwrapperDisabled
         | Perfwrapper :
-            { _1 :
-                { perfFreq :
-                    { fromHz : Double }
-                , perfLimit :
-                    { fromOps : Integer }
-                }
+            { perfFreq :
+                { fromHz : Double }
+            , perfLimit :
+                { fromOps : Integer }
             }
         >.Perfwrapper
-        { _1 =
-            { perfFreq = { fromHz = 1.0 }, perfLimit = { fromOps = +100000 } }
-        }
+        { perfFreq = { fromHz = 1.0 }, perfLimit = { fromOps = +100000 } }
     , power =
         { policy =
             < NoPowerPolicy | DDCM | DVFS | Combined >.NoPowerPolicy

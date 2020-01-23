@@ -160,7 +160,6 @@ class Local(object):
 
     def workload_recv(self):
         """ Receive a message from NRM's upstream API. """
-        print("receiving")
         return self.upstreampub.recv()
 
     def workload_send(self, message):
