@@ -118,7 +118,7 @@ newtype SensorID = SensorID {sensorID :: Text}
       D.Interpret,
       D.Inject
     )
-  deriving (IsString,JSONSchema, A.ToJSON, A.FromJSON) via Text
+  deriving (IsString, JSONSchema, A.ToJSON, A.FromJSON) via Text
 
 ------- ACTUATORS
 class CPDLActuator a where
