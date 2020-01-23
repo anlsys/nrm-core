@@ -23,7 +23,6 @@ module NRM.State
   )
 where
 
-import Data.Map as DM
 import LMap.Map as LM
 import NRM.Node.Hwloc
 import NRM.Node.Sysfs
@@ -132,10 +131,10 @@ removeCmd ::
   Maybe (DeletionInfo, CmdID, Cmd, SliceID, NRMState)
 removeCmd key st = case key of
   KCmdID cmdID ->
-    DM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
+    LM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
       go cmdID cmd sliceID slice
   KProcessID pid ->
-    DM.lookup pid (pidMap st) <&> \(cmdID, cmd, sliceID, slice) ->
+    LM.lookup pid (pidMap st) <&> \(cmdID, cmd, sliceID, slice) ->
       go cmdID cmd sliceID slice
   where
     go cmdID cmd sliceID slice =
@@ -186,7 +185,7 @@ registerLaunched ::
   NRMState ->
   Either Text (NRMState, SliceID, Maybe UpstreamClientID)
 registerLaunched cmdID pid st =
-  case DM.lookup cmdID (awaitingCmdIDMap st) of
+  case LM.lookup cmdID (awaitingCmdIDMap st) of
     Nothing -> Left "No such awaiting command."
     Just (cmdCore, sliceID, slice) ->
       Right
@@ -215,7 +214,7 @@ registerFailed ::
   NRMState ->
   Maybe (NRMState, SliceID, Slice, CmdCore)
 registerFailed cmdID st =
-  DM.lookup cmdID (awaitingCmdIDMap st) <&> \(cmdCore, sliceID, slice) ->
+  LM.lookup cmdID (awaitingCmdIDMap st) <&> \(cmdCore, sliceID, slice) ->
     ( st {slices = LM.update f sliceID (slices st)},
       sliceID,
       slice,

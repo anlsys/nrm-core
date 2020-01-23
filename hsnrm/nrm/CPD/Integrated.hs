@@ -22,12 +22,12 @@ import CPD.Core
 import qualified Data.Aeson as A
 import Data.Data
 import Data.JSON.Schema
-import qualified Data.Map as DM
 import Data.MessagePack
 import Dhall (Inject, Interpret)
+import LMap.Map as DM
 import NRM.Classes.Messaging
 import NRM.Types.Units
-import Protolude
+import Protolude hiding (Map)
 
 data Integrator
   = Integrator

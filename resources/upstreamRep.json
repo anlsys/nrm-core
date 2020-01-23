@@ -739,72 +739,98 @@
                             "type": "array"
                         },
                         "sensors": {
-                            "additionalProperties": {
-                                "required": [
-                                    "range",
-                                    "maxFrequency"
-                                ],
-                                "type": "object",
-                                "properties": {
-                                    "maxFrequency": {
-                                        "type": "number"
+                            "uniqueItems": false,
+                            "items": {
+                                "items": [
+                                    {
+                                        "type": "string"
                                     },
-                                    "range": {
-                                        "oneOf": [
-                                            {
-                                                "required": [
-                                                    "i"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "i": {
-                                                        "items": [
-                                                            {
-                                                                "type": "number"
-                                                            },
-                                                            {
-                                                                "type": "number"
-                                                            }
-                                                        ],
-                                                        "type": "array"
-                                                    }
-                                                }
+                                    {
+                                        "required": [
+                                            "range",
+                                            "maxFrequency"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "maxFrequency": {
+                                                "type": "number"
                                             },
-                                            {
-                                                "required": [
-                                                    "empty"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "empty": {
+                                            "range": {
+                                                "oneOf": [
+                                                    {
+                                                        "required": [
+                                                            "i"
+                                                        ],
                                                         "type": "object",
-                                                        "properties": {}
+                                                        "properties": {
+                                                            "i": {
+                                                                "items": [
+                                                                    {
+                                                                        "type": "number"
+                                                                    },
+                                                                    {
+                                                                        "type": "number"
+                                                                    }
+                                                                ],
+                                                                "type": "array"
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "required": [
+                                                            "empty"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "empty": {
+                                                                "type": "object",
+                                                                "properties": {}
+                                                            }
+                                                        }
                                                     }
-                                                }
+                                                ]
                                             }
-                                        ]
+                                        }
                                     }
-                                }
+                                ],
+                                "type": "array"
                             },
-                            "type": "object"
+                            "type": "array"
                         },
                         "actuators": {
-                            "additionalProperties": {
-                                "required": [
-                                    "actions"
-                                ],
-                                "type": "object",
-                                "properties": {
-                                    "actions": {
-                                        "uniqueItems": false,
-                                        "items": {
-                                            "type": "number"
-                                        },
-                                        "type": "array"
+                            "uniqueItems": false,
+                            "items": {
+                                "items": [
+                                    {
+                                        "required": [
+                                            "actuatorID"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "actuatorID": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "required": [
+                                            "actions"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "actions": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "number"
+                                                },
+                                                "type": "array"
+                                            }
+                                        }
                                     }
-                                }
+                                ],
+                                "type": "array"
                             },
-                            "type": "object"
+                            "type": "array"
                         }
                     }
                 }

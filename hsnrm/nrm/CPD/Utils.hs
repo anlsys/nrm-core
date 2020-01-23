@@ -18,9 +18,9 @@ where
 
 import CPD.Core as CPD
 import CPD.Values as CPD
-import qualified Data.Map as DM
+import LMap.Map as DM hiding (singleton)
 import Numeric.Interval as I hiding (elem)
-import Protolude
+import Protolude hiding (Map)
 
 data MeasurementValidation = AdjustInterval (Interval Double) | MeasurementOk
 

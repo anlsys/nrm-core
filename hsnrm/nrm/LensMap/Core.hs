@@ -15,11 +15,11 @@ module LensMap.Core
 where
 
 import Control.Lens
-import Data.Map as DM
 import Data.Maybe (fromJust)
+import LMap.Map as DM
 import qualified LMap.Map as LM
 import qualified LMap.NonEmpty as NELM
-import Protolude
+import Protolude hiding (Map)
 
 newtype ScopedLens s a = ScopedLens {getScopedLens :: Lens' s a}
 
@@ -28,29 +28,29 @@ type LensMap s k a = Map k (ScopedLens s a)
 class HasLensMap s k a where
   lenses :: s -> LensMap s k a
 
-instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (Map k v) key a where
-  lenses s = DM.fromList . mconcat $ DM.toList s <&> \(k, v) -> go k (lenses (k, v))
-    where
-      go ::
-        forall key k v a.
-        (Ord k) =>
-        k ->
-        Map key (ScopedLens (k, v) a) ->
-        [(key, ScopedLens (Map k v) a)]
-      go k lensMap =
-        DM.toList lensMap <&> second (augmentedLens k)
-      augmentedLens ::
-        forall k v a.
-        (Ord k) =>
-        k ->
-        ScopedLens (k, v) a ->
-        ScopedLens (Map k v) a
-      augmentedLens k = addPath $ lens getter setter
-        where
-          getter m = fromJust $ DM.lookup k m <&> (k,)
-          setter m (_, value) = DM.insert k value m
+--instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (Map k v) key a where
+--  --lenses s = DM.fromList . mconcat $ DM.toList s <&> \(k, v) -> go k (lenses (k, v))
+--    --where
+--      --go ::
+--        --forall key k v a.
+--        --(Ord k) =>
+--        --k ->
+--        --Map key (ScopedLens (k, v) a) ->
+--        --[(key, ScopedLens (Map k v) a)]
+--      --go k lensMap =
+--        --DM.toList lensMap <&> second (augmentedLens k)
+--      --augmentedLens ::
+--        --forall k v a.
+--        --(Ord k) =>
+--        --k ->
+--        --ScopedLens (k, v) a ->
+--        --ScopedLens (Map k v) a
+--      --augmentedLens k = addPath $ lens getter setter
+--        --where
+--          --getter m = fromJust $ DM.lookup k m <&> (k,)
+--          --setter m (_, value) = DM.insert k value m
 
-instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (LM.Map k v) key a where
+instance (Ord k, HasLensMap (k, v) key a) => HasLensMap (LM.Map k v) key a where
   lenses s = DM.fromList . mconcat $ LM.toList s <&> \(k, v) -> go k (lenses (k, v))
     where
       go ::
@@ -72,7 +72,7 @@ instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (LM.Map k v) ke
           getter m = fromJust $ LM.lookup k m <&> (k,)
           setter m (_, value) = LM.insert k value m
 
-instance (Ord k, Ord key, HasLensMap (k, v) key a) => HasLensMap (NELM.Map k v) key a where
+instance (Ord k, HasLensMap (k, v) key a) => HasLensMap (NELM.Map k v) key a where
   lenses s = DM.fromList . mconcat $ NELM.toList s <&> \(k, v) -> go k (lenses (k, v))
     where
       go ::

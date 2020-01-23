@@ -19,11 +19,10 @@ import CPD.Utils
 import CPD.Values
 import Control.Lens hiding ((...))
 import Data.Generics.Product
-import Data.Map as DM
 import HBandit.BwCR as BwCR
 import HBandit.Class
 import HBandit.Types
-import LMap.Map as LMap
+import LMap.Map as DM
 import NRM.Orphans.NonEmpty ()
 import NRM.Types.Configuration
 import NRM.Types.Controller
@@ -31,7 +30,7 @@ import NRM.Types.MemBuffer as MemBuffer
 import NRM.Types.NRM
 import NRM.Types.Units
 import Numeric.Interval
-import Protolude
+import Protolude hiding (Map)
 import Refined
 import System.Random
 
@@ -74,7 +73,7 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) = do
     reset = do
       field @"bandit" .= Nothing
       field @"bufferedMeasurements" .= Nothing
-      field @"referenceMeasurements" .= LMap.fromDataMap (sensors cpd $> MemBuffer.empty)
+      field @"referenceMeasurements" .= (sensors cpd $> MemBuffer.empty)
       refine 0 & \case
         Left _ -> logError "refinement failed in banditCartesianProductControl" >> doNothing
         Right v -> do
@@ -153,7 +152,7 @@ cStep _ stepObjectives stepConstraints sensors t = do
           evaluatedConstraints = stepConstraints <&> \(interv, c) ->
             ( interv,
               eval measurements c,
-              eval (toDataMap refMeasurements <&> MemBuffer.avgBuffer) c
+              eval (refMeasurements <&> MemBuffer.avgBuffer) c
             )
           refinedConstraints :: Maybe [(Interval Double, Double)]
           refinedConstraints =

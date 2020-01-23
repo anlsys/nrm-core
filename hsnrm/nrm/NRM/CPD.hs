@@ -16,7 +16,7 @@ where
 
 import CPD.Core
 import Control.Lens hiding ((...))
-import qualified Data.Map as DM
+import LMap.Map as DM
 import LensMap.Core
 import NRM.Actuators
 import NRM.Sensors
@@ -24,7 +24,7 @@ import NRM.Types.Configuration
 import NRM.Types.Sensor as S
 import NRM.Types.State
 import Numeric.Interval hiding (elem)
-import Protolude
+import Protolude hiding (Map)
 import Refined (unrefine)
 
 toCPD :: Maybe ControlCfg -> NRMState -> Problem

@@ -16,8 +16,8 @@ import Control.Lens hiding ((...))
 import Data.Aeson
 import Data.Generics.Product
 import Data.JSON.Schema
-import Data.Map as DM
 import Data.MessagePack
+import LMap.Map as DM
 import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Types.DownstreamThreadID

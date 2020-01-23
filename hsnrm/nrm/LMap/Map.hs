@@ -14,6 +14,7 @@ module LMap.Map
     LMap.Map.map,
     LMap.Map.empty,
     LMap.Map.null,
+    singleton,
     lookup,
     insert,
     alter,
@@ -22,6 +23,7 @@ module LMap.Map
     elems,
     keys,
     mapKV,
+    filterWithKey,
   )
 where
 
@@ -47,6 +49,9 @@ empty = Map []
 null :: Map k a -> Bool
 null (Map []) = True
 null _ = False
+
+singleton :: k -> v -> Map k v
+singleton k v = Map [(k, v)]
 
 fromDataMap :: DM.Map k v -> Map k v
 fromDataMap = fromList . DM.toList
@@ -83,6 +88,9 @@ keys (Map m) = DM.keys (DM.fromList m)
 
 map :: (Ord k) => (a -> b) -> Map k a -> Map k b
 map f (Map m) = DM.map f (DM.fromList m) & DM.toList & fromList
+
+filterWithKey :: Ord k => (k -> a -> Bool) -> Map k a -> Map k a
+filterWithKey kf m = fromDataMap $ DM.filterWithKey kf (toDataMap m)
 
 type instance Index (Map k a) = k
 

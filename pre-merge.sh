@@ -32,8 +32,9 @@ nix-shell --pure -p '(import ./.).pythonPackages.black' --run bash <<< '
   black pynrm/nrm/*.py
 '
 
-./shake.sh doc
 ./shake.sh codegen
+./shake.sh doc
 ./shake.sh build
 ./shake.sh pyclient
 ./shake.sh notebooks
+#./shake.sh client

@@ -10,12 +10,12 @@ where
 
 import qualified CPD.Core as CPD
 import Control.Lens
-import Data.Map as DM
+import LMap.Map as DM
 import LensMap.Core
 import NRM.Classes.Actuators
 import NRM.Types.Actuator
 import NRM.Types.State
-import Protolude
+import Protolude hiding (Map)
 
 cpdActuators :: NRMState -> Map CPD.ActuatorID CPD.Actuator
 cpdActuators st =

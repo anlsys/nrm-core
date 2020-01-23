@@ -48,17 +48,17 @@ where
 
 import qualified Data.Aeson as A
 import Data.JSON.Schema
-import qualified Data.Map as DM
 import Data.MessagePack
 import Data.String (IsString (..))
 import qualified Dhall as D
+import LMap.Map as Map
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import NRM.Orphans.ZeroOne ()
 import qualified NRM.Types.Units as Units
 import NeatInterpolation
 import Numeric.Interval as I hiding (elem)
-import Protolude
+import Protolude hiding (Map)
 
 -- METADATA
 newtype Discrete = DiscreteDouble Double
@@ -83,7 +83,7 @@ data Problem
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
 
 emptyProblem :: Problem
-emptyProblem = Problem DM.empty DM.empty [] []
+emptyProblem = Problem Map.empty Map.empty [] []
 
 data Sensor = Sensor {range :: Interval Double, maxFrequency :: Units.Frequency}
   deriving (Show, Generic, MessagePack, D.Interpret, D.Inject)

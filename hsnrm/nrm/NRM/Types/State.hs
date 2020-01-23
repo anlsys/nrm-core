@@ -38,7 +38,6 @@ import Data.Aeson
 import Data.Data
 import Data.Generics.Product
 import Data.JSON.Schema
-import Data.Map as DM
 import Data.MessagePack
 import LMap.Map as LM
 import LensMap.Core
@@ -121,15 +120,15 @@ insertSlice :: SliceID -> Slice -> NRMState -> NRMState
 insertSlice sliceID slice s = s {slices = LM.insert sliceID slice (slices s)}
 
 lookupProcess :: ProcessID -> NRMState -> Maybe (CmdID, Cmd, SliceID, Slice)
-lookupProcess cmdID st = DM.lookup cmdID (pidMap st)
+lookupProcess cmdID st = LM.lookup cmdID (pidMap st)
 
 -- | NRM state map view by ProcessID.
-pidMap :: NRMState -> DM.Map ProcessID (CmdID, Cmd, SliceID, Slice)
+pidMap :: NRMState -> LM.Map ProcessID (CmdID, Cmd, SliceID, Slice)
 pidMap s = mconcat $ LM.toList (slices s) <&> mkMap
   where
-    mkMap :: forall c. (c, Slice) -> DM.Map ProcessID (CmdID, Cmd, c, Slice)
+    mkMap :: forall c. (c, Slice) -> LM.Map ProcessID (CmdID, Cmd, c, Slice)
     mkMap x@(_, c) =
-      DM.fromList $
+      LM.fromList $
         zip
           (pid <$> LM.elems (cmds c))
           (LM.toList (cmds c) <&> mkTriple x)
@@ -138,25 +137,25 @@ mkTriple :: (c, d) -> (a, b) -> (a, b, c, d)
 mkTriple (cid, c) (cmid, cm) = (cmid, cm, cid, c)
 
 lookupCmd :: CmdID -> NRMState -> Maybe (Cmd, SliceID, Slice)
-lookupCmd cmdID st = DM.lookup cmdID (cmdIDMap st)
+lookupCmd cmdID st = LM.lookup cmdID (cmdIDMap st)
 
 -- | NRM state map view by cmdID of "running" commands..
-cmdIDMap :: NRMState -> DM.Map CmdID (Cmd, SliceID, Slice)
+cmdIDMap :: NRMState -> LM.Map CmdID (Cmd, SliceID, Slice)
 cmdIDMap = mkCmdIDMap cmds
 
 -- | NRM state map view by cmdID of "awaiting" commands.
-awaitingCmdIDMap :: NRMState -> DM.Map CmdID (CmdCore, SliceID, Slice)
+awaitingCmdIDMap :: NRMState -> LM.Map CmdID (CmdCore, SliceID, Slice)
 awaitingCmdIDMap = mkCmdIDMap awaiting
 
 mkCmdIDMap ::
   Ord k =>
   (Slice -> LM.Map k a) ->
   NRMState ->
-  DM.Map k (a, SliceID, Slice)
+  LM.Map k (a, SliceID, Slice)
 mkCmdIDMap accessor s = mconcat $ LM.toList (slices s) <&> mkMap
   where
     mkMap x@(_, c) =
-      DM.fromList $
+      LM.fromList $
         zip
           (LM.keys $ accessor c)
           (LM.elems (accessor c) <&> mk x)
@@ -166,20 +165,20 @@ mkCmdIDMap accessor s = mconcat $ LM.toList (slices s) <&> mkMap
 {-# WARNING runningCmdIDCmdMap "To remove" #-}
 
 -- | List commands currently registered as running
-runningCmdIDCmdMap :: NRMState -> DM.Map CmdID Cmd
+runningCmdIDCmdMap :: NRMState -> LM.Map CmdID Cmd
 runningCmdIDCmdMap = cmdsMap cmds
 
 -- | List commands awaiting to be launched
-awaitingCmdIDCmdMap :: NRMState -> DM.Map CmdID CmdCore
+awaitingCmdIDCmdMap :: NRMState -> LM.Map CmdID CmdCore
 awaitingCmdIDCmdMap = cmdsMap awaiting
 
 -- | List commands awaiting to be launched
 cmdsMap ::
   (Slice -> LM.Map CmdID a) ->
   NRMState ->
-  DM.Map CmdID a
+  LM.Map CmdID a
 cmdsMap accessor s =
-  DM.fromList . LM.toList . mconcat $
+  LM.fromList . LM.toList . mconcat $
     accessor
       <$> LM.elems (slices s)
 

@@ -27,7 +27,6 @@ import CPD.Values as CPD
 import Control.Lens hiding (to)
 import Control.Monad.Trans.RWS.Lazy (RWST)
 import Data.Generics.Product
-import Data.Map as DM
 import LMap.Map as LM
 import LensMap.Core as LensMap
 import qualified NRM.CPD as NRMCPD
@@ -55,7 +54,7 @@ import NRM.Types.Sensor as Sensor
 import qualified NRM.Types.Slice as Ct
 import NRM.Types.State
 import qualified NRM.Types.Units as U
-import Protolude hiding (log)
+import Protolude hiding (Map, log)
 
 -- | External interface for NRM behavior, without RWS monad
 behavior :: Cfg.Cfg -> NRMState -> U.Time -> NRMEvent -> IO (NRMState, [Behavior])
@@ -198,7 +197,7 @@ nrm callTime DoControl = doControl (NoEvent callTime)
 nrm callTime DoSensor = do
   st <- get
   c <- ask <&> controlCfg
-  (st', measurements) <- lift (foldM (folder callTime) (st, Just []) (DM.toList $ lenses st))
+  (st', measurements) <- lift (foldM (folder callTime) (st, Just []) (LM.toList $ lenses st))
   put st'
   measurements & \case
     Just [] ->
@@ -228,7 +227,7 @@ doControl input = do
           fromCPDKey actuatorID & \case
             Nothing -> log "couldn't decode actuatorID"
             Just aKey ->
-              DM.lookup aKey (lenses st) & \case
+              LM.lookup aKey (lenses st) & \case
                 Nothing -> log "NRM internal error: actuator not found."
                 Just (ScopedLens l) -> do
                   liftIO $ go (st ^. l) discreteValue
@@ -296,7 +295,7 @@ nrmDownstreamEvent callTime clientid = \case
         OAdjustment -> return OAdjustment
         OOk m -> do
           st <- get
-          DM.lookup (cmdID downstreamThreadID) (cmdIDMap st) & \case
+          LM.lookup (cmdID downstreamThreadID) (cmdIDMap st) & \case
             Nothing ->
               log "internal NRM state warning: phasecontext pub lookup failed"
                 >> return (OOk m)
