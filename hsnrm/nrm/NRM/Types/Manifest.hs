@@ -16,7 +16,6 @@ module NRM.Types.Manifest
     Instrumentation (..),
     ImageType (..),
     Perfwrapper (..),
-    Pw (..),
     Image (..),
     jsonOptions,
   )
@@ -84,17 +83,14 @@ data Power
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Power
 
-data Perfwrapper = PerfwrapperDisabled | Perfwrapper Pw
-  deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Perfwrapper
-
-data Pw
-  = MkPw
+data Perfwrapper
+  = PerfwrapperDisabled
+  | Perfwrapper
       { perfFreq :: U.Frequency,
         perfLimit :: U.Operations
       }
   deriving (Eq, Show, Generic, Data, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Pw
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Perfwrapper
 
 newtype Instrumentation
   = Instrumentation

@@ -35,8 +35,8 @@ import Protolude hiding (Map, toList)
 -- | Association list with Data.Map interface and Control.Lens.At
 -- instance. Useful to us because of the generic representation.
 newtype Map a b = Map [(a, b)]
-  deriving (Show, Generic, Data, MessagePack, Functor, Foldable, Inject, Interpret)
-  deriving (Semigroup, Monoid) via [(a, b)]
+  deriving (Show, Generic, Data, MessagePack, Functor, Foldable)
+  deriving (Semigroup, Monoid, Inject, Interpret) via [(a, b)]
 
 mapKV :: ((a, b) -> (c, d)) -> Map a b -> Map c d
 mapKV f m = m & LMap.Map.toList <&> f & fromList

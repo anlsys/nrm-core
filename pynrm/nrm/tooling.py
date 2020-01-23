@@ -91,7 +91,9 @@ class Local(object):
     def __init__(self):
         self.commonOpts = lib.defaultCommonOpts()
 
-    def start_daemon(self, configuration, outfile="/tmp/nrmd_out"):
+    def start_daemon(
+        self, configuration, outfile="/tmp/nrmd_out", errfile="/tmp/nrmd_err"
+    ):
         """ start nrmd """
         if self.check_daemon():
             self.stop_daemon()
@@ -100,9 +102,11 @@ class Local(object):
                 "daemonize",
                 "-o",
                 outfile,
+                "-e",
+                errfile,
                 shutil.which("nrmd"),
                 "-y",
-                yaml.dump(configuration),
+                json.dumps(configuration),
             ],
             stderr=subprocess.STDOUT,
             stdin=subprocess.PIPE,
@@ -137,7 +141,7 @@ class Local(object):
                     w["cmd"],
                     w["args"],
                     list(dict(os.environ).items()),
-                    yaml.dump(w["manifest"]),
+                    json.dumps(w["manifest"]),
                     w["sliceID"],
                 ),
             )

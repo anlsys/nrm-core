@@ -25,7 +25,7 @@ ormolu:
         }
       ' --run bash <<< '
         RETURN=0
-        for F in $(fd -E hsnrm/hbandit -e hs); do
+        for F in $(fd -E hsnrm/hbandit hsnrm/dhall-haskell -e hs); do
           ormolu -o -XTypeApplications -m check $F
           if [ $? -ne 0 ]; then
             echo "[!] $F does not pass ormolu haskell format check." >&2
@@ -89,7 +89,7 @@ clang-format:
     - |
       nix-shell --pure -p '(import ./.).fd' '(import ./.).clang-tools' --run bash <<< '
         RETURN=0
-        for F in $(fd -E hsnrm/hbandit -e c); do
+        for F in $(fd -E hsnrm/hbandit hsnrm/dhall-haskell -e c); do
           clang-format < $F | cmp -s $F -
           if [ $? -ne 0 ]; then
             echo "[!] $F does not pass clang-format format check." >&2
@@ -108,7 +108,7 @@ dhall-format:
     - |
       nix-shell --pure -p '(import ./.).fd' '(import ./.).haskellPackages.dhall' --run bash <<< '
         RETURN=0
-        for F in $(fd -E hsnrm/hbandit -e dhall); do
+        for F in $(fd -E hsnrm/hbandit hsnrm/dhall-haskell -e dhall); do
           dhall format < $F | cmp -s $F -
           if [ $? -ne 0 ]; then
             echo "[!] $F does not pass clang-format format check." >&2

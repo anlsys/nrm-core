@@ -63,7 +63,7 @@ mkSimpleRunExport = exportIO mkSimpleRun
   where
     mkSimpleRun :: Text -> [Text] -> [(Text, Text)] -> Text -> Text -> IO Run
     mkSimpleRun cmd args env manifest sliceID = do
-      m <- processType (Proxy :: Proxy Manifest) Json (toS manifest)
+      m <- processType (Proxy :: Proxy Manifest) Yaml (toS manifest)
       return $ Run
         { manifest = m,
           spec = CmdSpec

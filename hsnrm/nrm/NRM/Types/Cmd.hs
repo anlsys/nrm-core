@@ -99,14 +99,14 @@ addDownstreamCmdClient ::
 addDownstreamCmdClient Cmd {..} downstreamCmdClientID =
   cmdCore & manifest & Manifest.app & Manifest.perfwrapper & \case
     PerfwrapperDisabled -> Nothing
-    Perfwrapper pw ->
+    Perfwrapper perfFreq perfLimit ->
       Just $ Cmd
         { downstreamCmds =
             LM.insert
               downstreamCmdClientID
               ( DownstreamCmd
-                  (Manifest.perfLimit pw)
-                  (Manifest.perfFreq pw)
+                  perfLimit
+                  perfFreq
                   MemBuffer.empty
               )
               downstreamCmds,

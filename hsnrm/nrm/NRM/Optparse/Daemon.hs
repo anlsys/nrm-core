@@ -55,10 +55,10 @@ commonParser =
       )
     <*> flag
       Dhall
-      Json
-      ( long "json" <> short 'j'
+      Yaml
+      ( long "yaml" <> short 'y'
           <> help
-            "Assume configuration to be yaml instead of dhall."
+            "Assume configuration to be yaml(json is valid yaml) instead of dhall."
       )
 
 opts :: Parser (IO Cfg)
@@ -102,17 +102,24 @@ processType ::
 processType proxy@(Proxy :: Proxy x) sourceType bs =
   mergeAndExtract (def :: x) =<< toExpr proxy sourceType bs
 
-toExpr :: (Proxy x) -> SourceType -> ByteString -> IO (Dhall.Expr Dhall.Src Dhall.X)
+toExpr ::
+  (Dhall.Inject x, Dhall.Interpret x, Default x) =>
+  (Proxy x) ->
+  SourceType ->
+  ByteString ->
+  IO (Dhall.Expr Dhall.Src Dhall.X)
 toExpr _proxy (Dhall) s = Dhall.inputExpr $ toS s
 toExpr proxy (Yaml) s = sourceValueToExpr proxy $ Y.decodeEither' s
 toExpr proxy (Json) s = sourceValueToExpr proxy $ J.eitherDecode' (toS s)
 
-sourceValueToExpr :: (Proxy x) -> Either e Y.Value -> IO (Dhall.Expr Dhall.Src Dhall.X)
+sourceValueToExpr ::
+  (Default x, Dhall.Interpret x, Dhall.Inject x) =>
+  (Proxy x) ->
+  Either e Y.Value ->
+  IO (Dhall.Expr Dhall.Src Dhall.X)
 sourceValueToExpr (Proxy :: Proxy x) = \case
   Left _ -> die "yaml parsing exception"
   Right v -> do
-    let exprType = (typeToExpr (Proxy :: Proxy Cfg))
-    let exprValue = (valueToExpr (def :: Cfg))
     DJ.dhallToJSON exprValue & \case
       Left e -> die $ "horrible internal dhall error in cli parsing: " <> show e
       Right jsonValue ->
@@ -123,8 +130,16 @@ sourceValueToExpr (Proxy :: Proxy x) = \case
           & \case
             Left e -> die ("yaml -> dhall compilation error" <> show e)
             Right expr -> return expr
+  where
+    exprType :: Dhall.Expr Dhall.Src Dhall.X
+    exprType = (typeToExpr (Proxy :: Proxy x))
+    exprValue = (valueToExpr (def :: x))
 
-mergeAndExtract :: (Dhall.Interpret x, Dhall.Inject x) => x -> Dhall.Expr Dhall.Src Dhall.X -> IO x
+mergeAndExtract ::
+  (Dhall.Interpret x, Dhall.Inject x) =>
+  x ->
+  Dhall.Expr Dhall.Src Dhall.X ->
+  IO x
 mergeAndExtract x expr = Dhall.extract
   Dhall.auto
   ( Dhall.normalize

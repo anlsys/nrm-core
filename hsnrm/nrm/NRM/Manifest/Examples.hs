@@ -24,7 +24,7 @@ instance Examples Manifest where
           def
             { app =
                 def
-                  { perfwrapper = Perfwrapper $ MkPw
+                  { perfwrapper = Perfwrapper
                       { perfFreq = U.hz 1,
                         perfLimit = U.Operations 100000
                       }

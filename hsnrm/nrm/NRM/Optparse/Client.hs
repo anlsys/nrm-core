@@ -113,10 +113,10 @@ parserRun =
       (long "stdin" <> short 'i' <> help "Read configuration on stdin.")
     <*> flag
       Dhall
-      Yaml
+      Json
       ( long "yaml" <> short 'y'
           <> help
-            "Assume stdin to be yaml instead of dhall."
+            "Assume stdin to be yaml(json is valid yaml) instead of dhall."
       )
     <*> flag
       False
