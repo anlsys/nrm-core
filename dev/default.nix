@@ -116,7 +116,8 @@ pkgs // rec {
           (o: { nativeBuildInputs = o.nativeBuildInputs ++ [ pkgs.glpk ]; });
         dhall = super.dhall_1_24_0;
         dhall-json =
-          super.dhall-json_1_3_0.overrideAttrs (o: { doCheck = false; });
+          (self.callCabal2nix "dhall-json" ../hsnrm/dhall-haskell/dhall-json
+            { }).overrideAttrs (o: { doCheck = false; });
         dhrun = (self.callCabal2nix "dhrun" (builtins.fetchGit {
           inherit (pkgs.stdenv.lib.importJSON ./pkgs/dhrun/pin.json) url rev;
         })) { };

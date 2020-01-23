@@ -1,3 +1,6 @@
 [submodule "hsnrm/hbandit"]
 	path = hsnrm/hbandit
 	url = ../hbandit.git
+[submodule "hsnrm/dhall-haskell"]
+	path = hsnrm/dhall-haskell
+	url = git@github.com:freuk/dhall-haskell.git

@@ -53,8 +53,8 @@ commonParser =
       )
     <*> flag
       Dhall
-      Yaml
-      ( long "yaml" <> short 'y'
+      Json
+      ( long "json" <> short 'j'
           <> help
             "Assume configuration to be yaml instead of dhall."
       )
@@ -91,16 +91,22 @@ load MainCfg {..} =
   where
     process = processType (Proxy :: Proxy Cfg)
 
-processType :: (Default x, Dhall.Interpret x, Dhall.Inject x) => (Proxy x) -> SourceType -> ByteString -> IO x
-processType (Proxy :: Proxy x) sourceType bs = mergeAndExtract (def :: x) =<< toExpr sourceType bs
+processType ::
+  (Default x, Dhall.Interpret x, Dhall.Inject x) =>
+  (Proxy x) ->
+  SourceType ->
+  ByteString ->
+  IO x
+processType proxy@(Proxy :: Proxy x) sourceType bs =
+  mergeAndExtract (def :: x) =<< toExpr proxy sourceType bs
 
-toExpr :: SourceType -> ByteString -> IO (Dhall.Expr Dhall.Src Dhall.X)
-toExpr (Dhall) = Dhall.inputExpr . toS
-toExpr (Yaml) = sourceValueToExpr . Y.decodeEither'
-toExpr (Json) = sourceValueToExpr . J.eitherDecode' . toS
+toExpr :: (Proxy x) -> SourceType -> ByteString -> IO (Dhall.Expr Dhall.Src Dhall.X)
+toExpr _proxy (Dhall) s = Dhall.inputExpr $ toS s
+toExpr proxy (Yaml) s = sourceValueToExpr proxy $ Y.decodeEither' s
+toExpr proxy (Json) s = sourceValueToExpr proxy $ J.eitherDecode' (toS s)
 
-sourceValueToExpr :: Either e Y.Value -> IO (Dhall.Expr Dhall.Src Dhall.X)
-sourceValueToExpr = \case
+sourceValueToExpr :: (Proxy x) -> Either e Y.Value -> IO (Dhall.Expr Dhall.Src Dhall.X)
+sourceValueToExpr (Proxy :: Proxy x) = \case
   Left _ -> die "yaml parsing exception"
   Right v -> JSONToDhall.dhallFromJSON
     JSONToDhall.defaultConversion

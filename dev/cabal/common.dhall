@@ -193,6 +193,8 @@ let deps =
           nobound "conduit"
       , brick =
           nobound "brick"
+      , aeson-extra =
+          nobound "aeson-extra"
       , conduit-extra =
           nobound "conduit-extra"
       , aeson-pretty =
@@ -350,6 +352,7 @@ let libdep =
       , deps.dhall-json
       , deps.conduit
       , deps.conduit-extra
+      , deps.aeson-extra
       , deps.resourcet
       , deps.intervals
       , deps.neat-interpolation
