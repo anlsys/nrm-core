@@ -44,7 +44,7 @@ shellcheck:
     - |
       nix-shell --pure -p '(import ./.).fd' -p '(import ./.).shellcheck' --run bash <<< '
         RETURN=0
-        files=$(fd -e sh)
+        files=$(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e sh)
         for F in $files; do
           shellcheck -s bash $F
           if [ $? -ne 0 ]; then
