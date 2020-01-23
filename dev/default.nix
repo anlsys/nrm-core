@@ -36,6 +36,8 @@ pkgs // rec {
       black = psuper.black.overridePythonAttrs (o: { doCheck = false; });
       pytest = psuper.pytest.overridePythonAttrs (o: { doCheck = false; });
       networkx = psuper.networkx.overridePythonAttrs (o: { doCheck = false; });
+      pandas = psuper.pandas.overridePythonAttrs (o: { doCheck = false; });
+      seaborn = psuper.seaborn.overridePythonAttrs (o: { doCheck = false; });
       importlab = pkgs.callPackage ./pkgs/importlab { pythonPackages = pself; };
       pyzmq = psuper.pyzmq.override { zeromq = pkgs.zeromq; };
       pytype = pkgs.callPackage ./pkgs/pytype {
@@ -223,13 +225,13 @@ pkgs // rec {
     '';
     extraJupyterPath = "${builtins.toPath ../.}/pynrm/:${
         pythonPackages.makePythonPath
-        (with pythonPackages; [ nb_black msgpack warlock pyzmq ])
+        (with pythonPackages; [ nb_black msgpack warlock pyzmq pandas seaborn ])
       }:";
     kernels = [
       (import ./jupyterWith/ipython.nix {
         inherit (pkgs) stdenv writeScriptBin;
         name = "Nix";
-        packages = p: [ p.nb_black p.msgpack p.warlock p.pyzmq ];
+        packages = p: [ p.nb_black p.msgpack p.warlock p.pyzmq p.pandas p.seaborn ];
         python3 = python;
       })
     ];

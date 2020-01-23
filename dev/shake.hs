@@ -149,16 +149,6 @@ runshake as =
                 "--jobs=4"
               ]
         )
-      liftIO
-        ( runProcess_ $ setWorkingDir "hsnrm" $
-            proc
-              "cabal"
-              [ "v2-run",
-                "--builddir=../.build",
-                "codegen",
-                "../resources/"
-              ]
-        )
     phony "pyclient" $ do
       version <- liftIO $ toS . strip . toS <$> readProcessStdout_ "ghc --numeric-version"
       ghcPathRaw <- liftIO $ strip . toS <$> readProcessStdout_ "which ghc"

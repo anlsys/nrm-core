@@ -26,7 +26,6 @@ import Codegen.CHeader
 import Codegen.Dhall
 import Codegen.Schema (generatePretty)
 import Codegen.Schema as CS
-import Data.Aeson as A
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import Data.Default
 import Data.JSON.Schema as S

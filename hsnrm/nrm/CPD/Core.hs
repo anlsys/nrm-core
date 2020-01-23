@@ -107,7 +107,6 @@ newtype Admissible = Admissible {admissibleValues :: [Discrete]}
 
 -------- SENSORS
 newtype SensorID = SensorID {sensorID :: Text}
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON SensorID
   deriving
     ( Ord,
       Eq,
@@ -119,7 +118,7 @@ newtype SensorID = SensorID {sensorID :: Text}
       D.Interpret,
       D.Inject
     )
-  deriving (IsString) via Text
+  deriving (IsString,JSONSchema, A.ToJSON, A.FromJSON) via Text
 
 ------- ACTUATORS
 class CPDLActuator a where
