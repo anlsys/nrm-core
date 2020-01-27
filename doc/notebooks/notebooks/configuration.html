@@ -13141,6 +13141,9 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> nb_black
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="n">pp</span> <span class="o">=</span> <span class="n">pprint</span><span class="o">.</span><span class="n">PrettyPrinter</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13159,15 +13162,15 @@ div#notebook {
 
 
 
-<div id="39ae15bc-854d-4429-8830-36c489c92864"></div>
+<div id="8fbe72dc-2591-4b1c-9752-7e41a94c5c28"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#39ae15bc-854d-4429-8830-36c489c92864');
+var element = $('#8fbe72dc-2591-4b1c-9752-7e41a94c5c28');
 
             setTimeout(function() {
                 var nbb_cell_id = 2;
-                var nbb_unformatted_code = "%load_ext nb_black";
-                var nbb_formatted_code = "%load_ext nb_black";
+                var nbb_unformatted_code = "%load_ext nb_black\nimport json\nimport pprint\npp = pprint.PrettyPrinter(indent=4)";
+                var nbb_formatted_code = "%load_ext nb_black\nimport json\nimport pprint\n\npp = pprint.PrettyPrinter(indent=4)";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13291,10 +13294,10 @@ var element = $('#39ae15bc-854d-4429-8830-36c489c92864');
 
 
 
-<div id="3a556bf3-909b-49e0-a383-99c237194a43"></div>
+<div id="0de4f689-44e7-4ba2-b374-7bb8493b57c3"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#3a556bf3-909b-49e0-a383-99c237194a43');
+var element = $('#0de4f689-44e7-4ba2-b374-7bb8493b57c3');
 
             setTimeout(function() {
                 var nbb_cell_id = 3;
@@ -13396,10 +13399,10 @@ cat ./resources/defaults/Cfg.json <span class="p">|</span> jq
 
 
 
-<div id="1594048e-f886-4078-85fa-60cb46594c9b"></div>
+<div id="30465d8c-5ae8-410e-8791-5d540dd76269"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#1594048e-f886-4078-85fa-60cb46594c9b');
+var element = $('#30465d8c-5ae8-410e-8791-5d540dd76269');
 
             setTimeout(function() {
                 var nbb_cell_id = 4;
@@ -13501,10 +13504,10 @@ cat resources/examples/perfwrap.json <span class="p">|</span> jq
 
 
 
-<div id="a7ffa650-a09a-443c-81ac-6761bb4b781b"></div>
+<div id="590be223-2791-47c0-b089-7718c9bfad9f"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#a7ffa650-a09a-443c-81ac-6761bb4b781b');
+var element = $('#590be223-2791-47c0-b089-7718c9bfad9f');
 
             setTimeout(function() {
                 var nbb_cell_id = 5;
@@ -13606,10 +13609,10 @@ var element = $('#a7ffa650-a09a-443c-81ac-6761bb4b781b');
 
 
 
-<div id="c4c076c0-3767-4e4a-b2a3-8de32c799f59"></div>
+<div id="094b3099-2342-4736-9f9e-022a95d58459"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#c4c076c0-3767-4e4a-b2a3-8de32c799f59');
+var element = $('#094b3099-2342-4736-9f9e-022a95d58459');
 
             setTimeout(function() {
                 var nbb_cell_id = 6;
@@ -13697,10 +13700,10 @@ cat resources/defaults/Manifest.json <span class="p">|</span> jq
 
 
 
-<div id="cb555b5b-6b9b-4f0e-87d4-09197f551fbb"></div>
+<div id="f5afea2d-639c-4fbb-829e-ddd6e10d6282"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#cb555b5b-6b9b-4f0e-87d4-09197f551fbb');
+var element = $('#f5afea2d-639c-4fbb-829e-ddd6e10d6282');
 
             setTimeout(function() {
                 var nbb_cell_id = 7;
@@ -13729,7 +13732,7 @@ var element = $('#cb555b5b-6b9b-4f0e-87d4-09197f551fbb');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The <code>dhall</code> and <code>dhall-to-json</code> utilities are available as convenience in this environment should you need them. Dhall is useful as a configuration language in itself.</p>
+<p>The <code>dhall</code> and <code>dhall-to-json</code> utilities are available as convenience in this environment should you need them. Dhall is useful as a configuration language in itself:</p>
 
 </div>
 </div>
@@ -13739,10 +13742,11 @@ var element = $('#cb555b5b-6b9b-4f0e-87d4-09197f551fbb');
 <div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="k">script</span> dhall-to-json
-let Manifest = ./resources/types/Manifest.dhall 
-let appendName = \(m: Manifest) -&gt; m // {name = m.name ++ &quot;-appended&quot; }
-in appendName ./resources/defaults/Manifest.dhall
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%</span><span class="k">script</span> bash
+dhall-to-json &lt;&lt;&lt; &#39;let Manifest = ./resources/types/Manifest.dhall 
+    let appendName = \(m: Manifest) -&gt; m // {name = m.name ++ &quot;-appended&quot; }
+    in appendName ./resources/defaults/Manifest.dhall
+&#39; | jq
 </pre></div>
 
     </div>
@@ -13759,7 +13763,25 @@ in appendName ./resources/defaults/Manifest.dhall
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>{&#34;image&#34;:null,&#34;hwbind&#34;:false,&#34;app&#34;:{&#34;scheduler&#34;:&#34;FIFO&#34;,&#34;instrumentation&#34;:null,&#34;power&#34;:{&#34;slowdown&#34;:1,&#34;profile&#34;:false,&#34;policy&#34;:&#34;NoPowerPolicy&#34;},&#34;perfwrapper&#34;:&#34;PerfwrapperDisabled&#34;,&#34;slice&#34;:{&#34;cpus&#34;:1,&#34;mems&#34;:1}},&#34;name&#34;:&#34;default-appended&#34;}
+<pre>{
+  &#34;image&#34;: null,
+  &#34;hwbind&#34;: false,
+  &#34;app&#34;: {
+    &#34;scheduler&#34;: &#34;FIFO&#34;,
+    &#34;instrumentation&#34;: null,
+    &#34;power&#34;: {
+      &#34;slowdown&#34;: 1,
+      &#34;profile&#34;: false,
+      &#34;policy&#34;: &#34;NoPowerPolicy&#34;
+    },
+    &#34;perfwrapper&#34;: &#34;PerfwrapperDisabled&#34;,
+    &#34;slice&#34;: {
+      &#34;cpus&#34;: 1,
+      &#34;mems&#34;: 1
+    }
+  },
+  &#34;name&#34;: &#34;default-appended&#34;
+}
 </pre>
 </div>
 </div>
@@ -13772,15 +13794,15 @@ in appendName ./resources/defaults/Manifest.dhall
 
 
 
-<div id="4c9f1917-97b3-40a8-9a23-2fbdf41ff350"></div>
+<div id="e37d70ba-8cd5-409b-9bc8-1048332aba1a"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#4c9f1917-97b3-40a8-9a23-2fbdf41ff350');
+var element = $('#e37d70ba-8cd5-409b-9bc8-1048332aba1a');
 
             setTimeout(function() {
                 var nbb_cell_id = 8;
-                var nbb_unformatted_code = "%%script dhall-to-json\nlet Manifest = ./resources/types/Manifest.dhall \nlet appendName = \\(m: Manifest) -> m // {name = m.name ++ \"-appended\" }\nin appendName ./resources/defaults/Manifest.dhall";
-                var nbb_formatted_code = "%%script dhall-to-json\nlet Manifest = ./resources/types/Manifest.dhall \nlet appendName = \\(m: Manifest) -> m // {name = m.name ++ \"-appended\" }\nin appendName ./resources/defaults/Manifest.dhall";
+                var nbb_unformatted_code = "%%script bash\ndhall-to-json <<< 'let Manifest = ./resources/types/Manifest.dhall \n    let appendName = \\(m: Manifest) -> m // {name = m.name ++ \"-appended\" }\n    in appendName ./resources/defaults/Manifest.dhall\n' | jq";
+                var nbb_formatted_code = "%%script bash\ndhall-to-json <<< 'let Manifest = ./resources/types/Manifest.dhall \n    let appendName = \\(m: Manifest) -> m // {name = m.name ++ \"-appended\" }\n    in appendName ./resources/defaults/Manifest.dhall\n' | jq";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13814,10 +13836,8 @@ var element = $('#4c9f1917-97b3-40a8-9a23-2fbdf41ff350');
 <div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
-
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;resources/examples/perfwrap.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;resources/examples/perfwrap.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
 </pre></div>
 
     </div>
@@ -13834,7 +13854,17 @@ var element = $('#4c9f1917-97b3-40a8-9a23-2fbdf41ff350');
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>{&#39;image&#39;: None, &#39;hwbind&#39;: False, &#39;app&#39;: {&#39;scheduler&#39;: &#39;FIFO&#39;, &#39;instrumentation&#39;: None, &#39;power&#39;: {&#39;slowdown&#39;: 1, &#39;profile&#39;: False, &#39;policy&#39;: &#39;NoPowerPolicy&#39;}, &#39;perfwrapper&#39;: {&#39;perfLimit&#39;: {&#39;fromOps&#39;: 100000}, &#39;perfFreq&#39;: {&#39;fromHz&#39;: 1}}, &#39;slice&#39;: {&#39;cpus&#39;: 1, &#39;mems&#39;: 1}}, &#39;name&#39;: &#39;default&#39;}
+<pre>{   &#39;app&#39;: {   &#39;instrumentation&#39;: None,
+               &#39;perfwrapper&#39;: {   &#39;perfFreq&#39;: {&#39;fromHz&#39;: 1},
+                                  &#39;perfLimit&#39;: {&#39;fromOps&#39;: 100000}},
+               &#39;power&#39;: {   &#39;policy&#39;: &#39;NoPowerPolicy&#39;,
+                            &#39;profile&#39;: False,
+                            &#39;slowdown&#39;: 1},
+               &#39;scheduler&#39;: &#39;FIFO&#39;,
+               &#39;slice&#39;: {&#39;cpus&#39;: 1, &#39;mems&#39;: 1}},
+    &#39;hwbind&#39;: False,
+    &#39;image&#39;: None,
+    &#39;name&#39;: &#39;default&#39;}
 </pre>
 </div>
 </div>
@@ -13847,15 +13877,15 @@ var element = $('#4c9f1917-97b3-40a8-9a23-2fbdf41ff350');
 
 
 
-<div id="1ba2bed5-263a-483b-b389-23c18210e314"></div>
+<div id="60840fe3-a1f7-43f3-a4fe-dfe9d3314d4c"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#1ba2bed5-263a-483b-b389-23c18210e314');
+var element = $('#60840fe3-a1f7-43f3-a4fe-dfe9d3314d4c');
 
             setTimeout(function() {
                 var nbb_cell_id = 9;
-                var nbb_unformatted_code = "import json\n\nwith open(\"resources/examples/perfwrap.json\") as f:\n    print(json.load(f))";
-                var nbb_formatted_code = "import json\n\nwith open(\"resources/examples/perfwrap.json\") as f:\n    print(json.load(f))";
+                var nbb_unformatted_code = "with open(\"resources/examples/perfwrap.json\") as f:\n    pp.pprint(json.load(f))";
+                var nbb_formatted_code = "with open(\"resources/examples/perfwrap.json\") as f:\n    pp.pprint(json.load(f))";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13872,6 +13902,19 @@ var element = $('#1ba2bed5-263a-483b-b389-23c18210e314');
 
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
+
+    </div>
 </div>
 </div>
 

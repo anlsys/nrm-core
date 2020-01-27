@@ -10,6 +10,7 @@ module NRM.Types.Messaging.Protocols
 where
 
 import qualified CPD.Core as CPD
+import qualified CPD.Values as CPD
 import qualified NRM.Types.Messaging.UpstreamRep as Rep
 import qualified NRM.Types.Messaging.UpstreamReq as Req
 import qualified NRM.Types.State
@@ -18,7 +19,7 @@ data ReqRep req rep where
   SliceList :: ReqRep Req.SliceList Rep.SliceList
   GetState :: ReqRep Req.GetState NRM.Types.State.NRMState
   GetConfig :: ReqRep Req.GetConfig Rep.GetConfig
-  SetPower :: ReqRep Req.SetPower Rep.GetPower
+  Actuate :: ReqRep [CPD.Action] Rep.Actuated
   KillSlice :: ReqRep Req.KillSlice Rep.SliceKilled
   KillCmd :: ReqRep Req.KillCmd Rep.CmdKilled
   CPD :: ReqRep Req.CPD CPD.Problem

@@ -23,6 +23,7 @@ module NRM.Behavior
 where
 
 import CPD.Core as CPD
+import CPD.Utils as CPD
 import CPD.Values as CPD
 import Control.Lens hiding (to)
 import Control.Monad.Trans.RWS.Lazy (RWST)
@@ -149,7 +150,24 @@ nrm _callTime (Req clientid msg) = do
                   ),
             Nothing
           )
-    UReq.ReqSetPower _ -> return ()
+    UReq.ReqActuate actions -> do
+      cpd <- NRMCPD.toCPD <$> (ask <&> controlCfg) <*> pure st
+      for_ actions $ \action@(Action actuatorID (CPD.DiscreteDouble value)) -> validateAction cpd action & \case
+        UnknownActuator -> do
+          log "NRM controller received an action request on a non-existent actuator"
+          rep clientid (URep.RepActuate URep.NotActuated)
+        InvalidAction -> do
+          log "NRM controller received an action request on an invalid action"
+          rep clientid (URep.RepActuate URep.NotActuated)
+        ActionOk ->
+          fromCPDKey actuatorID & \case
+            Nothing -> log "couldn't decode actuatorID"
+            Just aKey -> LM.lookup aKey (lenses st) & \case
+              Nothing -> log "NRM internal error: actuator not found, after CPD validation."
+              Just (ScopedLens l) -> do
+                liftIO $ go (st ^. l) value
+                log $ "NRM controller takes action:" <> show value <> " for actuator" <> show actuatorID
+                rep clientid (URep.RepActuate URep.Actuated)
     UReq.ReqKillCmd UReq.KillCmd {..} ->
       removeCmd (KCmdID killCmdID) st & \case
         Nothing -> rep clientid $ URep.RepNoSuchCmd URep.NoSuchCmd

@@ -94,8 +94,8 @@ initialState c time = do
                           { frequency = hz 3,
                             raplPath = path,
                             max = maxEnergy,
-                            discreteChoices = [uW 180, uW 200],
-                            defaultPower = uW 200,
+                            discreteChoices = [watts 180, watts 200],
+                            defaultPower = watts 200,
                             lastTime = Nothing,
                             history = MemBuffer.empty
                           }

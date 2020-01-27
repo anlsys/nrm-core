@@ -119,7 +119,7 @@ dispatchProtocol s c = \case
   (UReq.ReqSliceList x) -> reqrep s c Protocols.SliceList x
   (UReq.ReqKillSlice x) -> reqrep s c Protocols.KillSlice x
   (UReq.ReqKillCmd x) -> reqrep s c Protocols.KillCmd x
-  (UReq.ReqSetPower x) -> reqrep s c Protocols.SetPower x
+  (UReq.ReqActuate x) -> reqrep s c Protocols.Actuate x
   (UReq.ReqGetConfig x) -> reqrep s c Protocols.GetConfig x
   (UReq.ReqGetState x) -> reqrep s c Protocols.GetState x
   (UReq.ReqCPD x) -> reqrep s c Protocols.CPD x
@@ -195,10 +195,15 @@ reqrep s opts = \case
             else putText $ pShowOpts opts cfg
         _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
-  Protocols.SetPower ->
+  Protocols.Actuate ->
     const $ do
-      msg <- ZMQ.receive s
-      liftIO . print $ ((decodeT $ toS msg) :: Maybe URep.Rep)
+      ZMQ.receive s <&> decodeT . toS >>= \case
+        Nothing -> putText "Couldn't decode reply"
+        Just (URep.RepActuate URep.Actuated) ->
+          putText "actuated"
+        Just (URep.RepActuate URep.NotActuated) ->
+          putText "couldn't actuate"
+        _ -> putText "reply wasn't in protocol"
       liftIO $ hFlush stdout
   Protocols.KillSlice ->
     const $ do

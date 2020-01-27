@@ -12,6 +12,8 @@ module NRM.Optparse.Client
   )
 where
 
+import CPD.Core as CPD
+import CPD.Values as CPD
 import qualified Data.ByteString as B
   ( getContents,
   )
@@ -169,14 +171,31 @@ parserKillSlice =
             "Name/ID of the slice to kill"
       )
 
-parserSetpower :: Parser U.Power
-parserSetpower =
-  U.watts
+parserActuate :: Parser [CPD.Action]
+parserActuate =
+  (\x -> [x])
+    <$> ( CPD.Action
+            <$> parserActuatorID
+            <*> parserActuatorValue
+        )
+
+parserActuatorID :: Parser CPD.ActuatorID
+parserActuatorID =
+  ActuatorID
+    <$> strArgument
+      ( metavar "CONTAINER"
+          <> help
+            "Name/ID of the slice to kill"
+      )
+
+parserActuatorValue :: Parser CPD.Discrete
+parserActuatorValue =
+  CPD.DiscreteDouble
     <$> argument
       Options.Applicative.auto
-      ( metavar "POWERLIMIT"
+      ( metavar "CONTAINER"
           <> help
-            "Power limit to set"
+            "Name/ID of the slice to kill"
       )
 
 data Listen = All | CPDOnly | Raw
@@ -218,14 +237,14 @@ opts =
             $ progDesc "Kill slice"
         )
       <> command
-        "setpower"
+        "actuate"
         ( info
             ( return
-                <$> ( Opts <$> (Right . ReqSetPower . SetPower <$> parserSetpower)
+                <$> ( Opts <$> (Right . ReqActuate <$> parserActuate)
                         <*> parserCommon
                     )
             )
-            $ progDesc "Set power limit"
+            $ progDesc "Send actuator action"
         )
       <> command
         "cpd"

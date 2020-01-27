@@ -368,20 +368,28 @@
         },
         {
             "required": [
-                "reqSetPower"
+                "reqActuate"
             ],
             "type": "object",
             "properties": {
-                "reqSetPower": {
-                    "required": [
-                        "limit"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "limit": {
-                            "type": "number"
+                "reqActuate": {
+                    "uniqueItems": false,
+                    "items": {
+                        "required": [
+                            "actuatorID",
+                            "actuatorValue"
+                        ],
+                        "type": "object",
+                        "properties": {
+                            "actuatorValue": {
+                                "type": "number"
+                            },
+                            "actuatorID": {
+                                "type": "string"
+                            }
                         }
-                    }
+                    },
+                    "type": "array"
                 }
             }
         },

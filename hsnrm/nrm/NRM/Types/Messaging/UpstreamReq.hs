@@ -14,12 +14,12 @@ module NRM.Types.Messaging.UpstreamReq
     CPD (..),
     KillSlice (..),
     KillCmd (..),
-    SetPower (..),
     GetConfig (..),
     GetState (..),
   )
 where
 
+import CPD.Values
 import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
@@ -28,7 +28,6 @@ import qualified NRM.Types.Cmd as Cmd
 import NRM.Types.CmdID
 import NRM.Types.Manifest
 import qualified NRM.Types.Slice as C
-import qualified NRM.Types.Units as U
 import Protolude
 
 data Req
@@ -42,8 +41,8 @@ data Req
     ReqCPD CPD
   | -- | Request to kill a running command.
     ReqKillCmd KillCmd
-  | -- | Request to set the global power bound.
-    ReqSetPower SetPower
+  | -- | Request to take some actions
+    ReqActuate [Action]
   | -- | Request to obtain the full daemon state.
     ReqGetState GetState
   | -- | Request to get the daemon configuration.
@@ -73,13 +72,6 @@ newtype KillCmd
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON KillCmd
-
-newtype SetPower
-  = SetPower
-      { limit :: U.Power
-      }
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON SetPower
 
 data SliceList = SliceList
   deriving (Show, Generic, MessagePack)

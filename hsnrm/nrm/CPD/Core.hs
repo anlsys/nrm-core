@@ -49,7 +49,6 @@ where
 import qualified Data.Aeson as A
 import Data.JSON.Schema
 import Data.MessagePack
-import Data.String (IsString (..))
 import qualified Dhall as D
 import LMap.Map as Map
 import NRM.Classes.Messaging
@@ -133,19 +132,16 @@ newtype ActuatorID = ActuatorID {actuatorID :: Text}
       Generic,
       MessagePack,
       A.ToJSONKey,
-      A.FromJSONKey,
+      A.FromJSONKey
+    )
+  deriving
+    ( JSONSchema,
+      A.ToJSON,
+      A.FromJSON,
       D.Interpret,
       D.Inject
     )
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON ActuatorID
-
-instance IsString ActuatorID where
-  fromString x =
-    fromMaybe
-      ( panic
-          "couldn't decode ActuatorID in FromString instance"
-      )
-      (A.decode $ toS x)
+    via Text
 
 newtype Actuator = Actuator {actions :: [Discrete]}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator

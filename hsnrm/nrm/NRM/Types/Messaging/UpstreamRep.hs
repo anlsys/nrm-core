@@ -23,7 +23,7 @@ module NRM.Types.Messaging.UpstreamRep
     NoSuchSlice (..),
     CmdKilled (..),
     ThisCmdKilled (..),
-    GetPower (..),
+    Actuated (..),
     GetConfig (..),
   )
 where
@@ -69,7 +69,7 @@ data Rep
   | -- | The command for this upstream client was killed
     RepThisCmdKilled ThisCmdKilled
   | -- | Power query response
-    RepGetPower GetPower
+    RepActuate Actuated
   | -- | State query response
     RepGetState NRMState
   | -- | Configuration query response
@@ -159,12 +159,9 @@ newtype SliceKilled
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON SliceKilled
 
-newtype GetPower
-  = GetPower
-      { limit :: U.Power
-      }
+data Actuated = Actuated | NotActuated
   deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON GetPower
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Actuated
 
 newtype GetConfig
   = GetConfig

@@ -11,14 +11,16 @@ module PyExport
   )
 where
 
-import CPD.Core (Problem)
+import CPD.Core (ActuatorID (..), Discrete (..), Problem)
+import CPD.Values (Action (..))
+import Data.Aeson as A
 import qualified Data.ByteString as BS
 import Data.Default
 import Data.Restricted
 import FFI.TypeUncurry.Msgpack
 import Foreign.C
 import LMap.Map as LM
-import NRM.Classes.Messaging
+import NRM.Classes.Messaging as M
 import NRM.Client
 import NRM.Optparse.Client
 import NRM.Optparse.Daemon
@@ -37,7 +39,11 @@ type Ex = CString -> IO CString
 
 foreign export ccall showStateExport :: Ex
 
+foreign export ccall jsonStateExport :: Ex
+
 foreign export ccall showCpdExport :: Ex
+
+foreign export ccall jsonCpdExport :: Ex
 
 foreign export ccall defaultCommonOptsExport :: Ex
 
@@ -52,6 +58,8 @@ foreign export ccall rpcAddressExport :: Ex
 foreign export ccall finishedExport :: Ex
 
 foreign export ccall cpdExport :: Ex
+
+foreign export ccall actionExport :: Ex
 
 foreign export ccall stateExport :: Ex
 
@@ -84,8 +92,25 @@ rpcAddressExport = exportIO ((return :: a -> IO a) . rpcAddress)
 showStateExport :: Ex
 showStateExport = exportIO (return . toS . pShow :: NRMState -> IO Text)
 
+jsonStateExport :: Ex
+jsonStateExport = exportIO (return . toS . A.encode :: NRMState -> IO Text)
+
 showCpdExport :: Ex
 showCpdExport = exportIO (return . toS . pShow :: Problem -> IO Text)
+
+jsonCpdExport :: Ex
+jsonCpdExport = exportIO (return . toS . A.encode :: Problem -> IO Text)
+
+actionExport :: Ex
+actionExport = exportIO actuate
+  where
+    actuate :: CommonOpts -> [(Text, Double)] -> IO Bool
+    actuate c actions = doReqRep c (ReqActuate (toAction <$> actions)) $ \case
+      (Rep.RepActuate Rep.Actuated) -> True
+      (Rep.RepActuate Rep.NotActuated) -> False
+      _ -> panic "action protocol failed"
+    toAction :: (Text, Double) -> Action
+    toAction (textID, doubleAction) = Action (ActuatorID textID) (DiscreteDouble doubleAction)
 
 runExport :: Ex
 runExport = exportIO $ \c runreq -> doReqRep c (ReqRun runreq) $ \case
@@ -121,7 +146,7 @@ doReqRep common req f = do
   ZMQ.runZMQ $ do
     s <- ZMQ.socket ZMQ.Dealer
     connectWithOptions uuid common s
-    ZMQ.send s [] (toS $ encode req)
+    ZMQ.send s [] (toS $ M.encode req)
     ZMQ.receive s <&> decodeT . toS >>= \case
       Nothing -> panic "Couldn't decode reply"
       Just x -> return (f x)

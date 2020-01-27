@@ -1,1 +1,1 @@
-(import ./dev/default.nix {}).hack
+{ useGhcide ? false, }: (import ./dev/default.nix { inherit useGhcide; }).hack

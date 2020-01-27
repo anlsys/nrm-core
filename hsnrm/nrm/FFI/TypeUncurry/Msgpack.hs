@@ -15,7 +15,7 @@ module FFI.TypeUncurry.Msgpack
   )
 where
 
-import Control.Exception.Enclosed (catchAny)
+import qualified Control.Exception.Enclosed as EE
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as BS
 import qualified Data.ByteString.Lazy as BSL
@@ -99,7 +99,7 @@ uncurryMsgpackIO f bs =
       )
 
 exceptionLess :: IO a -> IO (Either Text a)
-exceptionLess io = catchAny (Right <$> io) $ return . Left . show
+exceptionLess io = EE.catchAny (Right <$> io) $ return . Left . show
 
 -- | O(n). Makes a copy of the ByteString's contents into a malloc()ed area.
 -- You need to free() the returned string when you're done with it.

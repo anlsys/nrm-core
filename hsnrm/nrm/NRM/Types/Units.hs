@@ -86,7 +86,7 @@ uW = Power
 
 -- | Watt value constructor.
 watts :: Double -> Power
-watts = Power . (* 1000.0)
+watts = Power . (* 1000000.0)
 
 -- | Microsecond value constructor.
 uS :: Double -> Time

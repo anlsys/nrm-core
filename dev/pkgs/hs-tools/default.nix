@@ -1,6 +1,7 @@
-{ haskell, mkDerivation, stdenv, cabal-install, apply-refact, hdevtools, Glob
-, hindent, fswatch, hlint, protolude, shake, Cabal, fix-imports, ghcid
-, typed-process, optparse-applicative, unix, cabal-helper, dhall-json }:
+{ haskell, lib, mkDerivation, stdenv, cabal-install, apply-refact
+, hdevtools, Glob, hindent, fswatch, hlint, protolude, shake, Cabal, fix-imports
+, ghcid, typed-process, optparse-applicative, unix, cabal-helper, dhall-json
+, useGhcide }:
 let
   ghcide = (import (builtins.fetchTarball
     "https://github.com/hercules-ci/ghcide-nix/tarball/master")
@@ -18,7 +19,6 @@ in mkDerivation {
     #fswatch
     hlint
     #protolude
-    #ghcide
     fix-imports
     optparse-applicative
     shake
@@ -28,7 +28,8 @@ in mkDerivation {
     dhall-json
     #typed-process
     #unix
-  ];
+  ] ++ (lib.optional useGhcide ghcide);
+  #ghcide;
   description = "";
   license = stdenv.lib.licenses.mit;
 }

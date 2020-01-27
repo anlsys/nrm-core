@@ -6,6 +6,18 @@ import subprocess
 import shutil
 import nrm.messaging
 
+from typing import NamedTuple, List, NewType
+
+
+ActuatorID = NewType("ActuatorID", str)
+ActuatorValue = NewType("ActuatorValue", float)
+
+
+class Action(NamedTuple):
+    actuatorID: ActuatorID
+    actuatorValue: ActuatorValue
+
+
 lib = nrm.sharedlib.UnsafeLib(os.environ["PYNRMSO"])
 
 
@@ -28,6 +40,10 @@ class CPD(object):
     def __str__(self):
         return lib.showCpd(self.cpd)
 
+    def __iter__(self):
+        for key, value in json.loads(lib.jsonCpd(self.cpd)).items():
+            yield key, value
+
 
 class NRMState(object):
     def __init__(self, cpd):
@@ -35,6 +51,10 @@ class NRMState(object):
 
     def __str__(self):
         return lib.showState(self.state)
+
+    def __iter__(self):
+        for key, value in json.loads(lib.jsonState(self.state)).items():
+            yield key, value
 
 
 class Remote(object):
@@ -65,6 +85,9 @@ class Remote(object):
 
     def run_workload(self, workload):
         """ Runs a workload via NRM. The `nrmd` daemon must be running. """
+        pass
+
+    def get_state(self):
         pass
 
     def get_cpd(self):
@@ -162,9 +185,13 @@ class Local(object):
         """ Receive a message from NRM's upstream API. """
         return self.upstreampub.recv()
 
-    def workload_send(self, message):
+    def workload_action(self, actionList: List[Action]):
         """ Send a message to NRM's upstream API. """
-        pass
+        actionList = [(str(a.actuatorID), float(a.actuatorValue)) for a in actionList]
+        if lib.action(self.commonOpts, actionList):
+            pass
+        else:
+            raise (Exception("couldn't actuate"))
 
     def workload_exit_status(self):
         """ Check the workload's exit status. """

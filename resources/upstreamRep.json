@@ -802,15 +802,7 @@
                             "items": {
                                 "items": [
                                     {
-                                        "required": [
-                                            "actuatorID"
-                                        ],
-                                        "type": "object",
-                                        "properties": {
-                                            "actuatorID": {
-                                                "type": "string"
-                                            }
-                                        }
+                                        "type": "string"
                                     },
                                     {
                                         "required": [
@@ -1104,20 +1096,19 @@
         },
         {
             "required": [
-                "repGetPower"
+                "repActuate"
             ],
             "type": "object",
             "properties": {
-                "repGetPower": {
-                    "required": [
-                        "limit"
-                    ],
-                    "type": "object",
-                    "properties": {
-                        "limit": {
-                            "type": "number"
+                "repActuate": {
+                    "oneOf": [
+                        {
+                            "const": "\"actuated\""
+                        },
+                        {
+                            "const": "\"notActuated\""
                         }
-                    }
+                    ]
                 }
             }
         },

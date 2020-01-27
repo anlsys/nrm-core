@@ -4,6 +4,8 @@
 
 , pkgs ? import (fetched ./pkgs.json) { }
 
+, useGhcide ? false
+
 }:
 
 let
@@ -160,7 +162,7 @@ pkgs // rec {
   hsnrm-hack = pkgs.haskellPackages.shellFor {
     packages = p: [
       haskellPackages.nrmlib
-      (haskellPackages.callPackage ./pkgs/hs-tools { })
+      (haskellPackages.callPackage ./pkgs/hs-tools { inherit useGhcide; })
     ];
     withHoogle = true;
     buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq ];
@@ -182,18 +184,53 @@ pkgs // rec {
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
-  jupyter = import (/home/fre/sandbox/jupyterWith) { };
+  #jupyter = import /home/fre/sandbox/jupyterWith { };
 
-  jupyterLabEnvironment = (jupyter.jupyterlabWith {
-    buildInputs = [
-      pkgs.hwloc
-      ormolu
-      haskellPackages.dhrun
-      pkgs.daemonize
-      pkgs.linuxPackages.perf
-    ];
-    inputsFrom = with pkgs; [ hsnrm-hack libnrm-hack ];
-    shellHook = ''
+  jupyter = import (pkgs.fetchFromGitHub {
+    owner = "freuk";
+    repo = "jupyterWith";
+    rev = "9fc066c6a3b91d6ea462b822ca5909985e5748fc";
+    sha256 = "0ii8rm09bz2mhrn2z7q20gjx27y3dqzldp1zkfz64860ml31lb12";
+  }) { };
+
+  jupyterLabEnvironment = let
+    lab = (jupyter.jupyterlabWith {
+      extraInputsFrom = _: [ hsnrm-hack libnrm-hack ];
+      extraPackages = _: [
+        pkgs.hwloc
+        ormolu
+        haskellPackages.dhrun
+        pkgs.daemonize
+        pkgs.linuxPackages.perf
+      ];
+      extraJupyterPath = "${builtins.toPath ../.}/pynrm/:${
+          pythonPackages.makePythonPath (with pythonPackages; [
+            nb_black
+            msgpack
+            warlock
+            pyzmq
+            pandas
+            seaborn
+          ])
+        }:";
+      kernels = [
+        (import ./jupyterWith/ipython.nix {
+          inherit (pkgs) stdenv writeScriptBin;
+          name = "Nix";
+          packages = p: [
+            p.nb_black
+            p.msgpack
+            p.warlock
+            p.pyzmq
+            p.pandas
+            p.seaborn
+          ];
+          python3 = python;
+        })
+      ];
+    }).env;
+  in lab.overrideAttrs (o: {
+    shellHook = o.shellHook + ''
       # path for NRM dev experimentation
       export PYNRMSO=${
         builtins.toPath ../.
@@ -223,19 +260,7 @@ pkgs // rec {
       cp $CABALFILE hsnrm/hsnrm.cabal
       chmod +rw hsnrm/hsnrm.cabal
     '';
-    extraJupyterPath = "${builtins.toPath ../.}/pynrm/:${
-        pythonPackages.makePythonPath
-        (with pythonPackages; [ nb_black msgpack warlock pyzmq pandas seaborn ])
-      }:";
-    kernels = [
-      (import ./jupyterWith/ipython.nix {
-        inherit (pkgs) stdenv writeScriptBin;
-        name = "Nix";
-        packages = p: [ p.nb_black p.msgpack p.warlock p.pyzmq p.pandas p.seaborn ];
-        python3 = python;
-      })
-    ];
-  }).env;
+  });
 
   hack = pkgs.mkShell {
     CABALFILE = cabalFile ./cabal "dev.dhall"; # for easy manual vendoring

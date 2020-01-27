@@ -31,13 +31,8 @@ nix-build -A nrm
 
 ##### enter a development environment: 
 
-enter a dev env using:
-
-```
-nix-shell
-```
-
-then:
+You may enter a dev env using `nix-shell`.
+Those helpers are available:
 
 - use `$ ./shake.sh build` to build the `nrm.so` shared library (also runs the code generation step for vendored resources)
 - use `$ ./shake.sh client` to build the `nrm` client
@@ -64,4 +59,10 @@ Running the notebooks in development mode:
 
 ```
 ./lab.sh
+```
+
+Note that `jupyterWith` takes a while to build, so you may use [cachix](https://cachix.org/) for this artifact before running `./lab.sh`:
+
+```
+cachix use jupyterWith
 ```

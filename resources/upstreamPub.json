@@ -181,15 +181,7 @@
                                     "items": {
                                         "items": [
                                             {
-                                                "required": [
-                                                    "actuatorID"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "actuatorID": {
-                                                        "type": "string"
-                                                    }
-                                                }
+                                                "type": "string"
                                             },
                                             {
                                                 "required": [

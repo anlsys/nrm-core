@@ -17,14 +17,14 @@ module CPD.Utils
 where
 
 import CPD.Core as CPD
-import CPD.Values as CPD
-import LMap.Map as DM hiding (singleton)
+import CPD.Values
+import LMap.Map hiding (singleton)
 import Numeric.Interval as I hiding (elem)
 import Protolude hiding (Map)
 
 data MeasurementValidation = AdjustInterval (Interval Double) | MeasurementOk
 
-data ActionValidation = ActionOk | InvalidAction
+data ActionValidation e = ActionOk | UnknownActuator | InvalidAction
 
 -- | validates a single sensor's range
 validateMeasurement :: Interval Double -> Double -> MeasurementValidation
@@ -33,10 +33,13 @@ validateMeasurement i x
   | x < inf i = AdjustInterval $ 2 * x - sup i ... sup i
   | otherwise = AdjustInterval $ inf i ... 2 * x - inf i
 
-validateAction :: Admissible -> Action -> ActionValidation
-validateAction (Admissible ds) (Action _actuator d)
-  | d `elem` ds = ActionOk
-  | otherwise = InvalidAction
+validateAction :: Problem -> Action -> ActionValidation Text
+validateAction p action = lookup (CPD.Values.actuatorID action) (actuators p) & \case
+  Nothing -> UnknownActuator
+  Just actuator ->
+    if (CPD.Values.actuatorValue action) `elem` CPD.actions actuator
+      then ActionOk
+      else InvalidAction
 
 -- | Standard object evaluation on Num instances.
 evalNum ::
@@ -46,7 +49,7 @@ evalNum ::
   OExpr ->
   Maybe a
 evalNum scalarLifter m = \case
-  OValue sensorID -> DM.lookup sensorID m
+  OValue sensorID -> lookup sensorID m
   OScalar s -> Just (scalarLifter s)
   OAdd a b -> ev2 a b (+)
   OSub a b -> ev2 a b (-)
