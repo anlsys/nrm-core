@@ -23,8 +23,11 @@ let
 in with pkgs;
 pkgs // rec {
 
+  noCheck = p : p.overridePythonAttrs (_:{doCheck=false;});
+  noCheckAll = lib.mapAttrs (name : p : noCheck p);
+
   python = let
-    packageOverrides = pself: psuper: {
+    packageOverrides = pself: psuper: (noCheckAll {
       cffi = psuper.cffi.overridePythonAttrs (o: { doCheck = false; });
       sqlalchemy =
         psuper.sqlalchemy.overridePythonAttrs (o: { doCheck = false; });
@@ -39,6 +42,8 @@ pkgs // rec {
       pytest = psuper.pytest.overridePythonAttrs (o: { doCheck = false; });
       networkx = psuper.networkx.overridePythonAttrs (o: { doCheck = false; });
       pandas = psuper.pandas.overridePythonAttrs (o: { doCheck = false; });
+      ssl = psuper.ssl.overridePythonAttrs (o: { doCheck = false; });
+      pySSL = psuper.pySSL.overridePythonAttrs (o: { doCheck = false; });
       seaborn = psuper.seaborn.overridePythonAttrs (o: { doCheck = false; });
       importlab = pkgs.callPackage ./pkgs/importlab { pythonPackages = pself; };
       pyzmq = psuper.pyzmq.override { zeromq = pkgs.zeromq; };
@@ -55,7 +60,7 @@ pkgs // rec {
         };
         pythonPackages = pself;
       };
-    };
+    });
   in pkgs.python37.override {
     inherit packageOverrides;
     self = python;

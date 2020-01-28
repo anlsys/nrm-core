@@ -61,7 +61,9 @@ Running the notebooks in development mode:
 ./lab.sh
 ```
 
-Note that `jupyterWith` takes a while to build, so you may use [cachix](https://cachix.org/) for this artifact before running `./lab.sh`:
+Note: `jupyterWith` takes a while to build, so if you are an advanced Nix user,
+you may use [cachix](https://cachix.org/) for this artifact before running
+`./lab.sh`:
 
 ```
 cachix use jupyterWith
