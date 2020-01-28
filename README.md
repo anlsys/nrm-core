@@ -17,6 +17,13 @@ libnrm-instrumented applications can also be installed using `nix-env -f.  -iA <
 
 from a local clone, *with submodules initialized and updated*:
 
+```
+git clone https://xgitlab.cels.anl.gov/argo/hnrm.git
+cd hnrm
+git submodule init
+git submodule update
+```
+
 ##### read internal haddock documentation: 
 
 ```
@@ -46,11 +53,11 @@ minima, try `nix-env -iA nixpkgs.gitlab-runner`. You can then run a unique job
 using `./ci.sh <jobname>` or all jobs using `./ci.sh`. This runs jobs on your
 latest local commit.
 
-##### install NRM to a (Nix-enabled) remote system user environment:
+##### deploy to a Nix-enabled remote system:
 
 `./deploy.sh nrm user@host`
 
-##### jupyter notebooks:
+##### run jupyter-lab:
 
 * Unexecuted: [`notebooks/`](notebooks/)
 * Executed and vendored (CI checked for being up-to-date an not throwing errors): [`doc/notebooks/notebooks`](doc/notebooks/notebooks) (also contains HTML versions)
