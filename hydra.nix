@@ -1,4 +1,4 @@
-{ hostNixpkgs, declInput }: let pkgs = import hostNixpkgs {}; in {
+{ hnrm, declInput }: let pkgs = import hnrm {}; in {
   jobsets = pkgs.runCommand "spec.json" {} ''
     cat <<EOF
     ${builtins.toXML declInput}

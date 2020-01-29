@@ -2,7 +2,7 @@
     "enabled": 1,
     "hidden": false,
     "description": "Jobsets",
-    "nixexprinput": "src",
+    "nixexprinput": "hnrm",
     "nixexprpath": "hydra.nix",
     "checkinterval": 300,
     "schedulingshares": 100,
