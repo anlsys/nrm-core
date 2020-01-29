@@ -1,4 +1,4 @@
-{ hnrm, declInput }: let pkgs = import hnrm {}; in {
+{ nixpkgs, declInput }: let pkgs = import nixpkgs {}; in {
   jobsets = pkgs.runCommand "spec.json" {} ''
     cat <<EOF
     ${builtins.toXML declInput}
