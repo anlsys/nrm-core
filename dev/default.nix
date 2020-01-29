@@ -2,7 +2,9 @@
 
 , fetched ? s: (hostPkgs.nix-update-source.fetch s).src
 
-, pkgs ? import (fetched ./pkgs.json) { }
+, pkgs ? import (fetched ./pkgs.json) {
+  overlays = [ (import ./jupyterWith/nix/python-overlay.nix) ];
+}
 
 , useGhcide ? false
 
@@ -23,44 +25,48 @@ let
 in with pkgs;
 pkgs // rec {
 
-  noCheck = p : p.overridePythonAttrs (_:{doCheck=false;});
-  noCheckAll = lib.mapAttrs (name : p : noCheck p);
+  noCheck = p: p.overridePythonAttrs (_: { doCheck = false; });
+  noCheckAll = lib.mapAttrs (name: p: noCheck p);
 
   python = let
-    packageOverrides = pself: psuper: (noCheckAll {
-      cffi = psuper.cffi.overridePythonAttrs (o: { doCheck = false; });
-      sqlalchemy =
-        psuper.sqlalchemy.overridePythonAttrs (o: { doCheck = false; });
-      requests = psuper.requests.overridePythonAttrs (o: { doCheck = false; });
-      sphinx = psuper.sphinx.overridePythonAttrs (o: { doCheck = false; });
-      cryptography =
-        psuper.cryptography.overridePythonAttrs (o: { doCheck = false; });
-      cython = psuper.cython.overridePythonAttrs (o: { doCheck = false; });
-      hypothesis =
-        psuper.hypothesis.overridePythonAttrs (o: { doCheck = false; });
-      black = psuper.black.overridePythonAttrs (o: { doCheck = false; });
-      pytest = psuper.pytest.overridePythonAttrs (o: { doCheck = false; });
-      networkx = psuper.networkx.overridePythonAttrs (o: { doCheck = false; });
-      pandas = psuper.pandas.overridePythonAttrs (o: { doCheck = false; });
-      ssl = psuper.ssl.overridePythonAttrs (o: { doCheck = false; });
-      pySSL = psuper.pySSL.overridePythonAttrs (o: { doCheck = false; });
-      seaborn = psuper.seaborn.overridePythonAttrs (o: { doCheck = false; });
-      importlab = pkgs.callPackage ./pkgs/importlab { pythonPackages = pself; };
-      pyzmq = psuper.pyzmq.override { zeromq = pkgs.zeromq; };
-      pytype = pkgs.callPackage ./pkgs/pytype {
-        src = fetched ./pkgs/pytype/pin.json;
-        pythonPackages = pself;
-      };
-      nb_black = pkgs.callPackage ./pkgs/nb_black {
-        src = pkgs.fetchFromGitHub {
-          owner = "dnanhkhoa";
-          repo = "nb_black";
-          rev = "cf4a07f83ab4fbfa2a2728fdb8a0605704c830dd";
-          sha256 = "11qapvda8jk8pagbk7nipr137jm58i68nr45yar8qg8p3cvanjzf";
+    packageOverrides = pself: psuper:
+      (noCheckAll {
+        cffi = psuper.cffi.overridePythonAttrs (o: { doCheck = false; });
+        sqlalchemy =
+          psuper.sqlalchemy.overridePythonAttrs (o: { doCheck = false; });
+        requests =
+          psuper.requests.overridePythonAttrs (o: { doCheck = false; });
+        sphinx = psuper.sphinx.overridePythonAttrs (o: { doCheck = false; });
+        cryptography =
+          psuper.cryptography.overridePythonAttrs (o: { doCheck = false; });
+        cython = psuper.cython.overridePythonAttrs (o: { doCheck = false; });
+        hypothesis =
+          psuper.hypothesis.overridePythonAttrs (o: { doCheck = false; });
+        black = psuper.black.overridePythonAttrs (o: { doCheck = false; });
+        pytest = psuper.pytest.overridePythonAttrs (o: { doCheck = false; });
+        networkx =
+          psuper.networkx.overridePythonAttrs (o: { doCheck = false; });
+        pandas = psuper.pandas.overridePythonAttrs (o: { doCheck = false; });
+        ssl = psuper.ssl.overridePythonAttrs (o: { doCheck = false; });
+        pySSL = psuper.pySSL.overridePythonAttrs (o: { doCheck = false; });
+        seaborn = psuper.seaborn.overridePythonAttrs (o: { doCheck = false; });
+        importlab =
+          pkgs.callPackage ./pkgs/importlab { pythonPackages = pself; };
+        pyzmq = psuper.pyzmq.override { zeromq = pkgs.zeromq; };
+        pytype = pkgs.callPackage ./pkgs/pytype {
+          src = fetched ./pkgs/pytype/pin.json;
+          pythonPackages = pself;
         };
-        pythonPackages = pself;
-      };
-    });
+        nb_black = pkgs.callPackage ./pkgs/nb_black {
+          src = pkgs.fetchFromGitHub {
+            owner = "dnanhkhoa";
+            repo = "nb_black";
+            rev = "cf4a07f83ab4fbfa2a2728fdb8a0605704c830dd";
+            sha256 = "11qapvda8jk8pagbk7nipr137jm58i68nr45yar8qg8p3cvanjzf";
+          };
+          pythonPackages = pself;
+        };
+      });
   in pkgs.python37.override {
     inherit packageOverrides;
     self = python;
@@ -189,14 +195,7 @@ pkgs // rec {
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
-  #jupyter = import /home/fre/sandbox/jupyterWith { };
-
-  jupyter = import (pkgs.fetchFromGitHub {
-    owner = "freuk";
-    repo = "jupyterWith";
-    rev = "9fc066c6a3b91d6ea462b822ca5909985e5748fc";
-    sha256 = "0ii8rm09bz2mhrn2z7q20gjx27y3dqzldp1zkfz64860ml31lb12";
-  }) { };
+  jupyter = import (./jupyterWith) { inherit pkgs;};
 
   jupyterLabEnvironment = let
     lab = (jupyter.jupyterlabWith {
@@ -219,7 +218,7 @@ pkgs // rec {
           ])
         }:";
       kernels = [
-        (import ./jupyterWith/ipython.nix {
+        (import ./jupyterWith/kernels/ipython {
           inherit (pkgs) stdenv writeScriptBin;
           name = "Nix";
           packages = p: [
