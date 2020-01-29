@@ -2,9 +2,7 @@
 
 , fetched ? s: (hostPkgs.nix-update-source.fetch s).src
 
-, opkgs ? import (fetched ./pkgs.json) {
-  overlays = [ (import ./jupyterWith/nix/python-overlay.nix) ];
-}
+, opkgs ? import (fetched ./pkgs.json) { }
 
 , useGhcide ? false
 
