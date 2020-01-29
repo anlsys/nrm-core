@@ -1,4 +1,6 @@
-{ hostPkgs ? import <nixpkgs> { }
+{ nixpkgs ? <nixpkgs>
+
+, hostPkgs ? import nixpkgs { }
 
 , fetched ? s: (hostPkgs.nix-update-source.fetch s).src
 
