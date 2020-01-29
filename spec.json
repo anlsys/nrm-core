@@ -1,8 +1,8 @@
 {
     "enabled": 1,
     "hidden": false,
-    "description": "NRM",
-    "nixexprinput": "hnrm",
+    "description": "Jobsets",
+    "nixexprinput": "src",
     "nixexprpath": "hydra.nix",
     "checkinterval": 300,
     "schedulingshares": 100,
@@ -10,6 +10,6 @@
     "emailoverride": "fre@freux.fr",
     "keepnr": 3,
     "inputs": {
-        "hnrm": { "type": "git", "value": "https://xgitlab.cels.anl.gov/argo/hnrm.git", "emailresponsible": false }
+       "hnrm": { "type": "git", "value": "https://xgitlab.cels.anl.gov/argo/hnrm.git", "emailresponsible": false }
     }
 }

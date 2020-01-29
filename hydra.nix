@@ -8,7 +8,7 @@
         "master": {
             "enabled": 1,
             "hidden": false,
-            "description": "js",
+            "description": "jobsets",
             "nixexprinput": "hnrm",
             "nixexprpath": "release.nix",
             "checkinterval": 300,
