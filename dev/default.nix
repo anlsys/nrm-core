@@ -195,7 +195,8 @@ pkgs // rec {
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
-  jupyter = import (./jupyterWith) { inherit pkgs;};
+  jupyter =
+    import (./jupyterWith) { pkgs = pkgs // { inherit pythonPackages; }; };
 
   jupyterLabEnvironment = let
     lab = (jupyter.jupyterlabWith {
