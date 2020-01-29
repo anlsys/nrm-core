@@ -2,7 +2,7 @@
 
 , fetched ? s: (hostPkgs.nix-update-source.fetch s).src
 
-, pkgs ? import (fetched ./pkgs.json) {
+, opkgs ? import (fetched ./pkgs.json) {
   overlays = [ (import ./jupyterWith/nix/python-overlay.nix) ];
 }
 
@@ -20,13 +20,10 @@ let
   };
   unbreak = x:
     x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
-  callPackage = pkgs.lib.callPackageWith pkgs;
-
-in with pkgs;
-pkgs // rec {
+  callPackage = opkgs.lib.callPackageWith opkgs;
 
   noCheck = p: p.overridePythonAttrs (_: { doCheck = false; });
-  noCheckAll = lib.mapAttrs (name: p: noCheck p);
+  noCheckAll = opkgs.lib.mapAttrs (name: p: noCheck p);
 
   python = let
     packageOverrides = pself: psuper:
@@ -51,14 +48,14 @@ pkgs // rec {
         pySSL = psuper.pySSL.overridePythonAttrs (o: { doCheck = false; });
         seaborn = psuper.seaborn.overridePythonAttrs (o: { doCheck = false; });
         importlab =
-          pkgs.callPackage ./pkgs/importlab { pythonPackages = pself; };
-        pyzmq = psuper.pyzmq.override { zeromq = pkgs.zeromq; };
-        pytype = pkgs.callPackage ./pkgs/pytype {
+          opkgs.callPackage ./pkgs/importlab { pythonPackages = pself; };
+        pyzmq = psuper.pyzmq.override { zeromq = opkgs.zeromq; };
+        pytype = opkgs.callPackage ./pkgs/pytype {
           src = fetched ./pkgs/pytype/pin.json;
           pythonPackages = pself;
         };
-        nb_black = pkgs.callPackage ./pkgs/nb_black {
-          src = pkgs.fetchFromGitHub {
+        nb_black = opkgs.callPackage ./pkgs/nb_black {
+          src = opkgs.fetchFromGitHub {
             owner = "dnanhkhoa";
             repo = "nb_black";
             rev = "cf4a07f83ab4fbfa2a2728fdb8a0605704c830dd";
@@ -67,11 +64,18 @@ pkgs // rec {
           pythonPackages = pself;
         };
       });
-  in pkgs.python37.override {
+  in opkgs.python37.override {
     inherit packageOverrides;
     self = python;
   };
   pythonPackages = python.passthru.pkgs;
+
+  pkgs = opkgs // {
+    inherit python;
+    inherit pythonPackages;
+  };
+in with pkgs;
+pkgs // rec {
 
   dhall-to-cabal-resources = pkgs.stdenv.mkDerivation {
     name = "dhall-to-cabal-resources";
@@ -195,77 +199,26 @@ pkgs // rec {
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
-  jupyter =
-    import (./jupyterWith) { pkgs = pkgs // { inherit pythonPackages; }; };
-
-  jupyterLabEnvironment = let
-    lab = (jupyter.jupyterlabWith {
-      extraInputsFrom = _: [ hsnrm-hack libnrm-hack ];
-      extraPackages = _: [
-        pkgs.hwloc
-        ormolu
-        haskellPackages.dhrun
-        pkgs.daemonize
-        pkgs.linuxPackages.perf
-      ];
-      extraJupyterPath = "${builtins.toPath ../.}/pynrm/:${
-          pythonPackages.makePythonPath (with pythonPackages; [
-            nb_black
-            msgpack
-            warlock
-            pyzmq
-            pandas
-            seaborn
-          ])
-        }:";
-      kernels = [
-        (import ./jupyterWith/kernels/ipython {
-          inherit (pkgs) stdenv writeScriptBin;
-          name = "Nix";
-          packages = p: [
-            p.nb_black
-            p.msgpack
-            p.warlock
-            p.pyzmq
-            p.pandas
-            p.seaborn
-          ];
-          python3 = python;
-        })
-      ];
-    }).env;
-  in lab.overrideAttrs (o: {
-    shellHook = o.shellHook + ''
-      # path for NRM dev experimentation
-      export PYNRMSO=${
-        builtins.toPath ../.
-      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
-      export NRMSO=${
-        builtins.toPath ../.
-      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
-      export PATH=${builtins.toPath ../.}/dev/:${
-        builtins.toPath ../.
-      }/pynrm/bin:${
-        builtins.toPath ../.
-      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
-      export PYTHONPATH=${builtins.toPath ../.}/pynrm/:${
-        pythonPackages.makePythonPath [ ]
-      }:$PYTHONPATH
-      export JUPYTER_PATH=$JUPYTER_PATH:${builtins.toPath ../.}/pynrm/
-      # exports for `ghcide` use
-      export NIX_GHC="${haskellPackages.nrmlib.env.NIX_GHC}"
-      export NIX_GHCPKG="${haskellPackages.nrmlib.env.NIX_GHCPKG}"
-      export NIX_GHC_DOCDIR="${haskellPackages.nrmlib.env.NIX_GHC_DOCDIR}"
-      export NIX_GHC_LIBDIR="${haskellPackages.nrmlib.env.NIX_GHC_LIBDIR}"
-      export LC_ALL="en_US.UTF-8";
-      export LOCALE_ARCHIVE="${pkgs.glibcLocales}/lib/locale/locale-archive";
-      export CABALFILE=${
-        cabalFile ./cabal "dev.dhall"
-      } # for easy manual vendoring
-      cp $CABALFILE hsnrm/hsnrm.cabal
-      chmod +rw hsnrm/hsnrm.cabal
-    '';
-  });
+  jupyterWithBatteries = pkgs.jupyter.override rec {
+    python3 = pythonPackages.python.withPackages
+      (ps: with ps; [ nb_black msgpack warlock pyzmq pandas seaborn ]);
+    definitions = {
+      # This is the Python kernel we have defined above.
+      python3 = {
+        displayName = "Python 3";
+        argv = [
+          "${python3.interpreter}"
+          "-m"
+          "ipykernel_launcher"
+          "-f"
+          "{connection_file}"
+        ];
+        language = "python";
+        logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
+        logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
+      };
+    };
+  };
 
   hack = pkgs.mkShell {
     CABALFILE = cabalFile ./cabal "dev.dhall"; # for easy manual vendoring
@@ -274,7 +227,7 @@ pkgs // rec {
       pkgs.hwloc
       ormolu
       haskellPackages.dhrun
-      #jupyterWithBatteries
+      jupyterWithBatteries
       pkgs.daemonize
     ];
     shellHook = ''

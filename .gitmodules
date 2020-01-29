@@ -4,6 +4,3 @@
 [submodule "hsnrm/dhall-haskell"]
 	path = hsnrm/dhall-haskell
 	url = https://github.com/freuk/dhall-haskell.git
-[submodule "dev/jupyterWith"]
-	path = dev/jupyterWith
-	url = https://github.com/freuk/jupyterWith.git
