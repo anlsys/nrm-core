@@ -1,6 +1,6 @@
-{ haskell, lib, mkDerivation, stdenv, cabal-install, apply-refact
+{ haskell, lib, mkDerivation, stdenv, cabal-install, apply-refact, cabal2nix
 , hdevtools, Glob, hindent, fswatch, hlint, protolude, shake, Cabal, fix-imports
-, ghcid, typed-process, optparse-applicative, unix, cabal-helper, dhall-json
+, ghcid, typed-process, optparse-applicative, unix, cabal-helper, dhall-json, dhall-to-cabal
 , useGhcide }:
 let
   ghcide = (import (builtins.fetchTarball
@@ -15,6 +15,7 @@ in mkDerivation {
     #apply-refact
     hdevtools
     #zmcat
+    dhall-to-cabal
     #hindent
     #fswatch
     hlint
@@ -26,6 +27,7 @@ in mkDerivation {
     Glob
     ghcid
     dhall-json
+    cabal2nix
     #typed-process
     #unix
   ] ++ (lib.optional useGhcide ghcide);

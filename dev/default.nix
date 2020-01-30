@@ -42,6 +42,16 @@ pkgs // rec {
       ${haskellPackages.dhall-to-cabal}/bin/dhall-to-cabal <<< "./${dhallFileName} \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
     '';
 
+  patchedSrc = source: rename: dhallDir: dhallFileName:
+    pkgs.runCommand "patchedSrc" { } ''
+      mkdir -p $out
+      cp -r ${source}/${rename} $out/${rename}
+      cp -r ${source}/hbandit $out/hbandit
+      cp -r ${source}/glpk $out/glpk
+      chmod -R +rw $out
+      cp ${cabalFile dhallDir dhallFileName} $out/hsnrm.cabal
+    '';
+
   ormolu = let
     source = pkgs.fetchFromGitHub {
       owner = "tweag";
@@ -50,8 +60,6 @@ pkgs // rec {
       sha256 = "1hs7ayq5d15m9kxwfmdac3p2i3s6b0cn58cm4rrqc4d447yl426y";
     };
   in (import source { }).ormolu;
-  #ormolu = (import (builtins.fetchTarball
-  #"https://github.com/tweag/ormolu/archive/0.0.1.0.tar.gz") { }).ormolu;
 
   nrmso-nodoc = pkgs.haskell.lib.dontHaddock haskellPackages.nrmlib;
 
@@ -130,8 +138,21 @@ pkgs // rec {
     };
   };
 
-  hack = pkgs.mkShell {
+  hack = let src' = src;
+  in pkgs.mkShell {
     CABALFILE = cabalFile ./cabal "dev.dhall"; # for easy manual vendoring
+    CABALFILE_LIB = cabalFile ./cabal "lib.dhall"; # for easy manual vendoring
+    CABALFILE_BIN = cabalFile ./cabal "bin.dhall"; # for easy manual vendoring
+    NIXFILE_LIB = (haskellPackages.haskellSrc2nix {
+      name = "hsnrm";
+      src =
+        (patchedSrc (src + "/hsnrm") "nrm" (src + "/dev/cabal") "lib.dhall");
+    });
+    NIXFILE_BIN = (haskellPackages.haskellSrc2nix {
+      name = "hsnrm";
+      src =
+        (patchedSrc (src + "/hsnrm") "nrm" (src + "/dev/cabal") "bin.dhall");
+    });
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
     buildInputs = [
       pkgs.hwloc
@@ -161,7 +182,11 @@ pkgs // rec {
       export NIX_GHC_DOCDIR="${haskellPackages.nrmlib.env.NIX_GHC_DOCDIR}"
       export NIX_GHC_LIBDIR="${haskellPackages.nrmlib.env.NIX_GHC_LIBDIR}"
       cp $CABALFILE hsnrm/hsnrm.cabal
-      chmod +rw hsnrm/hsnrm.cabal
+      cp $CABALFILE_LIB dev/pkgs/hnrm/lib.cabal
+      cp $CABALFILE_BIN dev/pkgs/hnrm/bin.cabal
+      cp $NIXFILE_LIB/default.nix dev/pkgs/hnrm/lib.nix
+      cp $NIXFILE_BIN/default.nix dev/pkgs/hnrm/bin.nix
+      chmod +rw hsnrm/hsnrm.cabal dev/pkgs/hnrm/bin.nix dev/pkgs/hnrm/lib.nix dev/pkgs/hnrm/bin.cabal dev/pkgs/hnrm/lib.cabal
     '';
     LC_ALL = "en_US.UTF-8";
     LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";

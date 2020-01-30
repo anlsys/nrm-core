@@ -23,7 +23,7 @@ git submodule init
 git submodule update
 ```
 
-- opening jupyter notebooks: `$ ./lab.sh`, then navigate to the `notebooks` folder
+- opening jupyter notebooks: `$ ./shell.sh`, then run `jupyter-notebook` and navigate to the `notebooks` folder
 - entering a development shell : `$ ./shell.sh`
 - local release nix build: `$ ./build.sh`
 - local nix profile install: `$ ./install.sh`
