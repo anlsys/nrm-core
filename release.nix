@@ -3,4 +3,4 @@ let
 
   pkgs = import hnrm { };
 
-in { inherit (pkgs) libnrm; }
+in { inherit (pkgs) libnrm hsnrm; }
