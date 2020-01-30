@@ -147,11 +147,13 @@ pkgs // rec {
     NIXFILE_LIB = (haskellPackages.haskellSrc2nix {
       name = "hsnrm";
       src = patchedSrc (src + "/hsnrm") cabalFileLib;
+      extraCabal2nixOptions = "--extra-arguments src";
     });
 
     NIXFILE_BIN = (haskellPackages.haskellSrc2nix {
       name = "hsnrm";
       src = patchedSrc (src + "/hsnrm") cabalFileBin;
+      extraCabal2nixOptions = "--extra-arguments src";
     });
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
     buildInputs = [
@@ -163,7 +165,6 @@ pkgs // rec {
     ];
     shellHook = ''
       # path for NRM dev experimentation
-      echo "FOO"
       export PYNRMSO=${
         builtins.toPath ../.
       }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
@@ -188,7 +189,8 @@ pkgs // rec {
       cp $NIXFILE_LIB/default.nix dev/pkgs/hnrm/lib.nix
       cp $NIXFILE_BIN/default.nix dev/pkgs/hnrm/bin.nix
       chmod +rw hsnrm/hsnrm.cabal dev/pkgs/hnrm/bin.nix dev/pkgs/hnrm/lib.nix dev/pkgs/hnrm/bin.cabal dev/pkgs/hnrm/lib.cabal
-      echo "BAR"
+      sed -i 's/src = .*/inherit src;/' dev/pkgs/hnrm/lib.nix
+      sed -i 's/src = .*/inherit src;/' dev/pkgs/hnrm/bin.nix
     '';
     LC_ALL = "en_US.UTF-8";
     LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";

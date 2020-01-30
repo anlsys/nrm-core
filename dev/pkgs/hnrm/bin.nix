@@ -1,10 +1,10 @@
 { mkDerivation, base, enclosed-exceptions, glpk, nrmlib, protolude
-, stdenv
+, src, stdenv
 }:
 mkDerivation {
   pname = "hsnrm";
   version = "1.0.0";
-  src = /nix/store/55xqhvgkgqx63plzl71qlf7cly3kl2lb-patchedSrc;
+  inherit src;
   isLibrary = false;
   isExecutable = true;
   executableHaskellDepends = [
