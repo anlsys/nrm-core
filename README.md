@@ -1,11 +1,5 @@
 # NRM monorepo
 
-## Installation
-
-the NRM client and daemon can be installed in the (Nix) user environment by
-running `./install.sh` from a local clone. This runs a `nix-env -i` command
-with additional options to use our binary cache. 
-
 ## User Documentation
 
 - [User documentation](http://hnrm.readthedocs.io)
@@ -23,10 +17,10 @@ git submodule init
 git submodule update
 ```
 
+- local nix profile install: `$ ./install.sh` (`$ nix-env -f. -iA nrm` if binary cache is down)
+- entering a development shell : `$ ./shell.sh` (`$ nix-shell` if binary cache is down)
 - opening jupyter notebooks: `$ ./shell.sh`, then run `jupyter-notebook` and navigate to the `notebooks` folder
-- entering a development shell : `$ ./shell.sh`
-- local release nix build: `$ ./build.sh`
-- local nix profile install: `$ ./install.sh`
+- local release nix build: `$ ./build.sh` (`$ nix-build -A nrm` if binary cache is down)
 - deploy to a remote nix-enabled system: `./deploy.sh nrm user@host`
 - running CI jobs: `./ci.sh <jobname>` or all jobs using `./ci.sh`
 
