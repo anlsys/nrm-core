@@ -2,7 +2,10 @@
 
 , nixpkgs ? <nixpkgs>
 
-, pkgs ? import ./nixpkgs.nix { inherit nixpkgs; inherit src; }
+, pkgs ? import ./nixpkgs.nix {
+  inherit nixpkgs;
+  inherit src;
+}
 
 , useGhcide ? false
 
@@ -59,14 +62,14 @@ pkgs // rec {
 
   libnrm = pkgs.callPackage ./pkgs/libnrm {
     inherit resources;
-    src = ../libnrm;
+    src = src + "../libnrm";
     hsnrm = haskellPackages.nrmbin;
   };
 
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     inherit resources;
     pythonPackages = python37Packages;
-    src = ../pynrm;
+    src = src + "../pynrm";
     hsnrm = haskellPackages.nrmbin;
   };
 
@@ -171,9 +174,10 @@ pkgs // rec {
     '';
   });
 
-  dhrunTestConfigLayer = pkgs.stdenv.mkDerivation rec {
+  dhrunTestConfigLayer = let src' = src;
+  in pkgs.stdenv.mkDerivation rec {
     name = "dhrunSpecs";
-    src = ./dhrun;
+    src = src' + "./dhrun";
     installPhase = ''
       mkdir -p $out
       cp -r $src/* $out
