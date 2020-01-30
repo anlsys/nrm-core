@@ -75,7 +75,7 @@ pkgs // rec {
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     inherit resources;
     pythonPackages = python37Packages;
-    src = src + "../pynrm";
+    src = src + "/pynrm";
     hsnrm = haskellPackages.nrmbin;
   };
 
