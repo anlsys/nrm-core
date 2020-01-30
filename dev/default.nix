@@ -42,14 +42,12 @@ pkgs // rec {
       ${haskellPackages.dhall-to-cabal}/bin/dhall-to-cabal <<< "./${dhallFileName} \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
     '';
 
-  patchedSrc = source: rename: dhallDir: dhallFileName:
+  patchedSrc = source: cabalFile:
     pkgs.runCommand "patchedSrc" { } ''
       mkdir -p $out
-      cp -r ${source}/${rename} $out/${rename}
-      cp -r ${source}/hbandit $out/hbandit
-      cp -r ${source}/glpk $out/glpk
+      cp -r ${source}/ $out
       chmod -R +rw $out
-      cp ${cabalFile dhallDir dhallFileName} $out/hsnrm.cabal
+      cp ${cabalFile} $out/hsnrm.cabal
     '';
 
   ormolu = let
@@ -138,20 +136,22 @@ pkgs // rec {
     };
   };
 
-  hack = let src' = src;
+  hack = let
+    src' = src;
+    cabalFileLib = cabalFile ./cabal "lib.dhall";
+    cabalFileBin = cabalFile ./cabal "bin.dhall";
   in pkgs.mkShell {
     CABALFILE = cabalFile ./cabal "dev.dhall"; # for easy manual vendoring
-    CABALFILE_LIB = cabalFile ./cabal "lib.dhall"; # for easy manual vendoring
-    CABALFILE_BIN = cabalFile ./cabal "bin.dhall"; # for easy manual vendoring
+    CABALFILE_LIB = cabalFileLib; # for easy manual vendoring
+    CABALFILE_BIN = cabalFileBin; # for easy manual vendoring
     NIXFILE_LIB = (haskellPackages.haskellSrc2nix {
       name = "hsnrm";
-      src =
-        (patchedSrc (src + "/hsnrm") "nrm" (src + "/dev/cabal") "lib.dhall");
+      src = patchedSrc (src + "/hsnrm") cabalFileLib;
     });
+
     NIXFILE_BIN = (haskellPackages.haskellSrc2nix {
       name = "hsnrm";
-      src =
-        (patchedSrc (src + "/hsnrm") "nrm" (src + "/dev/cabal") "bin.dhall");
+      src = patchedSrc (src + "/hsnrm") cabalFileBin;
     });
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
     buildInputs = [

@@ -12,14 +12,12 @@ let
       nrmlib = (self.callPackage (./pkgs/hnrm/lib.nix) { }).overrideAttrs (o: {
         src = src + "/hsnrm";
         configurePhase = ''
-          ls
           cp ${./pkgs/hnrm/lib.cabal} hsnrm.cabal
         '' + o.configurePhase;
       });
       nrmbin = (self.callPackage (./pkgs/hnrm/bin.nix) { }).overrideAttrs (o: {
         src = src + "/hsnrm";
         configurePhase = ''
-          ls
           cp ${./pkgs/hnrm/bin.cabal} hsnrm.cabal
         '' + o.configurePhase;
       });

@@ -15,7 +15,7 @@
 mkDerivation {
   pname = "nrmlib";
   version = "1.0.0";
-  src = /nix/store/l419cai0xnz2jrdi05iyhsj6zifyq4ad-patchedSrc;
+  src = /nix/store/zw0kd2hnmhfghd44jqxqmhhka31jfqvs-patchedSrc;
   libraryHaskellDepends = [
     aeson aeson-extra aeson-pretty async base binary brick bytestring
     conduit conduit-extra containers data-default data-msgpack dhall
