@@ -2,7 +2,7 @@
 # shellcheck disable=SC2016
 
 nix-shell --pure -E '
-  let pkgs = (import ./.);
+  let pkgs = (import ./. {});
   in pkgs.mkShell {
     buildInputs = [pkgs.fd pkgs.ormolu];
     shellHook =
@@ -15,19 +15,19 @@ nix-shell --pure -E '
   done
 '
 
-nix-shell --pure -p '(import ./.).fd' '(import ./.).haskellPackages.dhall' --run bash <<< '
+nix-shell --pure -p '(import ./. {}).fd' '(import ./. {}).haskellPackages.dhall' --run bash <<< '
   for F in $(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e dhall); do
     dhall format --inplace $F
   done
 '
 
-nix-shell --pure -p '(import ./.).fd' '(import ./.).shellcheck' --run bash <<< '
+nix-shell --pure -p '(import ./. {}).fd' '(import ./. {}).shellcheck' --run bash <<< '
   for F in $(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e sh); do
     shellcheck -s bash $F
   done
 '
 
-nix-shell --pure -p '(import ./.).pythonPackages.black' --run bash <<< '
+nix-shell --pure -p '(import ./. {}).python37Packages.black' --run bash <<< '
   black pynrm/bin/*
   black pynrm/nrm/*.py
 '
