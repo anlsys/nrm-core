@@ -9,15 +9,15 @@
             "enabled": 1,
             "hidden": false,
             "description": "jobsets",
-            "nixexprinput": "hnrm",
+            "nixexprinput": "src",
             "nixexprpath": "release.nix",
             "checkinterval": 300,
             "schedulingshares": 100,
             "enableemail": false,
-            "emailoverride": "fre@freux.fr",
+            "emailoverride": "",
             "keepnr": 3,
             "inputs": {
-              "hnrm": { "type": "git", "value": "https://xgitlab.cels.anl.gov/argo/hnrm.git", "emailresponsible": false },
+              "src": { "type": "git", "value": "https://xgitlab.cels.anl.gov/argo/hnrm.git", "emailresponsible": false },
               "nixpkgs": { "type": "git", "value": "git://github.com/NixOS/nixpkgs.git release-19.03", "emailresponsible": false }
             }
         }

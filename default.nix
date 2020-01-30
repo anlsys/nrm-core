@@ -1,1 +1,1 @@
-import dev/default.nix {}
+import dev/default.nix

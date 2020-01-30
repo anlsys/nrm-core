@@ -1,6 +1,6 @@
-let pkgs = import dev/default.nix { };
-in {
+{ src }:
+let
 
-  inherit (pkgs) libnrm;
+  pkgs = import src { };
 
-}
+in { inherit (pkgs) libnrm; }
