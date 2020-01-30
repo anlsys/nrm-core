@@ -1,3 +1,6 @@
-{ hnrm }: let pkgs = import hnrm {}; in {
+let pkgs = import dev/default.nix { };
+in {
+
   inherit (pkgs) libnrm;
+
 }
