@@ -163,6 +163,7 @@ pkgs // rec {
     ];
     shellHook = ''
       # path for NRM dev experimentation
+      echo "FOO"
       export PYNRMSO=${
         builtins.toPath ../.
       }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
@@ -187,6 +188,7 @@ pkgs // rec {
       cp $NIXFILE_LIB/default.nix dev/pkgs/hnrm/lib.nix
       cp $NIXFILE_BIN/default.nix dev/pkgs/hnrm/bin.nix
       chmod +rw hsnrm/hsnrm.cabal dev/pkgs/hnrm/bin.nix dev/pkgs/hnrm/lib.nix dev/pkgs/hnrm/bin.cabal dev/pkgs/hnrm/lib.cabal
+      echo "BAR"
     '';
     LC_ALL = "en_US.UTF-8";
     LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
