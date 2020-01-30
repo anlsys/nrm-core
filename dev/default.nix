@@ -1,10 +1,6 @@
 { nixpkgs ? <nixpkgs>
 
-, hostPkgs ? import nixpkgs { }
-
-, fetched ? s: (hostPkgs.nix-update-source.fetch s).src
-
-, opkgs ? import (fetched ./pkgs.json) { }
+, pkgs ? import ./nixpkgs.nix { inherit nixpkgs; }
 
 , useGhcide ? false
 
@@ -18,43 +14,8 @@ let
         && (baseNameOf path != "result") && (baseNameOf path != "README")
         && (baseNameOf path != "dist")) path;
   };
-  unbreak = x:
-    x.overrideAttrs (attrs: { meta = attrs.meta // { broken = false; }; });
-  callPackage = opkgs.lib.callPackageWith opkgs;
+  callPackage = pkgs.lib.callPackageWith pkgs;
 
-  noCheck = p: p.overridePythonAttrs (_: { doCheck = false; });
-  noCheckAll = opkgs.lib.mapAttrs (name: p: noCheck p);
-
-  python = let
-    packageOverrides = pself: psuper:
-      (noCheckAll {
-        importlab =
-          opkgs.callPackage ./pkgs/importlab { pythonPackages = pself; };
-        pyzmq = psuper.pyzmq.override { zeromq = opkgs.zeromq; };
-        pytype = opkgs.callPackage ./pkgs/pytype {
-          src = fetched ./pkgs/pytype/pin.json;
-          pythonPackages = pself;
-        };
-        nb_black = opkgs.callPackage ./pkgs/nb_black {
-          src = opkgs.fetchFromGitHub {
-            owner = "dnanhkhoa";
-            repo = "nb_black";
-            rev = "cf4a07f83ab4fbfa2a2728fdb8a0605704c830dd";
-            sha256 = "11qapvda8jk8pagbk7nipr137jm58i68nr45yar8qg8p3cvanjzf";
-          };
-          pythonPackages = pself;
-        };
-      });
-  in opkgs.python37.override {
-    inherit packageOverrides;
-    self = python;
-  };
-  pythonPackages = python.passthru.pkgs;
-
-  pkgs = opkgs // {
-    inherit python;
-    inherit pythonPackages;
-  };
 in with pkgs;
 pkgs // rec {
 
@@ -76,20 +37,6 @@ pkgs // rec {
       ${haskellPackages.dhall-to-cabal}/bin/dhall-to-cabal <<< "./${dhallFileName} \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
     '';
 
-  patchedSrc = source: rename: dhallDir: dhallFileName:
-    pkgs.runCommand "patchedSrc" { } ''
-      mkdir -p $out
-      cp -r ${source}/${rename} $out/${rename}
-      cp -r ${source}/hbandit $out/hbandit
-      cp -r ${source}/glpk $out/glpk
-      chmod -R +rw $out
-      cp ${cabalFile dhallDir dhallFileName} $out/hsnrm.cabal
-    '';
-
-  patchedSrcLib = patchedSrc ../hsnrm "nrm" ./cabal "lib.dhall";
-
-  patchedSrcBin = patchedSrc ../hsnrm "bin" ./cabal "bin.dhall";
-
   ormolu = let
     source = pkgs.fetchFromGitHub {
       owner = "tweag";
@@ -100,29 +47,6 @@ pkgs // rec {
   in (import source { }).ormolu;
   #ormolu = (import (builtins.fetchTarball
   #"https://github.com/tweag/ormolu/archive/0.0.1.0.tar.gz") { }).ormolu;
-
-  haskellPackages = pkgs.haskellPackages.override {
-    overrides = self: super:
-      with pkgs.haskell.lib; rec {
-        regex = doJailbreak super.regex;
-        json-schema = unbreak (doJailbreak super.json-schema);
-        zeromq4-conduit = unbreak (dontCheck super.zeromq4-conduit);
-        nrmlib =
-          (self.callCabal2nix "hsnrm.cabal" patchedSrcLib { }).overrideAttrs
-          (o: { nativeBuildInputs = o.nativeBuildInputs ++ [ pkgs.glpk ]; });
-        nrmbin = (self.callCabal2nix "hsnrm.cabal" patchedSrcBin {
-          inherit nrmlib;
-        }).overrideAttrs
-          (o: { nativeBuildInputs = o.nativeBuildInputs ++ [ pkgs.glpk ]; });
-        dhall = super.dhall_1_24_0;
-        dhall-json =
-          (self.callCabal2nix "dhall-json" ../hsnrm/dhall-haskell/dhall-json
-            { }).overrideAttrs (o: { doCheck = false; });
-        dhrun = (self.callCabal2nix "dhrun" (builtins.fetchGit {
-          inherit (pkgs.stdenv.lib.importJSON ./pkgs/dhrun/pin.json) url rev;
-        })) { };
-      };
-  };
 
   nrmso-nodoc = pkgs.haskell.lib.dontHaddock haskellPackages.nrmlib;
 
@@ -139,7 +63,7 @@ pkgs // rec {
 
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     inherit resources;
-    pythonPackages = pythonPackages;
+    pythonPackages = python37Packages;
     src = ../pynrm;
     hsnrm = haskellPackages.nrmbin;
   };
@@ -167,7 +91,7 @@ pkgs // rec {
   pynrm-hack = pynrm.overrideAttrs (o: {
     propagatedBuildInputs =
       (pkgs.lib.lists.remove haskellPackages.nrmbin o.propagatedBuildInputs);
-    buildInputs = with pythonPackages;
+    buildInputs = with python37Packages;
       (pkgs.lib.lists.remove haskellPackages.nrmbin o.buildInputs)
       ++ [ flake8 autopep8 black mypy pytype nbformat nbconvert nb_black ];
 
@@ -181,7 +105,7 @@ pkgs // rec {
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
   jupyterWithBatteries = pkgs.jupyter.override rec {
-    python3 = pythonPackages.python.withPackages
+    python3 = python37Packages.python.withPackages
       (ps: with ps; [ nb_black msgpack warlock pyzmq pandas seaborn ]);
     definitions = {
       # This is the Python kernel we have defined above.
