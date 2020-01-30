@@ -115,9 +115,16 @@ pkgs // rec {
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
-  jupyterWithBatteries = pkgs.jupyter.override rec {
-    python3 = python37Packages.python.withPackages
-      (ps: with ps; [ nb_black msgpack warlock pyzmq pandas seaborn ]);
+  jupyterWithBatteries = (pkgs.jupyter.override rec {
+    python3 = (python37Packages.python.withPackages (ps:
+      with ps; [
+        nb_black
+        msgpack
+        warlock
+        pyzmq
+        pandas
+        seaborn
+      ]));
     definitions = {
       # This is the Python kernel we have defined above.
       python3 = {
@@ -134,7 +141,7 @@ pkgs // rec {
         logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
       };
     };
-  };
+  }).overrideAttrs (_: { doCheck = false; });
 
   hack = let
     src' = src;
