@@ -3,4 +3,4 @@ let
 
   pkgs = import hnrm { };
 
-in { inherit (pkgs) libnrm hsnrm; }
+in { inherit (pkgs) git hello; }
