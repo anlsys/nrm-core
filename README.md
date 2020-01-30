@@ -30,3 +30,8 @@ Local development builds can be obtained using the following:
 - use `./shake.sh client` to build the `nrm` client
 - use `./shake.sh pyclient` to build the Python shared library (for use by the python module `nrm.tooling`)
 - the appropriate Nix `shellHooks` are in place for you to use `nrm` and `nrmd` after running `./shell.sh`.
+
+## CI
+
+- [master gitlab-ci pipeline](https://xgitlab.cels.anl.gov/argo/hnrm/pipelines/latest)
+- [hydra](http://129.114.24.212/jobset/nrm/master#tabs-jobs)
