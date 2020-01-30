@@ -9,14 +9,17 @@ let
       regex = doJailbreak super.regex;
       json-schema = unbreak (doJailbreak super.json-schema);
       zeromq4-conduit = unbreak (dontCheck super.zeromq4-conduit);
-      nrmlib = (self.callPackage (./pkgs/hnrm/lib.nix) { }).overrideAttrs (o: {
+      nrmlib = (self.callPackage (./pkgs/hnrm/lib.nix) {
         src = src + "/hsnrm";
+      }).overrideAttrs (o: {
+
         configurePhase = ''
           cp ${./pkgs/hnrm/lib.cabal} hsnrm.cabal
         '' + o.configurePhase;
       });
-      nrmbin = (self.callPackage (./pkgs/hnrm/bin.nix) { }).overrideAttrs (o: {
+      nrmbin = (self.callPackage (./pkgs/hnrm/bin.nix) {
         src = src + "/hsnrm";
+      }).overrideAttrs (o: {
         configurePhase = ''
           cp ${./pkgs/hnrm/bin.cabal} hsnrm.cabal
         '' + o.configurePhase;

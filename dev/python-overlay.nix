@@ -6,6 +6,12 @@ let
   noCheckAll = pkgs.lib.mapAttrs (name: p: noCheck p);
   packageOverrides = pself: psuper:
     noCheckAll {
+      jupyter_client = psuper.jupyter_client;
+      nbformat = psuper.nbformat;
+      ipykernel = psuper.ipykernel;
+      jupyter_core = psuper.jupyter_core;
+      networkx = psuper.networkx;
+      nbconvert = psuper.nbconvert;
       importlab = pself.callPackage (src + "/dev/pkgs/importlab") { };
       pyzmq = psuper.pyzmq.override { zeromq = pkgs.zeromq; };
       pytype = pself.callPackage (src + "/dev/pkgs/pytype") {

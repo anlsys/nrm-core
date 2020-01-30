@@ -21,6 +21,23 @@
               "nixpkgs": { "type": "git", "value": "git://github.com/NixOS/nixpkgs.git release-19.03", "emailresponsible": false }
             }
         }
+        ,
+        "dev": {
+            "enabled": 1,
+            "hidden": false,
+            "description": "jobsets",
+            "nixexprinput": "hnrm",
+            "nixexprpath": "release.nix",
+            "checkinterval": 300,
+            "schedulingshares": 100,
+            "enableemail": false,
+            "emailoverride": "",
+            "keepnr": 3,
+            "inputs": {
+              "hnrm": { "type": "git", "value": "https://xgitlab.cels.anl.gov/argo/hnrm.git dev", "emailresponsible": false },
+              "nixpkgs": { "type": "git", "value": "git://github.com/NixOS/nixpkgs.git release-19.03", "emailresponsible": false }
+            }
+        }
     }
     EOF
   '';

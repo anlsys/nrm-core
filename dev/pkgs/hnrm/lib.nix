@@ -6,7 +6,7 @@
 , hxt-xpath, intervals, json-schema, lens, MonadRandom, mtl
 , mtl-compat, neat-interpolation, optparse-applicative
 , pretty-simple, prettyprinter, protolude, random
-, recursion-schemes, refined, regex, resourcet, stdenv
+, recursion-schemes, refined, regex, resourcet, src, stdenv
 , storable-endian, template-haskell, text, transformers
 , typed-process, units, units-defs, unix, unordered-containers
 , uuid, vcs-revision, vector, yaml, zeromq4-conduit
@@ -15,7 +15,7 @@
 mkDerivation {
   pname = "nrmlib";
   version = "1.0.0";
-  src = /nix/store/zw0kd2hnmhfghd44jqxqmhhka31jfqvs-patchedSrc;
+  inherit src;
   libraryHaskellDepends = [
     aeson aeson-extra aeson-pretty async base binary brick bytestring
     conduit conduit-extra containers data-default data-msgpack dhall

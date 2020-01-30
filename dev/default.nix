@@ -68,14 +68,14 @@ pkgs // rec {
 
   libnrm = pkgs.callPackage ./pkgs/libnrm {
     inherit resources;
-    src = src + "../libnrm";
+    src = src + "/libnrm";
     hsnrm = haskellPackages.nrmbin;
   };
 
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     inherit resources;
     pythonPackages = python37Packages;
-    src = src + "../pynrm";
+    src = src + "/pynrm";
     hsnrm = haskellPackages.nrmbin;
   };
 
@@ -115,9 +115,16 @@ pkgs // rec {
   libnrm-hack = libnrm.overrideAttrs
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
-  jupyterWithBatteries = pkgs.jupyter.override rec {
-    python3 = python37Packages.python.withPackages
-      (ps: with ps; [ nb_black msgpack warlock pyzmq pandas seaborn ]);
+  jupyterWithBatteries = (pkgs.jupyter.override rec {
+    python3 = (python37Packages.python.withPackages (ps:
+      with ps; [
+        nb_black
+        msgpack
+        warlock
+        pyzmq
+        pandas
+        seaborn
+      ]));
     definitions = {
       # This is the Python kernel we have defined above.
       python3 = {
@@ -134,7 +141,7 @@ pkgs // rec {
         logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
       };
     };
-  };
+  }).overrideAttrs (_: { doCheck = false; });
 
   hack = let
     src' = src;
@@ -147,11 +154,13 @@ pkgs // rec {
     NIXFILE_LIB = (haskellPackages.haskellSrc2nix {
       name = "hsnrm";
       src = patchedSrc (src + "/hsnrm") cabalFileLib;
+      extraCabal2nixOptions = "--extra-arguments src";
     });
 
     NIXFILE_BIN = (haskellPackages.haskellSrc2nix {
       name = "hsnrm";
       src = patchedSrc (src + "/hsnrm") cabalFileBin;
+      extraCabal2nixOptions = "--extra-arguments src";
     });
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
     buildInputs = [
@@ -187,6 +196,8 @@ pkgs // rec {
       cp $NIXFILE_LIB/default.nix dev/pkgs/hnrm/lib.nix
       cp $NIXFILE_BIN/default.nix dev/pkgs/hnrm/bin.nix
       chmod +rw hsnrm/hsnrm.cabal dev/pkgs/hnrm/bin.nix dev/pkgs/hnrm/lib.nix dev/pkgs/hnrm/bin.cabal dev/pkgs/hnrm/lib.cabal
+      sed -i 's/src = .*/inherit src;/' dev/pkgs/hnrm/lib.nix
+      sed -i 's/src = .*/inherit src;/' dev/pkgs/hnrm/bin.nix
     '';
     LC_ALL = "en_US.UTF-8";
     LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
