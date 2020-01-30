@@ -1,6 +1,6 @@
-{ src }:
+{ hnrm }:
 let
 
-  pkgs = import src { };
+  pkgs = import hnrm { };
 
 in { inherit (pkgs) libnrm; }
