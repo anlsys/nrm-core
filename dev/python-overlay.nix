@@ -27,4 +27,6 @@ in rec {
       packageOverrides;
   });
   python37Packages = python37.passthru.pkgs;
+  python3 = python37;
+  python3Packages = python37Packages;
 }
