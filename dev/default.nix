@@ -28,25 +28,6 @@ let
   python = let
     packageOverrides = pself: psuper:
       (noCheckAll {
-        cffi = psuper.cffi.overridePythonAttrs (o: { doCheck = false; });
-        sqlalchemy =
-          psuper.sqlalchemy.overridePythonAttrs (o: { doCheck = false; });
-        requests =
-          psuper.requests.overridePythonAttrs (o: { doCheck = false; });
-        sphinx = psuper.sphinx.overridePythonAttrs (o: { doCheck = false; });
-        cryptography =
-          psuper.cryptography.overridePythonAttrs (o: { doCheck = false; });
-        cython = psuper.cython.overridePythonAttrs (o: { doCheck = false; });
-        hypothesis =
-          psuper.hypothesis.overridePythonAttrs (o: { doCheck = false; });
-        black = psuper.black.overridePythonAttrs (o: { doCheck = false; });
-        pytest = psuper.pytest.overridePythonAttrs (o: { doCheck = false; });
-        networkx =
-          psuper.networkx.overridePythonAttrs (o: { doCheck = false; });
-        pandas = psuper.pandas.overridePythonAttrs (o: { doCheck = false; });
-        ssl = psuper.ssl.overridePythonAttrs (o: { doCheck = false; });
-        pySSL = psuper.pySSL.overridePythonAttrs (o: { doCheck = false; });
-        seaborn = psuper.seaborn.overridePythonAttrs (o: { doCheck = false; });
         importlab =
           opkgs.callPackage ./pkgs/importlab { pythonPackages = pself; };
         pyzmq = psuper.pyzmq.override { zeromq = opkgs.zeromq; };
