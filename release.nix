@@ -1,6 +1,6 @@
-{ hnrm }:
+{ hnrm ? ./. }:
 let
 
   pkgs = import hnrm { src = hnrm; };
 
-in { inherit (pkgs) git hello; }
+in { inherit (pkgs.haskellPackages) nrmbin nrmlib; }
