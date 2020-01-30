@@ -16,7 +16,7 @@ ormolu:
   script:
     - |
       nix-shell --pure -E '
-        let pkgs = (import ./.);
+        let pkgs = (import ./. {});
         in pkgs.mkShell {
           buildInputs = [pkgs.fd pkgs.ormolu];
           shellHook =
@@ -42,7 +42,7 @@ shellcheck:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./.).fd' -p '(import ./.).shellcheck' --run bash <<< '
+      nix-shell --pure -p '(import ./. {}).fd' -p '(import ./. {}).shellcheck' --run bash <<< '
         RETURN=0
         files=$(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e sh)
         for F in $files; do
@@ -62,7 +62,7 @@ hlint:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./.).hlint' --run bash <<< '
+      nix-shell --pure -p '(import ./. {}).hlint' --run bash <<< '
         hlint hsnrm/nrm/ --hint=./.hlint.yaml
         hlint hsnrm/bin/ --hint=./.hlint.yaml
       '
@@ -74,7 +74,7 @@ black:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./.).pythonPackages.black' --run bash <<< '
+      nix-shell --pure -p '(import ./. {}).pythonPackages.black' --run bash <<< '
         set -e
         black pynrm/bin/* --check
         black pynrm/nrm/*.py --check
@@ -87,7 +87,7 @@ clang-format:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./.).fd' '(import ./.).clang-tools' --run bash <<< '
+      nix-shell --pure -p '(import ./. {}).fd' '(import ./. {}).clang-tools' --run bash <<< '
         RETURN=0
         for F in $(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e c); do
           clang-format < $F | cmp -s $F -
@@ -106,7 +106,7 @@ dhall-format:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./.).fd' '(import ./.).haskellPackages.dhall' --run bash <<< '
+      nix-shell --pure -p '(import ./. {}).fd' '(import ./. {}).haskellPackages.dhall' --run bash <<< '
         RETURN=0
         for F in $(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e dhall); do
           dhall format < $F | cmp -s $F -
@@ -290,7 +290,7 @@ dhrun:hello:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./.).nrm' -p '(import ./.).dhrun' --run "dhrun run --verbose" <<< '
+      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun run --verbose" <<< '
         let all = ./dev/dhrun/all-tests.dh
           "../dev/dhrun/assets/"
           "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
@@ -305,7 +305,7 @@ dhrun:exitcode:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./.).nrm' -p '(import ./.).dhrun' --run "dhrun run --verbose" <<< '
+      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun run --verbose" <<< '
         let all = ./dev/dhrun/all-tests.dh
           "../dev/dhrun/assets/"
           "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
@@ -320,7 +320,7 @@ dhrun:listen:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./.).nrm' -p '(import ./.).dhrun' --run "dhrun run --verbose" <<< '
+      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun run --verbose" <<< '
         let all = ./dev/dhrun/all-tests.dh
           "../dev/dhrun/assets/"
           "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
