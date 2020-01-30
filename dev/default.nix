@@ -1,6 +1,8 @@
-{ nixpkgs ? <nixpkgs>
+{ src ? ../.
 
-, pkgs ? import ./nixpkgs.nix { inherit nixpkgs; }
+, nixpkgs ? <nixpkgs>
+
+, pkgs ? import ./nixpkgs.nix { inherit nixpkgs; inherit src; }
 
 , useGhcide ? false
 

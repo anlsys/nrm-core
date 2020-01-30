@@ -1,3 +1,4 @@
+{ src }:
 _: pkgs:
 let
   fetched = s: (pkgs.nix-update-source.fetch s).src;
@@ -33,10 +34,9 @@ let
       cp ${cabalFile dhallDir dhallFileName} $out/hsnrm.cabal
     '';
 
-  patchedSrcLib = patchedSrc ../hsnrm "nrm" ./cabal "lib.dhall";
+  patchedSrcLib = patchedSrc (src + "/hsnrm") "nrm" (src+"/dev/cabal") "lib.dhall";
 
-  patchedSrcBin = patchedSrc ../hsnrm "bin" ./cabal "bin.dhall";
-
+  patchedSrcBin = patchedSrc (src + "/hsnrm") "bin" (src+"/dev/cabal") "bin.dhall";
 
   overrides = self: super:
     with pkgs.haskell.lib; rec {
@@ -52,13 +52,11 @@ let
         (o: { nativeBuildInputs = o.nativeBuildInputs ++ [ pkgs.glpk ]; });
       dhall = super.dhall_1_24_0;
       dhall-json =
-        (self.callCabal2nix "dhall-json" ../hsnrm/dhall-haskell/dhall-json
+        (self.callCabal2nix "dhall-json" (src + "/hsnrm/dhall-haskell/dhall-json")
           { }).overrideAttrs (o: { doCheck = false; });
       dhrun = (self.callCabal2nix "dhrun" (builtins.fetchGit {
         inherit (pkgs.stdenv.lib.importJSON ./pkgs/dhrun/pin.json) url rev;
       })) { };
     };
 
-in {
-  haskellPackages = pkgs.haskellPackages.override  { inherit overrides;};
-}
+in { haskellPackages = pkgs.haskellPackages.override { inherit overrides; }; }

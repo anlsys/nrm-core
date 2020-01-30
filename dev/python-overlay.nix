@@ -1,3 +1,4 @@
+{ src }:
 _: pkgs:
 let
   fetched = s: (pkgs.nix-update-source.fetch s).src;
@@ -5,12 +6,12 @@ let
   noCheckAll = pkgs.lib.mapAttrs (name: p: noCheck p);
   packageOverrides = pself: psuper:
     noCheckAll {
-      importlab = pself.callPackage ./pkgs/importlab { };
+      importlab = pself.callPackage (src + "/dev/pkgs/importlab") { };
       pyzmq = psuper.pyzmq.override { zeromq = pkgs.zeromq; };
-      pytype = pself.callPackage ./pkgs/pytype {
-        src = fetched ./pkgs/pytype/pin.json;
+      pytype = pself.callPackage (src + "/dev/pkgs/pytype") {
+        src = fetched (src + "/dev/pkgs/pytype/pin.json");
       };
-      nb_black = pself.callPackage ./pkgs/nb_black {
+      nb_black = pself.callPackage (src + "/dev/pkgs/nb_black") {
         src = pkgs.fetchFromGitHub {
           owner = "dnanhkhoa";
           repo = "nb_black";

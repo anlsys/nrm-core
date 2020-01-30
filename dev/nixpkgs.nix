@@ -1,6 +1,6 @@
-{
+{ src
 
-config ? { }
+, config ? { }
 
 , overlays ? [ ]
 
@@ -12,7 +12,10 @@ config ? { }
 
 let
   fetched = s: (hostPkgs.nix-update-source.fetch s).src;
-  defaultOverlays = [ (import ./python-overlay.nix) (import ./haskell-overlay.nix) ];
+  defaultOverlays = [
+    (import ./python-overlay.nix { inherit src; })
+    (import ./haskell-overlay.nix { inherit src; })
+  ];
   overlaysAll = defaultOverlays ++ overlays;
 in import (fetched ./pkgs.json) {
   inherit config;

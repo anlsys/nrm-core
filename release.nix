@@ -1,6 +1,6 @@
 { hnrm }:
 let
 
-  pkgs = import hnrm { };
+  pkgs = import hnrm { src = hnrm; };
 
 in { inherit (pkgs) git hello; }
