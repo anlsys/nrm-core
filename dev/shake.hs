@@ -171,7 +171,7 @@ runshake as =
             proc
               "cabal"
               [ "v2-run",
-                "--builddir=../.build",
+                "--builddir=../.build_codegen",
                 "codegen",
                 "../resources/"
               ]

@@ -34,7 +34,6 @@ import qualified NRM.Types.UpstreamClient as UC
 import NeatInterpolation
 import Protolude hiding (Rep)
 import System.Exit (exitWith)
-import System.IO (hFlush)
 import qualified System.Posix.Signals as SPS
   ( Handler (..),
     installHandler,
@@ -141,92 +140,55 @@ reqrep ::
   Protocols.ReqRep req rep ->
   req ->
   ZMQ.ZMQ z ()
-reqrep s opts = \case
-  Protocols.CPD ->
-    const $ do
-      ZMQ.receive s <&> decodeT . toS >>= \case
-        Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepCPD cpd) ->
+reqrep s opts proto =
+  const $ do
+    ZMQ.receive s <&> (decodeT :: Text -> Maybe URep.Rep) . toS >>= \case
+      Nothing -> putText "Couldn't decode reply"
+      Just rep -> (proto, rep) & \case
+        (Protocols.CPD, URep.RepCPD cpd) ->
           putText
             [text|
-              asynchronous Control Problem Description:
-              $cpdT
+                asynchronous Control Problem Description:
+                $cpdT
 
-              $actuatorcount actuator(s) currently registered.
-              $sensorcount sensor(s) currently registered.
-             |]
+                $actuatorcount actuator(s) currently registered.
+                $sensorcount sensor(s) currently registered.
+               |]
           where
             cpdT = prettyCPD cpd
             actuatorcount = show $ length (CPD.actuators cpd)
             sensorcount = show $ length (CPD.sensors cpd)
-        _ -> putText "reply wasn't in protocol"
-      liftIO $ hFlush stdout
-  Protocols.SliceList ->
-    const $ do
-      ZMQ.receive s <&> decodeT . toS >>= \case
-        Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepList (URep.SliceList l)) ->
+        (Protocols.SliceList, URep.RepList (URep.SliceList l)) ->
           putText
             [text|
-              $slicecount slice(s) currently running.
-               $slices
-             |]
+                      $slicecount slice(s) currently running.
+                       $slices
+                     |]
           where
             slicecount = show $ length l
             slices = showSliceList l
-        _ -> putText "reply wasn't in protocol"
-      liftIO $ hFlush stdout
-  Protocols.GetState ->
-    const $ do
-      msg <- ZMQ.receive s <&> toS
-      case decodeT msg of
-        Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepGetState st) ->
+        (Protocols.GetState, URep.RepGetState st) ->
           putText $ pShowOpts opts st
-        _ -> putText "reply wasn't in protocol"
-      liftIO $ hFlush stdout
-  Protocols.GetConfig ->
-    const $ do
-      ZMQ.receive s <&> decodeT . toS >>= \case
-        Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepGetConfig (URep.GetConfig cfg)) ->
+        (Protocols.GetConfig, URep.RepGetConfig (URep.GetConfig cfg)) ->
           if C.jsonPrint opts
             then putText $ toS (AP.encodePretty cfg)
             else putText $ pShowOpts opts cfg
-        _ -> putText "reply wasn't in protocol"
-      liftIO $ hFlush stdout
-  Protocols.Actuate ->
-    const $ do
-      ZMQ.receive s <&> decodeT . toS >>= \case
-        Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepActuate URep.Actuated) ->
+        (Protocols.Actuate, URep.RepActuate URep.Actuated) ->
           putText "actuated"
-        Just (URep.RepActuate URep.NotActuated) ->
+        (Protocols.Actuate, URep.RepActuate URep.NotActuated) ->
           putText "couldn't actuate"
-        _ -> putText "reply wasn't in protocol"
-      liftIO $ hFlush stdout
-  Protocols.KillSlice ->
-    const $ do
-      ZMQ.receive s <&> decodeT . toS >>= \case
-        Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepSliceKilled (URep.SliceKilled sliceID)) ->
+        (Protocols.KillSlice, URep.RepSliceKilled (URep.SliceKilled sliceID)) ->
           putText $ "Killed slice ID: " <> C.toText sliceID
-        Just (URep.RepNoSuchSlice URep.NoSuchSlice) ->
+        (Protocols.KillSlice, URep.RepNoSuchSlice URep.NoSuchSlice) ->
           putText "No such slice ID. "
-        _ -> putText "reply wasn't in protocol"
-      liftIO $ hFlush stdout
-  Protocols.KillCmd ->
-    const $ do
-      ZMQ.receive s <&> decodeT . toS >>= \case
-        Nothing -> putText "Couldn't decode reply"
-        Just (URep.RepCmdKilled (URep.CmdKilled cmdID)) ->
+        (Protocols.KillCmd, URep.RepCmdKilled (URep.CmdKilled cmdID)) ->
           putText $ "Killed cmd ID: " <> CmdID.toText cmdID
-        Just (URep.RepSliceKilled (URep.SliceKilled sliceID)) ->
+        (Protocols.KillCmd, URep.RepSliceKilled (URep.SliceKilled sliceID)) ->
           putText $ "Killed slice ID: " <> C.toText sliceID
-        Just (URep.RepNoSuchCmd URep.NoSuchCmd) ->
+        (Protocols.KillCmd, URep.RepNoSuchCmd URep.NoSuchCmd) ->
           putText "No such command ID. "
+        (_, URep.RepException e) -> putText $ "daemon throws internal exception: \n" <> e
         _ -> putText "reply wasn't in protocol"
-      liftIO $ hFlush stdout
 
 reqstream ::
   ZMQ.Socket z ZMQ.Dealer ->

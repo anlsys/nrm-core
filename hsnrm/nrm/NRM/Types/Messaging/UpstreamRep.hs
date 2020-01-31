@@ -38,7 +38,6 @@ import NRM.Types.CmdID
 import NRM.Types.Configuration as C
 import NRM.Types.Slice as C
 import NRM.Types.State as S
-import NRM.Types.Units as U
 import Protolude hiding (Rep)
 
 data Rep
@@ -74,6 +73,8 @@ data Rep
     RepGetState NRMState
   | -- | Configuration query response
     RepGetConfig GetConfig
+  | -- | Generic exception carrying response
+    RepException Text
   deriving (Show, Generic, MessagePack, NRMMessage)
 
 data OutputType = StdoutOutput | StderrOutput

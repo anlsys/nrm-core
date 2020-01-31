@@ -1,5 +1,6 @@
 {-# LANGUAGE DerivingVia #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# OPTIONS_GHC -fno-warn-partial-fields #-}
 
 -- |
 -- Module      : NRM.Types.Manifest
