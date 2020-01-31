@@ -25,6 +25,7 @@ where
 import CPD.Core as CPD
 import CPD.Utils as CPD
 import CPD.Values as CPD
+import qualified Control.Exception.Enclosed as EE
 import Control.Lens hiding (to)
 import Control.Monad.Trans.RWS.Lazy (RWST)
 import Data.Generics.Product
@@ -55,6 +56,7 @@ import NRM.Types.Sensor as Sensor
 import qualified NRM.Types.Slice as Ct
 import NRM.Types.State
 import qualified NRM.Types.Units as U
+import NRM.Types.UpstreamClient
 import Protolude hiding (Map, log)
 
 -- | External interface for NRM behavior, without RWS monad
@@ -106,7 +108,7 @@ nrm _callTime (RegisterCmd cmdID cmdstatus) = do
         maybeClientID & \case
           Just clientID -> rep clientID $ URep.RepStart (URep.Start sliceID cmdID)
           Nothing -> return ()
-nrm _callTime (Req clientid msg) = do
+nrm _callTime (Req clientid msg) = sendExceptionsUp clientid $ do
   st <- get
   c <- ask
   msg & \case
@@ -452,9 +454,17 @@ mayInjectLibnrmPreload c manifest e =
             )
             "LD_PRELOAD"
 
-behaveLens ::
-  (NRMState -> (Behavior, NRMState)) ->
-  RWST Cfg [Behavior] NRMState IO ()
+behaveLens :: (NRMState -> (Behavior, NRMState)) -> NRM ()
 behaveLens l = do
   st <- get
   l st & \(bh, st') -> put st' >> behave bh
+
+sendExceptionsUp :: UpstreamClientID -> NRM () -> NRM ()
+sendExceptionsUp clientid nrmMonad = exceptionLess nrmMonad >>= \case
+  Left content -> do
+    logError content
+    rep clientid (URep.RepException content)
+  Right _ -> return ()
+
+exceptionLess :: NRM a -> NRM (Either Text a)
+exceptionLess io = EE.catchAny (Right <$> io) $ return . Left . show

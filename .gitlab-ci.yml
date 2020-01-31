@@ -237,7 +237,7 @@ libnrm:
   script:
     - |
       nix-shell -E '
-        let pkgs = (import ./default.nix);
+        let pkgs = (import ./default.nix {});
         in pkgs.libnrm.overrideAttrs (o:{
           preBuild="";
         })

@@ -1321,6 +1321,17 @@
                     }
                 }
             }
+        },
+        {
+            "required": [
+                "repException"
+            ],
+            "type": "object",
+            "properties": {
+                "repException": {
+                    "type": "string"
+                }
+            }
         }
     ]
 }
