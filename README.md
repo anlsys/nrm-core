@@ -21,7 +21,8 @@ git submodule update
 - entering a development shell : `./shell.sh` (`nix-shell` if binary cache is down)
 - opening jupyter notebooks: `./shell.sh`, then run `jupyter-notebook` and navigate to the `notebooks` folder
 - local release nix build: `./build.sh` (`nix-build -A nrm` if binary cache is down)
-- deploy to a remote nix-enabled system: `./deploy.sh nrm user@host`
+- deploy to a remote nix-enabled system: `./deploy_nix.sh nrm user@host`
+- deploy a g5k notebook setup: `./deploy_g5k.sh nrm user@host`
 - running CI jobs: `./ci.sh <jobname>` or all jobs using `./ci.sh`
 
 Local development builds can be obtained using the following:
