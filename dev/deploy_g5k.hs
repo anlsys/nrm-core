@@ -10,7 +10,7 @@
 
 import Control.Lens
 import Data.Aeson
-import Data.Aeson.Lens
+import Data.Aeson.Lens as A
 import Data.Aeson.Types
 import Data.Default
 import NeatInterpolation
@@ -25,20 +25,75 @@ import qualified System.IO as SIO
     stdout,
   )
 
-httpOpts :: CommonOpts -> Network.Wreq.Options
-httpOpts (CommonOpts (User u) (Password p) _) =
-  defaults
-    & (auth ?~ basicAuth (toS u) (toS p))
-    & (Network.Wreq.header "Accept" .~ ["*/*"])
-    & manager
-    .~ Left (mkManagerSettings (TLSSettingsSimple False False False) Nothing)
+------ COMMON
 
-data ReservationRequestCLI
-  = ReservationRequestCLI
-      { nodes :: Nodes,
+newtype UID = UID Int
+  deriving (Generic)
+  deriving (Show, FromJSON, ToJSON) via Int
+
+newtype Walltime = Walltime Text
+  deriving (Show, Generic)
+  deriving (ToJSON) via Text
+
+newtype Site = Site Text
+  deriving (Show)
+  deriving (ToJSON) via Text
+
+newtype Environment = Environment Text
+  deriving (Show)
+  deriving (ToJSON) via Text
+
+newtype Pubfile = Pubfile Text
+  deriving (Show)
+  deriving (ToJSON) via Text
+
+newtype Pubkey = Pubkey Text
+  deriving (Show)
+  deriving (ToJSON) via Text
+
+newtype Hosts = Hosts [Text]
+  deriving (Show, Generic)
+  deriving (ToJSON, FromJSON) via [Text]
+
+newtype User = User Text
+
+newtype Password = Password Text
+
+------ CLI
+
+newtype NodeCount = NodeCount Int
+  deriving (Show, Generic)
+  deriving (ToJSON) via Int
+
+data CommonOpts
+  = CommonOpts
+      { user :: User,
+        password :: Password,
+        site :: Site
+      }
+
+data ReservationCLI
+  = ReservationCLI
+      { nodecount :: NodeCount,
         walltime :: Walltime
       }
-  deriving (Show, Generic)
+
+data DeployCLI
+  = DeployCLI
+      { deployHosts :: Hosts,
+        pubfile :: Pubfile,
+        envir :: Environment
+      }
+  deriving (Show)
+
+data AllCLI
+  = AllCLI
+      { reservationCLI :: ReservationCLI,
+        allPubfile :: Pubfile,
+        allEnvironment :: Environment
+      }
+
+------ REQUESTS
 
 data ReservationRequest
   = ReservationRequest
@@ -48,20 +103,21 @@ data ReservationRequest
       }
   deriving (Show, Generic, ToJSON)
 
-data Hosts = Hosts [Text]
-  deriving (Show, Generic, FromJSON, ToJSON)
+data DeployRequest
+  = DeployRequest
+      { nodes :: Hosts,
+        environment :: Environment,
+        key :: Pubkey
+      }
+  deriving (Show, Generic, ToJSON)
 
-newtype UID = UID Int
-  deriving (Generic)
-  deriving (Show, FromJSON, ToJSON) via Int
-
-newtype Nodes = Nodes Int
-  deriving (Show, Generic)
-  deriving (ToJSON) via Int
-
-newtype Walltime = Walltime Text
-  deriving (Show, Generic)
-  deriving (ToJSON) via Text
+httpOpts :: CommonOpts -> Network.Wreq.Options
+httpOpts (CommonOpts (User u) (Password p) _) =
+  defaults
+    & (auth ?~ basicAuth (toS u) (toS p))
+    & (Network.Wreq.header "Accept" .~ ["*/*"])
+    & manager
+    .~ Left (mkManagerSettings (TLSSettingsSimple False False False) Nothing)
 
 main :: IO ()
 main = do
@@ -69,40 +125,55 @@ main = do
     <> void (join (execParser (info (parseOpts <**> helper) idm)))
 
 hosts :: CommonOpts -> UID -> IO (Maybe Hosts)
-hosts cOpts jobID = do
+hosts cOpts@(CommonOpts _ _ (Site s)) jobID = do
   r <-
     getWith (httpOpts cOpts) $
-      "https://api.grid5000.fr/3.0/sites/rennes/jobs/"
+      "https://api.grid5000.fr/3.0/sites/" <> toS s <> "/jobs/"
         <> show jobID
         <> "?pretty"
-  return $ (r ^? responseBody . key "assigned_nodes") >>= parseMaybe parseJSON
+  return $ (r ^? responseBody . A.key "assigned_nodes") >>= parseMaybe parseJSON
 
-reserve :: CommonOpts -> ReservationRequestCLI -> IO (Maybe UID)
-reserve cOpts@(CommonOpts _ _ (Site s)) (ReservationRequestCLI (Nodes n) (Walltime w)) = do
+reserve :: CommonOpts -> ReservationCLI -> IO (Maybe UID)
+reserve cOpts@(CommonOpts _ _ (Site s)) (ReservationCLI (NodeCount n) (Walltime w)) = do
   let req = (ReservationRequest ("nodes=" <> show n <> ",walltime=" <> w) "sleep 100000" ["deploy"])
   r <-
     postWith
       (httpOpts cOpts)
       ("https://api.grid5000.fr/3.0/sites/" <> toS s <> "/jobs")
       (toJSON req)
-  let uid = UID . floor <$> (r ^? responseBody . key "uid" . _Number)
-  print uid
+  let uid = UID . floor <$> (r ^? responseBody . A.key "uid" . _Number)
   return uid
 
-deploy :: CommonOpts -> Hosts -> IO (Bool)
-deploy = undefined
+deploy :: CommonOpts -> DeployCLI -> IO (Bool)
+deploy cOpts@(CommonOpts _ _ (Site s)) (DeployCLI hosts (Pubfile pubkey) environment) = do
+  print hosts
+  key <- Pubkey <$> readFile (toS pubkey)
+  let req = DeployRequest {nodes = hosts, environment = environment, key = key}
+  putText $ toS (encode req)
+  r <- postWith (httpOpts cOpts) ("https://api.grid5000.fr/3.0/sites/" <> toS s <> "/deployments") (toJSON req)
+  return $ r ^. responseStatus . statusCode == 200
 
-allOperations :: CommonOpts -> ReservationRequestCLI -> IO ()
+allOperations :: CommonOpts -> AllCLI -> IO ()
 allOperations c r = do
-  reserve c r >>= \case
+  reserve c (reservationCLI r) >>= \case
     Nothing -> die "Reservation failure"
-    Just (UID id) -> do
-      putText $ "Reserved job ID " <> show id
-      (prompt ". Try to deploy?" <&> (`elem` ["y", "Y"])) >>= \case
-        False -> exitSuccess
-        True -> tryDeploy
+    Just uid -> do
+      putText $ "Reserved job " <> show uid
+      tryHosts uid
   where
-    tryDeploy = putText "pa"
+    tryHosts :: UID -> IO ()
+    tryHosts jobid =
+      (prompt "Try to get hosts? [y/Y]" <&> (`elem` ["y", "Y"])) >>= \case
+        False -> exitSuccess
+        True -> hosts c jobid >>= \case
+          Nothing -> putText "no hosts associated yet" >> tryHosts jobid
+          Just hs -> tryDeploy hs
+    tryDeploy hs =
+      (prompt "Try to deploy? [y/Y]" <&> (`elem` ["y", "Y"])) >>= \case
+        False -> exitSuccess
+        True -> deploy c (DeployCLI {deployHosts = hs, pubfile = allPubfile r, envir = allEnvironment r}) >>= \case
+          False -> putText "deployment couldn't succeed.. " >> tryDeploy hs
+          True -> putText "deployment success" >> exitSuccess
 
 prompt :: Text -> IO Text
 prompt xs = putText (xs <> " ") >> getLine
@@ -110,16 +181,16 @@ prompt xs = putText (xs <> " ") >> getLine
 hostsAndPrint :: CommonOpts -> UID -> IO ()
 hostsAndPrint c i = hosts c i >>= \case
   Nothing -> die "Query failure"
-  Just (hosts) -> putText $ "job has hosts " <> show hosts
+  Just (Hosts hosts) -> putText $ "job has hosts " <> show hosts
 
-reserveAndPrint :: CommonOpts -> ReservationRequestCLI -> IO ()
+reserveAndPrint :: CommonOpts -> ReservationCLI -> IO ()
 reserveAndPrint c r = reserve c r >>= \case
   Nothing -> die "Reservation failure"
   Just (UID id) -> putText $ "Reserved job ID " <> show id
 
-deployAndPrint :: CommonOpts -> Hosts -> IO ()
-deployAndPrint c h = deploy c h >>= \case
-  True -> putText $ "deployed to hosts" <> show h
+deployAndPrint :: CommonOpts -> DeployCLI -> IO ()
+deployAndPrint c d = deploy c d >>= \case
+  True -> putText $ "deployed CLI deployment request" <> show d
   _ -> die "Deployment request failure"
 
 parseOpts :: OA.Parser (IO ())
@@ -127,12 +198,12 @@ parseOpts =
   hsubparser $
     OA.command
       "reserve"
-      ( info ((reserveAndPrint <$> parserCommon <*> parserReservationRequestCLI)) $
+      ( info ((reserveAndPrint <$> parserCommon <*> parserReservationCLI)) $
           progDesc "Reserve a node"
       )
       <> OA.command
         "deploy"
-        ( info ((deployAndPrint <$> parserCommon <*> parserHosts)) $
+        ( info ((deployAndPrint <$> parserCommon <*> parserDeployCLI)) $
             progDesc "Deploy to a reserved node"
         )
       <> OA.command
@@ -145,41 +216,37 @@ parseOpts =
       <> OA.command
         "all"
         ( info
-            ( (allOperations <$> parserCommon <*> parserReservationRequestCLI)
+            ( (allOperations <$> parserCommon <*> (AllCLI <$> parserReservationCLI <*> parserPubfile <*> parserEnvironment))
             )
             $ progDesc "Deploy and reserve"
         )
       <> help
         "Choice of operation."
 
-data CommonOpts
-  = CommonOpts
-      { user :: User,
-        password :: Password,
-        site :: Site
-      }
-
-newtype Site = Site Text deriving (Show)
-
-newtype User = User Text
-
-newtype Password = Password Text
-
 parserUID :: OA.Parser UID
 parserUID = UID <$> OA.argument auto (metavar "UID")
 
 parserHosts :: OA.Parser Hosts
-parserHosts = Hosts <$> OA.argument auto (metavar "HOSTS")
+parserHosts = Hosts <$> OA.option auto ((metavar "HOSTS") <> long "hosts")
 
-parserReservationRequestCLI :: OA.Parser ReservationRequestCLI
-parserReservationRequestCLI =
-  ReservationRequestCLI
-    <$> ( Nodes
+parserPubfile :: OA.Parser Pubfile
+parserPubfile = Pubfile <$> OA.strOption ((metavar "PUBKEY") <> long "pubfile" <> short 'k')
+
+parserEnvironment :: OA.Parser Environment
+parserEnvironment = Environment <$> OA.strOption ((metavar "ENVIRONMENT") <> value "wheezy-x64-base" <> long "environment" <> short 'e')
+
+parserDeployCLI :: OA.Parser DeployCLI
+parserDeployCLI = DeployCLI <$> parserHosts <*> parserPubfile <*> parserEnvironment
+
+parserReservationCLI :: OA.Parser ReservationCLI
+parserReservationCLI =
+  ReservationCLI
+    <$> ( NodeCount
             <$> OA.option auto (metavar "nodes" <> long "nodes" <> value 1)
         )
-    <*> ( Walltime
-            <$> OA.strOption (metavar "walltime" <> long "walltime" <> value "00:10")
-        )
+      <*> ( Walltime
+              <$> OA.strOption (metavar "walltime" <> long "walltime" <> value "00:10")
+          )
 
 parserCommon :: OA.Parser CommonOpts
 parserCommon =

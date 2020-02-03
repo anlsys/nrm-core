@@ -1,5 +1,5 @@
-{ haskell, lib, mkDerivation, stdenv, cabal-install, apply-refact, cabal2nix
-, wreq, hdevtools, Glob, hindent, fswatch, hlint, protolude, shake, Cabal
+{ haskell, lib, mkDerivation, stdenv, cabal-install, apply-refact, cabal2nix, 
+ wreq, hdevtools, Glob, hindent, fswatch, hlint, protolude, shake, Cabal
 , fix-imports, ghcid, typed-process, optparse-applicative, unix, cabal-helper
 , dhall-json, dhall-to-cabal, useGhcide }:
 let
