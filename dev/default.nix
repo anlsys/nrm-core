@@ -204,6 +204,7 @@ pkgs // rec {
   };
 
   dhrun = haskellPackages.dhrun.overrideAttrs (old: {
+    doCheck = false;
     installPhase = old.installPhase + ''
       mkdir -p $out/share/
       cp -r resources $out/share/
