@@ -5,7 +5,8 @@ let FileCheck =
 
 in  { Cfg =
         ./Cfg.dhall
-    , FileCheck = FileCheck
+    , FileCheck =
+        FileCheck
     , EnvVar =
         { varname : Text, value : Text }
     , Cleaning =
