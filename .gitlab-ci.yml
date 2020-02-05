@@ -290,7 +290,7 @@ dhrun:hello:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun run --verbose" <<< '
+      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun -i" <<< '
         let all = ./dev/dhrun/all-tests.dh
           "../dev/dhrun/assets/"
           "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
@@ -305,7 +305,7 @@ dhrun:exitcode:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun run --verbose" <<< '
+      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun -i" <<< '
         let all = ./dev/dhrun/all-tests.dh
           "../dev/dhrun/assets/"
           "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
@@ -320,7 +320,7 @@ dhrun:listen:
     - nix
   script:
     - |
-      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun run --verbose" <<< '
+      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun -i" <<< '
         let all = ./dev/dhrun/all-tests.dh
           "../dev/dhrun/assets/"
           "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
@@ -339,4 +339,4 @@ readthedocs:
     - nix
   script:
     - echo "token=$RTD_TOKEN"
-    - nix run nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hnrm/104604/
+    - nix nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hnrm/104604/
