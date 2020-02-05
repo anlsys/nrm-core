@@ -1,7 +1,11 @@
   λ(dataDir : Text)
 → λ(daemonCfg : Text)
 → λ(manifestDir : Text)
-→ let lib = ./lib.dh dataDir manifestDir
+→ let types = ./dhrun/types.dhall
+  
+  let values = ./dhrun/values.dhall
+  
+  let lib = ./lib.dh dataDir manifestDir
   
   let message = "HelloWorld"
   
@@ -18,9 +22,9 @@
           , timeout =
                     if isTest
               
-              then  [ 600 ] : Optional Natural
+              then  [ +600 ] : Optional Integer
               
-              else  [] : Optional Natural
+              else  [] : Optional Integer
           }
   
   let Powercap = < Cap : Text | NoCap : {} >
@@ -30,8 +34,6 @@
           (   lib.emptyMakeBaseArg "echo" singularityManifest daemonCfg cn
             ⫽ { args =
                   [ message ]
-              , verbose =
-                  True
               , singularity =
                   True
               , cmdwants =
@@ -39,7 +41,7 @@
               , cmdavoids =
                   [ "Traceback" ]
               , timeout =
-                  [ 600 ] : Optional Natural
+                  [ +600 ] : Optional Integer
               }
           )
       , run =
@@ -47,14 +49,12 @@
           (   lib.emptyMakeBaseArg "echo" basicManifest daemonCfg cn
             ⫽ { args =
                   [ message ]
-              , verbose =
-                  True
               , cmdwants =
                   [] : List Text
               , cmdavoids =
                   [ "Traceback" ]
               , timeout =
-                  [ 600 ] : Optional Natural
+                  [ +600 ] : Optional Integer
               }
           )
       , exitcode =
@@ -62,16 +62,15 @@
           (   lib.emptyMakeBaseArg "false" basicManifest daemonCfg cn
             ⫽ { args =
                   [] : List Text
-              , verbose =
-                  True
               , cmdwants =
                   [] : List Text
               , cmdavoids =
                   [ "Traceback" ]
               , timeout =
-                  [ 600 ] : Optional Natural
+                  [ +600 ] : Optional Integer
               , runExitcode =
-                  [ +1 ] : Optional Integer
+                  [ types.ExitCode.ExitFailure { _1 = +1 } ] : Optional
+                                                               types.ExitCode
               }
           )
       , hello =
@@ -79,14 +78,12 @@
           (   lib.emptyMakeBaseArg "echo" basicManifest daemonCfg cn
             ⫽ { args =
                   [ message ]
-              , verbose =
-                  True
               , cmdwants =
                   [ message ]
               , cmdavoids =
                   [ "Traceback" ]
               , timeout =
-                  [ 600 ] : Optional Natural
+                  [ +600 ] : Optional Integer
               }
           )
       , listen =
@@ -96,17 +93,15 @@
                   [ "1" ]
               , daemonCfg =
                   daemonCfg
-              , verbose =
-                  True
               , cmdwants =
                   [] : List Text
               , cmdavoids =
                   [ "Traceback" ]
               , timeout =
-                  [ 600 ] : Optional Natural
+                  [ +600 ] : Optional Integer
               }
           )
-          [   lib.values.emptyCmd
+          [   values.emptyCmd
               { name =
                   "nrm"
               , outfile =
@@ -121,7 +116,7 @@
           daemonCfg
           (   lib.emptyFilterTestArgs "power" "sleep"
             ⫽ { timeout =
-                  [ 600 ] : Optional Natural
+                  [ +600 ] : Optional Integer
               , args =
                   [ "15" ]
               , isTest =
@@ -133,7 +128,7 @@
           daemonCfg
           (   lib.emptyFilterTestArgs "performance" "sleep"
             ⫽ { timeout =
-                  [ 600 ] : Optional Natural
+                  [ +600 ] : Optional Integer
               , args =
                   [ "15" ]
               , isTest =
