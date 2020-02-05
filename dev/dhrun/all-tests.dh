@@ -11,7 +11,7 @@
   
   let cn = "testContainer"
   
-  let basicManifest = manifestDir ++ "default.dhall"
+  let basicManifest = manifestDir ++ "libnrm.dhall"
   
   let singularityManifest = manifestDir ++ "singularity.yml"
   
