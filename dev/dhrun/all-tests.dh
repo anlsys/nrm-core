@@ -61,7 +61,7 @@
           lib.makeBase
           (   lib.emptyMakeBaseArg "bash" basicManifest daemonCfg cn
             ⫽ { args =
-                  ["-c", "exit 1"] : List Text
+                  ["--","-c", "exit 1"] : List Text
               , cmdwants =
                   [] : List Text
               , cmdavoids =
