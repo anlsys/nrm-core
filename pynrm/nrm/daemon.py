@@ -92,7 +92,7 @@ class Daemon(object):
                 pid, status, rusage = os.wait3(os.WNOHANG)
                 if pid == 0 and status == 0:
                     break
-                self.wrap("childDied")(pid, status)
+                self.wrap("childDied")(pid, os.WEXITSTATUS(status))
             except OSError:
                 break
         pass
