@@ -1,7 +1,7 @@
 {
   "url": "https://github.com/freuk/dhrun.git",
-  "rev": "fe893203372afb788fa45dc3bb8e33e9d2dc2986",
-  "date": "2019-11-04T08:53:51-06:00",
-  "sha256": "1i38pryrlj67dkdw80njkd574yrmrsha8ihc8ki4f0q8yfcs4n04",
+  "rev": "d8b4bc111b707c79a81949ec25ed7d983d8b1522",
+  "date": "2020-02-05T17:44:04-06:00",
+  "sha256": "1f653hgrm942m5pinxdpd6019d98sbgdal9wv6kzpwcrgs7n0xrn",
   "fetchSubmodules": false
 }

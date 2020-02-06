@@ -1,7 +1,7 @@
   λ(dataDir : Text)
 → λ(manifestDir : Text)
-→ let values = ./dhrun/package.dh
-  let types = ./dhrun/types.dh
+→ let types = ./dhrun/types.dhall
+let values = ./dhrun/values.dhall
   
   let assetDir = dataDir ++ "assets/"
   
@@ -28,29 +28,27 @@
           , args =
               [] : List Text
           , out =
-              { filename =
-                  "${args.outprefix}.out"
-              , filecheck =
-                  { wants = args.outwants, avoids = args.outavoids }
-              }
+              { filename = "${args.outprefix}.out", filecheck = args.outavoids }
           , err =
-              { filename =
-                  "${args.outprefix}.err"
-              , filecheck =
-                  values.emptyCheck ⫽ { avoids = args.outavoids }
-              }
+              { filename = "${args.outprefix}.err", filecheck = args.outavoids }
           , postchecks =
-              [] : List types.FileCheck
+                [ { filename =
+                      "${args.outprefix}.out"
+                  , filecheck =
+                      { wants = args.outwants, avoids = args.outavoids }
+                  }
+                ]
+              : List types.FileCheck
           , vars =
-              values.emptyVars
+              [] : List types.EnvVar
           , passvars =
-              [ "PATH" , "PWD", "PYTHONPATH", "NRMSO"]
+              [ "PATH", "PWD", "PYTHONPATH", "NRMSO" ]
           , timeout =
-              [] : Optional Natural
+              [] : Optional Integer
           , otherwd =
               [] : Optional Text
           , exitcode =
-              [] : Optional Integer
+              [] : Optional types.ExitCode
           }
   
   let Powercap = < Cap : Text | NoCap : {} >
@@ -66,8 +64,8 @@
             Text
         , args :
             List Text
-        , verbose :
-            Bool
+        , verbosity :
+            types.Verbosity
         , singularity :
             Bool
         , cmdwants :
@@ -77,9 +75,9 @@
         , vars :
             List types.EnvVar
         , timeout :
-            Optional Natural
-        , runExitcode :
             Optional Integer
+        , runExitcode :
+            Optional types.ExitCode
         , passvars :
             List Text
         , powercap :
@@ -103,8 +101,8 @@
                 daemonCfg
             , args =
                 [] : List Text
-            , verbose =
-                True
+            , verbosity =
+                types.Verbosity.Verbose
             , singularity =
                 False
             , cmdwants =
@@ -112,11 +110,11 @@
             , cmdavoids =
                 [] : List Text
             , vars =
-                values.emptyVars
+                [] : List types.EnvVar
             , timeout =
-                [] : Optional Natural
-            , runExitcode =
                 [] : Optional Integer
+            , runExitcode =
+                [] : Optional types.ExitCode
             , passvars =
                 [] : List Text
             , powercap =
@@ -125,9 +123,6 @@
                 [] : Optional Text
             }
           : MakeBaseArg
-  
-  
-  
   
   let makeBase =
           λ(args : MakeBaseArg)
@@ -143,7 +138,7 @@
                         [ "Traceback", "ValueError" ] : List Text
                     }
                   ⫽ { args =
-                          ([args.daemonCfg ]: List Text)
+                        [ args.daemonCfg ] : List Text
                     , vars =
                         [ { varname =
                               "ARGO_NODEOS_CONFIG"
@@ -185,10 +180,10 @@
                             args.runwd
                         }
                 ]
-            , verbose =
-                True
+            , verbosity =
+                types.Verbosity.Verbose
             , cleaning =
-                True
+                types.Cleaning.Keep
             , workdir =
                 "./_output"
             , pre =
@@ -196,7 +191,7 @@
             , post =
                 [] : List Text
             }
-          : types.Config
+          : types.Cfg
   
   let makeExtended =
           λ(args : MakeBaseArg)
@@ -223,7 +218,7 @@
         , isTest :
             Bool
         , timeout :
-            Optional Natural
+            Optional Integer
         , powercap :
             Powercap
         }
@@ -240,7 +235,7 @@
             , args =
                 [] : List Text
             , vars =
-                values.emptyVars
+                [] : List types.EnvVar
             , passvars =
                 [] : List Text
             , cmdavoids =
@@ -248,7 +243,7 @@
             , isTest =
                 False
             , timeout =
-                [] : Optional Natural
+                [] : Optional Integer
             , powercap =
                 < NoCap = {=} | Cap : Text >
             }
@@ -256,7 +251,7 @@
   
   let appTest =
           λ(daemonCfg : Text)
-         -> λ(args : FilterTestArgs)
+        → λ(args : FilterTestArgs)
         → let cn = "testContainer"
           
           in  makeExtended
@@ -268,15 +263,16 @@
                         
                         else  "parallel.dhall"
                       )
-              ,daemonCfg = daemonCfg
+              , daemonCfg =
+                  daemonCfg
               , containerName =
                   cn
               , cmd =
                   args.cmd
               , args =
                   args.args
-              , verbose =
-                  True
+              , verbosity =
+                  types.Verbosity.Verbose
               , singularity =
                   False
               , cmdwants =
@@ -292,7 +288,7 @@
               , runwd =
                   [] : Optional Text
               , runExitcode =
-                  [] : Optional Integer
+                  [] : Optional types.ExitCode
               , powercap =
                   args.powercap
               }
@@ -309,18 +305,22 @@
                 in    b
                     ⫽ { args =
                           [ "listen", "-s", cn, "--filter", args.filter ]
-                      , out =
-                            b.out
-                          ⫽ { filecheck =
-                                  values.emptyCheck
-                                ⫽ { wants =
+                      , postchecks =
+                            [ { filename =
+                                  "nrmlisten.out"
+                              , filecheck =
+                                  { wants =
                                             if args.isTest
                                       
                                       then  [ args.filter ]
                                       
                                       else  [] : List Text
+                                  , avoids =
+                                      [] : List Text
                                   }
-                            }
+                              }
+                            ]
+                          : List types.FileCheck
                       }
               ]
   
@@ -338,7 +338,7 @@
         , isTest :
             Bool
         , timeout :
-            Optional Natural
+            Optional Integer
         , powercap :
             Powercap
         }
@@ -359,7 +359,7 @@
             , isTest =
                 False
             , timeout =
-                [] : Optional Natural
+                [] : Optional Integer
             , powercap =
                 < NoCap = {=} | Cap : Text >
             }
@@ -367,8 +367,9 @@
   
   let progressAppTest =
           λ(daemonCfg : Text)
-          ->λ(args : ProgressAppTestArg)
-        → appTest daemonCfg
+        → λ(args : ProgressAppTestArg)
+        → appTest
+          daemonCfg
           (   emptyFilterTestArgs "progress" args.cmd
             ⫽ { args =
                   args.args
@@ -405,19 +406,18 @@
           in  b ⫽ { args = [ "listen", "-s", cn, "--filter", filter ] }
   
   let powerexpeCmds =
-        [ mkListen "testContainer" "power"
-        , mkListen "testContainer" "performance"
-        , mkListen "testContainer" "control"
-        ] : List types.Cmd
+          [ mkListen "testContainer" "power"
+          , mkListen "testContainer" "performance"
+          , mkListen "testContainer" "control"
+          ]
+        : List types.Cmd
   
   let extendApp =
-          λ(c : types.Config)
+          λ(c : types.Cfg)
         → λ(isTest : Bool)
         → if isTest then c else c ⫽ { cmds = c.cmds # powerexpeCmds }
   
-  in  { values =
-          values
-      , emptyMakeBaseArg =
+  in  { emptyMakeBaseArg =
           emptyMakeBaseArg
       , makeBase =
           makeBase

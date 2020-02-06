@@ -7,5 +7,5 @@ in {
   inherit (pkgs.haskellPackages)
     nrmbin nrmlib;
   inherit (pkgs)
-    libnrm resources pynrm jupyterWithBatteries;
+    libnrm resources pynrm jupyterWithBatteries dhrun;
 }

@@ -32,9 +32,9 @@ let
       dhall-json = (self.callCabal2nix "dhall-json"
         (src + "/hsnrm/dhall-haskell/dhall-json") { }).overrideAttrs
         (o: { doCheck = false; });
-      dhrun = (self.callCabal2nix "dhrun" (builtins.fetchGit {
+      dhrun = ((self.callCabal2nix "dhrun" (builtins.fetchGit {
         inherit (pkgs.stdenv.lib.importJSON ./pkgs/dhrun/pin.json) url rev;
-      })) { };
+      })) { }).overrideAttrs (_:{doCheck = false;});
     };
 
 in { haskellPackages = pkgs.haskellPackages.override { inherit overrides; }; }
