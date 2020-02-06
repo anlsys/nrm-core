@@ -59,9 +59,9 @@
           )
       , exitcode =
           lib.makeBase
-          (   lib.emptyMakeBaseArg "false" basicManifest daemonCfg cn
+          (   lib.emptyMakeBaseArg "bash" basicManifest daemonCfg cn
             ⫽ { args =
-                  [] : List Text
+                  ["-c", "exit 1"] : List Text
               , cmdwants =
                   [] : List Text
               , cmdavoids =
