@@ -35,6 +35,6 @@ Local development builds can be obtained using the following:
 ## CI
 
 - [gitlab-ci(master branch)](https://xgitlab.cels.anl.gov/argo/hnrm/pipelines/master/latest)
-- [gitlab-ci(dev branch)](https://xgitlab.cels.anl.gov/argo/hnrm/pipelines/dev/latest)
+- [gitlab-ci(develop branch)](https://xgitlab.cels.anl.gov/argo/hnrm/pipelines/develop/latest)
 - [hydra(master branch)](http://129.114.24.212/jobset/nrm/master#tabs-jobs)
-- [hydra(dev branch)](http://129.114.24.212/jobset/nrm/dev#tabs-jobs)
+- [hydra(develop branch)](http://129.114.24.212/jobset/nrm/develop#tabs-jobs)
