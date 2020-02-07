@@ -13117,82 +13117,9 @@ div#notebook {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="NRM-python-upstream-client-library-tutorial">NRM python upstream client library tutorial<a class="anchor-link" href="#NRM-python-upstream-client-library-tutorial">&#182;</a></h1><p>This tutorial covers the use of NRM's python upstream client library, in the context of running an external resource management strategy. Its cell's output are deterministic, and the executed version that is vendored in the source tree is checked by the project's CI, so its behavior should always be up-to-date with the latest version of the software, and no cells should be throwing exceptions.</p>
-<p>The next few cells are for setup purposes.</p>
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
-<span class="n">cd</span> <span class="o">..</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> nb_black
-<span class="kn">import</span> <span class="nn">nrm.tooling</span> <span class="k">as</span> <span class="nn">nrm</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
-<div id="998a5903-cc80-4929-b514-303c7d00378f"></div>
-<div class="output_subarea output_javascript ">
-<script type="text/javascript">
-var element = $('#998a5903-cc80-4929-b514-303c7d00378f');
-
-            setTimeout(function() {
-                var nbb_cell_id = 2;
-                var nbb_unformatted_code = "%load_ext nb_black\nimport nrm.tooling as nrm\nimport time\nimport json\nimport pandas as pd\nimport matplotlib.pyplot as plt";
-                var nbb_formatted_code = "%load_ext nb_black\nimport nrm.tooling as nrm\nimport time\nimport json\nimport pandas as pd\nimport matplotlib.pyplot as plt";
-                var nbb_cells = Jupyter.notebook.get_cells();
-                for (var i = 0; i < nbb_cells.length; ++i) {
-                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
-                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
-                             nbb_cells[i].set_text(nbb_formatted_code);
-                        }
-                        break;
-                    }
-                }
-            }, 500);
-            
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
@@ -13205,7 +13132,29 @@ var element = $('#998a5903-cc80-4929-b514-303c7d00378f');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
+<span class="n">cd</span> <span class="o">..</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The next cell builds the shared libraries. This should take about a minute on a modern laptop.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%capture</span>
@@ -13216,46 +13165,6 @@ var element = $('#998a5903-cc80-4929-b514-303c7d00378f');
 </pre></div>
 
     </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
-<div id="9b88b56b-2ecd-4095-8e32-cc258241d70f"></div>
-<div class="output_subarea output_javascript ">
-<script type="text/javascript">
-var element = $('#9b88b56b-2ecd-4095-8e32-cc258241d70f');
-
-            setTimeout(function() {
-                var nbb_cell_id = 3;
-                var nbb_unformatted_code = "%%capture\n%%bash\n./shake.sh build # for the daemon \n./shake.sh client # for the upstream client\n./shake.sh pyclient # for the shared client library";
-                var nbb_formatted_code = "%%capture\n%%bash\n./shake.sh build # for the daemon \n./shake.sh client # for the upstream client\n./shake.sh pyclient # for the shared client library";
-                var nbb_cells = Jupyter.notebook.get_cells();
-                for (var i = 0; i < nbb_cells.length; ++i) {
-                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
-                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
-                             nbb_cells[i].set_text(nbb_formatted_code);
-                        }
-                        break;
-                    }
-                }
-            }, 500);
-            
-</script>
-</div>
-
-</div>
-
 </div>
 </div>
 
@@ -13270,7 +13179,7 @@ var element = $('#9b88b56b-2ecd-4095-8e32-cc258241d70f');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span>%%bash
@@ -13304,42 +13213,8 @@ Available options:
   -y,--yaml                Assume configuration to be yaml(json is valid yaml)
                            instead of dhall.
   -h,--help                Show this help text
-0 ExitSuccess
 </pre>
 </div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
-<div id="c021f9a4-8e1a-4777-9187-60d2786008d3"></div>
-<div class="output_subarea output_javascript ">
-<script type="text/javascript">
-var element = $('#c021f9a4-8e1a-4777-9187-60d2786008d3');
-
-            setTimeout(function() {
-                var nbb_cell_id = 4;
-                var nbb_unformatted_code = "%%bash\nnrmd --help";
-                var nbb_formatted_code = "%%bash\nnrmd --help";
-                var nbb_cells = Jupyter.notebook.get_cells();
-                for (var i = 0; i < nbb_cells.length; ++i) {
-                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
-                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
-                             nbb_cells[i].set_text(nbb_formatted_code);
-                        }
-                        break;
-                    }
-                }
-            }, 500);
-            
-</script>
-</div>
-
 </div>
 
 </div>
@@ -13348,7 +13223,7 @@ var element = $('#c021f9a4-8e1a-4777-9187-60d2786008d3');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span>%%bash 
@@ -13419,6 +13294,39 @@ Available options:
 </div>
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Defining-experiments">Defining experiments<a class="anchor-link" href="#Defining-experiments">&#182;</a></h2><p>Now that the daemon is properly set-up, we will configure and run some experiments using the python interface.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> nb_black
+<span class="kn">import</span> <span class="nn">nrm.tooling</span> <span class="k">as</span> <span class="nn">nrm</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
 <div class="output_area">
 
     <div class="prompt"></div>
@@ -13427,15 +13335,15 @@ Available options:
 
 
 
-<div id="0df3161c-cf81-4085-86ce-493fc2f5afb8"></div>
+<div id="0d231d10-4608-4653-a1de-15705bfb7bbc"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#0df3161c-cf81-4085-86ce-493fc2f5afb8');
+var element = $('#0d231d10-4608-4653-a1de-15705bfb7bbc');
 
             setTimeout(function() {
                 var nbb_cell_id = 5;
-                var nbb_unformatted_code = "%%bash \nnrm --help\necho \"\"\nnrm run --help";
-                var nbb_formatted_code = "%%bash \nnrm --help\necho \"\"\nnrm run --help";
+                var nbb_unformatted_code = "%load_ext nb_black\nimport nrm.tooling as nrm\nimport time\nimport json\nimport pandas as pd\nimport matplotlib.pyplot as plt";
+                var nbb_formatted_code = "%load_ext nb_black\nimport nrm.tooling as nrm\nimport time\nimport json\nimport pandas as pd\nimport matplotlib.pyplot as plt";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
                     if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
@@ -13459,7 +13367,6 @@ var element = $('#0df3161c-cf81-4085-86ce-493fc2f5afb8');
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Defining-experiments">Defining experiments<a class="anchor-link" href="#Defining-experiments">&#182;</a></h2><p>Now that the daemon is properly set-up, we will configure and run some experiments using the python interface.</p>
 <p>This notebook will start <code>nrmd</code> on the same machine as the notebok, but the same interface should be available for remote execution:</p>
 
 </div>
@@ -13467,7 +13374,7 @@ var element = $('#0df3161c-cf81-4085-86ce-493fc2f5afb8');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span> <span class="o">=</span> <span class="n">nrm</span><span class="o">.</span><span class="n">Local</span><span class="p">()</span>
@@ -13490,13 +13397,13 @@ var element = $('#0df3161c-cf81-4085-86ce-493fc2f5afb8');
 
 
 
-<div id="71aeee97-e808-4d8b-a71c-ab8a3ad71f8c"></div>
+<div id="4e1a5738-3bc3-467b-8c99-a03c7f4c756e"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#71aeee97-e808-4d8b-a71c-ab8a3ad71f8c');
+var element = $('#4e1a5738-3bc3-467b-8c99-a03c7f4c756e');
 
             setTimeout(function() {
-                var nbb_cell_id = 3;
+                var nbb_cell_id = 6;
                 var nbb_unformatted_code = "host = nrm.Local()\n# host=Remote( target=\"cc@129.114.108.201\")";
                 var nbb_formatted_code = "host = nrm.Local()\n# host=Remote( target=\"cc@129.114.108.201\")";
                 var nbb_cells = Jupyter.notebook.get_cells();
@@ -13529,7 +13436,7 @@ var element = $('#71aeee97-e808-4d8b-a71c-ab8a3ad71f8c');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">inspect</span>
@@ -13575,13 +13482,13 @@ workload_recv:  Receive a message from NRM&#39;s upstream API.
 
 
 
-<div id="a9df502e-53e8-473b-aa7f-feece5cef887"></div>
+<div id="29ddf557-f693-41df-bd9b-8c415a6053d4"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#a9df502e-53e8-473b-aa7f-feece5cef887');
+var element = $('#29ddf557-f693-41df-bd9b-8c415a6053d4');
 
             setTimeout(function() {
-                var nbb_cell_id = 4;
+                var nbb_cell_id = 7;
                 var nbb_unformatted_code = "import inspect\n\nfor a, x in inspect.getmembers(host, predicate=inspect.ismethod):\n    print(\"%s: %s\" % (a, x.__doc__))";
                 var nbb_formatted_code = "import inspect\n\nfor a, x in inspect.getmembers(host, predicate=inspect.ismethod):\n    print(\"%s: %s\" % (a, x.__doc__))";
                 var nbb_cells = Jupyter.notebook.get_cells();
@@ -13614,7 +13521,7 @@ var element = $('#a9df502e-53e8-473b-aa7f-feece5cef887');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">daemonCfgs</span> <span class="o">=</span> <span class="p">{</span>
@@ -13623,21 +13530,24 @@ var element = $('#a9df502e-53e8-473b-aa7f-feece5cef887');
 <span class="p">}</span>
 
 <span class="n">workloads</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;dummy&quot;</span><span class="p">:[{</span><span class="s2">&quot;cmd&quot;</span><span class="p">:</span><span class="s2">&quot;sleep&quot;</span><span class="p">,</span>
-              <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;10&quot;</span><span class="p">]</span> <span class="p">,</span> <span class="c1"># running the sleep command for 10 seconds.</span>
-              <span class="s2">&quot;sliceID&quot;</span><span class="p">:</span> <span class="s2">&quot;toto&quot;</span><span class="p">,</span>
-              <span class="s2">&quot;manifest&quot;</span><span class="p">:{</span>
-                  <span class="s2">&quot;app&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="s2">&quot;slice&quot;</span><span class="p">:</span> <span class="p">{</span>
-                                 <span class="s2">&quot;cpus&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-                                 <span class="s2">&quot;mems&quot;</span><span class="p">:</span> <span class="mi">1</span> 
-                           <span class="p">},</span>  
-                           <span class="s2">&quot;perfwrapper&quot;</span><span class="p">:{</span><span class="s2">&quot;perfLimit&quot;</span><span class="p">:{</span><span class="s2">&quot;fromOps&quot;</span><span class="p">:</span><span class="mi">100000</span><span class="p">},</span><span class="s2">&quot;perfFreq&quot;</span><span class="p">:{</span><span class="s2">&quot;fromHz&quot;</span><span class="p">:</span><span class="mi">1</span><span class="p">}}</span>
-                         <span class="p">},</span>
-                          <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;perfwrap&quot;</span><span class="p">,</span>
-                         <span class="p">}</span>
-            <span class="p">}</span>
-            <span class="p">],</span>
-    <span class="c1">#&quot;other&quot;:your code</span>
+    <span class="s2">&quot;dummy&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;cmd&quot;</span><span class="p">:</span> <span class="s2">&quot;sleep&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;args&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;10&quot;</span><span class="p">],</span>  <span class="c1"># running the sleep command for 10 seconds.</span>
+            <span class="s2">&quot;sliceID&quot;</span><span class="p">:</span> <span class="s2">&quot;toto&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;manifest&quot;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s2">&quot;app&quot;</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="s2">&quot;slice&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;cpus&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;mems&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                    <span class="s2">&quot;perfwrapper&quot;</span><span class="p">:</span> <span class="p">{</span>
+                        <span class="s2">&quot;perfLimit&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fromOps&quot;</span><span class="p">:</span> <span class="mi">100000</span><span class="p">},</span>
+                        <span class="s2">&quot;perfFreq&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;fromHz&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span>
+                    <span class="p">},</span>
+                <span class="p">},</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;perfwrap&quot;</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="c1"># &quot;other&quot;:your code</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -13657,14 +13567,14 @@ var element = $('#a9df502e-53e8-473b-aa7f-feece5cef887');
 
 
 
-<div id="a41d1352-5ce4-44e5-bb99-5503c9c15022"></div>
+<div id="be036ce6-cf19-4e2a-9575-25cf2926401f"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#a41d1352-5ce4-44e5-bb99-5503c9c15022');
+var element = $('#be036ce6-cf19-4e2a-9575-25cf2926401f');
 
             setTimeout(function() {
-                var nbb_cell_id = 5;
-                var nbb_unformatted_code = "daemonCfgs = {\n    \"redirected_log\": {\"logfile\": \"/tmp/logfile_experiment2\", \"verbose\": \"Info\"},\n    # \"other\":your code\n}\n\nworkloads = {\n    \"dummy\":[{\"cmd\":\"sleep\",\n              \"args\": [\"10\"] , # running the sleep command for 10 seconds.\n              \"sliceID\": \"toto\",\n              \"manifest\":{\n                  \"app\": { \"slice\": {\n                                 \"cpus\": 1,\n                                 \"mems\": 1 \n                           },  \n                           \"perfwrapper\":{\"perfLimit\":{\"fromOps\":100000},\"perfFreq\":{\"fromHz\":1}}\n                         },\n                          \"name\": \"perfwrap\",\n                         }\n            }\n            ],\n    #\"other\":your code\n}";
+                var nbb_cell_id = 8;
+                var nbb_unformatted_code = "daemonCfgs = {\n    \"redirected_log\": {\"logfile\": \"/tmp/logfile_experiment2\", \"verbose\": \"Info\"},\n    # \"other\":your code\n}\n\nworkloads = {\n    \"dummy\": [\n        {\n            \"cmd\": \"sleep\",\n            \"args\": [\"10\"],  # running the sleep command for 10 seconds.\n            \"sliceID\": \"toto\",\n            \"manifest\": {\n                \"app\": {\n                    \"slice\": {\"cpus\": 1, \"mems\": 1},\n                    \"perfwrapper\": {\n                        \"perfLimit\": {\"fromOps\": 100000},\n                        \"perfFreq\": {\"fromHz\": 1},\n                    },\n                },\n                \"name\": \"perfwrap\",\n            },\n        }\n    ],\n    # \"other\":your code\n}";
                 var nbb_formatted_code = "daemonCfgs = {\n    \"redirected_log\": {\"logfile\": \"/tmp/logfile_experiment2\", \"verbose\": \"Info\"},\n    # \"other\":your code\n}\n\nworkloads = {\n    \"dummy\": [\n        {\n            \"cmd\": \"sleep\",\n            \"args\": [\"10\"],  # running the sleep command for 10 seconds.\n            \"sliceID\": \"toto\",\n            \"manifest\": {\n                \"app\": {\n                    \"slice\": {\"cpus\": 1, \"mems\": 1},\n                    \"perfwrapper\": {\n                        \"perfLimit\": {\"fromOps\": 100000},\n                        \"perfFreq\": {\"fromHz\": 1},\n                    },\n                },\n                \"name\": \"perfwrap\",\n            },\n        }\n    ],\n    # \"other\":your code\n}";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
@@ -13696,7 +13606,7 @@ var element = $('#a41d1352-5ce4-44e5-bb99-5503c9c15022');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">experiments</span> <span class="o">=</span> <span class="p">{</span>
@@ -13721,13 +13631,13 @@ var element = $('#a41d1352-5ce4-44e5-bb99-5503c9c15022');
 
 
 
-<div id="d6545e9e-4fbe-48bd-a76f-508f2d298882"></div>
+<div id="3d1a1b2e-514a-476b-b0a0-f34d1e1755c6"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#d6545e9e-4fbe-48bd-a76f-508f2d298882');
+var element = $('#3d1a1b2e-514a-476b-b0a0-f34d1e1755c6');
 
             setTimeout(function() {
-                var nbb_cell_id = 6;
+                var nbb_cell_id = 9;
                 var nbb_unformatted_code = "experiments = {\n    \"example\": (daemonCfgs[\"redirected_log\"], workloads[\"dummy\"]),\n    # \"other\": your code\n}";
                 var nbb_formatted_code = "experiments = {\n    \"example\": (daemonCfgs[\"redirected_log\"], workloads[\"dummy\"]),\n    # \"other\": your code\n}";
                 var nbb_cells = Jupyter.notebook.get_cells();
@@ -13760,7 +13670,7 @@ var element = $('#d6545e9e-4fbe-48bd-a76f-508f2d298882');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">.</span><span class="n">start_daemon</span><span class="p">(</span><span class="n">daemonCfgs</span><span class="p">[</span><span class="s2">&quot;redirected_log&quot;</span><span class="p">])</span>
@@ -13795,13 +13705,13 @@ connected to tcp://localhost:2345
 
 
 
-<div id="8f820746-cadf-47ed-8815-f64bc91dbadf"></div>
+<div id="0fe0cc23-b910-4552-874b-24fe9e2860ee"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#8f820746-cadf-47ed-8815-f64bc91dbadf');
+var element = $('#0fe0cc23-b910-4552-874b-24fe9e2860ee');
 
             setTimeout(function() {
-                var nbb_cell_id = 7;
+                var nbb_cell_id = 10;
                 var nbb_unformatted_code = "host.start_daemon(daemonCfgs[\"redirected_log\"])\nassert host.check_daemon()";
                 var nbb_formatted_code = "host.start_daemon(daemonCfgs[\"redirected_log\"])\nassert host.check_daemon()";
                 var nbb_cells = Jupyter.notebook.get_cells();
@@ -13834,13 +13744,13 @@ var element = $('#8f820746-cadf-47ed-8815-f64bc91dbadf');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cpd</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">get_cpd</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cpd</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">get_cpd</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pretty-printing the control problem description:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cpd</span><span class="p">)</span>
 <span class="n">cpdd</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">cpd</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Python dictionary version: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span><span class="k">cpdd</span>)
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Python dictionary version: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">cpdd</span><span class="p">)</span>
 </pre></div>
 
     </div>
@@ -13895,14 +13805,14 @@ Python dictionary version: {&#39;objectives&#39;: [], &#39;constraints&#39;: [],
 
 
 
-<div id="46fee0ce-960a-4841-b73a-deb07499a265"></div>
+<div id="1a864042-deb0-437d-b77c-9cebbffc65d0"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#46fee0ce-960a-4841-b73a-deb07499a265');
+var element = $('#1a864042-deb0-437d-b77c-9cebbffc65d0');
 
             setTimeout(function() {
-                var nbb_cell_id = 8;
-                var nbb_unformatted_code = "cpd=host.get_cpd()\nprint(\"Pretty-printing the control problem description:\\n %s\" % cpd)\ncpdd = dict(cpd)\nprint(\"Python dictionary version: %s\" %cpdd)";
+                var nbb_cell_id = 11;
+                var nbb_unformatted_code = "cpd = host.get_cpd()\nprint(\"Pretty-printing the control problem description:\\n %s\" % cpd)\ncpdd = dict(cpd)\nprint(\"Python dictionary version: %s\" % cpdd)";
                 var nbb_formatted_code = "cpd = host.get_cpd()\nprint(\"Pretty-printing the control problem description:\\n %s\" % cpd)\ncpdd = dict(cpd)\nprint(\"Python dictionary version: %s\" % cpdd)";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
@@ -13934,14 +13844,17 @@ var element = $('#46fee0ce-960a-4841-b73a-deb07499a265');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">actuator0</span> <span class="o">=</span> <span class="n">cpdd</span><span class="p">[</span><span class="s1">&#39;actuators&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">actuator0</span> <span class="o">=</span> <span class="n">cpdd</span><span class="p">[</span><span class="s2">&quot;actuators&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">actuator0ID</span> <span class="o">=</span> <span class="n">actuator0</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">actuator0FirstAction</span> <span class="o">=</span> <span class="n">actuator0</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;actions&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;We take the first available action (</span><span class="si">%s</span><span class="s2">) for the first actuator (</span><span class="si">%s</span><span class="s2">).&quot;</span> <span class="o">%</span><span class="p">(</span><span class="n">actuator0FirstAction</span> <span class="p">,</span><span class="n">actuator0ID</span><span class="p">))</span>
-<span class="n">host</span><span class="o">.</span><span class="n">workload_action</span><span class="p">([</span><span class="n">nrm</span><span class="o">.</span><span class="n">Action</span><span class="p">(</span><span class="s2">&quot;RaplKey (PackageID 0)&quot;</span><span class="p">,</span><span class="mf">2.0e8</span><span class="p">)])</span>
+<span class="nb">print</span><span class="p">(</span>
+    <span class="s2">&quot;We take the first available action (</span><span class="si">%s</span><span class="s2">) for the first actuator (</span><span class="si">%s</span><span class="s2">).&quot;</span>
+    <span class="o">%</span> <span class="p">(</span><span class="n">actuator0FirstAction</span><span class="p">,</span> <span class="n">actuator0ID</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">host</span><span class="o">.</span><span class="n">workload_action</span><span class="p">([</span><span class="n">nrm</span><span class="o">.</span><span class="n">Action</span><span class="p">(</span><span class="s2">&quot;RaplKey (PackageID 0)&quot;</span><span class="p">,</span> <span class="mf">2.0e8</span><span class="p">)])</span>
 </pre></div>
 
     </div>
@@ -13968,17 +13881,49 @@ var element = $('#46fee0ce-960a-4841-b73a-deb07499a265');
     <div class="prompt"></div>
 
 
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">Exception</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-12-f304698f0d27&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">      6</span>     <span class="ansi-blue-fg">%</span> <span class="ansi-blue-fg">(</span>actuator0FirstAction<span class="ansi-blue-fg">,</span> actuator0ID<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">      7</span> )
+<span class="ansi-green-fg">----&gt; 8</span><span class="ansi-red-fg"> </span>host<span class="ansi-blue-fg">.</span>workload_action<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">[</span>nrm<span class="ansi-blue-fg">.</span>Action<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;RaplKey (PackageID 0)&#34;</span><span class="ansi-blue-fg">,</span> <span class="ansi-cyan-fg">2.0e8</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
+
+<span class="ansi-green-fg">~/workspace/hnrm/pynrm/nrm/tooling.py</span> in <span class="ansi-cyan-fg">workload_action</span><span class="ansi-blue-fg">(self, actionList)</span>
+<span class="ansi-green-intense-fg ansi-bold">    189</span>         <span class="ansi-blue-fg">&#34;&#34;&#34; Send a message to NRM&#39;s upstream API. &#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    190</span>         actionList <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">(</span>str<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">.</span>actuatorID<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> float<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">.</span>actuatorValue<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">for</span> a <span class="ansi-green-fg">in</span> actionList<span class="ansi-blue-fg">]</span>
+<span class="ansi-green-fg">--&gt; 191</span><span class="ansi-red-fg">         </span><span class="ansi-green-fg">if</span> lib<span class="ansi-blue-fg">.</span>action<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>commonOpts<span class="ansi-blue-fg">,</span> actionList<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    192</span>             <span class="ansi-green-fg">pass</span>
+<span class="ansi-green-intense-fg ansi-bold">    193</span>         <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/workspace/hnrm/pynrm/nrm/sharedlib.py</span> in <span class="ansi-cyan-fg">eitherwrap</span><span class="ansi-blue-fg">(*args)</span>
+<span class="ansi-green-intense-fg ansi-bold">     55</span>                 <span class="ansi-green-fg">raise</span> SystemError
+<span class="ansi-green-intense-fg ansi-bold">     56</span>             <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">---&gt; 57</span><span class="ansi-red-fg">                 </span><span class="ansi-green-fg">raise</span> Exception<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;.so library call raised exception: %s&#34;</span> <span class="ansi-blue-fg">%</span> content<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     58</span> 
+<span class="ansi-green-intense-fg ansi-bold">     59</span>         <span class="ansi-green-fg">return</span> eitherwrap
+
+<span class="ansi-red-fg">Exception</span>: .so library call raised exception: FatalError {fatalErrorMessage = &#34;daemon threw exception: /sys/devices/virtual/powercap/intel-rapl/intel-rapl:0/constraint_0_power_limit_uw: openFile: permission denied (Permission denied)&#34;}</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
 
 
 
-<div id="baee536c-3593-4874-8c38-4cdc4df9088b"></div>
+
+
+<div id="e4bab526-1436-4b22-abf1-4143ed6243f1"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#baee536c-3593-4874-8c38-4cdc4df9088b');
+var element = $('#e4bab526-1436-4b22-abf1-4143ed6243f1');
 
             setTimeout(function() {
-                var nbb_cell_id = 9;
-                var nbb_unformatted_code = "actuator0 = cpdd['actuators'][0]\nactuator0ID = actuator0[0]\nactuator0FirstAction = actuator0[1][\"actions\"][0]\nprint(\"We take the first available action (%s) for the first actuator (%s).\" %(actuator0FirstAction ,actuator0ID))\nhost.workload_action([nrm.Action(\"RaplKey (PackageID 0)\",2.0e8)])";
+                var nbb_cell_id = 12;
+                var nbb_unformatted_code = "actuator0 = cpdd[\"actuators\"][0]\nactuator0ID = actuator0[0]\nactuator0FirstAction = actuator0[1][\"actions\"][0]\nprint(\n    \"We take the first available action (%s) for the first actuator (%s).\"\n    % (actuator0FirstAction, actuator0ID)\n)\nhost.workload_action([nrm.Action(\"RaplKey (PackageID 0)\", 2.0e8)])";
                 var nbb_formatted_code = "actuator0 = cpdd[\"actuators\"][0]\nactuator0ID = actuator0[0]\nactuator0FirstAction = actuator0[1][\"actions\"][0]\nprint(\n    \"We take the first available action (%s) for the first actuator (%s).\"\n    % (actuator0FirstAction, actuator0ID)\n)\nhost.workload_action([nrm.Action(\"RaplKey (PackageID 0)\", 2.0e8)])";
                 var nbb_cells = Jupyter.notebook.get_cells();
                 for (var i = 0; i < nbb_cells.length; ++i) {
@@ -14010,10 +13955,10 @@ var element = $('#baee536c-3593-4874-8c38-4cdc4df9088b');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">s</span><span class="o">=</span><span class="n">host</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">s</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">get_state</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
 </pre></div>
@@ -14126,13 +14071,13 @@ var element = $('#baee536c-3593-4874-8c38-4cdc4df9088b');
 
 
 
-<div id="fa8a8e93-832f-487e-96ad-d95205a83081"></div>
+<div id="6b662f36-1b3b-4fdd-98fb-f45815bdc80d"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#fa8a8e93-832f-487e-96ad-d95205a83081');
+var element = $('#6b662f36-1b3b-4fdd-98fb-f45815bdc80d');
 
             setTimeout(function() {
-                var nbb_cell_id = 10;
+                var nbb_cell_id = 13;
                 var nbb_unformatted_code = "s=host.get_state()\nprint(s)\nprint(dict(s))";
                 var nbb_formatted_code = "s = host.get_state()\nprint(s)\nprint(dict(s))";
                 var nbb_cells = Jupyter.notebook.get_cells();
@@ -14165,7 +14110,7 @@ var element = $('#fa8a8e93-832f-487e-96ad-d95205a83081');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">host</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span>
@@ -14188,13 +14133,13 @@ var element = $('#fa8a8e93-832f-487e-96ad-d95205a83081');
 
 
 
-<div id="ef97df9d-8ca4-4f9f-9b16-6bdb92ac7c27"></div>
+<div id="4b713ffb-4316-4420-a745-cbdf2d6af725"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#ef97df9d-8ca4-4f9f-9b16-6bdb92ac7c27');
+var element = $('#4b713ffb-4316-4420-a745-cbdf2d6af725');
 
             setTimeout(function() {
-                var nbb_cell_id = 11;
+                var nbb_cell_id = 14;
                 var nbb_unformatted_code = "host.stop_daemon()\nassert host.check_daemon() == False";
                 var nbb_formatted_code = "host.stop_daemon()\nassert host.check_daemon() == False";
                 var nbb_cells = Jupyter.notebook.get_cells();
@@ -14227,7 +14172,7 @@ var element = $('#ef97df9d-8ca4-4f9f-9b16-6bdb92ac7c27');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[16]:</div>
+<div class="prompt input_prompt">In&nbsp;[15]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">daemonCfg</span><span class="p">,</span> <span class="n">workload</span><span class="p">)</span> <span class="ow">in</span> <span class="n">experiments</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -14235,16 +14180,16 @@ var element = $('#ef97df9d-8ca4-4f9f-9b16-6bdb92ac7c27');
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting the workload&quot;</span><span class="p">)</span>
     <span class="n">host</span><span class="o">.</span><span class="n">run_workload</span><span class="p">(</span><span class="n">workload</span><span class="p">)</span>
     <span class="n">history</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">getCPD</span><span class="o">=</span><span class="kc">True</span>
+    <span class="n">getCPD</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="k">while</span> <span class="n">host</span><span class="o">.</span><span class="n">check_daemon</span><span class="p">()</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">host</span><span class="o">.</span><span class="n">workload_finished</span><span class="p">():</span>
         <span class="n">measurement_message</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">workload_recv</span><span class="p">()</span>
-        <span class="n">msg</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">measurement_message</span><span class="p">)</span>
-        <span class="c1">#print(&quot;received raw message: %s&quot; %msg)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">measurement_message</span><span class="p">)</span>
+        <span class="c1"># print(&quot;received raw message: %s&quot; %msg)</span>
         <span class="k">if</span> <span class="s2">&quot;pubMeasurements&quot;</span> <span class="ow">in</span> <span class="n">msg</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">getCPD</span><span class="p">:</span>
-                <span class="n">getCPD</span><span class="o">=</span><span class="kc">False</span>
+                <span class="n">getCPD</span> <span class="o">=</span> <span class="kc">False</span>
                 <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-                <span class="n">cpd</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">get_cpd</span><span class="p">())</span>
+                <span class="n">cpd</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">host</span><span class="o">.</span><span class="n">get_cpd</span><span class="p">())</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sensor identifier list:&quot;</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">sensorID</span> <span class="ow">in</span> <span class="p">[</span><span class="n">sensor</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">sensor</span> <span class="ow">in</span> <span class="n">cpd</span><span class="p">[</span><span class="s2">&quot;sensors&quot;</span><span class="p">]]:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;- </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">sensorID</span><span class="p">)</span>
@@ -14255,12 +14200,15 @@ var element = $('#ef97df9d-8ca4-4f9f-9b16-6bdb92ac7c27');
             <span class="n">t</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">]</span>
             <span class="n">sensorID</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="s2">&quot;sensorID&quot;</span><span class="p">]</span>
             <span class="n">x</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="s2">&quot;sensorValue&quot;</span><span class="p">]</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Received measurement originating at time </span><span class="si">%s</span><span class="s2"> for sensor </span><span class="si">%s</span><span class="s2"> of value </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;sensorID&quot;</span><span class="p">],</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;sensorValue&quot;</span><span class="p">]))</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="s2">&quot;Received measurement originating at time </span><span class="si">%s</span><span class="s2"> for sensor </span><span class="si">%s</span><span class="s2"> of value </span><span class="si">%s</span><span class="s2">&quot;</span>
+                <span class="o">%</span> <span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">],</span> <span class="n">content</span><span class="p">[</span><span class="s2">&quot;sensorID&quot;</span><span class="p">],</span> <span class="n">content</span><span class="p">[</span><span class="s2">&quot;sensorValue&quot;</span><span class="p">])</span>
+            <span class="p">)</span>
             <span class="k">if</span> <span class="n">sensorID</span> <span class="ow">in</span> <span class="n">history</span><span class="p">:</span>
-                <span class="n">history</span><span class="p">[</span><span class="n">sensorID</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">t</span><span class="p">,</span><span class="n">x</span><span class="p">))</span>
+                <span class="n">history</span><span class="p">[</span><span class="n">sensorID</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">history</span><span class="p">[</span><span class="n">sensorID</span><span class="p">]</span><span class="o">=</span> <span class="p">[(</span><span class="n">t</span><span class="p">,</span><span class="n">x</span><span class="p">)]</span>
-        <span class="n">host</span><span class="o">.</span><span class="n">workload_action</span><span class="p">([</span><span class="n">nrm</span><span class="o">.</span><span class="n">Action</span><span class="p">(</span><span class="s2">&quot;RaplKey (PackageID 0)&quot;</span><span class="p">,</span><span class="mf">1.8e8</span><span class="p">)])</span>
+                <span class="n">history</span><span class="p">[</span><span class="n">sensorID</span><span class="p">]</span> <span class="o">=</span> <span class="p">[(</span><span class="n">t</span><span class="p">,</span> <span class="n">x</span><span class="p">)]</span>
+        <span class="n">host</span><span class="o">.</span><span class="n">workload_action</span><span class="p">([</span><span class="n">nrm</span><span class="o">.</span><span class="n">Action</span><span class="p">(</span><span class="s2">&quot;RaplKey (PackageID 0)&quot;</span><span class="p">,</span> <span class="mf">1.8e8</span><span class="p">)])</span>
     <span class="n">host</span><span class="o">.</span><span class="n">check_daemon</span><span class="p">()</span>
 
 <span class="n">host</span><span class="o">.</span><span class="n">stop_daemon</span><span class="p">()</span>
@@ -14284,30 +14232,45 @@ var element = $('#ef97df9d-8ca4-4f9f-9b16-6bdb92ac7c27');
 connected to tcp://localhost:2345
 Starting the workload
 Sensor identifier list:
-- DownstreamCmdKey (DownstreamCmdID 18c6b005-f7fe-4e05-a2d6-0f15d019906b)
 - RaplKey (PackageID 0)
 Actuator identifier list:
 - RaplKey (PackageID 0)
-Received measurement originating at time 1580142815283332.5 for sensor RaplKey (PackageID 0) of value 65528920136
-Received measurement originating at time 1580142816283626.8 for sensor RaplKey (PackageID 0) of value 65536811961
-Received measurement originating at time 1580142817018380 for sensor DownstreamCmdKey (DownstreamCmdID 18c6b005-f7fe-4e05-a2d6-0f15d019906b) of value 0
-Received measurement originating at time 1580142817283471.5 for sensor RaplKey (PackageID 0) of value 65546773239
-Received measurement originating at time 1580142818018595.2 for sensor DownstreamCmdKey (DownstreamCmdID 18c6b005-f7fe-4e05-a2d6-0f15d019906b) of value 0
-Received measurement originating at time 1580142818282989.5 for sensor RaplKey (PackageID 0) of value 65555524621
-Received measurement originating at time 1580142819018999.2 for sensor DownstreamCmdKey (DownstreamCmdID 18c6b005-f7fe-4e05-a2d6-0f15d019906b) of value 0
-Received measurement originating at time 1580142819283585 for sensor RaplKey (PackageID 0) of value 65564011415
-Received measurement originating at time 1580142820019300 for sensor DownstreamCmdKey (DownstreamCmdID 18c6b005-f7fe-4e05-a2d6-0f15d019906b) of value 0
-Received measurement originating at time 1580142820283497.8 for sensor RaplKey (PackageID 0) of value 65574161231
-Received measurement originating at time 1580142821019686.5 for sensor DownstreamCmdKey (DownstreamCmdID 18c6b005-f7fe-4e05-a2d6-0f15d019906b) of value 0
-Received measurement originating at time 1580142821283599.5 for sensor RaplKey (PackageID 0) of value 65582606705
-Received measurement originating at time 1580142822020131.2 for sensor DownstreamCmdKey (DownstreamCmdID 18c6b005-f7fe-4e05-a2d6-0f15d019906b) of value 0
-Received measurement originating at time 1580142822283586.5 for sensor RaplKey (PackageID 0) of value 65591142022
-Received measurement originating at time 1580142823021169 for sensor DownstreamCmdKey (DownstreamCmdID 18c6b005-f7fe-4e05-a2d6-0f15d019906b) of value 0
-Received measurement originating at time 1580142823283595.2 for sensor RaplKey (PackageID 0) of value 65600608062
-Received measurement originating at time 1580142824021145.8 for sensor DownstreamCmdKey (DownstreamCmdID 18c6b005-f7fe-4e05-a2d6-0f15d019906b) of value 0
-Received measurement originating at time 1580142824283436.8 for sensor RaplKey (PackageID 0) of value 65610440801
-Received measurement originating at time 1580142825283122 for sensor RaplKey (PackageID 0) of value 65626178371
+Received measurement originating at time 1580500825712347 for sensor RaplKey (PackageID 0) of value 200341177799
 </pre>
+</div>
+</div>
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_text output_error">
+<pre>
+<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
+<span class="ansi-red-fg">Exception</span>                                 Traceback (most recent call last)
+<span class="ansi-green-fg">&lt;ipython-input-15-6cd3aca2f209&gt;</span> in <span class="ansi-cyan-fg">&lt;module&gt;</span>
+<span class="ansi-green-intense-fg ansi-bold">     29</span>             <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">     30</span>                 history<span class="ansi-blue-fg">[</span>sensorID<span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">(</span>t<span class="ansi-blue-fg">,</span>x<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">]</span>
+<span class="ansi-green-fg">---&gt; 31</span><span class="ansi-red-fg">         </span>host<span class="ansi-blue-fg">.</span>workload_action<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">[</span>nrm<span class="ansi-blue-fg">.</span>Action<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;RaplKey (PackageID 0)&#34;</span><span class="ansi-blue-fg">,</span><span class="ansi-cyan-fg">1.8e8</span><span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">]</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     32</span>     host<span class="ansi-blue-fg">.</span>check_daemon<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     33</span> 
+
+<span class="ansi-green-fg">~/workspace/hnrm/pynrm/nrm/tooling.py</span> in <span class="ansi-cyan-fg">workload_action</span><span class="ansi-blue-fg">(self, actionList)</span>
+<span class="ansi-green-intense-fg ansi-bold">    189</span>         <span class="ansi-blue-fg">&#34;&#34;&#34; Send a message to NRM&#39;s upstream API. &#34;&#34;&#34;</span>
+<span class="ansi-green-intense-fg ansi-bold">    190</span>         actionList <span class="ansi-blue-fg">=</span> <span class="ansi-blue-fg">[</span><span class="ansi-blue-fg">(</span>str<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">.</span>actuatorID<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">,</span> float<span class="ansi-blue-fg">(</span>a<span class="ansi-blue-fg">.</span>actuatorValue<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">)</span> <span class="ansi-green-fg">for</span> a <span class="ansi-green-fg">in</span> actionList<span class="ansi-blue-fg">]</span>
+<span class="ansi-green-fg">--&gt; 191</span><span class="ansi-red-fg">         </span><span class="ansi-green-fg">if</span> lib<span class="ansi-blue-fg">.</span>action<span class="ansi-blue-fg">(</span>self<span class="ansi-blue-fg">.</span>commonOpts<span class="ansi-blue-fg">,</span> actionList<span class="ansi-blue-fg">)</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-intense-fg ansi-bold">    192</span>             <span class="ansi-green-fg">pass</span>
+<span class="ansi-green-intense-fg ansi-bold">    193</span>         <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+
+<span class="ansi-green-fg">~/workspace/hnrm/pynrm/nrm/sharedlib.py</span> in <span class="ansi-cyan-fg">eitherwrap</span><span class="ansi-blue-fg">(*args)</span>
+<span class="ansi-green-intense-fg ansi-bold">     55</span>                 <span class="ansi-green-fg">raise</span> SystemError
+<span class="ansi-green-intense-fg ansi-bold">     56</span>             <span class="ansi-green-fg">else</span><span class="ansi-blue-fg">:</span>
+<span class="ansi-green-fg">---&gt; 57</span><span class="ansi-red-fg">                 </span><span class="ansi-green-fg">raise</span> Exception<span class="ansi-blue-fg">(</span><span class="ansi-blue-fg">&#34;.so library call raised exception: %s&#34;</span> <span class="ansi-blue-fg">%</span> content<span class="ansi-blue-fg">)</span>
+<span class="ansi-green-intense-fg ansi-bold">     58</span> 
+<span class="ansi-green-intense-fg ansi-bold">     59</span>         <span class="ansi-green-fg">return</span> eitherwrap
+
+<span class="ansi-red-fg">Exception</span>: .so library call raised exception: FatalError {fatalErrorMessage = &#34;daemon threw exception: /sys/devices/virtual/powercap/intel-rapl/intel-rapl:0/constraint_0_power_limit_uw: openFile: permission denied (Permission denied)&#34;}</pre>
 </div>
 </div>
 
@@ -14319,13 +14282,13 @@ Received measurement originating at time 1580142825283122 for sensor RaplKey (Pa
 
 
 
-<div id="49c10e1f-05db-4934-8939-7f9c2df594b4"></div>
+<div id="60bc5ccf-9d13-4f6d-8534-15cc7a11e1fe"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#49c10e1f-05db-4934-8939-7f9c2df594b4');
+var element = $('#60bc5ccf-9d13-4f6d-8534-15cc7a11e1fe');
 
             setTimeout(function() {
-                var nbb_cell_id = 16;
+                var nbb_cell_id = 15;
                 var nbb_unformatted_code = "for name, (daemonCfg, workload) in experiments.items():\n    host.start_daemon(daemonCfg)\n    print(\"Starting the workload\")\n    host.run_workload(workload)\n    history = {}\n    getCPD=True\n    while host.check_daemon() and not host.workload_finished():\n        measurement_message = host.workload_recv()\n        msg=json.loads(measurement_message)\n        #print(\"received raw message: %s\" %msg)\n        if \"pubMeasurements\" in msg:\n            if getCPD:\n                getCPD=False\n                time.sleep(1)\n                cpd=dict(host.get_cpd())\n                print(\"Sensor identifier list:\")\n                for sensorID in [sensor[0] for sensor in cpd[\"sensors\"]]:\n                    print(\"- %s\" % sensorID)\n                print(\"Actuator identifier list:\")\n                for sensorID in [sensor[0] for sensor in cpd[\"actuators\"]]:\n                    print(\"- %s\" % sensorID)\n            content = msg[\"pubMeasurements\"][1][0]\n            t = content[\"time\"]\n            sensorID = content[\"sensorID\"]\n            x = content[\"sensorValue\"]\n            print(\"Received measurement originating at time %s for sensor %s of value %s\" % (content[\"time\"],content[\"sensorID\"],content[\"sensorValue\"]))\n            if sensorID in history:\n                history[sensorID].append((t,x))\n            else:\n                history[sensorID]= [(t,x)]\n        host.workload_action([nrm.Action(\"RaplKey (PackageID 0)\",1.8e8)])\n    host.check_daemon()\n\nhost.stop_daemon()";
                 var nbb_formatted_code = "for name, (daemonCfg, workload) in experiments.items():\n    host.start_daemon(daemonCfg)\n    print(\"Starting the workload\")\n    host.run_workload(workload)\n    history = {}\n    getCPD = True\n    while host.check_daemon() and not host.workload_finished():\n        measurement_message = host.workload_recv()\n        msg = json.loads(measurement_message)\n        # print(\"received raw message: %s\" %msg)\n        if \"pubMeasurements\" in msg:\n            if getCPD:\n                getCPD = False\n                time.sleep(1)\n                cpd = dict(host.get_cpd())\n                print(\"Sensor identifier list:\")\n                for sensorID in [sensor[0] for sensor in cpd[\"sensors\"]]:\n                    print(\"- %s\" % sensorID)\n                print(\"Actuator identifier list:\")\n                for sensorID in [sensor[0] for sensor in cpd[\"actuators\"]]:\n                    print(\"- %s\" % sensorID)\n            content = msg[\"pubMeasurements\"][1][0]\n            t = content[\"time\"]\n            sensorID = content[\"sensorID\"]\n            x = content[\"sensorValue\"]\n            print(\n                \"Received measurement originating at time %s for sensor %s of value %s\"\n                % (content[\"time\"], content[\"sensorID\"], content[\"sensorValue\"])\n            )\n            if sensorID in history:\n                history[sensorID].append((t, x))\n            else:\n                history[sensorID] = [(t, x)]\n        host.workload_action([nrm.Action(\"RaplKey (PackageID 0)\", 1.8e8)])\n    host.check_daemon()\n\nhost.stop_daemon()";
                 var nbb_cells = Jupyter.notebook.get_cells();
@@ -14358,7 +14321,7 @@ var element = $('#49c10e1f-05db-4934-8939-7f9c2df594b4');
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">sensorID</span><span class="p">,</span><span class="n">measurements</span> <span class="ow">in</span> <span class="n">history</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -14376,73 +14339,16 @@ var element = $('#49c10e1f-05db-4934-8939-7f9c2df594b4');
 </div>
 </div>
 
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="data:image/png;base64,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
-"
->
 </div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span> 
+</pre></div>
 
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-<div class="output_png output_subarea ">
-<img src="data:image/png;base64,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
-"
->
-</div>
-
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
-<div id="b5ae4d24-2aa2-48c5-bd39-28c2a9da9638"></div>
-<div class="output_subarea output_javascript ">
-<script type="text/javascript">
-var element = $('#b5ae4d24-2aa2-48c5-bd39-28c2a9da9638');
-
-            setTimeout(function() {
-                var nbb_cell_id = 17;
-                var nbb_unformatted_code = "for sensorID,measurements in history.items():\n    dataframe = pd.DataFrame(data=[(pd.Timestamp(t, unit='us'), m) \n                                   for t,m \n                                   in measurements])\n    dataframe.columns=[\"time\",\"value\"]\n    dataframe = dataframe.set_index(\"time\")\n    ax = dataframe.plot(marker='o', \n                        linestyle='-',\n                        title='values for sensor \"%s[..]\"' % sensorID[:20])";
-                var nbb_formatted_code = "for sensorID, measurements in history.items():\n    dataframe = pd.DataFrame(\n        data=[(pd.Timestamp(t, unit=\"us\"), m) for t, m in measurements]\n    )\n    dataframe.columns = [\"time\", \"value\"]\n    dataframe = dataframe.set_index(\"time\")\n    ax = dataframe.plot(\n        marker=\"o\", linestyle=\"-\", title='values for sensor \"%s[..]\"' % sensorID[:20]\n    )";
-                var nbb_cells = Jupyter.notebook.get_cells();
-                for (var i = 0; i < nbb_cells.length; ++i) {
-                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
-                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
-                             nbb_cells[i].set_text(nbb_formatted_code);
-                        }
-                        break;
-                    }
-                }
-            }, 500);
-            
-</script>
-</div>
-
-</div>
-
+    </div>
 </div>
 </div>
 
