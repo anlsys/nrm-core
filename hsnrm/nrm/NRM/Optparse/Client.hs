@@ -28,7 +28,6 @@ import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Manifest
 import NRM.Types.Messaging.UpstreamReq
 import NRM.Types.Slice
-import qualified NRM.Types.Units as U
 import Options.Applicative
 import Protolude hiding (All)
 import System.Directory

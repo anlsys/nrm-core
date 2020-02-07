@@ -9,6 +9,7 @@
 module CPD.Integrated
   ( Integrator (..),
     IntegratorAction (..),
+    MeasurementState (..),
     initIntegrator,
     measureValue,
     squeeze,

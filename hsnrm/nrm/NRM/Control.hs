@@ -116,84 +116,104 @@ type CStep =
   ControlM Decision
 
 wrappedCStep :: CStep
-wrappedCStep ccfg stepObjectives stepConstraints sensors t = do
-  counter <- use $ field @"referenceMeasurementCounter"
-  let maxCounter = referenceMeasurementRoundInterval ccfg
-  if unrefine counter < unrefine maxCounter
-    then use (field @"bufferedMeasurements") >>= \case
-      Nothing ->
-        refine (unrefine counter + 1) & \case
-          Left _ -> logError "refinement failed in wrappedCStep" >> doNothing
-          Right value -> do
-            field @"referenceMeasurementCounter" .= value
-            cStep ccfg stepObjectives stepConstraints sensors t
-      Just buffered -> undefined -- feed the buffered objective to the bandit and remove the buffered value.
-    else undefined -- do the reference measurement
-
-cStep :: CStep
-cStep _ stepObjectives stepConstraints sensors t = do
-  i <- use (field @"integrator")
-  refMeasurements <- use (field @"referenceMeasurements")
+wrappedCStep cc stepObjectives stepConstraints sensors t =
   use (field @"integrator" . field @"measured") <&> squeeze t >>= \case
     Nothing -> doNothing
     Just (measurements, newMeasured) -> do
       field @"integrator" . field @"measured" .= newMeasured
-      let evaluatedObjectives :: [(Double, Maybe Double, Maybe (Interval Double))]
-          evaluatedObjectives = stepObjectives <&> \(w, v) ->
-            (w, eval measurements v, evalRange (DM.fromList $ (,0 ... 1) <$> sensors) v)
-          refinedObjectives :: Maybe [(Double, ZeroOne Double)]
-          refinedObjectives =
-            sequence
-              ( evaluatedObjectives <&> \case
-                  (w, Just v, Just r) -> normalize v (sup r) <&> (w,)
-                  _ -> Nothing
-              )
-          evaluatedConstraints :: [(Interval Double, Maybe Double, Maybe Double)]
-          evaluatedConstraints = stepConstraints <&> \(interv, c) ->
-            ( interv,
-              eval measurements c,
-              eval (refMeasurements <&> MemBuffer.avgBuffer) c
-            )
-          refinedConstraints :: Maybe [(Interval Double, Double)]
-          refinedConstraints =
-            sequence
-              ( evaluatedConstraints <&> \case
-                  (interv, Just v, Just ref) -> Just (interv, v / ref)
-                  _ -> Nothing
-              )
-      (refinedObjectives, refinedConstraints) & \case
-        (Just robjs, Just rconstr) -> do
-          logInfo
-            ( "aggregated measurement computed with: \n sensors:"
-                <> show sensors
-                <> "\n sensor values:"
-                <> show measurements
-                <> "\n refined constraints:"
-                <> show robjs
-                <> "\n refined objectives:"
-                <> show rconstr
-                <> "\n full integrator data structure:"
-                <> show i
-            )
-          Decision
-            <$> zoom
-              (field @"bandit" . _Just)
-              ( do
-                  g <- liftIO getStdGen
-                  (a, g') <-
-                    get >>= \case
-                      KnapsackConstraints b -> do
-                        let ((a, g'), s') = runState (stepBwCR g ((snd <$> robjs) <> undefined)) b
-                        put (KnapsackConstraints s')
-                        return (a, g')
-                      LagrangeConstraints b -> do
-                        let ((a, g'), s') = runState (stepPFMAB g (hardConstrainedObjective robjs rconstr)) b
-                        put (LagrangeConstraints s')
-                        return (a, g')
-                  liftIO $ setStdGen g'
-                  return a
-              )
-        _ -> logError "objectives/constraints computation returned `Nothing`." >> doNothing
+      counter <- use $ field @"referenceMeasurementCounter"
+      mRefActions <- use $ field @"referenceActionList"
+      bufM <- use (field @"bufferedMeasurements")
+      let maxCounter = referenceMeasurementRoundInterval cc
+      let action = stepFromSqueezed stepObjectives stepConstraints sensors 
+      let normalAction = action measurements
+      refine (unrefine counter + 1) & \case
+        Left _ -> do
+          logError "refinement failed in wrappedCStep"
+          doNothing
+        Right counterValue -> case mRefActions of
+          Nothing -> normalAction
+          Just refActions -> do
+            field @"referenceMeasurementCounter" .= counterValue
+            if unrefine counterValue <= unrefine maxCounter
+              then case bufM of
+                Nothing -> normalAction
+                Just buffered -> do
+                  -- we need to conclude this reference measurement mechanism
+                  -- put the measurements that were just done in referenceMeasurements
+                  field @"referenceMeasurements" %= enqueueAll measurements
+                  -- feed the buffered measurement to the bandit
+                  field @"bufferedMeasurements" .= Nothing
+                  action buffered
+              else do
+                -- we need to start this reference measurement mechanism:
+                -- put the current measurements in "bufferedMeasurements"
+                field @"bufferedMeasurements" ?= measurements
+                -- take the reference actions
+                return $ Decision refActions
+
+stepFromSqueezed ::
+  [(Double, OExpr)] ->
+  [(Interval Double, OExpr)] ->
+  [SensorID] ->
+  Map SensorID Double ->
+  ControlM Decision
+stepFromSqueezed stepObjectives stepConstraints sensors  measurements = do
+  refMeasurements <- use (field @"referenceMeasurements")
+  let evaluatedObjectives :: [(Double, Maybe Double, Maybe (Interval Double))]
+      evaluatedObjectives = stepObjectives <&> \(w, v) ->
+        (w, eval measurements v, evalRange (DM.fromList $ (,0 ... 1) <$> sensors) v)
+      refinedObjectives :: Maybe [(Double, ZeroOne Double)]
+      refinedObjectives =
+        sequence
+          ( evaluatedObjectives <&> \case
+              (w, Just v, Just r) -> normalize v (sup r) <&> (w,)
+              _ -> Nothing
+          )
+      evaluatedConstraints :: [(Interval Double, Maybe Double, Maybe Double)]
+      evaluatedConstraints = stepConstraints <&> \(interv, c) ->
+        ( interv,
+          eval measurements c,
+          eval (refMeasurements <&> MemBuffer.avgBuffer) c
+        )
+      refinedConstraints :: Maybe [(Interval Double, Double)]
+      refinedConstraints =
+        sequence
+          ( evaluatedConstraints <&> \case
+              (interv, Just v, Just ref) -> Just (interv, v / ref)
+              _ -> Nothing
+          )
+  (refinedObjectives, refinedConstraints) & \case
+    (Just robjs, Just rconstr) -> do
+      logInfo
+        ( "aggregated measurement computed with: \n sensors:"
+            <> show sensors
+            <> "\n sensor values:"
+            <> show measurements
+            <> "\n refined constraints:"
+            <> show robjs
+            <> "\n refined objectives:"
+            <> show rconstr
+        )
+      Decision
+        <$> zoom
+          (field @"bandit" . _Just)
+          ( do
+              g <- liftIO getStdGen
+              (a, g') <-
+                get >>= \case
+                  KnapsackConstraints b -> do
+                    let ((a, g'), s') = runState (stepBwCR g ((snd <$> robjs) <> undefined)) b
+                    put (KnapsackConstraints s')
+                    return (a, g')
+                  LagrangeConstraints b -> do
+                    let ((a, g'), s') = runState (stepPFMAB g (hardConstrainedObjective robjs rconstr)) b
+                    put (LagrangeConstraints s')
+                    return (a, g')
+              liftIO $ setStdGen g'
+              return a
+          )
+    _ -> logError "objectives/constraints computation returned `Nothing`." >> doNothing
 
 hardConstrainedObjective ::
   [(Double, ZeroOne Double)] ->

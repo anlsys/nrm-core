@@ -23,6 +23,7 @@ module LMap.Map
     elems,
     keys,
     mapKV,
+    mapWithKey,
     filterWithKey,
   )
 where
@@ -88,6 +89,9 @@ keys (Map m) = DM.keys (DM.fromList m)
 
 map :: (Ord k) => (a -> b) -> Map k a -> Map k b
 map f (Map m) = DM.map f (DM.fromList m) & DM.toList & fromList
+
+mapWithKey :: (Ord k) => (k -> a -> b) -> Map k a -> Map k b
+mapWithKey f (Map m) = DM.mapWithKey f (DM.fromList m) & DM.toList & fromList
 
 filterWithKey :: Ord k => (k -> a -> Bool) -> Map k a -> Map k a
 filterWithKey kf m = fromDataMap $ DM.filterWithKey kf (toDataMap m)

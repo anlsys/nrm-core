@@ -15,6 +15,7 @@ module NRM.Types.Controller
     LearnConfig,
     LagrangeMultiplier (..),
     initialController,
+    enqueueAll,
   )
 where
 
@@ -35,7 +36,7 @@ import NRM.Orphans.NonEmpty ()
 import NRM.Orphans.ZeroOne ()
 import NRM.Types.MemBuffer as MemBuffer
 import NRM.Types.Units
-import Protolude
+import Protolude hiding (Map)
 import Refined
 import Refined.Unsafe
 
@@ -67,21 +68,36 @@ data Controller
   = Controller
       { integrator :: C.Integrator,
         bandit :: Maybe (Learn (Exp3 [V.Action]) (BwCR [V.Action] [ZeroOne Double])),
-        referenceActionList :: [V.Action],
-        bufferedMeasurements :: Maybe (LMap.Map SensorID (ZeroOne Double)),
-        referenceMeasurements :: LMap.Map SensorID (MemBuffer Double),
+        referenceActionList :: Maybe [V.Action],
+        bufferedMeasurements :: Maybe (Map SensorID Double),
+        referenceMeasurements :: Map SensorID (MemBuffer Double),
         referenceMeasurementCounter :: Refined NonNegative Int
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
   deriving (Show, Generic, MessagePack, Interpret, Inject)
 
-initialController :: Time -> Time -> [SensorID] -> Controller
-initialController time minTime sensorIDs = Controller
+enqueueAll :: (Ord k) => Map k a -> Map k (MemBuffer a) -> Map k (MemBuffer a)
+enqueueAll m mm =
+  mapWithKey
+    ( \k abuffer -> lookup k m & \case
+        Nothing -> abuffer
+        Just a -> enqueue a abuffer
+    )
+    mm
+
+initialController ::
+  Time ->
+  Time ->
+  [SensorID] ->
+  Maybe [V.Action] ->
+  Controller
+initialController time minTime sensorIDs refActions = Controller
   { integrator = initIntegrator time minTime sensorIDs,
     bandit = Nothing,
     bufferedMeasurements = Nothing,
     referenceMeasurements = LMap.fromList $ sensorIDs <&> (,MemBuffer.empty),
-    referenceMeasurementCounter = unsafeRefine 0
+    referenceMeasurementCounter = unsafeRefine 0,
+    referenceActionList = refActions
   }
 
 -- Instances to serialize the bandit state.
