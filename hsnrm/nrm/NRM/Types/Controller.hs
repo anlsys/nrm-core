@@ -68,7 +68,6 @@ data Controller
   = Controller
       { integrator :: C.Integrator,
         bandit :: Maybe (Learn (Exp3 [V.Action]) (BwCR [V.Action] [ZeroOne Double])),
-        referenceActionList :: Maybe [V.Action],
         bufferedMeasurements :: Maybe (Map SensorID Double),
         referenceMeasurements :: Map SensorID (MemBuffer Double),
         referenceMeasurementCounter :: Refined NonNegative Int
@@ -89,15 +88,13 @@ initialController ::
   Time ->
   Time ->
   [SensorID] ->
-  Maybe [V.Action] ->
   Controller
-initialController time minTime sensorIDs refActions = Controller
+initialController time minTime sensorIDs = Controller
   { integrator = initIntegrator time minTime sensorIDs,
     bandit = Nothing,
     bufferedMeasurements = Nothing,
     referenceMeasurements = LMap.fromList $ sensorIDs <&> (,MemBuffer.empty),
-    referenceMeasurementCounter = unsafeRefine 0,
-    referenceActionList = refActions
+    referenceMeasurementCounter = unsafeRefine 0
   }
 
 -- Instances to serialize the bandit state.

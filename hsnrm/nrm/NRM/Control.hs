@@ -43,8 +43,9 @@ banditCartesianProductControl ::
   ControlCfg ->
   Problem ->
   Input ->
+  Maybe [Action] ->
   ControlM Decision
-banditCartesianProductControl ccfg cpd (Reconfigure t) = do
+banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
   minTime <- use $ field @"integrator" . field @"minimumControlInterval"
   field @"integrator" .= initIntegrator t minTime (DM.keys $ sensors cpd)
   case objectives cpd of
@@ -83,8 +84,8 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) = do
       nonEmpty . cartesianProduct $
         DM.toList (actuators cpd)
           <&> \(actuatorID, a) -> Action actuatorID <$> actions a
-banditCartesianProductControl ccfg cpd (NoEvent t) = tryControlStep ccfg cpd t
-banditCartesianProductControl ccfg cpd (Event t ms) = do
+banditCartesianProductControl ccfg cpd (NoEvent t) mRefActions = tryControlStep ccfg cpd t mRefActions
+banditCartesianProductControl ccfg cpd (Event t ms) mRefActions = do
   forM_ ms $ \(Measurement sensorID sensorValue sensorTime) -> do
     let s = DM.lookup sensorID (sensors cpd)
     s & \case
@@ -96,36 +97,35 @@ banditCartesianProductControl ccfg cpd (Event t ms) = do
                 tlast
                 delta
                 (measuredM & ix sensorID %~ measureValue (tlast + delta) v)
-  tryControlStep ccfg cpd t
+  tryControlStep ccfg cpd t mRefActions
 
 tryControlStep ::
   ControlCfg ->
   Problem ->
   Time ->
+  Maybe [Action] ->
   ControlM Decision
-tryControlStep ccfg cpd t = case objectives cpd of
+tryControlStep ccfg cpd t mRefActions = case objectives cpd of
   [] -> doNothing
-  os -> wrappedCStep ccfg os (CPD.Core.constraints cpd) (DM.keys $ sensors cpd) t
+  os -> wrappedCStep ccfg os (CPD.Core.constraints cpd) (DM.keys $ sensors cpd) t mRefActions
 
-type CStep =
+wrappedCStep ::
   ControlCfg ->
   [(Double, OExpr)] ->
   [(Interval Double, OExpr)] ->
   [SensorID] ->
   Time ->
+  Maybe [Action] ->
   ControlM Decision
-
-wrappedCStep :: CStep
-wrappedCStep cc stepObjectives stepConstraints sensors t =
+wrappedCStep cc stepObjectives stepConstraints sensors t mRefActions =
   use (field @"integrator" . field @"measured") <&> squeeze t >>= \case
     Nothing -> doNothing
     Just (measurements, newMeasured) -> do
       field @"integrator" . field @"measured" .= newMeasured
       counter <- use $ field @"referenceMeasurementCounter"
-      mRefActions <- use $ field @"referenceActionList"
       bufM <- use (field @"bufferedMeasurements")
       let maxCounter = referenceMeasurementRoundInterval cc
-      let action = stepFromSqueezed stepObjectives stepConstraints sensors 
+      let action = stepFromSqueezed stepObjectives stepConstraints sensors
       let normalAction = action measurements
       refine (unrefine counter + 1) & \case
         Left _ -> do
@@ -158,7 +158,7 @@ stepFromSqueezed ::
   [SensorID] ->
   Map SensorID Double ->
   ControlM Decision
-stepFromSqueezed stepObjectives stepConstraints sensors  measurements = do
+stepFromSqueezed stepObjectives stepConstraints sensors measurements = do
   refMeasurements <- use (field @"referenceMeasurements")
   let evaluatedObjectives :: [(Double, Maybe Double, Maybe (Interval Double))]
       evaluatedObjectives = stepObjectives <&> \(w, v) ->

@@ -36,7 +36,7 @@ import NRM.Control
 import NRM.Messaging
 import NRM.Sensors as Sensors
 import NRM.State
-import NRM.Types.Actuator
+import NRM.Types.Actuator as A
 import NRM.Types.Behavior
 import NRM.Types.Cmd
 import NRM.Types.CmdID as CmdID
@@ -241,17 +241,28 @@ doControl input = do
     logInfo ("Control input:" <> show input)
     mccfg & \case
       Nothing -> return ()
-      Just ccfg -> banditCartesianProductControl ccfg (NRMCPD.toCPD (Just ccfg) st) input >>= \case
-        DoNothing -> return ()
-        Decision d -> forM_ d $ \(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->
-          fromCPDKey actuatorID & \case
-            Nothing -> log "couldn't decode actuatorID"
-            Just aKey ->
-              LM.lookup aKey (lenses st) & \case
-                Nothing -> log "NRM internal error: actuator not found."
-                Just (ScopedLens l) -> do
-                  liftIO $ go (st ^. l) discreteValue
-                  log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
+      Just ccfg ->
+        let cpd = (NRMCPD.toCPD (Just ccfg) st)
+            mRefActions =
+              if [] /= (CPD.constraints cpd)
+                then Just $
+                  (LM.toList (lenses st) :: [(ActuatorKey, ScopedLens NRMState A.Actuator)])
+                    <&> \(k, ScopedLens l) -> CPD.Action
+                      { actuatorID = toS k,
+                        actuatorValue = CPD.DiscreteDouble $ st ^. (l . field @"referenceAction")
+                      }
+                else Nothing
+         in banditCartesianProductControl ccfg cpd input mRefActions >>= \case
+              DoNothing -> return ()
+              Decision d -> forM_ d $ \(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->
+                fromCPDKey actuatorID & \case
+                  Nothing -> log "couldn't decode actuatorID"
+                  Just aKey ->
+                    LM.lookup aKey (lenses st) & \case
+                      Nothing -> log "NRM internal error: actuator not found."
+                      Just (ScopedLens l) -> do
+                        liftIO $ go (st ^. l) discreteValue
+                        log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
 
 -- | Downstream event handler.
 nrmDownstreamEvent ::

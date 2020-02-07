@@ -23,6 +23,7 @@ data Actuator
         referenceAction :: Double,
         go :: Double -> IO ()
       }
+  deriving (Generic)
 
 newtype ActuatorKey = RaplKey PackageID
   deriving (Show, Read, Eq, Ord)
