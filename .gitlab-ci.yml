@@ -339,4 +339,4 @@ readthedocs:
     - nix
   script:
     - echo "token=$RTD_TOKEN"
-    - nix nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hnrm/104604/
+    - nix run nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hnrm/104604/
