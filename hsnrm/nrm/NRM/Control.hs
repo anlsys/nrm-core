@@ -30,7 +30,7 @@ import NRM.Types.MemBuffer as MemBuffer
 import NRM.Types.NRM
 import NRM.Types.Units
 import Numeric.Interval
-import Protolude hiding (Map)
+import Protolude hiding (Map, log)
 import Refined
 import System.Random
 
@@ -86,7 +86,8 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
           <&> \(actuatorID, a) -> Action actuatorID <$> actions a
 banditCartesianProductControl ccfg cpd (NoEvent t) mRefActions = tryControlStep ccfg cpd t mRefActions
 banditCartesianProductControl ccfg cpd (Event t ms) mRefActions = do
-  forM_ ms $ \(Measurement sensorID sensorValue sensorTime) -> do
+  forM_ ms $ \m@(Measurement sensorID sensorValue sensorTime) -> do
+    log $ "Processing measurement " <> show m
     let s = DM.lookup sensorID (sensors cpd)
     s & \case
       Nothing -> return ()
@@ -215,13 +216,26 @@ stepFromSqueezed stepObjectives stepConstraints sensors measurements = do
                     put (Knapsack s')
                     return (a, g')
                   Lagrange b -> do
-                    let ((a, g'), s') = runState (stepPFMAB g (hardConstrainedObjective robjs rconstr)) b
+                    let hco = hardConstrainedObjective robjs rconstr
+                    log $ "computed Hard Constrained Objective of :" <> show hco
+                    let ((a, g'), s') = runState (stepPFMAB g hco) b
                     put (Lagrange s')
                     return (a, g')
               liftIO $ setStdGen g'
               return a
           )
-    _ -> logError "objectives/constraints computation returned `Nothing`." >> doNothing
+    _ -> do
+      logError $
+        "controller failed a refinement step:"
+          <> "\n refinedObjectives: "
+          <> show refinedObjectives
+          <> "\n refinedConstraints: "
+          <> show refinedConstraints
+          <> "\n evaluatedConstraints: "
+          <> show evaluatedConstraints
+          <> "\n evaluatedObjectives: "
+          <> show evaluatedObjectives
+      doNothing
 
 hardConstrainedObjective ::
   [(Double, ZeroOne Double)] ->

@@ -25,6 +25,7 @@ import CPD.Integrated as C
 import CPD.Values as V
 import Data.Aeson as A hiding ((.=))
 import Data.JSON.Schema
+import Data.Map.Merge.Lazy
 import Data.MessagePack
 import Dhall hiding (field)
 import HBandit.BwCR as BwCR
@@ -77,13 +78,16 @@ data Controller
   deriving (Show, Generic, MessagePack, Interpret, Inject)
 
 enqueueAll :: (Ord k) => Map k a -> Map k (MemBuffer a) -> Map k (MemBuffer a)
-enqueueAll m mm =
-  mapWithKey
-    ( \k abuffer -> lookup k m & \case
-        Nothing -> abuffer
-        Just a -> enqueue a abuffer
-    )
-    mm
+enqueueAll
+  (toDataMap -> m)
+  (toDataMap -> mapBuffers) =
+    fromDataMap $
+      merge
+        (mapMissing $ \_ a -> MemBuffer.singleton a)
+        preserveMissing
+        (zipWithMatched $ \_ a abuffer -> enqueue a abuffer)
+        m
+        mapBuffers
 
 initialController ::
   Time ->

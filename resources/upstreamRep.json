@@ -320,6 +320,17 @@
                                                                                             "type": "number"
                                                                                         },
                                                                                         "type": "array"
+                                                                                    },
+                                                                                    "lastRead": {
+                                                                                        "items": [
+                                                                                            {
+                                                                                                "type": "number"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "number"
+                                                                                            }
+                                                                                        ],
+                                                                                        "type": "array"
                                                                                     }
                                                                                 }
                                                                             }
@@ -638,6 +649,17 @@
                                                                                         "items": {
                                                                                             "type": "number"
                                                                                         },
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "lastRead": {
+                                                                                        "items": [
+                                                                                            {
+                                                                                                "type": "number"
+                                                                                            },
+                                                                                            {
+                                                                                                "type": "number"
+                                                                                            }
+                                                                                        ],
                                                                                         "type": "array"
                                                                                     }
                                                                                 }

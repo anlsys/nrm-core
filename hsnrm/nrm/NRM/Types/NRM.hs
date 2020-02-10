@@ -37,7 +37,7 @@ execNRM :: NRM a -> Cfg -> NRMState -> IO (NRMState, [Behavior])
 execNRM = execRWST
 
 -- | Perform a behavior
-behave :: Behavior -> NRM ()
+behave :: Behavior -> RWST Cfg [Behavior] a IO ()
 behave b = tell [b]
 
 -- | NRM reply
@@ -45,7 +45,7 @@ rep :: UpstreamClientID -> Rep -> NRM ()
 rep clientID rp = behave $ Rep clientID rp
 
 -- | NRM publish
-pub :: Pub -> NRM ()
+pub :: Pub -> RWST Cfg [Behavior] a IO ()
 pub msg = behave $ Pub msg
 
 -- | NRM debug level log

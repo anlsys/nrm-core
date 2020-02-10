@@ -19,12 +19,8 @@ import Dhall
 import Protolude
 import Refined
 import Refined.Orphan.Aeson ()
+import Refined.Unsafe
 import Prelude (fail)
-
-unsafeRefine :: (Predicate p a) => a -> Refined p a
-unsafeRefine x = refine x & \case
-  (Right r) -> r
-  (Left _) -> panic "Catastrophic error in 'unsafeRefine' (used to avoid TH, but an error appeared)"
 
 instance (JSONSchema a) => JSONSchema (Refined p a) where
   schema _ = schema (Proxy :: Proxy a)

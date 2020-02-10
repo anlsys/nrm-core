@@ -104,7 +104,7 @@ pkgs // rec {
       (pkgs.lib.lists.remove haskellPackages.nrmbin o.propagatedBuildInputs);
     buildInputs = with python37Packages;
       (pkgs.lib.lists.remove haskellPackages.nrmbin o.buildInputs)
-      ++ [ flake8 autopep8 black mypy pytype nbformat nbconvert nb_black ];
+      ++ [ flake8 autopep8 black mypy pytype nbformat nbconvert pandas matplotlib nb_black ];
 
     shellHook = ''
       export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
@@ -246,13 +246,13 @@ pkgs // rec {
     });
 
   stream-raw = callPackage ./pkgs/stream {
-    iterationCount = "200000";
+    iterationCount = "80";
     inherit libnrm;
     nrmSupport = false;
   };
 
   stream = callPackage ./pkgs/stream {
-    iterationCount = "20000";
+    iterationCount = "80";
     inherit libnrm;
     nrmSupport = true;
   };

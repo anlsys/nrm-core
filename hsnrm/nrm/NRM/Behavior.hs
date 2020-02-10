@@ -254,7 +254,7 @@ doControl input = do
                 else Nothing
          in banditCartesianProductControl ccfg cpd input mRefActions >>= \case
               DoNothing -> return ()
-              Decision d -> forM_ d $ \(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->
+              Decision d -> forM_ d $ \action@(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->
                 fromCPDKey actuatorID & \case
                   Nothing -> log "couldn't decode actuatorID"
                   Just aKey ->
@@ -263,6 +263,11 @@ doControl input = do
                       Just (ScopedLens l) -> do
                         liftIO $ go (st ^. l) discreteValue
                         log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
+                        pub (UPub.PubAction (getTime input) action)
+  where
+    getTime (Controller.Event t _) = t
+    getTime (Controller.NoEvent t) = t
+    getTime (Controller.Reconfigure t) = t
 
 -- | Downstream event handler.
 nrmDownstreamEvent ::

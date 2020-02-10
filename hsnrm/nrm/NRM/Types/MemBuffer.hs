@@ -9,6 +9,7 @@ module NRM.Types.MemBuffer
   ( MemBuffer,
     empty,
     enqueue,
+    singleton,
     avgBuffer,
   )
 where
@@ -20,6 +21,10 @@ import Refined.Unsafe
 -- | Memory buffer with 10 points.
 type MemBuffer a = Refined (SizeLessThan 10) [a]
 
+-- | MemBuffer with one element
+singleton :: a -> MemBuffer a
+singleton a = unsafeRefine [a]
+
 -- | empty MemBuffer
 empty :: MemBuffer a
 empty = unsafeRefine []
@@ -27,7 +32,7 @@ empty = unsafeRefine []
 -- | adding a data point to a MemBuffer, discarding the oldest point if there
 -- are more than 10 points.
 enqueue :: a -> MemBuffer a -> MemBuffer a
-enqueue x xs = unsafeRefine $ take 10 (x : unrefine xs)
+enqueue x xs = unsafeRefine $ take 9 (x : unrefine xs)
 
 -- | adding a data point to a MemBuffer, discarding the oldest point if there
 -- are more than 10 points.
