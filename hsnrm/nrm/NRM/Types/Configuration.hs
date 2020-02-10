@@ -112,7 +112,7 @@ instance Default ControlCfg where
   def = ControlCfg
     { minimumControlInterval = 0.1 & seconds,
       speedThreshold = fe (refine 0.9),
-      learnCfg = LagrangeConstraints (LagrangeMultiplier 0.5),
+      learnCfg = Lagrange (LagrangeMultiplier 0.5),
       referenceMeasurementRoundInterval = unsafeRefine 6
     }
     where

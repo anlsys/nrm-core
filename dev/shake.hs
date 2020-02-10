@@ -126,9 +126,9 @@ cabalstatic = runProcess_ $ shell "dhall-to-cabal ./dev/pkgs/hsnrm/static.dhall 
 
 notebooks = do
   runProcess_ $ shell "notebooks/batchnb.py notebooks/configuration.ipynb"
-  runProcess_ $ shell "cp notebooks/tutorial.ipynb doc/notebooks/notebooks/"
   runProcess_ $ shell "jupyter nbconvert doc/notebooks/notebooks/configuration.ipynb --output-dir=doc/notebooks/notebooks"
-  runProcess_ $ shell "jupyter nbconvert doc/notebooks/notebooks/tutorial.ipynb --output-dir=doc/notebooks/notebooks"
+  runProcess_ $ shell "rm doc/notebooks/notebooks/configuration.ipynb"
+  runProcess_ $ shell "jupyter nbconvert notebooks/tutorial.ipynb --output-dir=doc/notebooks/notebooks"
 
 runshake as =
   withArgs as $ shakeArgs shakeOptions $ do

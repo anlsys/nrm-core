@@ -1195,23 +1195,39 @@
                                             "oneOf": [
                                                 {
                                                     "required": [
-                                                        "lagrangeConstraints"
+                                                        "lagrange"
                                                     ],
                                                     "type": "object",
                                                     "properties": {
-                                                        "lagrangeConstraints": {
-                                                            "type": "number"
+                                                        "lagrange": {
+                                                            "required": [
+                                                                "lagrangeConstraint"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "lagrangeConstraint": {
+                                                                    "type": "number"
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 },
                                                 {
                                                     "required": [
-                                                        "knapsackConstraints"
+                                                        "knapsack"
                                                     ],
                                                     "type": "object",
                                                     "properties": {
-                                                        "knapsackConstraints": {
-                                                            "type": "number"
+                                                        "knapsack": {
+                                                            "required": [
+                                                                "knapsackConstraint"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "knapsackConstraint": {
+                                                                    "type": "number"
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }

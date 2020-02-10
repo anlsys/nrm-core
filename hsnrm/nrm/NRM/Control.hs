@@ -55,18 +55,18 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
       Just acp -> do
         g <- liftIO getStdGen
         let (b, a, g') = learnCfg ccfg & \case
-              LagrangeConstraints _ ->
+              Lagrange _ ->
                 initPFMAB
                   g
                   (Arms acp)
                   & _1
-                  %~ LagrangeConstraints
-              KnapsackConstraints (BwCR.T gamma) ->
+                  %~ Lagrange
+              Knapsack (BwCR.T gamma) ->
                 initBwCR
                   g
                   (BwCRHyper gamma (Arms acp) undefined undefined)
                   & _1
-                  %~ KnapsackConstraints
+                  %~ Knapsack
         liftIO $ setStdGen g'
         field @"bandit" .= Just b
         return $ Decision a
@@ -137,7 +137,9 @@ wrappedCStep cc stepObjectives stepConstraints sensors t mRefActions =
             field @"referenceMeasurementCounter" .= counterValue
             if unrefine counterValue <= unrefine maxCounter
               then case bufM of
-                Nothing -> normalAction
+                Nothing ->
+                  -- we perform the inner control in a standard way
+                  normalAction
                 Just buffered -> do
                   -- we need to conclude this reference measurement mechanism
                   -- put the measurements that were just done in referenceMeasurements
@@ -147,6 +149,12 @@ wrappedCStep cc stepObjectives stepConstraints sensors t mRefActions =
                   action buffered
               else do
                 -- we need to start this reference measurement mechanism:
+                -- reset the counter
+                field @"referenceMeasurementCounter"
+                  .= ( fromRight
+                         (panic "Catastrophic static refinement error")
+                         $ refine 0
+                     )
                 -- put the current measurements in "bufferedMeasurements"
                 field @"bufferedMeasurements" ?= measurements
                 -- take the reference actions
@@ -202,13 +210,13 @@ stepFromSqueezed stepObjectives stepConstraints sensors measurements = do
               g <- liftIO getStdGen
               (a, g') <-
                 get >>= \case
-                  KnapsackConstraints b -> do
+                  Knapsack b -> do
                     let ((a, g'), s') = runState (stepBwCR g ((snd <$> robjs) <> undefined)) b
-                    put (KnapsackConstraints s')
+                    put (Knapsack s')
                     return (a, g')
-                  LagrangeConstraints b -> do
+                  Lagrange b -> do
                     let ((a, g'), s') = runState (stepPFMAB g (hardConstrainedObjective robjs rconstr)) b
-                    put (LagrangeConstraints s')
+                    put (Lagrange s')
                     return (a, g')
               liftIO $ setStdGen g'
               return a

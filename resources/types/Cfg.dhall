@@ -45,10 +45,10 @@
     { minimumControlInterval :
         { fromuS : Double }
     , learnCfg :
-        < LagrangeConstraints :
-            { _1 : { _1 : Double } }
-        | KnapsackConstraints :
-            { _1 : { _1 : Double } }
+        < Lagrange :
+            { lagrangeConstraint : Double }
+        | Knapsack :
+            { knapsackConstraint : Double }
         >
     , speedThreshold :
         Double

@@ -1,5 +1,6 @@
 {-# LANGUAGE DerivingVia #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+{-# OPTIONS_GHC -fno-warn-partial-fields #-}
 
 -- |
 -- Module      : NRM.Types.Controller
@@ -52,15 +53,15 @@ data Input
 data Decision = DoNothing | Decision [V.Action] deriving (Show)
 
 data Learn a b
-  = LagrangeConstraints a
-  | KnapsackConstraints b
+  = Lagrange {lagrangeConstraint :: a}
+  | Knapsack {knapsackConstraint :: b}
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
 
 type LearnState = Learn (Exp3 [V.Action]) (BwCR [V.Action] [ZeroOne Double])
 
 newtype LagrangeMultiplier = LagrangeMultiplier Double
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via Double
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON, Interpret, Inject) via Double
+  deriving (Eq, Show, Generic, MessagePack)
 
 type LearnConfig = Learn LagrangeMultiplier BwCR.T
 
@@ -219,9 +220,9 @@ deriving instance Show BwCR.T
 
 deriving instance MessagePack BwCR.T
 
-deriving instance Interpret BwCR.T
+deriving via Double instance Interpret BwCR.T
 
-deriving instance Inject BwCR.T
+deriving via Double instance Inject BwCR.T
 
 deriving via (GenericJSON Integrator) instance JSONSchema Integrator
 
