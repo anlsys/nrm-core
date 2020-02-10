@@ -31,7 +31,8 @@ data DownstreamCmd
   = DownstreamCmd
       { maxValue :: Units.Operations,
         ratelimit :: Units.Frequency,
-        dtLastReferenceMeasurements :: MemBuffer Double
+        dtLastReferenceMeasurements :: MemBuffer Double,
+        lastRead :: Maybe (Time, Progress)
       }
   deriving (Show, Generic, MessagePack)
   deriving
@@ -48,12 +49,14 @@ instance
       (DownstreamCmdKey downstreamCmdID)
       (ScopedLens (_2 . lens getter setter))
     where
-      getter (DownstreamCmd _maxValue ratelimit dtLastRef) =
+      getter (DownstreamCmd _maxValue ratelimit dtLastRef lastRead) =
         ActiveSensor
           { activeMeta = SensorMeta
               { tags = [S.Maximize, S.DownstreamCmdSignal],
                 range = 0 ... (maxValue downstreamCmd & fromOps & fromIntegral),
-                lastReferenceMeasurements = dtLastRef
+                lastReferenceMeasurements = dtLastRef,
+                last = lastRead <&> fmap (fromIntegral . fromProgress),
+                cumulative = IntervalBased
               },
             maxFrequency = ratelimit,
             process = identity
@@ -63,3 +66,5 @@ instance
           .~ Operations (floor . sup . range $ meta activeSensor)
             & field @"dtLastReferenceMeasurements"
           .~ lastReferenceMeasurements (meta activeSensor)
+            & field @"lastRead"
+          .~ (over _Just (& _2 %~ progress . floor) $ S.last (S.meta activeSensor))

@@ -396,7 +396,7 @@ commonSP ::
 commonSP callTime key value = do
   cfg <- ask
   st <- get
-  Sensors.process cfg callTime st key value & commonProcess callTime
+  processActiveSensor cfg callTime st key value & commonProcess callTime
 
 commonProcess :: U.Time -> MeasurementOutput -> NRM (CommonOutcome Measurement)
 commonProcess callTime = \case

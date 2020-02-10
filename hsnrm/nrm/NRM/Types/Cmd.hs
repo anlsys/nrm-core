@@ -104,11 +104,12 @@ addDownstreamCmdClient Cmd {..} downstreamCmdClientID =
         { downstreamCmds =
             LM.insert
               downstreamCmdClientID
-              ( DownstreamCmd
-                  perfLimit
-                  perfFreq
-                  MemBuffer.empty
-              )
+              DownstreamCmd
+                { maxValue = perfLimit,
+                  ratelimit = perfFreq,
+                  dtLastReferenceMeasurements = MemBuffer.empty,
+                  lastRead = Nothing
+                }
               downstreamCmds,
           ..
         }
@@ -123,11 +124,12 @@ addDownstreamThreadClient Cmd {..} downstreamThreadClientID =
       { downstreamThreads =
           LM.insert
             downstreamThreadClientID
-            ( DownstreamThread
-                (1 & progress)
-                ratelimit
-                MemBuffer.empty
-            )
+            DownstreamThread
+              { maxValue = (1 & progress),
+                ratelimit = ratelimit,
+                dtLastReferenceMeasurements = MemBuffer.empty,
+                lastRead = Nothing
+              }
             downstreamThreads,
         ..
       }

@@ -1,5 +1,5 @@
 { stdenv, gcc, src, fetchgit, gfortran, pkgconfig, libnrm, nix-update-source
-, problemSize ? "80000000", iterationCount ? "10", nrmSupport ? false }:
+, problemSize ? "80000000", iterationCount ? "20", nrmSupport ? false }:
 
 let inherit (stdenv.lib) optional;
 

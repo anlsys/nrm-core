@@ -69,8 +69,8 @@ newtype Time = Time {fromuS :: Double}
   deriving (Show, Num, Fractional, JSONSchema, ToJSON, FromJSON) via Double
 
 newtype Energy = Energy {fromuJ :: Double}
-  deriving (Eq, Generic, Data, Inject, Interpret, MessagePack)
-  deriving (Show, JSONSchema, ToJSON, FromJSON) via Double
+  deriving (Eq, Ord, Generic, Data, Inject, Interpret, MessagePack)
+  deriving (Show, Num, JSONSchema, ToJSON, FromJSON) via Double
 
 -- | Microjoule value constructor.
 progress :: Int -> Progress

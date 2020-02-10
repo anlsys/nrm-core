@@ -9,7 +9,7 @@
 -- Maintainer  : fre@freux.fr
 module NRM.Sensors
   ( cpdSensors,
-    NRM.Sensors.process,
+    processActiveSensor,
     MeasurementOutput (..),
     processPassiveSensor,
     ProcessPassiveSensorOutput (..),
@@ -47,14 +47,14 @@ cpdSensors st =
 
 data MeasurementOutput = Adjusted NRMState | Ok NRMState Measurement | NotFound
 
-process ::
+processActiveSensor ::
   Cfg ->
   Time ->
   NRMState ->
   ActiveSensorKey ->
   Double ->
   MeasurementOutput
-process _cfg time st sensorKey value =
+processActiveSensor _cfg time st sensorKey value =
   DM.lookup sensorKey (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor) & \case
     Nothing -> NotFound
     Just (ScopedLens sl) ->
@@ -65,10 +65,14 @@ process _cfg time st sensorKey value =
           & \case
             MeasurementOk ->
               Ok
-                st
+                (st & sl . field @"activeMeta" . field @"last" .~ Just (time, value))
                 ( Measurement
                     { sensorID = toS sensorKey,
-                      sensorValue = value,
+                      sensorValue = cumulative (meta s) & \case
+                        Cumulative -> last (meta s) & \case
+                          Nothing -> 0
+                          Just (_, oldValue) -> value - oldValue
+                        IntervalBased -> value,
                       time = time
                     }
                 )
@@ -87,14 +91,23 @@ processPassiveSensor ::
 processPassiveSensor ps@(S.range . meta -> i) time sensorID value
   | value < inf i =
     IllegalValueRemediation $
-      ps {last = Nothing, passiveMeta = (meta ps) {S.range = 2 * value - sup i ... sup i}}
+      ps {passiveMeta = (meta ps) {S.range = 2 * value - sup i ... sup i, last = Nothing}}
   | sup i < value =
     IllegalValueRemediation $
-      ps {last = Nothing, passiveMeta = (meta ps) {S.range = inf i ... 2 * value - inf i}}
+      ps {passiveMeta = (meta ps) {S.range = inf i ... 2 * value - inf i, last = Nothing}}
   | otherwise =
     LegalMeasurement
-      (ps & field @"last" ?~ (time, value))
-      (Measurement sensorID value time)
+      (ps & field @"passiveMeta" . field @"last" ?~ (time, value))
+      ( Measurement
+          { sensorID = sensorID,
+            sensorValue = cumulative (meta ps) & \case
+              Cumulative -> last (meta ps) & \case
+                Nothing -> 0
+                Just (_, oldValue) -> value - oldValue
+              IntervalBased -> value,
+            time = time
+          }
+      )
 
 data ProcessPassiveSensorFailureOutput
   = LegalFailure
@@ -105,7 +118,7 @@ processPassiveSensorFailure ::
   Time ->
   ProcessPassiveSensorFailureOutput
 processPassiveSensorFailure ps time =
-  last ps & \case
+  last (meta ps) & \case
     Nothing -> LegalFailure
     Just (oldTime, _)
       | observedFrequency < fromHz (S.frequency ps) ->

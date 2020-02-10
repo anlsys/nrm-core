@@ -13,6 +13,7 @@ module NRM.Types.Sensor
     PassiveSensor (..),
     SensorMeta (..),
     HasMeta (..),
+    Cumulative (..),
 
     -- * Keys for LensMap
     ActiveSensorKey (..),
@@ -48,7 +49,6 @@ data PassiveSensor
   = PassiveSensor
       { perform :: IO (Maybe Double),
         frequency :: U.Frequency,
-        last :: Maybe (U.Time, Double),
         passiveMeta :: SensorMeta
       }
   deriving (Generic)
@@ -70,11 +70,15 @@ instance HasMeta ActiveSensor where
 instance HasMeta PassiveSensor where
   meta = passiveMeta
 
+data Cumulative = Cumulative | IntervalBased
+
 data SensorMeta
   = SensorMeta
       { tags :: [Tag],
         range :: Interval Double,
-        lastReferenceMeasurements :: MemBuffer Double
+        last :: Maybe (U.Time, Double),
+        lastReferenceMeasurements :: MemBuffer Double,
+        cumulative :: Cumulative
       }
   deriving (Generic)
 

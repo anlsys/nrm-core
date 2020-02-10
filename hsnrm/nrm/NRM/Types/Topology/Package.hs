@@ -37,7 +37,7 @@ data Rapl
         frequency :: Frequency,
         discreteChoices :: [Power],
         defaultPower :: Power,
-        lastTime :: Maybe (Time, Energy),
+        lastRead :: Maybe (Time, Energy),
         history :: MemBuffer Double
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
@@ -85,19 +85,22 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
               )
           )
     where
-      getter (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices _defaultPower last history) =
+      getter (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices _defaultPower lastRead history) =
         S.PassiveSensor
           { passiveMeta = S.SensorMeta
               { tags = [S.Minimize, S.Power, S.Rapl],
                 range = 0 ... fromuJ maxEnergy,
-                S.lastReferenceMeasurements = history
+                S.lastReferenceMeasurements = history,
+                last = lastRead <&> fmap fromuJ,
+                cumulative = S.Cumulative
               },
             frequency = freq,
-            perform = measureRAPLDir path <&> fmap (fromuJ . energy),
-            last = last <&> fmap fromuJ
+            perform = measureRAPLDir path <&> fmap (fromuJ . energy)
           }
       setter rapl passiveSensor =
         rapl & field @"max"
           .~ MaxEnergy (uJ (sup $ S.range $ S.meta passiveSensor))
             & field @"history"
           .~ S.lastReferenceMeasurements (S.meta passiveSensor)
+            & field @"lastRead"
+          .~ (over _Just (& _2 %~ uJ) $ S.last (S.meta passiveSensor))

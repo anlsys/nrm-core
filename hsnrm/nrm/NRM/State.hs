@@ -96,7 +96,7 @@ initialState c time = do
                             max = maxEnergy,
                             discreteChoices = [watts 180, watts 200],
                             defaultPower = watts 200,
-                            lastTime = Nothing,
+                            lastRead = Nothing,
                             history = MemBuffer.empty
                           }
                       )

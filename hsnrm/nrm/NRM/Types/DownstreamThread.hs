@@ -31,7 +31,8 @@ data DownstreamThread
   = DownstreamThread
       { maxValue :: Progress,
         ratelimit :: Frequency,
-        dtLastReferenceMeasurements :: MemBuffer Double
+        dtLastReferenceMeasurements :: MemBuffer Double,
+        lastRead :: Maybe (Time, Progress)
       }
   deriving (Eq, Ord, Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DownstreamThread
@@ -46,12 +47,14 @@ instance
       (DownstreamThreadKey downstreamThreadID)
       (ScopedLens (_2 . lens getter setter))
     where
-      getter (DownstreamThread _maxValue ratelimit dtLastRef) =
+      getter (DownstreamThread _maxValue ratelimit dtLastRef lastRead) =
         ActiveSensor
           { activeMeta = SensorMeta
               { tags = [S.Maximize, S.DownstreamThreadSignal],
                 range = 0 ... (maxValue downstreamThread & fromProgress & fromIntegral),
-                lastReferenceMeasurements = dtLastRef
+                lastReferenceMeasurements = dtLastRef,
+                last = lastRead <&> fmap (fromIntegral . fromProgress),
+                cumulative = IntervalBased
               },
             maxFrequency = ratelimit,
             process = identity
@@ -61,3 +64,5 @@ instance
           .~ progress (floor . sup $ range (meta activeSensor))
             & field @"dtLastReferenceMeasurements"
           .~ lastReferenceMeasurements (meta activeSensor)
+            & field @"lastRead"
+          .~ (over _Just (& _2 %~ progress . floor) $ S.last (S.meta activeSensor))
