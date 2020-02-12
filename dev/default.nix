@@ -249,13 +249,13 @@ pkgs // rec {
     });
 
   stream-raw = callPackage ./pkgs/stream {
-    iterationCount = "200";
+    iterationCount = "400";
     inherit libnrm;
     nrmSupport = false;
   };
 
   stream = callPackage ./pkgs/stream {
-    iterationCount = "200";
+    iterationCount = "400";
     inherit libnrm;
     nrmSupport = true;
   };

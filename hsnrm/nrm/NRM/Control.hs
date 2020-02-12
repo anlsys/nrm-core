@@ -106,17 +106,17 @@ tryControlStep ::
   ControlM Decision
 tryControlStep ccfg cpd t mRefActions = case objectives cpd of
   [] -> doNothing
-  os -> wrappedCStep ccfg os (CPD.Core.constraints cpd) (DM.keys $ sensors cpd) t mRefActions
+  os -> wrappedCStep ccfg os (CPD.Core.constraints cpd) (sensors cpd <&> range) t mRefActions
 
 wrappedCStep ::
   ControlCfg ->
   [(Double, OExpr)] ->
   [(Interval Double, OExpr)] ->
-  [SensorID] ->
+  Map SensorID (Interval Double) ->
   Time ->
   Maybe [Action] ->
   ControlM Decision
-wrappedCStep cc stepObjectives stepConstraints sensors t mRefActions =
+wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions =
   logInfo "control: squeeze attempt"
     >> use (field @"integrator" . field @"measured") <&> squeeze t >>= \case
       Nothing -> logInfo "control: integrator squeeze failure" >> doNothing
@@ -127,14 +127,14 @@ wrappedCStep cc stepObjectives stepConstraints sensors t mRefActions =
         bufM <- use (field @"bufferedMeasurements")
         let maxCounter = referenceMeasurementRoundInterval cc
         -- declaring some helper functions
-        let action = stepFromSqueezed stepObjectives stepConstraints sensors
-        let normalAction = action measurements
+        let controlStep = stepFromSqueezed stepObjectives stepConstraints sensorRanges
+        let innerStep = controlStep measurements
         refine (unrefine counter + 1) & \case
           Left _ -> do
             logError "refinement failed in wrappedCStep"
             doNothing
           Right counterValue -> case mRefActions of
-            Nothing -> normalAction
+            Nothing -> innerStep
             Just refActions -> do
               field @"referenceMeasurementCounter" .= counterValue
               if unrefine counterValue <= unrefine maxCounter
@@ -142,7 +142,7 @@ wrappedCStep cc stepObjectives stepConstraints sensors t mRefActions =
                   Nothing -> do
                     logInfo "control: inner control"
                     -- we perform the inner control in a standard way
-                    normalAction
+                    innerStep
                   Just buffered -> do
                     logInfo "control: meta control - concluding reference measurement step, resuming inner control"
                     -- we need to conclude this reference measurement mechanism
@@ -150,13 +150,12 @@ wrappedCStep cc stepObjectives stepConstraints sensors t mRefActions =
                     field @"referenceMeasurements" %= enqueueAll measurements
                     -- feed the buffered measurement to the bandit
                     field @"bufferedMeasurements" .= Nothing
-                    action buffered
+                    controlStep buffered
                 else do
                   -- we need to start this reference measurement mechanism:
                   logInfo "control: meta control - starting reference measurement step"
                   -- reset the counter
-                  field @"referenceMeasurementCounter"
-                    .= unsafeRefine 0
+                  field @"referenceMeasurementCounter" .= unsafeRefine 0
                   -- put the current measurements in "bufferedMeasurements"
                   field @"bufferedMeasurements" ?= measurements
                   -- take the reference actions
@@ -165,14 +164,15 @@ wrappedCStep cc stepObjectives stepConstraints sensors t mRefActions =
 stepFromSqueezed ::
   [(Double, OExpr)] ->
   [(Interval Double, OExpr)] ->
-  [SensorID] ->
+  Map SensorID (Interval Double) ->
   Map SensorID Double ->
   ControlM Decision
-stepFromSqueezed stepObjectives stepConstraints sensors measurements = do
+stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
+  logInfo "in inner control"
   refMeasurements <- use (field @"referenceMeasurements")
   let evaluatedObjectives :: [(Double, Maybe Double, Maybe (Interval Double))]
       evaluatedObjectives = stepObjectives <&> \(w, v) ->
-        (w, eval measurements v, evalRange (DM.fromList $ (,0 ... 1) <$> sensors) v)
+        (w, eval measurements v, evalRange sensorRanges v)
       refinedObjectives :: Maybe [(Double, ZeroOne Double)]
       refinedObjectives =
         sequence
@@ -197,7 +197,7 @@ stepFromSqueezed stepObjectives stepConstraints sensors measurements = do
     (Just robjs, Just rconstr) -> do
       logInfo
         ( "aggregated measurement computed with: \n sensors:"
-            <> show sensors
+            <> show sensorRanges
             <> "\n sensor values:"
             <> show measurements
             <> "\n refined constraints:"
@@ -226,7 +226,7 @@ stepFromSqueezed stepObjectives stepConstraints sensors measurements = do
               return a
           )
     _ -> do
-      logError $
+      logInfo $
         "controller failed a refinement step:"
           <> "\n refinedObjectives: "
           <> show refinedObjectives
