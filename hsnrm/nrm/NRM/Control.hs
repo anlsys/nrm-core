@@ -54,6 +54,7 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
     _ -> maybeNonEmptyActionList & \case
       Nothing -> reset
       Just acp -> do
+        logInfo "control: bandit initialization"
         g <- liftIO getStdGen
         let (b, a, g') = learnCfg ccfg & \case
               Lagrange _ ->
@@ -73,6 +74,7 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
         return $ Decision a
   where
     reset = do
+      logInfo "control: reset"
       field @"bandit" .= Nothing
       field @"bufferedMeasurements" .= Nothing
       field @"referenceMeasurements" .= (sensors cpd $> MemBuffer.empty)
@@ -115,44 +117,50 @@ wrappedCStep ::
   Maybe [Action] ->
   ControlM Decision
 wrappedCStep cc stepObjectives stepConstraints sensors t mRefActions =
-  use (field @"integrator" . field @"measured") <&> squeeze t >>= \case
-    Nothing -> doNothing
-    Just (measurements, newMeasured) -> do
-      field @"integrator" . field @"measured" .= newMeasured
-      counter <- use $ field @"referenceMeasurementCounter"
-      bufM <- use (field @"bufferedMeasurements")
-      let maxCounter = referenceMeasurementRoundInterval cc
-      let action = stepFromSqueezed stepObjectives stepConstraints sensors
-      let normalAction = action measurements
-      refine (unrefine counter + 1) & \case
-        Left _ -> do
-          logError "refinement failed in wrappedCStep"
-          doNothing
-        Right counterValue -> case mRefActions of
-          Nothing -> normalAction
-          Just refActions -> do
-            field @"referenceMeasurementCounter" .= counterValue
-            if unrefine counterValue <= unrefine maxCounter
-              then case bufM of
-                Nothing ->
-                  -- we perform the inner control in a standard way
-                  normalAction
-                Just buffered -> do
-                  -- we need to conclude this reference measurement mechanism
-                  -- put the measurements that were just done in referenceMeasurements
-                  field @"referenceMeasurements" %= enqueueAll measurements
-                  -- feed the buffered measurement to the bandit
-                  field @"bufferedMeasurements" .= Nothing
-                  action buffered
-              else do
-                -- we need to start this reference measurement mechanism:
-                -- reset the counter
-                field @"referenceMeasurementCounter"
-                  .= unsafeRefine 0
-                -- put the current measurements in "bufferedMeasurements"
-                field @"bufferedMeasurements" ?= measurements
-                -- take the reference actions
-                return $ Decision refActions
+  logInfo "control: squeeze attempt"
+    >> use (field @"integrator" . field @"measured") <&> squeeze t >>= \case
+      Nothing -> logInfo "control: integrator squeeze failure" >> doNothing
+      Just (measurements, newMeasured) -> do
+        logInfo "control: integrator squeeze success"
+        field @"integrator" . field @"measured" .= newMeasured
+        counter <- use $ field @"referenceMeasurementCounter"
+        bufM <- use (field @"bufferedMeasurements")
+        let maxCounter = referenceMeasurementRoundInterval cc
+        -- declaring some helper functions
+        let action = stepFromSqueezed stepObjectives stepConstraints sensors
+        let normalAction = action measurements
+        refine (unrefine counter + 1) & \case
+          Left _ -> do
+            logError "refinement failed in wrappedCStep"
+            doNothing
+          Right counterValue -> case mRefActions of
+            Nothing -> normalAction
+            Just refActions -> do
+              field @"referenceMeasurementCounter" .= counterValue
+              if unrefine counterValue <= unrefine maxCounter
+                then case bufM of
+                  Nothing -> do
+                    logInfo "control: inner control"
+                    -- we perform the inner control in a standard way
+                    normalAction
+                  Just buffered -> do
+                    logInfo "control: meta control - concluding reference measurement step, resuming inner control"
+                    -- we need to conclude this reference measurement mechanism
+                    -- put the measurements that were just done in referenceMeasurements
+                    field @"referenceMeasurements" %= enqueueAll measurements
+                    -- feed the buffered measurement to the bandit
+                    field @"bufferedMeasurements" .= Nothing
+                    action buffered
+                else do
+                  -- we need to start this reference measurement mechanism:
+                  logInfo "control: meta control - starting reference measurement step"
+                  -- reset the counter
+                  field @"referenceMeasurementCounter"
+                    .= unsafeRefine 0
+                  -- put the current measurements in "bufferedMeasurements"
+                  field @"bufferedMeasurements" ?= measurements
+                  -- take the reference actions
+                  return $ Decision refActions
 
 stepFromSqueezed ::
   [(Double, OExpr)] ->

@@ -5,6 +5,7 @@ in      ../resources/defaults/Cfg.dhall
             Some
             { minimumControlInterval =
                 { fromuS = 1000000.0 }
+           ,staticPower = { fromuW = 200000000.0 }
             , learnCfg =
                 < Lagrange :
                     { lagrangeConstraint : Double }

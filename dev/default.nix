@@ -103,8 +103,18 @@ pkgs // rec {
     propagatedBuildInputs =
       (pkgs.lib.lists.remove haskellPackages.nrmbin o.propagatedBuildInputs);
     buildInputs = with python37Packages;
-      (pkgs.lib.lists.remove haskellPackages.nrmbin o.buildInputs)
-      ++ [ flake8 autopep8 black mypy pytype nbformat nbconvert pandas matplotlib nb_black ];
+      (pkgs.lib.lists.remove haskellPackages.nrmbin o.buildInputs) ++ [
+        flake8
+        autopep8
+        black
+        mypy
+        pytype
+        nbformat
+        nbconvert
+        pandas
+        matplotlib
+        nb_black
+      ];
 
     shellHook = ''
       export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
@@ -116,15 +126,8 @@ pkgs // rec {
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
   jupyterWithBatteries = (pkgs.jupyter.override rec {
-    python3 = (python37Packages.python.withPackages (ps:
-      with ps; [
-        nb_black
-        msgpack
-        warlock
-        pyzmq
-        pandas
-        seaborn
-      ]));
+    python3 = (python37Packages.python.withPackages
+      (ps: with ps; [ nb_black msgpack warlock pyzmq pandas seaborn ]));
     definitions = {
       # This is the Python kernel we have defined above.
       python3 = {
@@ -246,13 +249,13 @@ pkgs // rec {
     });
 
   stream-raw = callPackage ./pkgs/stream {
-    iterationCount = "400";
+    iterationCount = "200";
     inherit libnrm;
     nrmSupport = false;
   };
 
   stream = callPackage ./pkgs/stream {
-    iterationCount = "400";
+    iterationCount = "200";
     inherit libnrm;
     nrmSupport = true;
   };
