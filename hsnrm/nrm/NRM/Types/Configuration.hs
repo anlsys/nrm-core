@@ -69,6 +69,7 @@ data Cfg
 data ControlCfg
   = ControlCfg
       { minimumControlInterval :: Time,
+        staticPower :: Power,
         learnCfg :: LearnConfig,
         speedThreshold :: ZeroOne Double,
         referenceMeasurementRoundInterval :: Refined (GreaterThan 5) Int
@@ -111,6 +112,7 @@ data UpstreamCfg
 instance Default ControlCfg where
   def = ControlCfg
     { minimumControlInterval = 0.1 & seconds,
+      staticPower = watts 200,
       speedThreshold = fe (refine 0.9),
       learnCfg = Lagrange (LagrangeMultiplier 0.5),
       referenceMeasurementRoundInterval = unsafeRefine 6

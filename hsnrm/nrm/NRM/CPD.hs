@@ -23,6 +23,7 @@ import NRM.Sensors
 import NRM.Types.Configuration
 import NRM.Types.Sensor as S
 import NRM.Types.State
+import NRM.Types.Units
 import Numeric.Interval hiding (elem)
 import Protolude hiding (Map)
 import Refined (unrefine)
@@ -35,13 +36,15 @@ toCPD cfg st = Problem {..}
     (objectives, constraints) = fromMaybe ([], []) (throughputConstrained <$> cfg <*> Just st)
 
 throughputConstrained ::
+  -- | Control configuration
   ControlCfg ->
+  -- | State
   NRMState ->
   ( [(Double, OExpr)],
     [(Interval Double, OExpr)]
   )
 throughputConstrained cfg st =
-  ( DM.toList toMinimize <&> \(i, _) -> (1, sID i),
+  ( (DM.toList toMinimize <&> \(i, _) -> (1, sID i)) <> [(1.0, scalar (fromuW $ staticPower cfg))],
     DM.toList constrained <&> \(i, _) -> (0 ... unrefine (speedThreshold cfg), sID i)
   )
   where

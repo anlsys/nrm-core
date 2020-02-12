@@ -32,6 +32,7 @@ import NRM.Types.Units
 import Numeric.Interval
 import Protolude hiding (Map, log)
 import Refined
+import Refined.Unsafe
 import System.Random
 
 -- | Zoomed NRM monad. Beware: can still `behave` and `ask`.
@@ -88,16 +89,11 @@ banditCartesianProductControl ccfg cpd (NoEvent t) mRefActions = tryControlStep 
 banditCartesianProductControl ccfg cpd (Event t ms) mRefActions = do
   forM_ ms $ \m@(Measurement sensorID sensorValue sensorTime) -> do
     log $ "Processing measurement " <> show m
-    let s = DM.lookup sensorID (sensors cpd)
-    s & \case
-      Nothing -> return ()
-      Just (range -> r) ->
-        let v = (sensorTime, (sensorValue - inf r) / width r)
-         in field @"integrator" %= \(Integrator tlast delta measuredM) ->
-              Integrator
-                tlast
-                delta
-                (measuredM & ix sensorID %~ measureValue (tlast + delta) v)
+    field @"integrator" %= \(Integrator tlast delta measuredM) ->
+      Integrator
+        tlast
+        delta
+        (measuredM & ix sensorID %~ measureValue (tlast + delta) (sensorTime, sensorValue))
   tryControlStep ccfg cpd t mRefActions
 
 tryControlStep ::
@@ -152,10 +148,7 @@ wrappedCStep cc stepObjectives stepConstraints sensors t mRefActions =
                 -- we need to start this reference measurement mechanism:
                 -- reset the counter
                 field @"referenceMeasurementCounter"
-                  .= ( fromRight
-                         (panic "Catastrophic static refinement error")
-                         $ refine 0
-                     )
+                  .= unsafeRefine 0
                 -- put the current measurements in "bufferedMeasurements"
                 field @"bufferedMeasurements" ?= measurements
                 -- take the reference actions
@@ -251,7 +244,7 @@ hardConstrainedObjective robjs rconstr =
 doNothing :: ControlM Decision
 doNothing = return DoNothing
 
--- | Cartesian product of lists. basically `sequence` with special treatment of
+-- | Cartesian product of lists. Basically `sequence` with special treatment of
 -- corner cases.
 cartesianProduct :: [[Action]] -> [[Action]]
 cartesianProduct [] = []

@@ -44,6 +44,8 @@
     Optional
     { minimumControlInterval :
         { fromuS : Double }
+    , staticPower :
+        { fromuW : Double }
     , learnCfg :
         < Lagrange :
             { lagrangeConstraint : Double }

@@ -1204,6 +1204,7 @@
                                 "controlCfg": {
                                     "required": [
                                         "minimumControlInterval",
+                                        "staticPower",
                                         "learnCfg",
                                         "speedThreshold",
                                         "referenceMeasurementRoundInterval"
@@ -1254,6 +1255,9 @@
                                                     }
                                                 }
                                             ]
+                                        },
+                                        "staticPower": {
+                                            "type": "number"
                                         },
                                         "speedThreshold": {
                                             "type": "number"

@@ -20,6 +20,7 @@ import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
 import NRM.Types.CmdID
+import NRM.Types.Controller
 import NRM.Types.DownstreamThreadID
 import NRM.Types.Messaging.DownstreamEvent
 import NRM.Types.Slice as C
@@ -38,7 +39,7 @@ data Pub
   | -- | Publishing when instrumentation produces progress reports.
     PubProgress Time DownstreamThreadID Progress
   | -- | Publishing when an action was taken.
-    PubAction Time CPD.Action
+    PubAction Time CPD.Action Controller
   | -- | Publishing when rewards are computed.
     PubReward Time CPD.Problem Double
   deriving (Show, Generic, MessagePack, NRMMessage)

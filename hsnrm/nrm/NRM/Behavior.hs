@@ -263,7 +263,7 @@ doControl input = do
                       Just (ScopedLens l) -> do
                         liftIO $ go (st ^. l) discreteValue
                         log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
-                        pub (UPub.PubAction (getTime input) action)
+                        pub (UPub.PubAction (getTime input) action (fromMaybe (panic "catastrophic controller maybe type error") $ controller st))
   where
     getTime (Controller.Event t _) = t
     getTime (Controller.NoEvent t) = t

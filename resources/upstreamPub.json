@@ -384,12 +384,647 @@
                         {
                             "required": [
                                 "actuatorID",
-                                "actuatorValue"
+                                "actuatorValue",
+                                "integrator",
+                                "referenceMeasurements",
+                                "referenceMeasurementCounter"
                             ],
                             "type": "object",
                             "properties": {
+                                "bandit": {
+                                    "oneOf": [
+                                        {
+                                            "required": [
+                                                "lagrange"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "lagrange": {
+                                                    "required": [
+                                                        "lagrangeConstraint"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "lagrangeConstraint": {
+                                                            "required": [
+                                                                "t",
+                                                                "lastAction",
+                                                                "k",
+                                                                "weights"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "lastAction": {
+                                                                    "uniqueItems": false,
+                                                                    "items": {
+                                                                        "required": [
+                                                                            "actuatorID",
+                                                                            "actuatorValue"
+                                                                        ],
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "actuatorValue": {
+                                                                                "type": "number"
+                                                                            },
+                                                                            "actuatorID": {
+                                                                                "type": "string"
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "type": "array"
+                                                                },
+                                                                "k": {
+                                                                    "type": "number"
+                                                                },
+                                                                "t": {
+                                                                    "type": "number"
+                                                                },
+                                                                "weights": {
+                                                                    "uniqueItems": false,
+                                                                    "items": {
+                                                                        "required": [
+                                                                            "probability",
+                                                                            "cumulativeLoss",
+                                                                            "action"
+                                                                        ],
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "probability": {
+                                                                                "required": [
+                                                                                    "getProbability"
+                                                                                ],
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "getProbability": {
+                                                                                        "type": "number"
+                                                                                    }
+                                                                                }
+                                                                            },
+                                                                            "action": {
+                                                                                "uniqueItems": false,
+                                                                                "items": {
+                                                                                    "required": [
+                                                                                        "actuatorID",
+                                                                                        "actuatorValue"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "actuatorValue": {
+                                                                                            "type": "number"
+                                                                                        },
+                                                                                        "actuatorID": {
+                                                                                            "type": "string"
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "type": "array"
+                                                                            },
+                                                                            "cumulativeLoss": {
+                                                                                "required": [
+                                                                                    "getCumulativeLoss"
+                                                                                ],
+                                                                                "type": "object",
+                                                                                "properties": {
+                                                                                    "getCumulativeLoss": {
+                                                                                        "type": "number"
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    },
+                                                                    "type": "array"
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "required": [
+                                                "knapsack"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "knapsack": {
+                                                    "required": [
+                                                        "knapsackConstraint"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "knapsackConstraint": {
+                                                            "oneOf": [
+                                                                {
+                                                                    "required": [
+                                                                        "screening"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "screening": {
+                                                                            "required": [
+                                                                                "tScreening",
+                                                                                "screening",
+                                                                                "screened",
+                                                                                "screenQueue",
+                                                                                "screeningHyper"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "screening": {
+                                                                                    "uniqueItems": false,
+                                                                                    "items": {
+                                                                                        "required": [
+                                                                                            "actuatorID",
+                                                                                            "actuatorValue"
+                                                                                        ],
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "actuatorValue": {
+                                                                                                "type": "number"
+                                                                                            },
+                                                                                            "actuatorID": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "screeningHyper": {
+                                                                                    "required": [
+                                                                                        "gamma",
+                                                                                        "arms",
+                                                                                        "constraints",
+                                                                                        "objectiveWeights"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "objectiveWeights": {
+                                                                                            "uniqueItems": false,
+                                                                                            "items": {
+                                                                                                "type": "number"
+                                                                                            },
+                                                                                            "type": "array"
+                                                                                        },
+                                                                                        "gamma": {
+                                                                                            "type": "number"
+                                                                                        },
+                                                                                        "arms": {
+                                                                                            "uniqueItems": false,
+                                                                                            "items": {
+                                                                                                "uniqueItems": false,
+                                                                                                "items": {
+                                                                                                    "required": [
+                                                                                                        "actuatorID",
+                                                                                                        "actuatorValue"
+                                                                                                    ],
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "actuatorValue": {
+                                                                                                            "type": "number"
+                                                                                                        },
+                                                                                                        "actuatorID": {
+                                                                                                            "type": "string"
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                "type": "array"
+                                                                                            },
+                                                                                            "type": "array"
+                                                                                        },
+                                                                                        "constraints": {
+                                                                                            "oneOf": [
+                                                                                                {
+                                                                                                    "required": [
+                                                                                                        "i"
+                                                                                                    ],
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "i": {
+                                                                                                            "items": [
+                                                                                                                {
+                                                                                                                    "uniqueItems": false,
+                                                                                                                    "items": {
+                                                                                                                        "type": "number"
+                                                                                                                    },
+                                                                                                                    "type": "array"
+                                                                                                                },
+                                                                                                                {
+                                                                                                                    "uniqueItems": false,
+                                                                                                                    "items": {
+                                                                                                                        "type": "number"
+                                                                                                                    },
+                                                                                                                    "type": "array"
+                                                                                                                }
+                                                                                                            ],
+                                                                                                            "type": "array"
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                {
+                                                                                                    "required": [
+                                                                                                        "empty"
+                                                                                                    ],
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "empty": {
+                                                                                                            "type": "object",
+                                                                                                            "properties": {}
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "screenQueue": {
+                                                                                    "uniqueItems": false,
+                                                                                    "items": {
+                                                                                        "uniqueItems": false,
+                                                                                        "items": {
+                                                                                            "required": [
+                                                                                                "actuatorID",
+                                                                                                "actuatorValue"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "actuatorValue": {
+                                                                                                    "type": "number"
+                                                                                                },
+                                                                                                "actuatorID": {
+                                                                                                    "type": "string"
+                                                                                                }
+                                                                                            }
+                                                                                        },
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "screened": {
+                                                                                    "uniqueItems": false,
+                                                                                    "items": {
+                                                                                        "items": [
+                                                                                            {
+                                                                                                "uniqueItems": false,
+                                                                                                "items": {
+                                                                                                    "type": "number"
+                                                                                                },
+                                                                                                "type": "array"
+                                                                                            },
+                                                                                            {
+                                                                                                "uniqueItems": false,
+                                                                                                "items": {
+                                                                                                    "required": [
+                                                                                                        "actuatorID",
+                                                                                                        "actuatorValue"
+                                                                                                    ],
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "actuatorValue": {
+                                                                                                            "type": "number"
+                                                                                                        },
+                                                                                                        "actuatorID": {
+                                                                                                            "type": "string"
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                "type": "array"
+                                                                                            }
+                                                                                        ],
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "tScreening": {
+                                                                                    "type": "number"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "required": [
+                                                                        "uCB"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "uCB": {
+                                                                            "required": [
+                                                                                "t",
+                                                                                "lastAction",
+                                                                                "k",
+                                                                                "weights",
+                                                                                "ucbHyper"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "lastAction": {
+                                                                                    "uniqueItems": false,
+                                                                                    "items": {
+                                                                                        "required": [
+                                                                                            "actuatorID",
+                                                                                            "actuatorValue"
+                                                                                        ],
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "actuatorValue": {
+                                                                                                "type": "number"
+                                                                                            },
+                                                                                            "actuatorID": {
+                                                                                                "type": "string"
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                },
+                                                                                "ucbHyper": {
+                                                                                    "required": [
+                                                                                        "gamma",
+                                                                                        "arms",
+                                                                                        "constraints",
+                                                                                        "objectiveWeights"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "objectiveWeights": {
+                                                                                            "uniqueItems": false,
+                                                                                            "items": {
+                                                                                                "type": "number"
+                                                                                            },
+                                                                                            "type": "array"
+                                                                                        },
+                                                                                        "gamma": {
+                                                                                            "type": "number"
+                                                                                        },
+                                                                                        "arms": {
+                                                                                            "uniqueItems": false,
+                                                                                            "items": {
+                                                                                                "uniqueItems": false,
+                                                                                                "items": {
+                                                                                                    "required": [
+                                                                                                        "actuatorID",
+                                                                                                        "actuatorValue"
+                                                                                                    ],
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "actuatorValue": {
+                                                                                                            "type": "number"
+                                                                                                        },
+                                                                                                        "actuatorID": {
+                                                                                                            "type": "string"
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                "type": "array"
+                                                                                            },
+                                                                                            "type": "array"
+                                                                                        },
+                                                                                        "constraints": {
+                                                                                            "oneOf": [
+                                                                                                {
+                                                                                                    "required": [
+                                                                                                        "i"
+                                                                                                    ],
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "i": {
+                                                                                                            "items": [
+                                                                                                                {
+                                                                                                                    "uniqueItems": false,
+                                                                                                                    "items": {
+                                                                                                                        "type": "number"
+                                                                                                                    },
+                                                                                                                    "type": "array"
+                                                                                                                },
+                                                                                                                {
+                                                                                                                    "uniqueItems": false,
+                                                                                                                    "items": {
+                                                                                                                        "type": "number"
+                                                                                                                    },
+                                                                                                                    "type": "array"
+                                                                                                                }
+                                                                                                            ],
+                                                                                                            "type": "array"
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                {
+                                                                                                    "required": [
+                                                                                                        "empty"
+                                                                                                    ],
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "empty": {
+                                                                                                            "type": "object",
+                                                                                                            "properties": {}
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            ]
+                                                                                        }
+                                                                                    }
+                                                                                },
+                                                                                "k": {
+                                                                                    "type": "number"
+                                                                                },
+                                                                                "t": {
+                                                                                    "type": "number"
+                                                                                },
+                                                                                "weights": {
+                                                                                    "uniqueItems": false,
+                                                                                    "items": {
+                                                                                        "required": [
+                                                                                            "cumulativeEstimates",
+                                                                                            "hits",
+                                                                                            "action"
+                                                                                        ],
+                                                                                        "type": "object",
+                                                                                        "properties": {
+                                                                                            "cumulativeEstimates": {
+                                                                                                "uniqueItems": false,
+                                                                                                "items": {
+                                                                                                    "type": "number"
+                                                                                                },
+                                                                                                "type": "array"
+                                                                                            },
+                                                                                            "action": {
+                                                                                                "uniqueItems": false,
+                                                                                                "items": {
+                                                                                                    "required": [
+                                                                                                        "actuatorID",
+                                                                                                        "actuatorValue"
+                                                                                                    ],
+                                                                                                    "type": "object",
+                                                                                                    "properties": {
+                                                                                                        "actuatorValue": {
+                                                                                                            "type": "number"
+                                                                                                        },
+                                                                                                        "actuatorID": {
+                                                                                                            "type": "string"
+                                                                                                        }
+                                                                                                    }
+                                                                                                },
+                                                                                                "type": "array"
+                                                                                            },
+                                                                                            "hits": {
+                                                                                                "type": "number"
+                                                                                            }
+                                                                                        }
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "referenceMeasurements": {
+                                    "uniqueItems": false,
+                                    "items": {
+                                        "items": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "number"
+                                                },
+                                                "type": "array"
+                                            }
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
+                                "referenceMeasurementCounter": {
+                                    "type": "number"
+                                },
                                 "actuatorValue": {
                                     "type": "number"
+                                },
+                                "bufferedMeasurements": {
+                                    "uniqueItems": false,
+                                    "items": {
+                                        "items": [
+                                            {
+                                                "type": "string"
+                                            },
+                                            {
+                                                "type": "number"
+                                            }
+                                        ],
+                                        "type": "array"
+                                    },
+                                    "type": "array"
+                                },
+                                "integrator": {
+                                    "required": [
+                                        "tLast",
+                                        "minimumControlInterval",
+                                        "measured"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "measured": {
+                                            "uniqueItems": false,
+                                            "items": {
+                                                "items": [
+                                                    {
+                                                        "type": "string"
+                                                    },
+                                                    {
+                                                        "oneOf": [
+                                                            {
+                                                                "required": [
+                                                                    "never"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "never": {
+                                                                        "type": "object",
+                                                                        "properties": {}
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "required": [
+                                                                    "running"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "running": {
+                                                                        "required": [
+                                                                            "firstTime",
+                                                                            "lastTime",
+                                                                            "lastValue",
+                                                                            "average"
+                                                                        ],
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "firstTime": {
+                                                                                "type": "number"
+                                                                            },
+                                                                            "average": {
+                                                                                "type": "number"
+                                                                            },
+                                                                            "lastTime": {
+                                                                                "type": "number"
+                                                                            },
+                                                                            "lastValue": {
+                                                                                "type": "number"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            },
+                                                            {
+                                                                "required": [
+                                                                    "done"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "done": {
+                                                                        "required": [
+                                                                            "totalAverageDone",
+                                                                            "lastTimeDone",
+                                                                            "lastValueDone"
+                                                                        ],
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "lastTimeDone": {
+                                                                                "type": "number"
+                                                                            },
+                                                                            "totalAverageDone": {
+                                                                                "type": "number"
+                                                                            },
+                                                                            "lastValueDone": {
+                                                                                "type": "number"
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        ]
+                                                    }
+                                                ],
+                                                "type": "array"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "minimumControlInterval": {
+                                            "type": "number"
+                                        },
+                                        "tLast": {
+                                            "type": "number"
+                                        }
+                                    }
                                 },
                                 "actuatorID": {
                                     "type": "string"
