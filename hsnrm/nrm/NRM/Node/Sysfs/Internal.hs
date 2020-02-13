@@ -19,6 +19,7 @@ module NRM.Node.Sysfs.Internal
     measureRAPLDir,
     readRAPLConfiguration,
     applyRAPLPcap,
+    processRAPLFolder,
 
     -- * Hwmon
     HwmonDirs,

@@ -27,6 +27,7 @@ import NRM.Orphans.NonEmpty ()
 import NRM.Types.Configuration
 import NRM.Types.Controller
 import NRM.Types.MemBuffer as MemBuffer
+import NRM.Types.Messaging.UpstreamPub as UPub
 import NRM.Types.NRM
 import NRM.Types.Units
 import Numeric.Interval
@@ -35,7 +36,7 @@ import Refined
 import Refined.Unsafe
 import System.Random
 
--- | Zoomed NRM monad. Beware: can still `behave` and `ask`.
+-- | Zoomed NRM monad. Can still `behave` and `ask`.
 type ControlM a = App Controller a
 
 -- |  basic control strategy - uses a bandit with a cartesian product
@@ -47,6 +48,7 @@ banditCartesianProductControl ::
   Maybe [Action] ->
   ControlM Decision
 banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
+  pub (UPub.PubCPD t cpd)
   minTime <- use $ field @"integrator" . field @"minimumControlInterval"
   field @"integrator" .= initIntegrator t minTime (DM.keys $ sensors cpd)
   case objectives cpd of
@@ -87,7 +89,8 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
       nonEmpty . cartesianProduct $
         DM.toList (actuators cpd)
           <&> \(actuatorID, a) -> Action actuatorID <$> actions a
-banditCartesianProductControl ccfg cpd (NoEvent t) mRefActions = tryControlStep ccfg cpd t mRefActions
+banditCartesianProductControl ccfg cpd (NoEvent t) mRefActions =
+  tryControlStep ccfg cpd t mRefActions
 banditCartesianProductControl ccfg cpd (Event t ms) mRefActions = do
   forM_ ms $ \m@(Measurement sensorID sensorValue sensorTime) -> do
     log $ "Processing measurement " <> show m
@@ -95,7 +98,10 @@ banditCartesianProductControl ccfg cpd (Event t ms) mRefActions = do
       Integrator
         tlast
         delta
-        (measuredM & ix sensorID %~ measureValue (tlast + delta) (sensorTime, sensorValue))
+        ( measuredM
+            & ix sensorID
+              %~ measureValue (tlast + delta) (sensorTime, sensorValue)
+        )
   tryControlStep ccfg cpd t mRefActions
 
 tryControlStep ::
@@ -116,43 +122,29 @@ wrappedCStep ::
   Time ->
   Maybe [Action] ->
   ControlM Decision
-wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions =
+wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
   logInfo "control: squeeze attempt"
-    >> use (field @"integrator" . field @"measured") <&> squeeze t >>= \case
-      Nothing -> logInfo "control: integrator squeeze failure" >> doNothing
-      Just (measurements, newMeasured) -> do
-        logInfo "control: integrator squeeze success"
-        field @"integrator" . field @"measured" .= newMeasured
-        counter <- use $ field @"referenceMeasurementCounter"
-        bufM <- use (field @"bufferedMeasurements")
-        let maxCounter = referenceMeasurementRoundInterval cc
-        -- declaring some helper functions
-        let controlStep = stepFromSqueezed stepObjectives stepConstraints sensorRanges
-        let innerStep = controlStep measurements
-        refine (unrefine counter + 1) & \case
-          Left _ -> do
-            logError "refinement failed in wrappedCStep"
-            doNothing
-          Right counterValue -> case mRefActions of
-            Nothing -> innerStep
-            Just refActions -> do
-              field @"referenceMeasurementCounter" .= counterValue
-              if unrefine counterValue <= unrefine maxCounter
-                then case bufM of
-                  Nothing -> do
-                    logInfo "control: inner control"
-                    -- we perform the inner control in a standard way
-                    innerStep
-                  Just buffered -> do
-                    logInfo "control: meta control - concluding reference measurement step, resuming inner control"
-                    -- we need to conclude this reference measurement mechanism
-                    -- put the measurements that were just done in referenceMeasurements
-                    field @"referenceMeasurements" %= enqueueAll measurements
-                    -- feed the buffered measurement to the bandit
-                    field @"bufferedMeasurements" .= Nothing
-                    controlStep buffered
-                else do
-                  -- we need to start this reference measurement mechanism:
+  use (field @"integrator" . field @"measured") <&> squeeze t >>= \case
+    Nothing -> logInfo "control: integrator squeeze failure" >> doNothing
+    Just (measurements, newMeasured) -> do
+      -- squeeze was successfull: setting the new integrator state
+      logInfo "control: integrator squeeze success"
+      field @"integrator" . field @"measured" .= newMeasured
+      -- acquiring fields
+      counter <- use $ field @"referenceMeasurementCounter"
+      bufM <- use (field @"bufferedMeasurements")
+      refM <- use $ field @"referenceMeasurements"
+      let maxCounter = referenceMeasurementRoundInterval cc
+      -- helper bindings
+      let controlStep = stepFromSqueezed stepObjectives stepConstraints sensorRanges
+      let innerStep = controlStep measurements
+      refineLog (unrefine counter + 1) $ \counterValue ->
+        case mRefActions of
+          Nothing -> innerStep
+          Just refActions -> do
+            field @"referenceMeasurementCounter" .= counterValue
+            -- define a ControlM monad value for starting the buffering
+            let startBuffering = do
                   logInfo "control: meta control - starting reference measurement step"
                   -- reset the counter
                   field @"referenceMeasurementCounter" .= unsafeRefine 0
@@ -160,6 +152,35 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions =
                   field @"bufferedMeasurements" ?= measurements
                   -- take the reference actions
                   return $ Decision refActions
+            if unrefine counterValue <= unrefine maxCounter
+              then case bufM of
+                Nothing -> do
+                  logInfo "control: inner control"
+                  -- we perform the inner control step if no reference measurements
+                  -- exist and otherwise run reference measurements.
+                  DM.toList refM & \case
+                    [] -> startBuffering
+                    _ -> innerStep
+                Just buffered -> do
+                  -- we need to conclude this reference measurement mechanism
+                  logInfo $
+                    "control: meta control - concluding reference"
+                      <> " measurement step, resuming inner control"
+                  -- put the measurements that were just done in referenceMeasurements
+                  field @"referenceMeasurements" %= enqueueAll measurements
+                  -- clear the buffered measurements
+                  field @"bufferedMeasurements" .= Nothing
+                  -- feed the buffered measurements to the bandit
+                  controlStep buffered
+              else startBuffering
+  where
+    refineLog ::
+      Predicate p x => x -> (Refined p x -> ControlM Decision) -> ControlM Decision
+    refineLog v m = refine v & \case
+      Left _ -> do
+        logError "refinement failed in wrappedCStep"
+        doNothing
+      Right r -> m r
 
 stepFromSqueezed ::
   [(Double, OExpr)] ->
@@ -228,6 +249,16 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
     _ -> do
       logInfo $
         "controller failed a refinement step:"
+          <> "\n stepObjectives: "
+          <> show stepObjectives
+          <> "\n stepConstraints: "
+          <> show stepConstraints
+          <> "\n sensorRanges: "
+          <> show sensorRanges
+          <> "\n measurements: "
+          <> show measurements
+          <> "\n refMeasurements: "
+          <> show refMeasurements
           <> "\n refinedObjectives: "
           <> show refinedObjectives
           <> "\n refinedConstraints: "

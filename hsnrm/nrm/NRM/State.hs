@@ -54,9 +54,11 @@ initialState c time = do
             <$> selectPackageIDs hwl
   packages <- raplCfg c & \case
     Nothing -> return packages'
-    Just raplc -> getDefaultRAPLDirs (toS $ Cfg.raplPath raplc) <&> \case
-      Just (RAPLDirs rapldirs) -> Protolude.foldl goRAPL packages' (LM.toList rapldirs)
-      Nothing -> packages'
+    Just raplc ->
+      getDefaultRAPLDirs (toS $ Cfg.raplPath raplc) >>= \case
+        Just (RAPLDirs rapldirs) -> do
+          return $ Protolude.foldl goRAPL packages' (LM.toList rapldirs)
+        Nothing -> return packages'
   return NRMState
     { controller = controlCfg c <&> \ccfg -> initialController time (minimumControlInterval ccfg) [],
       slices = LM.fromList [],
@@ -93,7 +95,7 @@ initialState c time = do
                       ( Rapl
                           { frequency = hz 3,
                             raplPath = path,
-                            max = maxEnergy,
+                            max = watts 300,
                             discreteChoices = [watts 180, watts 200],
                             defaultPower = watts 200,
                             lastRead = Nothing,

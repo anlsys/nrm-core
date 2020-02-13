@@ -216,7 +216,6 @@ nrm callTime (DownstreamEvent clientid msg) =
 nrm callTime DoControl = doControl (NoEvent callTime)
 nrm callTime DoSensor = do
   st <- get
-  c <- ask <&> controlCfg
   (st', measurements) <- lift (foldM (folder callTime) (st, Just []) (LM.toList $ lenses st))
   put st'
   measurements & \case
@@ -225,11 +224,7 @@ nrm callTime DoSensor = do
     Just ms ->
       pub (UPub.PubMeasurements callTime ms)
         >> doControl (Event callTime ms)
-    Nothing ->
-      let mcpd = (`NRMCPD.toCPD` st') <$> Just c
-       in for_ mcpd $ \cpd ->
-            pub (UPub.PubCPD callTime cpd)
-              >> doControl (Reconfigure callTime)
+    Nothing -> doControl (Reconfigure callTime)
 nrm _callTime DoShutdown = return ()
 
 -- | doControl checks the integrator state and triggers a control iteration if NRM is ready.

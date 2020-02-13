@@ -33,7 +33,7 @@ import Protolude hiding (max)
 data Rapl
   = Rapl
       { raplPath :: FilePath,
-        max :: MaxEnergy,
+        max :: Power,
         frequency :: Frequency,
         discreteChoices :: [Power],
         defaultPower :: Power,
@@ -61,7 +61,7 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
               )
           )
     where
-      getter (Rapl path (MaxEnergy _maxEnergy) _freq discreteChoices defaultPower _last _history) =
+      getter (Rapl path _maxPower _freq discreteChoices defaultPower _last _history) =
         Actuator
           { actions = discreteChoices <&> fromuW,
             referenceAction = fromuW defaultPower,
@@ -85,11 +85,11 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
               )
           )
     where
-      getter (Rapl path (MaxEnergy maxEnergy) freq _discreteChoices _defaultPower lastRead history) =
+      getter (Rapl path maxPower freq _discreteChoices _defaultPower lastRead history) =
         S.PassiveSensor
           { passiveMeta = S.SensorMeta
               { tags = [S.Minimize, S.Power, S.Rapl],
-                range = 0 ... fromuJ maxEnergy,
+                range = 0 ... fromuW maxPower,
                 S.lastReferenceMeasurements = history,
                 last = lastRead <&> fmap fromuJ,
                 cumulative = S.Cumulative
@@ -99,7 +99,7 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
           }
       setter rapl passiveSensor =
         rapl & field @"max"
-          .~ MaxEnergy (uJ (sup $ S.range $ S.meta passiveSensor))
+          .~ (uW (sup $ S.range $ S.meta passiveSensor))
             & field @"history"
           .~ S.lastReferenceMeasurements (S.meta passiveSensor)
             & field @"lastRead"
