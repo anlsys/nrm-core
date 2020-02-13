@@ -131,6 +131,7 @@ notebooks = do
   runProcess_ $ shell "rm doc/notebooks/notebooks/configuration.ipynb"
   runProcess_ $ shell "rm doc/notebooks/notebooks/tutorial.ipynb"
   runProcess_ $ shell "jupyter nbconvert notebooks/tutorial.ipynb --output-dir=doc/notebooks/notebooks"
+  runProcess_ $ shell "jupyter nbconvert notebooks/internal-control.ipynb --output-dir=doc/notebooks/notebooks"
 
 runshake as =
   withArgs as $ shakeArgs shakeOptions $ do
