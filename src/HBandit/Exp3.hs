@@ -79,7 +79,7 @@ instance
     where
       awl = toList as <&> (1 :: Double,)
       (a, g') = sampleWL awl g
-      ws = as <&> Weight (Probability 1) (CumulativeLoss 0)
+      ws = as <&> Weight (Probability $ 1.0 / fromIntegral (length (toList as))) (CumulativeLoss 0)
 
   step g (R.unrefine -> l) =
     get <&> lastAction >>= \oldAction -> do
