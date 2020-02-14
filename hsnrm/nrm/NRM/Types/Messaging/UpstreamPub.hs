@@ -39,7 +39,7 @@ data Pub
   | -- | Publishing when instrumentation produces progress reports.
     PubProgress Time DownstreamThreadID Progress
   | -- | Publishing when an action was taken.
-    PubAction Time CPD.Action Controller
+    PubAction Time [CPD.Action] DecisionMetadata Controller
   | -- | Publishing when rewards are computed.
     PubReward Time CPD.Problem Double
   deriving (Show, Generic, MessagePack, NRMMessage)

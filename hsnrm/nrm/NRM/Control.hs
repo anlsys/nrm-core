@@ -51,7 +51,7 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
   pub (UPub.PubCPD t cpd)
   minTime <- use $ field @"integrator" . field @"minimumControlInterval"
   field @"integrator" .= initIntegrator t minTime (DM.keys $ sensors cpd)
-  case objectives cpd of
+  case CPD.Core.objectives cpd of
     [] -> reset
     _ -> maybeNonEmptyActionList & \case
       Nothing -> reset
@@ -73,7 +73,7 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
                   %~ Knapsack
         liftIO $ setStdGen g'
         field @"bandit" .= Just b
-        return $ Decision a
+        return $ Decision a InitialDecision
   where
     reset = do
       logInfo "control: reset"
@@ -110,7 +110,7 @@ tryControlStep ::
   Time ->
   Maybe [Action] ->
   ControlM Decision
-tryControlStep ccfg cpd t mRefActions = case objectives cpd of
+tryControlStep ccfg cpd t mRefActions = case CPD.Core.objectives cpd of
   [] -> doNothing
   os -> wrappedCStep ccfg os (CPD.Core.constraints cpd) (sensors cpd <&> range) t mRefActions
 
@@ -151,7 +151,7 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
                   -- put the current measurements in "bufferedMeasurements"
                   field @"bufferedMeasurements" ?= measurements
                   -- take the reference actions
-                  return $ Decision refActions
+                  return $ Decision refActions ReferenceMeasurementDecision
             if unrefine counterValue <= unrefine maxCounter
               then case bufM of
                 Nothing -> do
@@ -246,6 +246,7 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
               liftIO $ setStdGen g'
               return a
           )
+          <*> pure (InnerDecision (ConstraintValue . snd <$> rconstr) (ObjectiveValue . unrefine . snd <$> robjs))
     _ -> do
       logInfo $
         "controller failed a refinement step:"

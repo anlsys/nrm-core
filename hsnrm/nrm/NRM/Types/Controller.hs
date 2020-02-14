@@ -11,6 +11,9 @@ module NRM.Types.Controller
   ( Controller (..),
     Input (..),
     Decision (..),
+    ObjectiveValue (..),
+    ConstraintValue (..),
+    DecisionMetadata (..),
     Learn (..),
     LearnState,
     LearnConfig,
@@ -51,7 +54,25 @@ data Input
     Reconfigure Time
   deriving (Show)
 
-data Decision = DoNothing | Decision [V.Action] deriving (Show)
+newtype ConstraintValue = ConstraintValue {fromConstraintValue :: Double}
+  deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ConstraintValue
+
+newtype ObjectiveValue = ObjectiveValue {fromObjectiveValue :: Double}
+  deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ObjectiveValue
+
+data DecisionMetadata
+  = InitialDecision
+  | ReferenceMeasurementDecision
+  | InnerDecision
+      { constraints :: [ConstraintValue],
+        objectives :: [ObjectiveValue]
+      }
+  deriving (Show, Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DecisionMetadata
+
+data Decision = DoNothing | Decision [V.Action] DecisionMetadata deriving (Show)
 
 data Learn a b
   = Lagrange {lagrangeConstraint :: a}

@@ -249,16 +249,17 @@ doControl input = do
                 else Nothing
          in banditCartesianProductControl ccfg cpd input mRefActions >>= \case
               DoNothing -> return ()
-              Decision d -> forM_ d $ \action@(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->
-                fromCPDKey actuatorID & \case
-                  Nothing -> log "couldn't decode actuatorID"
-                  Just aKey ->
-                    LM.lookup aKey (lenses st) & \case
-                      Nothing -> log "NRM internal error: actuator not found."
-                      Just (ScopedLens l) -> do
-                        liftIO $ go (st ^. l) discreteValue
-                        log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
-                        pub (UPub.PubAction (getTime input) action (fromMaybe (panic "catastrophic controller maybe type error") $ controller st))
+              Decision actions decisionMeta -> do
+                get >>= \ctrl -> pub (UPub.PubAction (getTime input) actions decisionMeta ctrl)
+                forM_ actions $ \(Action actuatorID (CPD.DiscreteDouble discreteValue)) ->
+                  fromCPDKey actuatorID & \case
+                    Nothing -> log "couldn't decode actuatorID"
+                    Just aKey ->
+                      LM.lookup aKey (lenses st) & \case
+                        Nothing -> log "NRM internal error: actuator not found."
+                        Just (ScopedLens l) -> do
+                          liftIO $ go (st ^. l) discreteValue
+                          log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
   where
     getTime (Controller.Event t _) = t
     getTime (Controller.NoEvent t) = t
