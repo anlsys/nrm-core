@@ -77,39 +77,7 @@
                                     "items": {
                                         "items": [
                                             {
-                                                "oneOf": [
-                                                    {
-                                                        "required": [
-                                                            "i"
-                                                        ],
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "i": {
-                                                                "items": [
-                                                                    {
-                                                                        "type": "number"
-                                                                    },
-                                                                    {
-                                                                        "type": "number"
-                                                                    }
-                                                                ],
-                                                                "type": "array"
-                                                            }
-                                                        }
-                                                    },
-                                                    {
-                                                        "required": [
-                                                            "empty"
-                                                        ],
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "empty": {
-                                                                "type": "object",
-                                                                "properties": {}
-                                                            }
-                                                        }
-                                                    }
-                                                ]
+                                                "type": "number"
                                             },
                                             {}
                                         ],
@@ -382,9 +350,101 @@
                             "type": "number"
                         },
                         {
+                            "uniqueItems": false,
+                            "items": {
+                                "required": [
+                                    "actuatorID",
+                                    "actuatorValue"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "actuatorValue": {
+                                        "type": "number"
+                                    },
+                                    "actuatorID": {
+                                        "type": "string"
+                                    }
+                                }
+                            },
+                            "type": "array"
+                        },
+                        {
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "initialDecision"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "initialDecision": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "referenceMeasurementDecision"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "referenceMeasurementDecision": {
+                                            "type": "object",
+                                            "properties": {}
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "innerDecision"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "innerDecision": {
+                                            "required": [
+                                                "constraints",
+                                                "objectives"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "objectives": {
+                                                    "uniqueItems": false,
+                                                    "items": {
+                                                        "required": [
+                                                            "fromObjectiveValue"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "fromObjectiveValue": {
+                                                                "type": "number"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "array"
+                                                },
+                                                "constraints": {
+                                                    "uniqueItems": false,
+                                                    "items": {
+                                                        "required": [
+                                                            "fromConstraintValue"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "fromConstraintValue": {
+                                                                "type": "number"
+                                                            }
+                                                        }
+                                                    },
+                                                    "type": "array"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
                             "required": [
-                                "actuatorID",
-                                "actuatorValue",
                                 "integrator",
                                 "referenceMeasurements",
                                 "referenceMeasurementCounter"
@@ -906,9 +966,6 @@
                                 "referenceMeasurementCounter": {
                                     "type": "number"
                                 },
-                                "actuatorValue": {
-                                    "type": "number"
-                                },
                                 "bufferedMeasurements": {
                                     "uniqueItems": false,
                                     "items": {
@@ -1025,9 +1082,6 @@
                                             "type": "number"
                                         }
                                     }
-                                },
-                                "actuatorID": {
-                                    "type": "string"
                                 }
                             }
                         }
@@ -1074,39 +1128,7 @@
                                     "items": {
                                         "items": [
                                             {
-                                                "oneOf": [
-                                                    {
-                                                        "required": [
-                                                            "i"
-                                                        ],
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "i": {
-                                                                "items": [
-                                                                    {
-                                                                        "type": "number"
-                                                                    },
-                                                                    {
-                                                                        "type": "number"
-                                                                    }
-                                                                ],
-                                                                "type": "array"
-                                                            }
-                                                        }
-                                                    },
-                                                    {
-                                                        "required": [
-                                                            "empty"
-                                                        ],
-                                                        "type": "object",
-                                                        "properties": {
-                                                            "empty": {
-                                                                "type": "object",
-                                                                "properties": {}
-                                                            }
-                                                        }
-                                                    }
-                                                ]
+                                                "type": "number"
                                             },
                                             {}
                                         ],

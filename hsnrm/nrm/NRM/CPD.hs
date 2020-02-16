@@ -24,7 +24,6 @@ import NRM.Types.Configuration
 import NRM.Types.Sensor as S
 import NRM.Types.State
 import NRM.Types.Units
-import Numeric.Interval hiding (elem)
 import Protolude hiding (Map)
 import Refined (unrefine)
 
@@ -41,11 +40,13 @@ throughputConstrained ::
   -- | State
   NRMState ->
   ( [(Double, OExpr)],
-    [(Interval Double, OExpr)]
+    [(Double, OExpr)]
   )
 throughputConstrained cfg st =
-  ( (DM.toList toMinimize <&> \(i, _) -> (1, sID i)) <> [(1.0, scalar (fromuW $ staticPower cfg))],
-    DM.toList constrained <&> \(i, _) -> (0 ... unrefine (speedThreshold cfg), sID i)
+  ( DM.toList toMinimize
+      <&> \(i, _) -> (1, sID i \+ scalar (fromWatts $ staticPower cfg)),
+    DM.toList constrained
+      <&> \(i, _) -> (unrefine $ speedThreshold cfg, sID i)
   )
   where
     toMinimize :: Map SensorID SensorMeta

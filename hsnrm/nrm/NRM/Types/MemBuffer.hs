@@ -34,7 +34,6 @@ empty = unsafeRefine []
 enqueue :: a -> MemBuffer a -> MemBuffer a
 enqueue x xs = unsafeRefine $ take 9 (x : unrefine xs)
 
--- | adding a data point to a MemBuffer, discarding the oldest point if there
--- are more than 10 points.
+-- | MemBuffer average
 avgBuffer :: (Floating a) => MemBuffer a -> a
 avgBuffer (unrefine -> xs) = sum xs / fromIntegral (length xs)

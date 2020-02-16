@@ -30,13 +30,16 @@ module NRM.Types.Units
     -- * Energy
     Energy,
     uJ,
+    joules,
     fromuJ,
+    fromJoules,
 
     -- * Power
     Power,
     uW,
-    fromuW,
     watts,
+    fromuW,
+    fromWatts,
   )
 where
 
@@ -80,9 +83,21 @@ progress = Progress
 uJ :: Double -> Energy
 uJ = Energy
 
+-- | Joule value accessor.
+fromJoules :: Energy -> Double
+fromJoules = (/ 1000000) . fromuJ
+
+-- | Watt value constructor.
+joules :: Double -> Energy
+joules = Energy . (* 1000000.0)
+
 -- | Microwatt value constructor.
 uW :: Double -> Power
 uW = Power
+
+-- | Watt value accessor.
+fromWatts :: Power -> Double
+fromWatts = (/ 1000000) . fromuW
 
 -- | Watt value constructor.
 watts :: Double -> Power

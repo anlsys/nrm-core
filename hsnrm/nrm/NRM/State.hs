@@ -90,18 +90,15 @@ initialState c time = do
           LM.insert
             pkgid
             ( oldPackage
-                { rapl =
-                    Just
-                      ( Rapl
-                          { frequency = hz 3,
-                            raplPath = path,
-                            max = watts 300,
-                            discreteChoices = [watts 180, watts 200],
-                            defaultPower = watts 200,
-                            lastRead = Nothing,
-                            history = MemBuffer.empty
-                          }
-                      )
+                { rapl = Just $ Rapl
+                    { frequency = hz 3,
+                      raplPath = path,
+                      max = watts 300,
+                      discreteChoices = [watts 180, watts 200],
+                      defaultPower = watts 200,
+                      lastRead = Nothing,
+                      history = MemBuffer.empty
+                    }
                 }
             )
             m

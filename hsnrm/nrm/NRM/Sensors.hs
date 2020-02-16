@@ -47,6 +47,13 @@ cpdSensors st =
 
 data MeasurementOutput = Adjusted NRMState | Ok NRMState Measurement | NotFound
 
+mkValue metaData time mvalue = cumulative metaData & \case
+  Cumulative -> last metaData & \case
+    Nothing -> 0
+    Just (lastTime, lastValue) ->
+      (mvalue - lastValue) / fromSeconds (time - lastTime)
+  IntervalBased -> mvalue
+
 processActiveSensor ::
   Cfg ->
   Time ->
@@ -54,29 +61,26 @@ processActiveSensor ::
   ActiveSensorKey ->
   Double ->
   MeasurementOutput
-processActiveSensor _cfg time st sensorKey value =
+processActiveSensor _cfg time st sensorKey mvalue =
   DM.lookup sensorKey (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor) & \case
     Nothing -> NotFound
     Just (ScopedLens sl) ->
       view sl st & \s ->
-        CPD.validateMeasurement
-          (CPD.range . snd $ toCPDSensor (sensorKey, s))
-          value
-          & \case
-            MeasurementOk ->
-              Ok
-                (st & sl . field @"activeMeta" . field @"last" .~ Just (time, value))
-                ( Measurement
-                    { sensorID = toS sensorKey,
-                      sensorValue = cumulative (meta s) & \case
-                        Cumulative -> last (meta s) & \case
-                          Nothing -> 0
-                          Just (_, oldValue) -> value - oldValue
-                        IntervalBased -> value,
-                      time = time
-                    }
-                )
-            AdjustInterval r -> Adjusted (st & sl . field @"activeMeta" . field @"range" .~ r)
+        let value = mkValue (meta s) time mvalue
+         in CPD.validateMeasurement
+              (CPD.range . snd $ toCPDSensor (sensorKey, s))
+              value
+              & \case
+                MeasurementOk ->
+                  Ok
+                    (st & sl . field @"activeMeta" . field @"last" .~ Just (time, mvalue))
+                    ( Measurement
+                        { sensorID = toS sensorKey,
+                          sensorValue = value,
+                          time = time
+                        }
+                    )
+                AdjustInterval r -> Adjusted (st & sl . field @"activeMeta" . field @"range" .~ r)
 
 data ProcessPassiveSensorOutput
   = IllegalValueRemediation PassiveSensor
@@ -88,7 +92,7 @@ processPassiveSensor ::
   SensorID ->
   Double ->
   ProcessPassiveSensorOutput
-processPassiveSensor ps@(S.range . meta -> i) time sensorID value
+processPassiveSensor ps@(S.range . meta -> i) time sensorID mvalue
   | value < inf i =
     IllegalValueRemediation $
       ps {passiveMeta = (meta ps) {S.range = 2 * value - sup i ... sup i, last = Nothing}}
@@ -97,17 +101,15 @@ processPassiveSensor ps@(S.range . meta -> i) time sensorID value
       ps {passiveMeta = (meta ps) {S.range = inf i ... 2 * value - inf i, last = Nothing}}
   | otherwise =
     LegalMeasurement
-      (ps & field @"passiveMeta" . field @"last" ?~ (time, value))
+      (ps & field @"passiveMeta" . field @"last" ?~ (time, mvalue))
       ( Measurement
           { sensorID = sensorID,
-            sensorValue = cumulative (meta ps) & \case
-              Cumulative -> last (meta ps) & \case
-                Nothing -> 0
-                Just (_, oldValue) -> value - oldValue
-              IntervalBased -> value,
+            sensorValue = value,
             time = time
           }
       )
+  where
+    value = mkValue (meta ps) time mvalue
 
 data ProcessPassiveSensorFailureOutput
   = LegalFailure

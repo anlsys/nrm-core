@@ -76,7 +76,7 @@ data Problem
       { sensors :: Map SensorID Sensor,
         actuators :: Map ActuatorID Actuator,
         objectives :: [(Double, OExpr)],
-        constraints :: [(Interval Double, OExpr)]
+        constraints :: [(Double, OExpr)]
       }
   deriving (Show, Generic, MessagePack, D.Interpret, D.Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem

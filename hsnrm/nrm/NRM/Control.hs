@@ -117,7 +117,7 @@ tryControlStep ccfg cpd t mRefActions = case CPD.Core.objectives cpd of
 wrappedCStep ::
   ControlCfg ->
   [(Double, OExpr)] ->
-  [(Interval Double, OExpr)] ->
+  [(Double, OExpr)] ->
   Map SensorID (Interval Double) ->
   Time ->
   Maybe [Action] ->
@@ -184,7 +184,7 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
 
 stepFromSqueezed ::
   [(Double, OExpr)] ->
-  [(Interval Double, OExpr)] ->
+  [(Double, OExpr)] ->
   Map SensorID (Interval Double) ->
   Map SensorID Double ->
   ControlM Decision
@@ -201,13 +201,13 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
               (w, Just v, Just r) -> normalize v (sup r) <&> (w,)
               _ -> Nothing
           )
-      evaluatedConstraints :: [(Interval Double, Maybe Double, Maybe Double)]
+      evaluatedConstraints :: [(Double, Maybe Double, Maybe Double)]
       evaluatedConstraints = stepConstraints <&> \(interv, c) ->
         ( interv,
           eval measurements c,
           eval (refMeasurements <&> MemBuffer.avgBuffer) c
         )
-      refinedConstraints :: Maybe [(Interval Double, Double)]
+      refinedConstraints :: Maybe [(Double, Double)]
       refinedConstraints =
         sequence
           ( evaluatedConstraints <&> \case
@@ -272,14 +272,14 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
 
 hardConstrainedObjective ::
   [(Double, ZeroOne Double)] ->
-  [(Interval Double, Double)] ->
+  [(Double, Double)] ->
   ZeroOne Double
 hardConstrainedObjective robjs rconstr =
   if allConstraintsMet
     then normalizedSum robjs
     else HBandit.Types.one
   where
-    allConstraintsMet = all (\(i, v) -> Numeric.Interval.member v i) rconstr
+    allConstraintsMet = all (\(threshold, v) -> v < threshold) rconstr
 
 doNothing :: ControlM Decision
 doNothing = return DoNothing

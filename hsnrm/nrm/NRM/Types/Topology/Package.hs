@@ -63,13 +63,13 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
     where
       getter (Rapl path _maxPower _freq discreteChoices defaultPower _last _history) =
         Actuator
-          { actions = discreteChoices <&> fromuW,
-            referenceAction = fromuW defaultPower,
-            go = setRAPLPowercap path . RAPLCommand . uW
+          { actions = discreteChoices <&> fromWatts,
+            referenceAction = fromWatts defaultPower,
+            go = setRAPLPowercap path . RAPLCommand . watts
           }
       setter rapl (Actuator actions referenceAction _go) =
-        rapl & field @"discreteChoices" .~ fmap uW actions
-          & field @"defaultPower" .~ uW referenceAction
+        rapl & field @"discreteChoices" .~ fmap watts actions
+          & field @"defaultPower" .~ watts referenceAction
 
 instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor where
   lenses (packageID, package) =
@@ -89,18 +89,18 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
         S.PassiveSensor
           { passiveMeta = S.SensorMeta
               { tags = [S.Minimize, S.Power, S.Rapl],
-                range = 0 ... fromuW maxPower,
+                range = 0 ... fromWatts maxPower,
                 S.lastReferenceMeasurements = history,
-                last = lastRead <&> fmap fromuJ,
+                last = lastRead <&> fmap fromJoules,
                 cumulative = S.Cumulative
               },
             frequency = freq,
-            perform = measureRAPLDir path <&> fmap (fromuJ . energy)
+            perform = measureRAPLDir path <&> fmap (fromJoules . energy)
           }
       setter rapl passiveSensor =
         rapl & field @"max"
-          .~ (uW (sup $ S.range $ S.meta passiveSensor))
+          .~ (watts (sup $ S.range $ S.meta passiveSensor))
             & field @"history"
           .~ S.lastReferenceMeasurements (S.meta passiveSensor)
             & field @"lastRead"
-          .~ (over _Just (& _2 %~ uJ) $ S.last (S.meta passiveSensor))
+          .~ (fmap joules <$> S.last (S.meta passiveSensor))
