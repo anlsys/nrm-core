@@ -95,6 +95,7 @@ filterCPD :: C.Listen -> UPub.Pub -> Maybe UPub.Pub
 filterCPD C.All p = Just p
 filterCPD C.CPDOnly p@(PubCPD _ _) = Just p
 filterCPD C.CPDOnly p@(PubMeasurements _ _) = Just p
+filterCPD C.CPDOnly p@(PubAction _ _ _ _) = Just p
 filterCPD C.CPDOnly _ = Nothing
 filterCPD C.Raw (PubMeasurements _ _) = Nothing
 filterCPD C.Raw (PubCPD _ _) = Nothing

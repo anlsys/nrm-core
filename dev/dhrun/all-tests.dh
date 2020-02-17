@@ -109,12 +109,12 @@
               , errfile =
                   "nrmlisten.err"
               }
-            ⫽ { args = [ "listen", "-u", cn ] }
+            ⫽ { args = [ "listen-cpd", "-u" ] }
           ]
       , power =
           lib.appTest
           daemonCfg
-          (   lib.emptyFilterTestArgs "power" "sleep"
+          (   lib.emptyFilterTestArgs "sleep"
             ⫽ { timeout =
                   [ +600 ] : Optional Integer
               , args =
@@ -126,7 +126,7 @@
       , performance =
           lib.appTest
           daemonCfg
-          (   lib.emptyFilterTestArgs "performance" "sleep"
+          (   lib.emptyFilterTestArgs "sleep"
             ⫽ { timeout =
                   [ +600 ] : Optional Integer
               , args =

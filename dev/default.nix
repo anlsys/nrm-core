@@ -90,6 +90,7 @@ pkgs // rec {
     ];
   };
 
+
   hsnrm-hack = pkgs.haskellPackages.shellFor {
     packages = p: [
       haskellPackages.nrmlib
@@ -236,6 +237,18 @@ pkgs // rec {
     unpackPhase = "true";
   };
 
+  expe = pkgs.mkShell {
+    name = "expe";
+    buildInputs = [
+      haskellPackages.nrmbin
+      dhrun
+      pynrm
+      resources
+      pkgs.linuxPackages.perf
+      pkgs.hwloc
+    ];
+  };
+
   doDhrun = dhallcall:
     test.overrideAttrs (old: {
       buildPhase = ''
@@ -248,16 +261,15 @@ pkgs // rec {
       '';
     });
 
-  stream-raw = callPackage ./pkgs/stream {
+  stream = callPackage ./pkgs/stream {
     iterationCount = "400";
     inherit libnrm;
     nrmSupport = false;
   };
 
-  stream = callPackage ./pkgs/stream {
-    iterationCount = "400";
+  amg = callPackage ./pkgs/amg {
     inherit libnrm;
-    nrmSupport = true;
+    nrmSupport = false;
   };
 
   testGeneric = doDhrun genericTestName;
