@@ -246,6 +246,7 @@ pkgs // rec {
       resources
       pkgs.linuxPackages.perf
       pkgs.hwloc
+      pkgs.mpich2
     ];
   };
 
