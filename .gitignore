@@ -88,3 +88,5 @@ pynrm/docs/manifest.rst
 .ipynb_checkpoints
 **/notebook_cookie_secret
 .build*
+
+_output
