@@ -41,20 +41,23 @@
 , hwmonCfg :
     { hwmonEnabled : Bool, hwmonPath : Text }
 , controlCfg :
-    Optional
-    { minimumControlInterval :
-        { fromuS : Double }
-    , staticPower :
-        { fromuW : Double }
-    , learnCfg :
-        < Lagrange :
-            { lagrangeConstraint : Double }
-        | Knapsack :
-            { knapsackConstraint : Double }
-        >
-    , speedThreshold :
-        Double
-    , referenceMeasurementRoundInterval :
-        Integer
-    }
+    < ControlCfg :
+        { minimumControlInterval :
+            { fromuS : Double }
+        , staticPower :
+            { fromuW : Double }
+        , learnCfg :
+            < Lagrange :
+                { lagrangeConstraint : Double }
+            | Knapsack :
+                { knapsackConstraint : Double }
+            >
+        , speedThreshold :
+            Double
+        , referenceMeasurementRoundInterval :
+            Integer
+        }
+    | FixedCommand :
+        { fixedPower : { fromuW : Double } }
+    >
 }

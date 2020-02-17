@@ -226,27 +226,31 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
             <> "\n refined objectives:"
             <> show rconstr
         )
-      Decision
-        <$> zoom
-          (field @"bandit" . _Just)
-          ( do
-              g <- liftIO getStdGen
-              (a, g') <-
-                get >>= \case
-                  Knapsack b -> do
-                    let ((a, g'), s') = runState (stepBwCR g ((snd <$> robjs) <> undefined)) b
-                    put (Knapsack s')
-                    return (a, g')
-                  Lagrange b -> do
-                    let hco = hardConstrainedObjective robjs rconstr
-                    log $ "computed Hard Constrained Objective of :" <> show hco
-                    let ((a, g'), s') = runState (stepPFMAB g hco) b
-                    put (Lagrange s')
-                    return (a, g')
-              liftIO $ setStdGen g'
-              return a
-          )
-          <*> pure (InnerDecision (ConstraintValue . snd <$> rconstr) (ObjectiveValue . unrefine . snd <$> robjs))
+      use (field @"bandit") >>= \case
+        Nothing -> doNothing
+        Just bandit -> do
+          g <- liftIO getStdGen
+          (a, g', computedReward) <-
+            bandit & \case
+              Knapsack b -> do
+                let ((a, g'), s') = runState (stepBwCR g ((snd <$> robjs) <> undefined)) b
+                field @"bandit" ?= (Knapsack s')
+                return (a, g', HBandit.Types.zero)
+              Lagrange b -> do
+                let hco = hardConstrainedObjective robjs rconstr
+                log $ "computed Hard Constrained Objective of :" <> show hco
+                let ((a, g'), s') = runState (stepPFMAB g hco) b
+                field @"bandit" ?= (Lagrange s')
+                return (a, g', hco)
+          liftIO $ setStdGen g'
+          return $
+            Decision
+              a
+              ( InnerDecision
+                  (ConstraintValue . snd <$> rconstr)
+                  (ObjectiveValue . unrefine . snd <$> robjs)
+                  computedReward
+              )
     _ -> do
       logInfo $
         "controller failed a refinement step:"

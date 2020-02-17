@@ -1,5 +1,6 @@
 {-# LANGUAGE DerivingVia #-}
 {-# OPTIONS_GHC -fno-warn-incomplete-patterns #-}
+{-# OPTIONS_GHC -fno-warn-partial-fields #-}
 
 -- |
 -- Module      : NRM.Types.Configuration
@@ -61,7 +62,7 @@ data Cfg
         upstreamCfg :: UpstreamCfg,
         raplCfg :: Maybe RaplCfg,
         hwmonCfg :: HwmonCfg,
-        controlCfg :: Maybe ControlCfg
+        controlCfg :: ControlCfg
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
@@ -73,6 +74,9 @@ data ControlCfg
         learnCfg :: LearnConfig,
         speedThreshold :: ZeroOne Double,
         referenceMeasurementRoundInterval :: Refined (GreaterThan 5) Int
+      }
+  | FixedCommand
+      { fixedPower :: Power
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ControlCfg
@@ -154,7 +158,7 @@ instance Default Cfg where
       raplCfg = Just def,
       hwmonCfg = def,
       verbose = NRM.Types.Configuration.Error,
-      controlCfg = Nothing
+      controlCfg = FixedCommand (watts 200)
     }
 
 instance Default UpstreamCfg where

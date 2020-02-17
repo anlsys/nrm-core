@@ -67,7 +67,8 @@ data DecisionMetadata
   | ReferenceMeasurementDecision
   | InnerDecision
       { constraints :: [ConstraintValue],
-        objectives :: [ObjectiveValue]
+        objectives :: [ObjectiveValue],
+        reward :: ZeroOne Double
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DecisionMetadata

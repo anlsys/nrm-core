@@ -1140,7 +1140,8 @@
                                 "slice_runtime",
                                 "downstreamCfg",
                                 "upstreamCfg",
-                                "hwmonCfg"
+                                "hwmonCfg",
+                                "controlCfg"
                             ],
                             "type": "object",
                             "properties": {
@@ -1170,70 +1171,101 @@
                                     "type": "string"
                                 },
                                 "controlCfg": {
-                                    "required": [
-                                        "minimumControlInterval",
-                                        "staticPower",
-                                        "learnCfg",
-                                        "speedThreshold",
-                                        "referenceMeasurementRoundInterval"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "referenceMeasurementRoundInterval": {
-                                            "type": "number"
-                                        },
-                                        "learnCfg": {
-                                            "oneOf": [
-                                                {
+                                    "oneOf": [
+                                        {
+                                            "required": [
+                                                "controlCfg"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "controlCfg": {
                                                     "required": [
-                                                        "lagrange"
+                                                        "minimumControlInterval",
+                                                        "staticPower",
+                                                        "learnCfg",
+                                                        "speedThreshold",
+                                                        "referenceMeasurementRoundInterval"
                                                     ],
                                                     "type": "object",
                                                     "properties": {
-                                                        "lagrange": {
-                                                            "required": [
-                                                                "lagrangeConstraint"
-                                                            ],
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "lagrangeConstraint": {
-                                                                    "type": "number"
+                                                        "referenceMeasurementRoundInterval": {
+                                                            "type": "number"
+                                                        },
+                                                        "learnCfg": {
+                                                            "oneOf": [
+                                                                {
+                                                                    "required": [
+                                                                        "lagrange"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "lagrange": {
+                                                                            "required": [
+                                                                                "lagrangeConstraint"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "lagrangeConstraint": {
+                                                                                    "type": "number"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "required": [
+                                                                        "knapsack"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "knapsack": {
+                                                                            "required": [
+                                                                                "knapsackConstraint"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "knapsackConstraint": {
+                                                                                    "type": "number"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
                                                                 }
-                                                            }
-                                                        }
-                                                    }
-                                                },
-                                                {
-                                                    "required": [
-                                                        "knapsack"
-                                                    ],
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "knapsack": {
-                                                            "required": [
-                                                                "knapsackConstraint"
-                                                            ],
-                                                            "type": "object",
-                                                            "properties": {
-                                                                "knapsackConstraint": {
-                                                                    "type": "number"
-                                                                }
-                                                            }
+                                                            ]
+                                                        },
+                                                        "staticPower": {
+                                                            "type": "number"
+                                                        },
+                                                        "speedThreshold": {
+                                                            "type": "number"
+                                                        },
+                                                        "minimumControlInterval": {
+                                                            "type": "number"
                                                         }
                                                     }
                                                 }
-                                            ]
+                                            }
                                         },
-                                        "staticPower": {
-                                            "type": "number"
-                                        },
-                                        "speedThreshold": {
-                                            "type": "number"
-                                        },
-                                        "minimumControlInterval": {
-                                            "type": "number"
+                                        {
+                                            "required": [
+                                                "fixedCommand"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "fixedCommand": {
+                                                    "required": [
+                                                        "fixedPower"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "fixedPower": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
-                                    }
+                                    ]
                                 },
                                 "upstreamCfg": {
                                     "required": [

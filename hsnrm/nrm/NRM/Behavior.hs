@@ -235,9 +235,9 @@ doControl input = do
   zoom (field @"controller" . _Just) $ do
     logInfo ("Control input:" <> show input)
     mccfg & \case
-      Nothing -> return ()
-      Just ccfg ->
-        let cpd = (NRMCPD.toCPD (Just ccfg) st)
+      FixedCommand _ -> return ()
+      ccfg@(ControlCfg _ _ _ _ _) ->
+        let cpd = NRMCPD.toCPD ccfg st
             mRefActions =
               if [] /= (CPD.constraints cpd)
                 then Just $

@@ -1,8 +1,29 @@
 let Cfg = ../resources/types/Cfg.dhall
 
+let ControlCfg =
+      < ControlCfg :
+          { minimumControlInterval :
+              { fromuS : Double }
+          , staticPower :
+              { fromuW : Double }
+          , learnCfg :
+              < Lagrange :
+                  { lagrangeConstraint : Double }
+              | Knapsack :
+                  { knapsackConstraint : Double }
+              >
+          , speedThreshold :
+              Double
+          , referenceMeasurementRoundInterval :
+              Integer
+          }
+      | FixedCommand :
+          { fixedPower : { fromuW : Double } }
+      >
+
 in      ../resources/defaults/Cfg.dhall
       ⫽ { controlCfg =
-            Some
+            ControlCfg.ControlCfg
             { minimumControlInterval =
                 { fromuS = 1000000.0 }
             , staticPower =

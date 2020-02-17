@@ -12,7 +12,9 @@ verbose: Error
 logfile: /tmp/nrm.log
 singularity: false
 argo_nodeos_config: argo_nodeos_config
-controlCfg: null
+controlCfg:
+  fixedPower:
+    fromuW: 200000000
 upstreamCfg:
   upstreamBindAddress: '*'
   rpcPort: 3456

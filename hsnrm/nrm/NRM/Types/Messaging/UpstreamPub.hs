@@ -40,8 +40,6 @@ data Pub
     PubProgress Time DownstreamThreadID Progress
   | -- | Publishing when an action was taken.
     PubAction Time [CPD.Action] DecisionMetadata Controller
-  | -- | Publishing when rewards are computed.
-    PubReward Time CPD.Problem Double
   deriving (Show, Generic, MessagePack, NRMMessage)
 
 data Control

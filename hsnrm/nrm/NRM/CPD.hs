@@ -27,12 +27,14 @@ import NRM.Types.Units
 import Protolude hiding (Map)
 import Refined (unrefine)
 
-toCPD :: Maybe ControlCfg -> NRMState -> Problem
+toCPD :: ControlCfg -> NRMState -> Problem
 toCPD cfg st = Problem {..}
   where
     sensors = cpdSensors st
     actuators = cpdActuators st
-    (objectives, constraints) = fromMaybe ([], []) (throughputConstrained <$> cfg <*> Just st)
+    (objectives, constraints) = fromMaybe ([], []) (throughputConstrained <$> mcfg cfg <*> Just st)
+    mcfg jc@(ControlCfg _ _ _ _ _) = Just jc
+    mcfg (FixedCommand _) = Nothing
 
 throughputConstrained ::
   -- | Control configuration
