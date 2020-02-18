@@ -283,7 +283,7 @@ hardConstrainedObjective robjs rconstr =
     then normalizedSum robjs
     else HBandit.Types.one
   where
-    allConstraintsMet = all (\(threshold, v) -> v < threshold) rconstr
+    allConstraintsMet = all (\(threshold, v) -> v > threshold) rconstr
 
 doNothing :: ControlM Decision
 doNothing = return DoNothing

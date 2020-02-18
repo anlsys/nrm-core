@@ -404,7 +404,7 @@
                                             "required": [
                                                 "constraints",
                                                 "objectives",
-                                                "reward"
+                                                "loss"
                                             ],
                                             "type": "object",
                                             "properties": {
@@ -423,6 +423,9 @@
                                                     },
                                                     "type": "array"
                                                 },
+                                                "loss": {
+                                                    "type": "number"
+                                                },
                                                 "constraints": {
                                                     "uniqueItems": false,
                                                     "items": {
@@ -437,9 +440,6 @@
                                                         }
                                                     },
                                                     "type": "array"
-                                                },
-                                                "reward": {
-                                                    "type": "number"
                                                 }
                                             }
                                         }

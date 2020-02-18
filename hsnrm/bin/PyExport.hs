@@ -80,7 +80,7 @@ mkSimpleRunExport = exportIO mkSimpleRun
               env = Env $ LM.fromList env
             },
           runSliceID = parseSliceID sliceID,
-          detachCmd = False
+          detachCmd = True
         }
 
 pubAddressExport :: Ex
@@ -105,7 +105,7 @@ actionExport :: Ex
 actionExport = exportIO actuate
   where
     actuate :: CommonOpts -> [(Text, Double)] -> IO Bool
-    actuate c actions = doReqRep c (ReqActuate (toAction <$> actions)) $ \case
+    actuate c actions = doReqRep c (ReqActuate (toAction <$> actions)) $ Right $ \case
       (Rep.RepActuate Rep.Actuated) -> True
       (Rep.RepActuate Rep.NotActuated) -> False
       _ -> panic "action protocol failed"
@@ -113,30 +113,27 @@ actionExport = exportIO actuate
     toAction (textID, doubleAction) = Action (ActuatorID textID) (DiscreteDouble doubleAction)
 
 runExport :: Ex
-runExport = exportIO $ \c runreq -> doReqRep c (ReqRun runreq) $ \case
-  (RepStart start) -> start
-  (RepStartFailure StartFailure) -> panic "command start failed."
-  _ -> protoError
+runExport = exportIO $ \c runreq -> doReqRep c (ReqRun runreq) $ Left $ ()
 
 stateExport :: Ex
-stateExport = exportIO $ \c -> doReqRep c (ReqGetState Req.GetState) $ \case
+stateExport = exportIO $ \c -> doReqRep c (ReqGetState Req.GetState) $ Right $ \case
   (RepGetState st) -> st
   _ -> protoError
 
 finishedExport :: Ex
-finishedExport = exportIO $ \common -> doReqRep common (ReqSliceList Req.SliceList) $ \case
+finishedExport = exportIO $ \common -> doReqRep common (ReqSliceList Req.SliceList) $ Right $ \case
   (RepList (Rep.SliceList l)) -> l & \case
     [] -> True
     _ -> False
   _ -> protoError
 
 cpdExport :: Ex
-cpdExport = exportIO $ \c -> doReqRep c (ReqCPD Req.CPD) $ \case
+cpdExport = exportIO $ \c -> doReqRep c (ReqCPD Req.CPD) $ Right $ \case
   (RepCPD problem) -> problem
   _ -> protoError
 
-doReqRep :: CommonOpts -> Req -> (Rep.Rep -> a) -> IO a
-doReqRep common req f = do
+doReqRep :: CommonOpts -> Req -> Either a (Rep.Rep -> a) -> IO a
+doReqRep common req eitherF = do
   uuid <-
     UC.nextUpstreamClientID <&> \case
       Nothing -> panic "couldn't generate next client ID"
@@ -147,10 +144,12 @@ doReqRep common req f = do
     s <- ZMQ.socket ZMQ.Dealer
     connectWithOptions uuid common s
     ZMQ.send s [] (toS $ M.encode req)
-    ZMQ.receive s <&> decodeT . toS >>= \case
-      Nothing -> panic "Couldn't decode reply"
-      Just (RepException text) -> panic $ "daemon threw exception: " <> text
-      Just x -> return (f x)
+    eitherF & \case
+      Left x' -> return x'
+      Right f -> ZMQ.receive s <&> decodeT . toS >>= \case
+        Nothing -> panic "Couldn't decode reply"
+        Just (RepException text) -> panic $ "daemon threw exception: " <> text
+        Just m -> return (f m)
 
 protoError :: a
 protoError = panic "protocol error"
