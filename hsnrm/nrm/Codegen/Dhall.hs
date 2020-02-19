@@ -78,7 +78,7 @@ relativeTo =
 
 typeToExpr :: Interpret x => Proxy x -> Expr Src b
 typeToExpr (Proxy :: Proxy x) =
-  fmap Dhall.absurd $ Dhall.expected (Dhall.auto :: Dhall.Type x)
+  Dhall.absurd <$> Dhall.expected (Dhall.auto :: Dhall.Type x)
 
 defaultToExpr :: (Inject x, Default x) => Proxy x -> Expr Src b
 defaultToExpr (Proxy :: Proxy x) =
@@ -92,7 +92,7 @@ valueToExpr x =
   Dhall.absurd
     <$> embed
       (injectWith defaultInterpretOptions)
-      (x)
+      x
 
 exprToText :: (Pretty.Pretty a) => Expr Src a -> Text
 exprToText = show . Dhall.prettyExpr

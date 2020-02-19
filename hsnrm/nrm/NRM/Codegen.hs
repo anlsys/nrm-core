@@ -191,7 +191,7 @@ generateResources prefix = do
     Dhall.load (Lint.lint (getDefault defaultType))
       >>= exprToDir "defaults/" (show defaultType)
   putText "Codegen: examples."
-  for_ (DM.toList (Examples.examples :: Map Text MI.Manifest)) $ \(defName, defValue) -> do
+  for_ (DM.toList (Examples.examples :: Map Text MI.Manifest)) $ \(defName, defValue) ->
     Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
       >>= exprToDir "examples/" defName
   where

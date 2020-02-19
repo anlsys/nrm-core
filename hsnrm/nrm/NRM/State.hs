@@ -59,7 +59,7 @@ initialState c time = do
     Nothing -> return packages'
     Just raplc ->
       getDefaultRAPLDirs (toS $ Cfg.raplPath raplc) >>= \case
-        Just (RAPLDirs rapldirs) -> do
+        Just (RAPLDirs rapldirs) ->
           return $ Protolude.foldl goRAPL packages' (LM.toList rapldirs)
         Nothing -> return packages'
   controlCfg c & \case
@@ -67,7 +67,7 @@ initialState c time = do
       for_ (LM.toList packages) $ \(pkid, pk) ->
         for_
           ( LM.toList
-              ( (lenses (pkid, pk)) ::
+              ( lenses (pkid, pk) ::
                   LensMap (PackageID, Package) ActuatorKey Actuator
               )
           )
@@ -76,7 +76,7 @@ initialState c time = do
   return NRMState
     { controller = controlCfg c & \case
         FixedCommand _ -> Nothing
-        ccfg@(ControlCfg {}) -> Just $ initialController time (minimumControlInterval ccfg) [],
+        ccfg@ControlCfg {} -> Just $ initialController time (minimumControlInterval ccfg) [],
       slices = LM.fromList [],
       pus = LM.fromList $ (,PU) <$> selectPUIDs hwl,
       cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl,

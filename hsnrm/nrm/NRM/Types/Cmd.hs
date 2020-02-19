@@ -125,7 +125,7 @@ addDownstreamThreadClient Cmd {..} downstreamThreadClientID =
           LM.insert
             downstreamThreadClientID
             DownstreamThread
-              { maxValue = (1 & progress),
+              { maxValue = 1 & progress,
                 ratelimit = ratelimit,
                 dtLastReferenceMeasurements = MemBuffer.empty,
                 lastRead = Nothing

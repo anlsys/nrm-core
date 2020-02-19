@@ -67,4 +67,4 @@ instance
             & field @"dtLastReferenceMeasurements"
           .~ lastReferenceMeasurements (meta activeSensor)
             & field @"lastRead"
-          .~ (over _Just (& _2 %~ progress . floor) $ S.last (S.meta activeSensor))
+          .~ over _Just (& _2 %~ progress . floor) (S.last (S.meta activeSensor))

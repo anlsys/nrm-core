@@ -73,7 +73,7 @@ processActiveSensor _cfg time st sensorKey mvalue =
               & \case
                 MeasurementOk ->
                   Ok
-                    (st & sl . field @"activeMeta" . field @"last" .~ Just (time, mvalue))
+                    (st & sl . field @"activeMeta" . field @"last" ?~ (time, mvalue))
                     ( Measurement
                         { sensorID = toS sensorKey,
                           sensorValue = value,

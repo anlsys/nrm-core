@@ -37,7 +37,7 @@ validateAction :: Problem -> Action -> ActionValidation Text
 validateAction p action = lookup (CPD.Values.actuatorID action) (actuators p) & \case
   Nothing -> UnknownActuator
   Just actuator ->
-    if (CPD.Values.actuatorValue action) `elem` CPD.actions actuator
+    if CPD.Values.actuatorValue action `elem` CPD.actions actuator
       then ActionOk
       else InvalidAction
 

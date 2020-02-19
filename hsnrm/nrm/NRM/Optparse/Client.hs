@@ -172,7 +172,7 @@ parserKillSlice =
 
 parserActuate :: Parser [CPD.Action]
 parserActuate =
-  (\x -> [x])
+  (: [])
     <$> ( CPD.Action
             <$> parserActuatorID
             <*> parserActuatorValue

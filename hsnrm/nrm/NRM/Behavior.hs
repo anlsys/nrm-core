@@ -236,10 +236,10 @@ doControl input = do
     logInfo ("Control input:" <> show input)
     mccfg & \case
       FixedCommand _ -> return ()
-      ccfg@(ControlCfg _ _ _ _ _) ->
+      ccfg@ControlCfg{} ->
         let cpd = NRMCPD.toCPD ccfg st
             mRefActions =
-              if [] /= (CPD.constraints cpd)
+              if [] /= CPD.constraints cpd
                 then Just $
                   (LM.toList (lenses st) :: [(ActuatorKey, ScopedLens NRMState A.Actuator)])
                     <&> \(k, ScopedLens l) -> CPD.Action

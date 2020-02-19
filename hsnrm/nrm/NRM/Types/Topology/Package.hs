@@ -99,7 +99,7 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
           }
       setter rapl passiveSensor =
         rapl & field @"max"
-          .~ (watts (sup $ S.range $ S.meta passiveSensor))
+          .~ watts (sup $ S.range $ S.meta passiveSensor)
             & field @"history"
           .~ S.lastReferenceMeasurements (S.meta passiveSensor)
             & field @"lastRead"

@@ -33,7 +33,7 @@ toCPD cfg st = Problem {..}
     sensors = cpdSensors st
     actuators = cpdActuators st
     (objectives, constraints) = fromMaybe ([], []) (throughputConstrained <$> mcfg cfg <*> Just st)
-    mcfg jc@(ControlCfg _ _ _ _ _) = Just jc
+    mcfg jc@ControlCfg{} = Just jc
     mcfg (FixedCommand _) = Nothing
 
 throughputConstrained ::

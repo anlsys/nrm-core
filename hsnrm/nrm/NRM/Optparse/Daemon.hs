@@ -73,7 +73,7 @@ ext :: Bool -> SourceType -> Maybe Text -> FinallySource
 ext _ _ (Just fn)
   | xt `elem` [".dh", ".dhall"] = FinallyFile Dhall fn
   | xt `elem` [".yml", ".yaml"] = FinallyFile Yaml fn
-  | xt `elem` [".json"] = FinallyFile Json fn
+  | xt == ".json" = FinallyFile Json fn
   | otherwise = NoExt
   where
     xt = takeExtension $ toS fn
@@ -95,7 +95,7 @@ load MainCfg {..} =
 
 processType ::
   (Default x, Dhall.Interpret x, Dhall.Inject x) =>
-  (Proxy x) ->
+  Proxy x ->
   SourceType ->
   ByteString ->
   IO x
@@ -104,22 +104,22 @@ processType proxy@(Proxy :: Proxy x) sourceType bs =
 
 toExpr ::
   (Dhall.Inject x, Dhall.Interpret x, Default x) =>
-  (Proxy x) ->
+  Proxy x ->
   SourceType ->
   ByteString ->
   IO (Dhall.Expr Dhall.Src Dhall.X)
-toExpr _proxy (Dhall) s = Dhall.inputExpr $ toS s
-toExpr proxy (Yaml) s = sourceValueToExpr proxy $ Y.decodeEither' s
-toExpr proxy (Json) s = sourceValueToExpr proxy $ J.eitherDecode' (toS s)
+toExpr _proxy Dhall s = Dhall.inputExpr $ toS s
+toExpr proxy Yaml s = sourceValueToExpr proxy $ Y.decodeEither' s
+toExpr proxy Json s = sourceValueToExpr proxy $ J.eitherDecode' (toS s)
 
 sourceValueToExpr ::
   (Default x, Dhall.Interpret x, Dhall.Inject x) =>
-  (Proxy x) ->
+  Proxy x ->
   Either e Y.Value ->
   IO (Dhall.Expr Dhall.Src Dhall.X)
 sourceValueToExpr (Proxy :: Proxy x) = \case
   Left _ -> die "yaml parsing exception"
-  Right v -> do
+  Right v ->
     DJ.dhallToJSON exprValue & \case
       Left e -> die $ "horrible internal dhall error in cli parsing: " <> show e
       Right jsonValue ->
@@ -132,8 +132,8 @@ sourceValueToExpr (Proxy :: Proxy x) = \case
             Right expr -> return expr
   where
     exprType :: Dhall.Expr Dhall.Src Dhall.X
-    exprType = (typeToExpr (Proxy :: Proxy x))
-    exprValue = (valueToExpr (def :: x))
+    exprType = typeToExpr (Proxy :: Proxy x)
+    exprValue = valueToExpr (def :: x)
 
 mergeAndExtract ::
   (Dhall.Interpret x, Dhall.Inject x) =>

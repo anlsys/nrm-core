@@ -68,7 +68,12 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
               Knapsack (BwCR.T gamma) ->
                 initBwCR
                   g
-                  (BwCRHyper gamma (Arms acp) undefined undefined)
+                  ( BwCRHyper
+                      gamma
+                      (Arms acp)
+                      ([HBandit.Types.zero] ... [HBandit.Types.one])
+                      []
+                  )
                   & _1
                   %~ Knapsack
         liftIO $ setStdGen g'
@@ -233,14 +238,14 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
           (a, g', computedReward) <-
             bandit & \case
               Knapsack b -> do
-                let ((a, g'), s') = runState (stepBwCR g ((snd <$> robjs) <> undefined)) b
-                field @"bandit" ?= (Knapsack s')
+                let ((a, g'), s') = runState (stepBwCR g ((snd <$> robjs) <> [])) b
+                field @"bandit" ?= Knapsack s'
                 return (a, g', HBandit.Types.zero)
               Lagrange b -> do
                 let hco = hardConstrainedObjective robjs rconstr
                 log $ "computed Hard Constrained Objective of :" <> show hco
                 let ((a, g'), s') = runState (stepPFMAB g hco) b
-                field @"bandit" ?= (Lagrange s')
+                field @"bandit" ?= Lagrange s'
                 return (a, g', hco)
           liftIO $ setStdGen g'
           return $
