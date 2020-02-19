@@ -113,7 +113,7 @@ actionExport = exportIO actuate
     toAction (textID, doubleAction) = Action (ActuatorID textID) (DiscreteDouble doubleAction)
 
 runExport :: Ex
-runExport = exportIO $ \c runreq -> doReqRep c (ReqRun runreq) $ Left $ ()
+runExport = exportIO $ \c runreq -> doReqRep c (ReqRun runreq) $ Left ()
 
 stateExport :: Ex
 stateExport = exportIO $ \c -> doReqRep c (ReqGetState Req.GetState) $ Right $ \case
