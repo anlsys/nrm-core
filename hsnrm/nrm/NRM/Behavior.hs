@@ -236,7 +236,7 @@ doControl input = do
     logInfo ("Control input:" <> show input)
     mccfg & \case
       FixedCommand _ -> return ()
-      ccfg@ControlCfg{} ->
+      ccfg@ControlCfg {} ->
         let cpd = NRMCPD.toCPD ccfg st
             mRefActions =
               if [] /= CPD.constraints cpd

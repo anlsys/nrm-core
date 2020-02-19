@@ -93,12 +93,12 @@ subClient l s common =
 
 filterCPD :: C.Listen -> UPub.Pub -> Maybe UPub.Pub
 filterCPD C.All p = Just p
-filterCPD C.CPDOnly p@PubCPD{} = Just p
-filterCPD C.CPDOnly p@PubMeasurements{} = Just p
-filterCPD C.CPDOnly p@PubAction{} = Just p
+filterCPD C.CPDOnly p@PubCPD {} = Just p
+filterCPD C.CPDOnly p@PubMeasurements {} = Just p
+filterCPD C.CPDOnly p@PubAction {} = Just p
 filterCPD C.CPDOnly _ = Nothing
-filterCPD C.Raw PubMeasurements{} = Nothing
-filterCPD C.Raw PubCPD{} = Nothing
+filterCPD C.Raw PubMeasurements {} = Nothing
+filterCPD C.Raw PubCPD {} = Nothing
 filterCPD C.Raw p = Just p
 
 reqrepClient ::
