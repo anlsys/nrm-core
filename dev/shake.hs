@@ -197,7 +197,6 @@ runshake as =
                 "cabal"
                 [ "v2-haddock",
                   "nrm.so",
-                  "--haddock-hyperlink-source",
                   "--haddock-internal",
                   "--builddir=../.build",
                   "--haddock-html-location=\"https://hackage.haskell.org/package/\\$pkg-\\$version/docs\""
