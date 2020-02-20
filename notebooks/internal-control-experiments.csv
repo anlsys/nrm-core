@@ -1,0 +1,1615 @@
+,time,variable,value,iteration,name
+0,2020-02-20 22:57:15.389201750,sensor-RaplKey (PackageID 0),0.0,0,pcap60
+1,2020-02-20 22:57:16.389119250,sensor-RaplKey (PackageID 0),59.84579400000803,0,pcap60
+2,2020-02-20 22:57:17.390301250,sensor-RaplKey (PackageID 0),59.917814999993425,0,pcap60
+3,2020-02-20 22:57:18.390088000,sensor-RaplKey (PackageID 0),59.828338000006624,0,pcap60
+4,2020-02-20 22:57:19.393955500,sensor-RaplKey (PackageID 0),60.153776999999536,0,pcap60
+5,2020-02-20 22:57:20.398065250,sensor-RaplKey (PackageID 0),59.92220999998972,0,pcap60
+6,2020-02-20 22:57:21.389085250,sensor-RaplKey (PackageID 0),59.379914000004646,0,pcap60
+7,2020-02-20 22:57:22.391207500,sensor-RaplKey (PackageID 0),59.964263000001665,0,pcap60
+8,2020-02-20 22:57:23.397178000,sensor-RaplKey (PackageID 0),60.77114500000607,0,pcap60
+9,2020-02-20 22:57:24.398141250,sensor-RaplKey (PackageID 0),59.34005799998704,0,pcap60
+10,2020-02-20 22:57:25.388563250,sensor-RaplKey (PackageID 0),59.110201000003144,0,pcap60
+11,2020-02-20 22:57:26.398349000,sensor-RaplKey (PackageID 0),60.53274300000339,0,pcap60
+12,2020-02-20 22:57:27.394291750,sensor-RaplKey (PackageID 0),59.551848999995855,0,pcap60
+13,2020-02-20 22:57:28.392545750,sensor-RaplKey (PackageID 0),59.61563100000785,0,pcap60
+14,2020-02-20 22:57:29.396097250,sensor-RaplKey (PackageID 0),59.987578999993275,0,pcap60
+15,2020-02-20 22:57:30.390849250,sensor-RaplKey (PackageID 0),59.646026000002166,0,pcap60
+16,2020-02-20 22:57:31.395000500,sensor-RaplKey (PackageID 0),60.07119600000442,0,pcap60
+17,2020-02-20 22:57:32.404292250,sensor-RaplKey (PackageID 0),60.87307499999588,0,pcap60
+18,2020-02-20 22:57:33.396488250,sensor-RaplKey (PackageID 0),58.740755000006175,0,pcap60
+19,2020-02-20 22:57:34.397261500,sensor-RaplKey (PackageID 0),60.12795899999037,0,pcap60
+20,2020-02-20 22:57:35.394141750,sensor-RaplKey (PackageID 0),59.474700999999186,0,pcap60
+21,2020-02-20 22:57:36.396033250,sensor-RaplKey (PackageID 0),59.89712500000314,0,pcap60
+22,2020-02-20 22:57:37.389378500,sensor-RaplKey (PackageID 0),59.40341199999966,0,pcap60
+23,2020-02-20 22:57:38.389439500,sensor-RaplKey (PackageID 0),60.12618900000234,0,pcap60
+24,2020-02-20 22:57:39.388818500,sensor-RaplKey (PackageID 0),59.36581499999738,0,pcap60
+25,2020-02-20 22:57:40.395086000,sensor-RaplKey (PackageID 0),60.22604200000933,0,pcap60
+26,2020-02-20 22:57:41.399355250,sensor-RaplKey (PackageID 0),60.16732599999523,0,pcap60
+27,2020-02-20 22:57:42.393582500,sensor-RaplKey (PackageID 0),59.64724700000079,0,pcap60
+28,2020-02-20 22:57:43.388907000,sensor-RaplKey (PackageID 0),59.50021399999969,0,pcap60
+29,2020-02-20 22:57:44.389161750,sensor-RaplKey (PackageID 0),60.1346729999932,0,pcap60
+30,2020-02-20 22:57:45.398537750,sensor-RaplKey (PackageID 0),60.60037000000011,0,pcap60
+31,2020-02-20 22:57:46.389349750,sensor-RaplKey (PackageID 0),58.63730100000976,0,pcap60
+32,2020-02-20 22:57:47.396020250,sensor-RaplKey (PackageID 0),60.033660000000964,0,pcap60
+33,2020-02-20 22:57:48.389764000,sensor-RaplKey (PackageID 0),59.7746269999916,0,pcap60
+34,2020-02-20 22:57:49.389755500,sensor-RaplKey (PackageID 0),59.76754699999583,0,pcap60
+35,2020-02-20 22:57:50.392184000,sensor-RaplKey (PackageID 0),59.66873200000555,0,pcap60
+36,2020-02-20 22:57:51.390305250,sensor-RaplKey (PackageID 0),59.816680000003544,0,pcap60
+37,2020-02-20 22:57:52.388671750,sensor-RaplKey (PackageID 0),59.60842899999989,0,pcap60
+38,2020-02-20 22:57:53.395213250,sensor-RaplKey (PackageID 0),60.438016999993124,0,pcap60
+39,2020-02-20 22:57:54.389294250,sensor-RaplKey (PackageID 0),59.34219399999711,0,pcap60
+40,2020-02-20 22:57:55.396411750,sensor-RaplKey (PackageID 0),60.312773000012385,0,pcap60
+41,2020-02-20 22:57:56.398343250,sensor-RaplKey (PackageID 0),60.13711399999738,0,pcap60
+42,2020-02-20 22:57:57.395559750,sensor-RaplKey (PackageID 0),59.70114099999773,0,pcap60
+43,2020-02-20 22:57:58.394586000,sensor-RaplKey (PackageID 0),59.682707999993,0,pcap60
+44,2020-02-20 22:57:59.389918750,sensor-RaplKey (PackageID 0),59.42398200000753,0,pcap60
+45,2020-02-20 22:58:00.389085500,sensor-RaplKey (PackageID 0),59.70101900000009,0,pcap60
+46,2020-02-20 22:58:01.398155500,sensor-RaplKey (PackageID 0),60.46078199999465,0,pcap60
+47,2020-02-20 22:58:02.390215250,sensor-RaplKey (PackageID 0),59.47433500000625,0,pcap60
+48,2020-02-20 22:58:03.398069000,sensor-RaplKey (PackageID 0),60.074798000001465,0,pcap60
+49,2020-02-20 22:58:04.396075250,sensor-RaplKey (PackageID 0),59.72506699999212,0,pcap60
+50,2020-02-20 22:58:05.389535500,sensor-RaplKey (PackageID 0),59.605437999998685,0,pcap60
+51,2020-02-20 22:58:06.390092250,sensor-RaplKey (PackageID 0),59.72091600000567,0,pcap60
+52,2020-02-20 22:58:07.389394250,sensor-RaplKey (PackageID 0),59.85971000000427,0,pcap60
+53,2020-02-20 22:58:08.397608000,sensor-RaplKey (PackageID 0),60.31448200000159,0,pcap60
+54,2020-02-20 22:58:09.393549000,sensor-RaplKey (PackageID 0),59.654449999987264,0,pcap60
+55,2020-02-20 22:58:10.389358750,sensor-RaplKey (PackageID 0),59.42953500000294,0,pcap60
+56,2020-02-20 22:58:11.389808750,sensor-RaplKey (PackageID 0),60.039824000006774,0,pcap60
+57,2020-02-20 22:58:12.389412500,sensor-RaplKey (PackageID 0),59.57424999999057,0,pcap60
+58,2020-02-20 22:58:13.398069250,sensor-RaplKey (PackageID 0),60.29775800000061,0,pcap60
+59,2020-02-20 22:58:14.394946000,sensor-RaplKey (PackageID 0),59.87911900000472,0,pcap60
+60,2020-02-20 22:58:15.389033250,sensor-RaplKey (PackageID 0),59.23428400000557,0,pcap60
+61,2020-02-20 22:58:16.389740750,sensor-RaplKey (PackageID 0),60.01058899999771,0,pcap60
+62,2020-02-20 22:57:22.115188000,sensor-RaplKey (PackageID 0),,0,pcap60
+63,2020-02-20 22:57:23.125347750,sensor-RaplKey (PackageID 0),,0,pcap60
+64,2020-02-20 22:57:24.123088500,sensor-RaplKey (PackageID 0),,0,pcap60
+65,2020-02-20 22:57:25.121858000,sensor-RaplKey (PackageID 0),,0,pcap60
+66,2020-02-20 22:57:26.128588250,sensor-RaplKey (PackageID 0),,0,pcap60
+67,2020-02-20 22:57:27.123376750,sensor-RaplKey (PackageID 0),,0,pcap60
+68,2020-02-20 22:57:28.151375000,sensor-RaplKey (PackageID 0),,0,pcap60
+69,2020-02-20 22:57:29.148228750,sensor-RaplKey (PackageID 0),,0,pcap60
+70,2020-02-20 22:57:30.140254500,sensor-RaplKey (PackageID 0),,0,pcap60
+71,2020-02-20 22:57:31.150237750,sensor-RaplKey (PackageID 0),,0,pcap60
+72,2020-02-20 22:57:32.148621000,sensor-RaplKey (PackageID 0),,0,pcap60
+73,2020-02-20 22:57:33.149570750,sensor-RaplKey (PackageID 0),,0,pcap60
+74,2020-02-20 22:57:34.160392000,sensor-RaplKey (PackageID 0),,0,pcap60
+75,2020-02-20 22:57:35.150444750,sensor-RaplKey (PackageID 0),,0,pcap60
+76,2020-02-20 22:57:36.160508250,sensor-RaplKey (PackageID 0),,0,pcap60
+77,2020-02-20 22:57:37.163050500,sensor-RaplKey (PackageID 0),,0,pcap60
+78,2020-02-20 22:57:38.166266250,sensor-RaplKey (PackageID 0),,0,pcap60
+79,2020-02-20 22:57:39.163312000,sensor-RaplKey (PackageID 0),,0,pcap60
+80,2020-02-20 22:57:40.173202250,sensor-RaplKey (PackageID 0),,0,pcap60
+81,2020-02-20 22:57:41.181901250,sensor-RaplKey (PackageID 0),,0,pcap60
+82,2020-02-20 22:57:42.193272000,sensor-RaplKey (PackageID 0),,0,pcap60
+83,2020-02-20 22:57:43.201884750,sensor-RaplKey (PackageID 0),,0,pcap60
+84,2020-02-20 22:57:44.214077500,sensor-RaplKey (PackageID 0),,0,pcap60
+85,2020-02-20 22:57:45.205248250,sensor-RaplKey (PackageID 0),,0,pcap60
+86,2020-02-20 22:57:46.220188500,sensor-RaplKey (PackageID 0),,0,pcap60
+87,2020-02-20 22:57:47.205270750,sensor-RaplKey (PackageID 0),,0,pcap60
+88,2020-02-20 22:57:48.207861750,sensor-RaplKey (PackageID 0),,0,pcap60
+89,2020-02-20 22:57:49.230299250,sensor-RaplKey (PackageID 0),,0,pcap60
+90,2020-02-20 22:57:50.226318750,sensor-RaplKey (PackageID 0),,0,pcap60
+91,2020-02-20 22:57:51.225359000,sensor-RaplKey (PackageID 0),,0,pcap60
+92,2020-02-20 22:57:52.228503750,sensor-RaplKey (PackageID 0),,0,pcap60
+93,2020-02-20 22:57:53.226858000,sensor-RaplKey (PackageID 0),,0,pcap60
+94,2020-02-20 22:57:54.248207750,sensor-RaplKey (PackageID 0),,0,pcap60
+95,2020-02-20 22:57:55.243218000,sensor-RaplKey (PackageID 0),,0,pcap60
+96,2020-02-20 22:57:56.237762250,sensor-RaplKey (PackageID 0),,0,pcap60
+97,2020-02-20 22:57:57.245015250,sensor-RaplKey (PackageID 0),,0,pcap60
+98,2020-02-20 22:57:58.260884500,sensor-RaplKey (PackageID 0),,0,pcap60
+99,2020-02-20 22:57:59.254646000,sensor-RaplKey (PackageID 0),,0,pcap60
+100,2020-02-20 22:58:00.263042500,sensor-RaplKey (PackageID 0),,0,pcap60
+101,2020-02-20 22:58:01.258674500,sensor-RaplKey (PackageID 0),,0,pcap60
+102,2020-02-20 22:58:02.270136000,sensor-RaplKey (PackageID 0),,0,pcap60
+103,2020-02-20 22:58:03.261500000,sensor-RaplKey (PackageID 0),,0,pcap60
+104,2020-02-20 22:58:04.274318750,sensor-RaplKey (PackageID 0),,0,pcap60
+105,2020-02-20 22:58:05.279195000,sensor-RaplKey (PackageID 0),,0,pcap60
+106,2020-02-20 22:58:06.294468000,sensor-RaplKey (PackageID 0),,0,pcap60
+107,2020-02-20 22:58:07.278909500,sensor-RaplKey (PackageID 0),,0,pcap60
+108,2020-02-20 22:58:08.284883000,sensor-RaplKey (PackageID 0),,0,pcap60
+109,2020-02-20 22:58:09.285033250,sensor-RaplKey (PackageID 0),,0,pcap60
+110,2020-02-20 22:58:10.296634000,sensor-RaplKey (PackageID 0),,0,pcap60
+111,2020-02-20 22:58:11.298105250,sensor-RaplKey (PackageID 0),,0,pcap60
+112,2020-02-20 22:58:13.304189000,sensor-RaplKey (PackageID 0),,0,pcap60
+113,2020-02-20 22:58:14.310951500,sensor-RaplKey (PackageID 0),,0,pcap60
+114,2020-02-20 22:58:15.308059750,sensor-RaplKey (PackageID 0),,0,pcap60
+115,2020-02-20 22:58:16.322359750,sensor-RaplKey (PackageID 0),,0,pcap60
+116,2020-02-20 22:58:16.870848250,sensor-RaplKey (PackageID 0),,0,pcap60
+117,2020-02-20 22:57:15.389201750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+118,2020-02-20 22:57:16.389119250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+119,2020-02-20 22:57:17.390301250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+120,2020-02-20 22:57:18.390088000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+121,2020-02-20 22:57:19.393955500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+122,2020-02-20 22:57:20.398065250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+123,2020-02-20 22:57:21.389085250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+124,2020-02-20 22:57:22.391207500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+125,2020-02-20 22:57:23.397178000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+126,2020-02-20 22:57:24.398141250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+127,2020-02-20 22:57:25.388563250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+128,2020-02-20 22:57:26.398349000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+129,2020-02-20 22:57:27.394291750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+130,2020-02-20 22:57:28.392545750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+131,2020-02-20 22:57:29.396097250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+132,2020-02-20 22:57:30.390849250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+133,2020-02-20 22:57:31.395000500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+134,2020-02-20 22:57:32.404292250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+135,2020-02-20 22:57:33.396488250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+136,2020-02-20 22:57:34.397261500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+137,2020-02-20 22:57:35.394141750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+138,2020-02-20 22:57:36.396033250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+139,2020-02-20 22:57:37.389378500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+140,2020-02-20 22:57:38.389439500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+141,2020-02-20 22:57:39.388818500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+142,2020-02-20 22:57:40.395086000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+143,2020-02-20 22:57:41.399355250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+144,2020-02-20 22:57:42.393582500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+145,2020-02-20 22:57:43.388907000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+146,2020-02-20 22:57:44.389161750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+147,2020-02-20 22:57:45.398537750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+148,2020-02-20 22:57:46.389349750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+149,2020-02-20 22:57:47.396020250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+150,2020-02-20 22:57:48.389764000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+151,2020-02-20 22:57:49.389755500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+152,2020-02-20 22:57:50.392184000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+153,2020-02-20 22:57:51.390305250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+154,2020-02-20 22:57:52.388671750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+155,2020-02-20 22:57:53.395213250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+156,2020-02-20 22:57:54.389294250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+157,2020-02-20 22:57:55.396411750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+158,2020-02-20 22:57:56.398343250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+159,2020-02-20 22:57:57.395559750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+160,2020-02-20 22:57:58.394586000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+161,2020-02-20 22:57:59.389918750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+162,2020-02-20 22:58:00.389085500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+163,2020-02-20 22:58:01.398155500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+164,2020-02-20 22:58:02.390215250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+165,2020-02-20 22:58:03.398069000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+166,2020-02-20 22:58:04.396075250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+167,2020-02-20 22:58:05.389535500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+168,2020-02-20 22:58:06.390092250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+169,2020-02-20 22:58:07.389394250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+170,2020-02-20 22:58:08.397608000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+171,2020-02-20 22:58:09.393549000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+172,2020-02-20 22:58:10.389358750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+173,2020-02-20 22:58:11.389808750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+174,2020-02-20 22:58:12.389412500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+175,2020-02-20 22:58:13.398069250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+176,2020-02-20 22:58:14.394946000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+177,2020-02-20 22:58:15.389033250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+178,2020-02-20 22:58:16.389740750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),,0,pcap60
+179,2020-02-20 22:57:22.115188000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6905024276.0,0,pcap60
+180,2020-02-20 22:57:23.125347750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7256517381.0,0,pcap60
+181,2020-02-20 22:57:24.123088500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6638827942.0,0,pcap60
+182,2020-02-20 22:57:25.121858000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7045955464.0,0,pcap60
+183,2020-02-20 22:57:26.128588250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6896454215.0,0,pcap60
+184,2020-02-20 22:57:27.123376750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6806394951.0,0,pcap60
+185,2020-02-20 22:57:28.151375000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6913824588.0,0,pcap60
+186,2020-02-20 22:57:29.148228750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6374865164.0,0,pcap60
+187,2020-02-20 22:57:30.140254500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7092246529.0,0,pcap60
+188,2020-02-20 22:57:31.150237750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6784267959.0,0,pcap60
+189,2020-02-20 22:57:32.148621000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6568876899.0,0,pcap60
+190,2020-02-20 22:57:33.149570750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6457893238.0,0,pcap60
+191,2020-02-20 22:57:34.160392000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),5871138319.0,0,pcap60
+192,2020-02-20 22:57:35.150444750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6635912377.0,0,pcap60
+193,2020-02-20 22:57:36.160508250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7209197425.0,0,pcap60
+194,2020-02-20 22:57:37.163050500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6761446479.0,0,pcap60
+195,2020-02-20 22:57:38.166266250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),5986694347.0,0,pcap60
+196,2020-02-20 22:57:39.163312000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6119240459.0,0,pcap60
+197,2020-02-20 22:57:40.173202250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6931657957.0,0,pcap60
+198,2020-02-20 22:57:41.181901250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7033426462.0,0,pcap60
+199,2020-02-20 22:57:42.193272000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7394111840.0,0,pcap60
+200,2020-02-20 22:57:43.201884750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6245986365.0,0,pcap60
+201,2020-02-20 22:57:44.214077500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6345285307.0,0,pcap60
+202,2020-02-20 22:57:45.205248250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6061140558.0,0,pcap60
+203,2020-02-20 22:57:46.220188500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6888299950.0,0,pcap60
+204,2020-02-20 22:57:47.205270750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7066183016.0,0,pcap60
+205,2020-02-20 22:57:48.207861750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6917073923.0,0,pcap60
+206,2020-02-20 22:57:49.230299250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6968184844.0,0,pcap60
+207,2020-02-20 22:57:50.226318750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7228439098.0,0,pcap60
+208,2020-02-20 22:57:51.225359000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7384159653.0,0,pcap60
+209,2020-02-20 22:57:52.228503750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6835556080.0,0,pcap60
+210,2020-02-20 22:57:53.226858000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),5881916357.0,0,pcap60
+211,2020-02-20 22:57:54.248207750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7278621715.0,0,pcap60
+212,2020-02-20 22:57:55.243218000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),6856399107.0,0,pcap60
+213,2020-02-20 22:57:56.237762250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),7428744068.0,0,pcap60
+214,2020-02-20 22:57:57.245015250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),8279476287.0,0,pcap60
+215,2020-02-20 22:57:58.260884500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),9334585143.0,0,pcap60
+216,2020-02-20 22:57:59.254646000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),9301583476.0,0,pcap60
+217,2020-02-20 22:58:00.263042500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),9959431764.0,0,pcap60
+218,2020-02-20 22:58:01.258674500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),10278861507.0,0,pcap60
+219,2020-02-20 22:58:02.270136000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),9371597775.0,0,pcap60
+220,2020-02-20 22:58:03.261500000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),8913058596.0,0,pcap60
+221,2020-02-20 22:58:04.274318750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),8615274253.0,0,pcap60
+222,2020-02-20 22:58:05.279195000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),9532600299.0,0,pcap60
+223,2020-02-20 22:58:06.294468000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),8854074633.0,0,pcap60
+224,2020-02-20 22:58:07.278909500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),8763376289.0,0,pcap60
+225,2020-02-20 22:58:08.284883000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),8565880521.0,0,pcap60
+226,2020-02-20 22:58:09.285033250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),8566087797.0,0,pcap60
+227,2020-02-20 22:58:10.296634000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),8445605239.0,0,pcap60
+228,2020-02-20 22:58:11.298105250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),9212437243.0,0,pcap60
+229,2020-02-20 22:58:13.304189000,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),18144054674.0,0,pcap60
+230,2020-02-20 22:58:14.310951500,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),18983676602.0,0,pcap60
+231,2020-02-20 22:58:15.308059750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),19197999966.0,0,pcap60
+232,2020-02-20 22:58:16.322359750,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),19395228811.0,0,pcap60
+233,2020-02-20 22:58:16.870848250,sensor-DownstreamCmdKey (DownstreamCmdID 4254a85a-0e24-4031-89ac-d0b97b5dea77),14331715044.0,0,pcap60
+0,2020-02-20 22:58:19.344730500,sensor-RaplKey (PackageID 0),0.0,0,pcap75
+1,2020-02-20 22:58:20.343551750,sensor-RaplKey (PackageID 0),73.54772500001127,0,pcap75
+2,2020-02-20 22:58:21.343558000,sensor-RaplKey (PackageID 0),79.19443799999135,0,pcap75
+3,2020-02-20 22:58:22.342540000,sensor-RaplKey (PackageID 0),74.71349300000293,0,pcap75
+4,2020-02-20 22:58:23.343651500,sensor-RaplKey (PackageID 0),74.70476500000223,0,pcap75
+5,2020-02-20 22:58:24.342035750,sensor-RaplKey (PackageID 0),74.73882199999935,0,pcap75
+6,2020-02-20 22:58:25.343031750,sensor-RaplKey (PackageID 0),74.91283299999486,0,pcap75
+7,2020-02-20 22:58:26.342442750,sensor-RaplKey (PackageID 0),74.76958400000876,0,pcap75
+8,2020-02-20 22:58:27.343025500,sensor-RaplKey (PackageID 0),74.60765799999353,0,pcap75
+9,2020-02-20 22:58:28.342403750,sensor-RaplKey (PackageID 0),74.85942799999611,0,pcap75
+10,2020-02-20 22:58:29.342567000,sensor-RaplKey (PackageID 0),74.78447600000072,0,pcap75
+11,2020-02-20 22:58:30.342355000,sensor-RaplKey (PackageID 0),74.79222800000571,0,pcap75
+12,2020-02-20 22:58:31.342034500,sensor-RaplKey (PackageID 0),74.59209399999236,0,pcap75
+13,2020-02-20 22:58:32.348677750,sensor-RaplKey (PackageID 0),75.33537900001102,0,pcap75
+14,2020-02-20 22:58:33.343601500,sensor-RaplKey (PackageID 0),74.59770899999421,0,pcap75
+15,2020-02-20 22:58:34.342205750,sensor-RaplKey (PackageID 0),74.37377200000628,0,pcap75
+16,2020-02-20 22:58:22.951909250,sensor-RaplKey (PackageID 0),,0,pcap75
+17,2020-02-20 22:58:23.944192500,sensor-RaplKey (PackageID 0),,0,pcap75
+18,2020-02-20 22:58:24.946112250,sensor-RaplKey (PackageID 0),,0,pcap75
+19,2020-02-20 22:58:25.952685500,sensor-RaplKey (PackageID 0),,0,pcap75
+20,2020-02-20 22:58:26.952251750,sensor-RaplKey (PackageID 0),,0,pcap75
+21,2020-02-20 22:58:27.953584750,sensor-RaplKey (PackageID 0),,0,pcap75
+22,2020-02-20 22:58:28.954615000,sensor-RaplKey (PackageID 0),,0,pcap75
+23,2020-02-20 22:58:29.955255250,sensor-RaplKey (PackageID 0),,0,pcap75
+24,2020-02-20 22:58:30.954643250,sensor-RaplKey (PackageID 0),,0,pcap75
+25,2020-02-20 22:58:31.954117500,sensor-RaplKey (PackageID 0),,0,pcap75
+26,2020-02-20 22:58:32.958024500,sensor-RaplKey (PackageID 0),,0,pcap75
+27,2020-02-20 22:58:33.958888500,sensor-RaplKey (PackageID 0),,0,pcap75
+28,2020-02-20 22:58:34.952946750,sensor-RaplKey (PackageID 0),,0,pcap75
+29,2020-02-20 22:58:35.105744750,sensor-RaplKey (PackageID 0),,0,pcap75
+30,2020-02-20 22:58:19.344730500,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+31,2020-02-20 22:58:20.343551750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+32,2020-02-20 22:58:21.343558000,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+33,2020-02-20 22:58:22.342540000,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+34,2020-02-20 22:58:23.343651500,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+35,2020-02-20 22:58:24.342035750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+36,2020-02-20 22:58:25.343031750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+37,2020-02-20 22:58:26.342442750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+38,2020-02-20 22:58:27.343025500,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+39,2020-02-20 22:58:28.342403750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+40,2020-02-20 22:58:29.342567000,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+41,2020-02-20 22:58:30.342355000,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+42,2020-02-20 22:58:31.342034500,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+43,2020-02-20 22:58:32.348677750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+44,2020-02-20 22:58:33.343601500,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+45,2020-02-20 22:58:34.342205750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),,0,pcap75
+46,2020-02-20 22:58:22.951909250,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),31432305416.0,0,pcap75
+47,2020-02-20 22:58:23.944192500,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),18885142994.0,0,pcap75
+48,2020-02-20 22:58:24.946112250,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),19056720805.0,0,pcap75
+49,2020-02-20 22:58:25.952685500,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),20883334724.0,0,pcap75
+50,2020-02-20 22:58:26.952251750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),30509788333.0,0,pcap75
+51,2020-02-20 22:58:27.953584750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),31009246009.0,0,pcap75
+52,2020-02-20 22:58:28.954615000,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),31247817443.0,0,pcap75
+53,2020-02-20 22:58:29.955255250,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),31051139558.0,0,pcap75
+54,2020-02-20 22:58:30.954643250,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),31122742370.0,0,pcap75
+55,2020-02-20 22:58:31.954117500,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),29816825932.0,0,pcap75
+56,2020-02-20 22:58:32.958024500,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),22214928269.0,0,pcap75
+57,2020-02-20 22:58:33.958888500,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),28874976937.0,0,pcap75
+58,2020-02-20 22:58:34.952946750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),21720168723.0,0,pcap75
+59,2020-02-20 22:58:35.105744750,sensor-DownstreamCmdKey (DownstreamCmdID fec9a42e-76a5-4c44-8880-b98acf6778c9),6724523670.0,0,pcap75
+0,2020-02-20 22:58:37.688579500,sensor-RaplKey (PackageID 0),0.0,0,pcap100
+1,2020-02-20 22:58:38.687596500,sensor-RaplKey (PackageID 0),73.52544599999965,0,pcap100
+2,2020-02-20 22:58:39.687561750,sensor-RaplKey (PackageID 0),111.9863469999982,0,pcap100
+3,2020-02-20 22:58:40.687476250,sensor-RaplKey (PackageID 0),101.56529199999932,0,pcap100
+4,2020-02-20 22:58:41.686035250,sensor-RaplKey (PackageID 0),98.85881700000027,0,pcap100
+5,2020-02-20 22:58:42.691333000,sensor-RaplKey (PackageID 0),100.50499100000889,0,pcap100
+6,2020-02-20 22:58:43.686551750,sensor-RaplKey (PackageID 0),99.30144300000393,0,pcap100
+7,2020-02-20 22:58:44.686041000,sensor-RaplKey (PackageID 0),99.23924799999804,0,pcap100
+8,2020-02-20 22:58:45.686497000,sensor-RaplKey (PackageID 0),99.47887099999934,0,pcap100
+9,2020-02-20 22:58:46.686476000,sensor-RaplKey (PackageID 0),99.86027900000045,0,pcap100
+10,2020-02-20 22:58:47.686405250,sensor-RaplKey (PackageID 0),99.72294999999576,0,pcap100
+11,2020-02-20 22:58:48.695476250,sensor-RaplKey (PackageID 0),100.40489499999967,0,pcap100
+12,2020-02-20 22:58:49.686565250,sensor-RaplKey (PackageID 0),99.01708000000508,0,pcap100
+13,2020-02-20 22:58:50.686565000,sensor-RaplKey (PackageID 0),98.60991600000125,0,pcap100
+14,2020-02-20 22:58:41.317176250,sensor-RaplKey (PackageID 0),,0,pcap100
+15,2020-02-20 22:58:42.302699500,sensor-RaplKey (PackageID 0),,0,pcap100
+16,2020-02-20 22:58:43.318769250,sensor-RaplKey (PackageID 0),,0,pcap100
+17,2020-02-20 22:58:44.315180750,sensor-RaplKey (PackageID 0),,0,pcap100
+18,2020-02-20 22:58:45.321811500,sensor-RaplKey (PackageID 0),,0,pcap100
+19,2020-02-20 22:58:46.322864000,sensor-RaplKey (PackageID 0),,0,pcap100
+20,2020-02-20 22:58:47.323748250,sensor-RaplKey (PackageID 0),,0,pcap100
+21,2020-02-20 22:58:48.324742500,sensor-RaplKey (PackageID 0),,0,pcap100
+22,2020-02-20 22:58:49.324757750,sensor-RaplKey (PackageID 0),,0,pcap100
+23,2020-02-20 22:58:50.326158750,sensor-RaplKey (PackageID 0),,0,pcap100
+24,2020-02-20 22:58:50.886597250,sensor-RaplKey (PackageID 0),,0,pcap100
+25,2020-02-20 22:58:37.688579500,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+26,2020-02-20 22:58:38.687596500,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+27,2020-02-20 22:58:39.687561750,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+28,2020-02-20 22:58:40.687476250,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+29,2020-02-20 22:58:41.686035250,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+30,2020-02-20 22:58:42.691333000,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+31,2020-02-20 22:58:43.686551750,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+32,2020-02-20 22:58:44.686041000,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+33,2020-02-20 22:58:45.686497000,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+34,2020-02-20 22:58:46.686476000,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+35,2020-02-20 22:58:47.686405250,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+36,2020-02-20 22:58:48.695476250,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+37,2020-02-20 22:58:49.686565250,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+38,2020-02-20 22:58:50.686565000,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),,0,pcap100
+39,2020-02-20 22:58:41.317176250,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),34364272567.0,0,pcap100
+40,2020-02-20 22:58:42.302699500,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),32798730329.0,0,pcap100
+41,2020-02-20 22:58:43.318769250,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),31917560444.0,0,pcap100
+42,2020-02-20 22:58:44.315180750,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),26524193257.0,0,pcap100
+43,2020-02-20 22:58:45.321811500,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),32443324586.0,0,pcap100
+44,2020-02-20 22:58:46.322864000,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),32311332148.0,0,pcap100
+45,2020-02-20 22:58:47.323748250,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),32229224085.0,0,pcap100
+46,2020-02-20 22:58:48.324742500,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),32167798596.0,0,pcap100
+47,2020-02-20 22:58:49.324757750,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),32449748420.0,0,pcap100
+48,2020-02-20 22:58:50.326158750,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),32567146067.0,0,pcap100
+49,2020-02-20 22:58:50.886597250,sensor-DownstreamCmdKey (DownstreamCmdID af8b19b8-e12d-4bb8-a5e5-3a6f10cd50dd),21556479478.0,0,pcap100
+0,2020-02-20 22:58:53.376101750,sensor-RaplKey (PackageID 0),0.0,0,pcap110
+1,2020-02-20 22:58:54.377493250,sensor-RaplKey (PackageID 0),72.51238699999521,0,pcap110
+2,2020-02-20 22:58:55.377524250,sensor-RaplKey (PackageID 0),112.15260600000329,0,pcap110
+3,2020-02-20 22:58:56.376492000,sensor-RaplKey (PackageID 0),111.0888879999984,0,pcap110
+4,2020-02-20 22:58:57.376411500,sensor-RaplKey (PackageID 0),109.0242569999973,0,pcap110
+5,2020-02-20 22:58:58.376369000,sensor-RaplKey (PackageID 0),108.01315100000647,0,pcap110
+6,2020-02-20 22:58:59.377441750,sensor-RaplKey (PackageID 0),108.11300499999197,0,pcap110
+7,2020-02-20 22:59:00.376029250,sensor-RaplKey (PackageID 0),107.9134810000105,0,pcap110
+8,2020-02-20 22:59:01.376432750,sensor-RaplKey (PackageID 0),109.14223800000036,0,pcap110
+9,2020-02-20 22:59:02.381446000,sensor-RaplKey (PackageID 0),109.35585999999603,0,pcap110
+10,2020-02-20 22:59:03.377035750,sensor-RaplKey (PackageID 0),108.78518299999996,0,pcap110
+11,2020-02-20 22:59:04.376483500,sensor-RaplKey (PackageID 0),108.91573700000299,0,pcap110
+12,2020-02-20 22:59:05.377366750,sensor-RaplKey (PackageID 0),108.2138949999935,0,pcap110
+13,2020-02-20 22:59:06.376412750,sensor-RaplKey (PackageID 0),95.88067500000761,0,pcap110
+14,2020-02-20 22:58:56.954078750,sensor-RaplKey (PackageID 0),,0,pcap110
+15,2020-02-20 22:58:57.956105750,sensor-RaplKey (PackageID 0),,0,pcap110
+16,2020-02-20 22:58:58.958594500,sensor-RaplKey (PackageID 0),,0,pcap110
+17,2020-02-20 22:58:59.960689250,sensor-RaplKey (PackageID 0),,0,pcap110
+18,2020-02-20 22:59:00.967869500,sensor-RaplKey (PackageID 0),,0,pcap110
+19,2020-02-20 22:59:01.970721000,sensor-RaplKey (PackageID 0),,0,pcap110
+20,2020-02-20 22:59:02.969749000,sensor-RaplKey (PackageID 0),,0,pcap110
+21,2020-02-20 22:59:03.964503750,sensor-RaplKey (PackageID 0),,0,pcap110
+22,2020-02-20 22:59:04.963684750,sensor-RaplKey (PackageID 0),,0,pcap110
+23,2020-02-20 22:59:05.961086750,sensor-RaplKey (PackageID 0),,0,pcap110
+24,2020-02-20 22:59:06.829502500,sensor-RaplKey (PackageID 0),,0,pcap110
+25,2020-02-20 22:58:53.376101750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+26,2020-02-20 22:58:54.377493250,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+27,2020-02-20 22:58:55.377524250,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+28,2020-02-20 22:58:56.376492000,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+29,2020-02-20 22:58:57.376411500,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+30,2020-02-20 22:58:58.376369000,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+31,2020-02-20 22:58:59.377441750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+32,2020-02-20 22:59:00.376029250,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+33,2020-02-20 22:59:01.376432750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+34,2020-02-20 22:59:02.381446000,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+35,2020-02-20 22:59:03.377035750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+36,2020-02-20 22:59:04.376483500,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+37,2020-02-20 22:59:05.377366750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+38,2020-02-20 22:59:06.376412750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),,0,pcap110
+39,2020-02-20 22:58:56.954078750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),34562530998.0,0,pcap110
+40,2020-02-20 22:58:57.956105750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),32528319972.0,0,pcap110
+41,2020-02-20 22:58:58.958594500,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),32050684198.0,0,pcap110
+42,2020-02-20 22:58:59.960689250,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),32670097104.0,0,pcap110
+43,2020-02-20 22:59:00.967869500,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),33846290801.0,0,pcap110
+44,2020-02-20 22:59:01.970721000,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),33545318405.0,0,pcap110
+45,2020-02-20 22:59:02.969749000,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),33565079213.0,0,pcap110
+46,2020-02-20 22:59:03.964503750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),33339487638.0,0,pcap110
+47,2020-02-20 22:59:04.963684750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),33390279270.0,0,pcap110
+48,2020-02-20 22:59:05.961086750,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),23880482634.0,0,pcap110
+49,2020-02-20 22:59:06.829502500,sensor-DownstreamCmdKey (DownstreamCmdID 01892ad2-d291-4f43-900a-914932ce80b1),16117504927.0,0,pcap110
+0,2020-02-20 22:59:09.316963500,sensor-RaplKey (PackageID 0),0.0,0,pcap120
+1,2020-02-20 22:59:10.319675250,sensor-RaplKey (PackageID 0),75.15392100000463,0,pcap120
+2,2020-02-20 22:59:11.317502000,sensor-RaplKey (PackageID 0),112.4221969999926,0,pcap120
+3,2020-02-20 22:59:12.318620500,sensor-RaplKey (PackageID 0),113.2655800000066,0,pcap120
+4,2020-02-20 22:59:13.318365750,sensor-RaplKey (PackageID 0),109.0772350000043,0,pcap120
+5,2020-02-20 22:59:14.316374500,sensor-RaplKey (PackageID 0),108.09298499999568,0,pcap120
+6,2020-02-20 22:59:15.317423750,sensor-RaplKey (PackageID 0),107.72207499999786,0,pcap120
+7,2020-02-20 22:59:16.317033250,sensor-RaplKey (PackageID 0),108.01180900000327,0,pcap120
+8,2020-02-20 22:59:17.320539000,sensor-RaplKey (PackageID 0),109.65688500000397,0,pcap120
+9,2020-02-20 22:59:18.320112750,sensor-RaplKey (PackageID 0),109.49062499999127,0,pcap120
+10,2020-02-20 22:59:19.317442500,sensor-RaplKey (PackageID 0),109.13503600000695,0,pcap120
+11,2020-02-20 22:59:20.320482000,sensor-RaplKey (PackageID 0),109.72579299999052,0,pcap120
+12,2020-02-20 22:59:21.317505000,sensor-RaplKey (PackageID 0),109.36336700001266,0,pcap120
+13,2020-02-20 22:59:12.880649500,sensor-RaplKey (PackageID 0),,0,pcap120
+14,2020-02-20 22:59:13.883094500,sensor-RaplKey (PackageID 0),,0,pcap120
+15,2020-02-20 22:59:14.882698750,sensor-RaplKey (PackageID 0),,0,pcap120
+16,2020-02-20 22:59:15.886742000,sensor-RaplKey (PackageID 0),,0,pcap120
+17,2020-02-20 22:59:16.887608500,sensor-RaplKey (PackageID 0),,0,pcap120
+18,2020-02-20 22:59:17.888667250,sensor-RaplKey (PackageID 0),,0,pcap120
+19,2020-02-20 22:59:18.889238750,sensor-RaplKey (PackageID 0),,0,pcap120
+20,2020-02-20 22:59:19.889152250,sensor-RaplKey (PackageID 0),,0,pcap120
+21,2020-02-20 22:59:20.889697750,sensor-RaplKey (PackageID 0),,0,pcap120
+22,2020-02-20 22:59:21.884388750,sensor-RaplKey (PackageID 0),,0,pcap120
+23,2020-02-20 22:59:21.986361750,sensor-RaplKey (PackageID 0),,0,pcap120
+24,2020-02-20 22:59:09.316963500,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+25,2020-02-20 22:59:10.319675250,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+26,2020-02-20 22:59:11.317502000,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+27,2020-02-20 22:59:12.318620500,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+28,2020-02-20 22:59:13.318365750,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+29,2020-02-20 22:59:14.316374500,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+30,2020-02-20 22:59:15.317423750,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+31,2020-02-20 22:59:16.317033250,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+32,2020-02-20 22:59:17.320539000,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+33,2020-02-20 22:59:18.320112750,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+34,2020-02-20 22:59:19.317442500,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+35,2020-02-20 22:59:20.320482000,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+36,2020-02-20 22:59:21.317505000,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),,0,pcap120
+37,2020-02-20 22:59:12.880649500,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),34941715278.0,0,pcap120
+38,2020-02-20 22:59:13.883094500,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),32282690389.0,0,pcap120
+39,2020-02-20 22:59:14.882698750,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),31111943135.0,0,pcap120
+40,2020-02-20 22:59:15.886742000,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),31712958309.0,0,pcap120
+41,2020-02-20 22:59:16.887608500,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),33357724657.0,0,pcap120
+42,2020-02-20 22:59:17.888667250,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),33150731042.0,0,pcap120
+43,2020-02-20 22:59:18.889238750,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),32965785158.0,0,pcap120
+44,2020-02-20 22:59:19.889152250,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),33323180762.0,0,pcap120
+45,2020-02-20 22:59:20.889697750,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),33332811324.0,0,pcap120
+46,2020-02-20 22:59:21.884388750,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),29650638990.0,0,pcap120
+47,2020-02-20 22:59:21.986361750,sensor-DownstreamCmdKey (DownstreamCmdID 639c7bfb-2aa9-484c-bdce-8fa4e9c68094),6549848788.0,0,pcap120
+0,2020-02-20 22:59:24.476009250,sensor-RaplKey (PackageID 0),0.0,0,pcap150
+1,2020-02-20 22:59:25.474569250,sensor-RaplKey (PackageID 0),70.75476299998991,0,pcap150
+2,2020-02-20 22:59:26.474607000,sensor-RaplKey (PackageID 0),112.33540599999833,0,pcap150
+3,2020-02-20 22:59:27.474055500,sensor-RaplKey (PackageID 0),115.17670700000599,0,pcap150
+4,2020-02-20 22:59:28.474389000,sensor-RaplKey (PackageID 0),106.7362989999965,0,pcap150
+5,2020-02-20 22:59:29.475395750,sensor-RaplKey (PackageID 0),107.86611800000537,0,pcap150
+6,2020-02-20 22:59:30.474505000,sensor-RaplKey (PackageID 0),107.52279600000475,0,pcap150
+7,2020-02-20 22:59:31.474434500,sensor-RaplKey (PackageID 0),108.54610899998806,0,pcap150
+8,2020-02-20 22:59:32.481544750,sensor-RaplKey (PackageID 0),107.21450800000457,0,pcap150
+9,2020-02-20 22:59:33.474485000,sensor-RaplKey (PackageID 0),108.49514500000805,0,pcap150
+10,2020-02-20 22:59:34.475113250,sensor-RaplKey (PackageID 0),108.51382100000046,0,pcap150
+11,2020-02-20 22:59:35.474429500,sensor-RaplKey (PackageID 0),108.84865899999568,0,pcap150
+12,2020-02-20 22:59:36.474040750,sensor-RaplKey (PackageID 0),108.43002099999285,0,pcap150
+13,2020-02-20 22:59:28.103547750,sensor-RaplKey (PackageID 0),,0,pcap150
+14,2020-02-20 22:59:29.091564250,sensor-RaplKey (PackageID 0),,0,pcap150
+15,2020-02-20 22:59:30.090088500,sensor-RaplKey (PackageID 0),,0,pcap150
+16,2020-02-20 22:59:31.094746500,sensor-RaplKey (PackageID 0),,0,pcap150
+17,2020-02-20 22:59:32.091639750,sensor-RaplKey (PackageID 0),,0,pcap150
+18,2020-02-20 22:59:33.090146250,sensor-RaplKey (PackageID 0),,0,pcap150
+19,2020-02-20 22:59:34.096915500,sensor-RaplKey (PackageID 0),,0,pcap150
+20,2020-02-20 22:59:35.104449500,sensor-RaplKey (PackageID 0),,0,pcap150
+21,2020-02-20 22:59:36.104750750,sensor-RaplKey (PackageID 0),,0,pcap150
+22,2020-02-20 22:59:37.104910750,sensor-RaplKey (PackageID 0),,0,pcap150
+23,2020-02-20 22:59:37.414094750,sensor-RaplKey (PackageID 0),,0,pcap150
+24,2020-02-20 22:59:24.476009250,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+25,2020-02-20 22:59:25.474569250,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+26,2020-02-20 22:59:26.474607000,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+27,2020-02-20 22:59:27.474055500,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+28,2020-02-20 22:59:28.474389000,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+29,2020-02-20 22:59:29.475395750,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+30,2020-02-20 22:59:30.474505000,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+31,2020-02-20 22:59:31.474434500,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+32,2020-02-20 22:59:32.481544750,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+33,2020-02-20 22:59:33.474485000,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+34,2020-02-20 22:59:34.475113250,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+35,2020-02-20 22:59:35.474429500,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+36,2020-02-20 22:59:36.474040750,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),,0,pcap150
+37,2020-02-20 22:59:28.103547750,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),33742945456.0,0,pcap150
+38,2020-02-20 22:59:29.091564250,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),32007533543.0,0,pcap150
+39,2020-02-20 22:59:30.090088500,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),31926836321.0,0,pcap150
+40,2020-02-20 22:59:31.094746500,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),31910351617.0,0,pcap150
+41,2020-02-20 22:59:32.091639750,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),33500826623.0,0,pcap150
+42,2020-02-20 22:59:33.090146250,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),30672028321.0,0,pcap150
+43,2020-02-20 22:59:34.096915500,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),33139997861.0,0,pcap150
+44,2020-02-20 22:59:35.104449500,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),33324654989.0,0,pcap150
+45,2020-02-20 22:59:36.104750750,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),32909688961.0,0,pcap150
+46,2020-02-20 22:59:37.104910750,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),32697495021.0,0,pcap150
+47,2020-02-20 22:59:37.414094750,sensor-DownstreamCmdKey (DownstreamCmdID e074098f-c4c2-4c30-a552-1d5e19dc976a),12916993489.0,0,pcap150
+0,2020-02-20 22:59:39.894061000,sensor-RaplKey (PackageID 0),0.0,0,pcap180
+1,2020-02-20 22:59:40.895497500,sensor-RaplKey (PackageID 0),71.17852899999707,0,pcap180
+2,2020-02-20 22:59:41.895460250,sensor-RaplKey (PackageID 0),112.35438800000702,0,pcap180
+3,2020-02-20 22:59:42.895501750,sensor-RaplKey (PackageID 0),113.8529189999972,0,pcap180
+4,2020-02-20 22:59:43.894048250,sensor-RaplKey (PackageID 0),107.08316100000229,0,pcap180
+5,2020-02-20 22:59:44.894218000,sensor-RaplKey (PackageID 0),107.54055700000026,0,pcap180
+6,2020-02-20 22:59:45.894541250,sensor-RaplKey (PackageID 0),104.31809200000134,0,pcap180
+7,2020-02-20 22:59:46.894107750,sensor-RaplKey (PackageID 0),109.28194699999585,0,pcap180
+8,2020-02-20 22:59:47.895053250,sensor-RaplKey (PackageID 0),94.957276000001,0,pcap180
+9,2020-02-20 22:59:48.902538750,sensor-RaplKey (PackageID 0),101.37651099999493,0,pcap180
+10,2020-02-20 22:59:49.895033250,sensor-RaplKey (PackageID 0),107.87136699999974,0,pcap180
+11,2020-02-20 22:59:50.894016750,sensor-RaplKey (PackageID 0),108.71902100001171,0,pcap180
+12,2020-02-20 22:59:51.894473750,sensor-RaplKey (PackageID 0),109.74276100000134,0,pcap180
+13,2020-02-20 22:59:52.894028000,sensor-RaplKey (PackageID 0),108.45577699999558,0,pcap180
+14,2020-02-20 22:59:43.512664500,sensor-RaplKey (PackageID 0),,0,pcap180
+15,2020-02-20 22:59:44.509664750,sensor-RaplKey (PackageID 0),,0,pcap180
+16,2020-02-20 22:59:45.518964750,sensor-RaplKey (PackageID 0),,0,pcap180
+17,2020-02-20 22:59:46.517403000,sensor-RaplKey (PackageID 0),,0,pcap180
+18,2020-02-20 22:59:47.508103500,sensor-RaplKey (PackageID 0),,0,pcap180
+19,2020-02-20 22:59:48.507676250,sensor-RaplKey (PackageID 0),,0,pcap180
+20,2020-02-20 22:59:49.510586750,sensor-RaplKey (PackageID 0),,0,pcap180
+21,2020-02-20 22:59:50.521721000,sensor-RaplKey (PackageID 0),,0,pcap180
+22,2020-02-20 22:59:51.523697000,sensor-RaplKey (PackageID 0),,0,pcap180
+23,2020-02-20 22:59:52.524689750,sensor-RaplKey (PackageID 0),,0,pcap180
+24,2020-02-20 22:59:53.525803500,sensor-RaplKey (PackageID 0),,0,pcap180
+25,2020-02-20 22:59:53.801325750,sensor-RaplKey (PackageID 0),,0,pcap180
+26,2020-02-20 22:59:39.894061000,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+27,2020-02-20 22:59:40.895497500,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+28,2020-02-20 22:59:41.895460250,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+29,2020-02-20 22:59:42.895501750,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+30,2020-02-20 22:59:43.894048250,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+31,2020-02-20 22:59:44.894218000,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+32,2020-02-20 22:59:45.894541250,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+33,2020-02-20 22:59:46.894107750,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+34,2020-02-20 22:59:47.895053250,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+35,2020-02-20 22:59:48.902538750,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+36,2020-02-20 22:59:49.895033250,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+37,2020-02-20 22:59:50.894016750,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+38,2020-02-20 22:59:51.894473750,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+39,2020-02-20 22:59:52.894028000,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),,0,pcap180
+40,2020-02-20 22:59:43.512664500,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),34528648062.0,0,pcap180
+41,2020-02-20 22:59:44.509664750,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),32315056956.0,0,pcap180
+42,2020-02-20 22:59:45.518964750,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),27727038129.0,0,pcap180
+43,2020-02-20 22:59:46.517403000,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),33283960451.0,0,pcap180
+44,2020-02-20 22:59:47.508103500,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),22682997194.0,0,pcap180
+45,2020-02-20 22:59:48.507676250,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),19788916335.0,0,pcap180
+46,2020-02-20 22:59:49.510586750,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),32265628770.0,0,pcap180
+47,2020-02-20 22:59:50.521721000,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),32193539769.0,0,pcap180
+48,2020-02-20 22:59:51.523697000,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),32374822240.0,0,pcap180
+49,2020-02-20 22:59:52.524689750,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),32158510563.0,0,pcap180
+50,2020-02-20 22:59:53.525803500,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),32421281812.0,0,pcap180
+51,2020-02-20 22:59:53.801325750,sensor-DownstreamCmdKey (DownstreamCmdID 4b5c728b-cab0-4ffe-9420-19921e150720),13796119041.0,0,pcap180
+0,2020-02-20 22:59:56.305718000,sensor-RaplKey (PackageID 0),0.0,0,pcap210
+1,2020-02-20 22:59:57.304536000,sensor-RaplKey (PackageID 0),78.53178200000548,0,pcap210
+2,2020-02-20 22:59:58.304494500,sensor-RaplKey (PackageID 0),112.75398299998778,0,pcap210
+3,2020-02-20 22:59:59.304558500,sensor-RaplKey (PackageID 0),113.4648589999997,0,pcap210
+4,2020-02-20 23:00:00.306476750,sensor-RaplKey (PackageID 0),108.2438630000106,0,pcap210
+5,2020-02-20 23:00:01.303046750,sensor-RaplKey (PackageID 0),107.72512799999095,0,pcap210
+6,2020-02-20 23:00:02.303439500,sensor-RaplKey (PackageID 0),108.6606710000051,0,pcap210
+7,2020-02-20 23:00:03.303587750,sensor-RaplKey (PackageID 0),109.96126599999843,0,pcap210
+8,2020-02-20 23:00:04.321779750,sensor-RaplKey (PackageID 0),111.42506900000444,0,pcap210
+9,2020-02-20 23:00:05.305700250,sensor-RaplKey (PackageID 0),106.73361399999703,0,pcap210
+10,2020-02-20 23:00:06.303459500,sensor-RaplKey (PackageID 0),108.235256999993,0,pcap210
+11,2020-02-20 23:00:07.303573750,sensor-RaplKey (PackageID 0),109.76412400000845,0,pcap210
+12,2020-02-20 23:00:08.303581500,sensor-RaplKey (PackageID 0),109.25441999999748,0,pcap210
+13,2020-02-20 22:59:59.831785500,sensor-RaplKey (PackageID 0),,0,pcap210
+14,2020-02-20 23:00:00.833711000,sensor-RaplKey (PackageID 0),,0,pcap210
+15,2020-02-20 23:00:01.830832250,sensor-RaplKey (PackageID 0),,0,pcap210
+16,2020-02-20 23:00:02.834781000,sensor-RaplKey (PackageID 0),,0,pcap210
+17,2020-02-20 23:00:03.833748250,sensor-RaplKey (PackageID 0),,0,pcap210
+18,2020-02-20 23:00:04.838846500,sensor-RaplKey (PackageID 0),,0,pcap210
+19,2020-02-20 23:00:05.836635750,sensor-RaplKey (PackageID 0),,0,pcap210
+20,2020-02-20 23:00:06.836724750,sensor-RaplKey (PackageID 0),,0,pcap210
+21,2020-02-20 23:00:07.834709250,sensor-RaplKey (PackageID 0),,0,pcap210
+22,2020-02-20 23:00:08.831888500,sensor-RaplKey (PackageID 0),,0,pcap210
+23,2020-02-20 23:00:08.916050500,sensor-RaplKey (PackageID 0),,0,pcap210
+24,2020-02-20 22:59:56.305718000,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+25,2020-02-20 22:59:57.304536000,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+26,2020-02-20 22:59:58.304494500,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+27,2020-02-20 22:59:59.304558500,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+28,2020-02-20 23:00:00.306476750,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+29,2020-02-20 23:00:01.303046750,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+30,2020-02-20 23:00:02.303439500,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+31,2020-02-20 23:00:03.303587750,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+32,2020-02-20 23:00:04.321779750,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+33,2020-02-20 23:00:05.305700250,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+34,2020-02-20 23:00:06.303459500,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+35,2020-02-20 23:00:07.303573750,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+36,2020-02-20 23:00:08.303581500,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),,0,pcap210
+37,2020-02-20 22:59:59.831785500,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),34962017377.0,0,pcap210
+38,2020-02-20 23:00:00.833711000,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),31959756396.0,0,pcap210
+39,2020-02-20 23:00:01.830832250,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),32557175045.0,0,pcap210
+40,2020-02-20 23:00:02.834781000,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),33422652807.0,0,pcap210
+41,2020-02-20 23:00:03.833748250,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),33413651254.0,0,pcap210
+42,2020-02-20 23:00:04.838846500,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),33256414383.0,0,pcap210
+43,2020-02-20 23:00:05.836635750,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),31701051043.0,0,pcap210
+44,2020-02-20 23:00:06.836724750,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),33067995535.0,0,pcap210
+45,2020-02-20 23:00:07.834709250,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),33151762014.0,0,pcap210
+46,2020-02-20 23:00:08.831888500,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),29074410578.0,0,pcap210
+47,2020-02-20 23:00:08.916050500,sensor-DownstreamCmdKey (DownstreamCmdID 3a712c00-1ba5-4aa0-af34-ace7dba5fec2),6393562572.0,0,pcap210
+0,2020-02-20 23:00:11.420124000,sensor-RaplKey (PackageID 0),0.0,0,controlOn
+1,2020-02-20 23:00:12.419492750,sensor-RaplKey (PackageID 0),74.83586799999466,0,controlOn
+2,2020-02-20 23:00:13.419384000,sensor-RaplKey (PackageID 0),111.98537000000942,0,controlOn
+3,2020-02-20 23:00:14.419419250,sensor-RaplKey (PackageID 0),111.80165499998839,0,controlOn
+4,2020-02-20 23:00:15.418327500,sensor-RaplKey (PackageID 0),99.5145760000014,0,controlOn
+5,2020-02-20 23:00:16.422910000,sensor-RaplKey (PackageID 0),107.48977700000978,0,controlOn
+6,2020-02-20 23:00:17.418363750,sensor-RaplKey (PackageID 0),106.44210999998904,0,controlOn
+7,2020-02-20 23:00:18.417303750,sensor-RaplKey (PackageID 0),107.96719200001098,0,controlOn
+8,2020-02-20 23:00:19.421628250,sensor-RaplKey (PackageID 0),107.01010200000019,0,controlOn
+9,2020-02-20 23:00:20.417296000,sensor-RaplKey (PackageID 0),107.59017799999856,0,controlOn
+10,2020-02-20 23:00:21.418383000,sensor-RaplKey (PackageID 0),108.59225200000219,0,controlOn
+11,2020-02-20 23:00:22.419009000,sensor-RaplKey (PackageID 0),103.64017600000079,0,controlOn
+12,2020-02-20 23:00:23.418457500,sensor-RaplKey (PackageID 0),107.14212099999713,0,controlOn
+13,2020-02-20 23:00:24.418439500,sensor-RaplKey (PackageID 0),107.41165100000217,0,controlOn
+14,2020-02-20 23:00:13.025658750,sensor-RaplKey (PackageID 0),,0,controlOn
+15,2020-02-20 23:00:14.038640000,sensor-RaplKey (PackageID 0),,0,controlOn
+16,2020-02-20 23:00:15.050515500,sensor-RaplKey (PackageID 0),,0,controlOn
+17,2020-02-20 23:00:16.042400750,sensor-RaplKey (PackageID 0),,0,controlOn
+18,2020-02-20 23:00:17.044614000,sensor-RaplKey (PackageID 0),,0,controlOn
+19,2020-02-20 23:00:18.033658250,sensor-RaplKey (PackageID 0),,0,controlOn
+20,2020-02-20 23:00:19.052067250,sensor-RaplKey (PackageID 0),,0,controlOn
+21,2020-02-20 23:00:20.054709500,sensor-RaplKey (PackageID 0),,0,controlOn
+22,2020-02-20 23:00:21.055063500,sensor-RaplKey (PackageID 0),,0,controlOn
+23,2020-02-20 23:00:22.049599500,sensor-RaplKey (PackageID 0),,0,controlOn
+24,2020-02-20 23:00:23.054100500,sensor-RaplKey (PackageID 0),,0,controlOn
+25,2020-02-20 23:00:24.055841500,sensor-RaplKey (PackageID 0),,0,controlOn
+26,2020-02-20 23:00:24.857378750,sensor-RaplKey (PackageID 0),,0,controlOn
+27,2020-02-20 23:00:11.420124000,actionType,,0,controlOn
+28,2020-02-20 23:00:12.419492750,actionType,,0,controlOn
+29,2020-02-20 23:00:13.419384000,actionType,,0,controlOn
+30,2020-02-20 23:00:14.419419250,actionType,,0,controlOn
+31,2020-02-20 23:00:15.418327500,actionType,referenceMeasurementDecision,0,controlOn
+32,2020-02-20 23:00:16.422910000,actionType,innerDecision,0,controlOn
+33,2020-02-20 23:00:17.418363750,actionType,innerDecision,0,controlOn
+34,2020-02-20 23:00:18.417303750,actionType,innerDecision,0,controlOn
+35,2020-02-20 23:00:19.421628250,actionType,innerDecision,0,controlOn
+36,2020-02-20 23:00:20.417296000,actionType,innerDecision,0,controlOn
+37,2020-02-20 23:00:21.418383000,actionType,innerDecision,0,controlOn
+38,2020-02-20 23:00:22.419009000,actionType,innerDecision,0,controlOn
+39,2020-02-20 23:00:23.418457500,actionType,innerDecision,0,controlOn
+40,2020-02-20 23:00:24.418439500,actionType,innerDecision,0,controlOn
+41,2020-02-20 23:00:13.025658750,actionType,initialDecision,0,controlOn
+42,2020-02-20 23:00:14.038640000,actionType,initialDecision,0,controlOn
+43,2020-02-20 23:00:15.050515500,actionType,,0,controlOn
+44,2020-02-20 23:00:16.042400750,actionType,,0,controlOn
+45,2020-02-20 23:00:17.044614000,actionType,,0,controlOn
+46,2020-02-20 23:00:18.033658250,actionType,,0,controlOn
+47,2020-02-20 23:00:19.052067250,actionType,,0,controlOn
+48,2020-02-20 23:00:20.054709500,actionType,,0,controlOn
+49,2020-02-20 23:00:21.055063500,actionType,,0,controlOn
+50,2020-02-20 23:00:22.049599500,actionType,,0,controlOn
+51,2020-02-20 23:00:23.054100500,actionType,,0,controlOn
+52,2020-02-20 23:00:24.055841500,actionType,,0,controlOn
+53,2020-02-20 23:00:24.857378750,actionType,,0,controlOn
+54,2020-02-20 23:00:11.420124000,RaplKey (PackageID 0)(action),,0,controlOn
+55,2020-02-20 23:00:12.419492750,RaplKey (PackageID 0)(action),,0,controlOn
+56,2020-02-20 23:00:13.419384000,RaplKey (PackageID 0)(action),,0,controlOn
+57,2020-02-20 23:00:14.419419250,RaplKey (PackageID 0)(action),,0,controlOn
+58,2020-02-20 23:00:15.418327500,RaplKey (PackageID 0)(action),200.0,0,controlOn
+59,2020-02-20 23:00:16.422910000,RaplKey (PackageID 0)(action),100.0,0,controlOn
+60,2020-02-20 23:00:17.418363750,RaplKey (PackageID 0)(action),200.0,0,controlOn
+61,2020-02-20 23:00:18.417303750,RaplKey (PackageID 0)(action),100.0,0,controlOn
+62,2020-02-20 23:00:19.421628250,RaplKey (PackageID 0)(action),200.0,0,controlOn
+63,2020-02-20 23:00:20.417296000,RaplKey (PackageID 0)(action),200.0,0,controlOn
+64,2020-02-20 23:00:21.418383000,RaplKey (PackageID 0)(action),100.0,0,controlOn
+65,2020-02-20 23:00:22.419009000,RaplKey (PackageID 0)(action),200.0,0,controlOn
+66,2020-02-20 23:00:23.418457500,RaplKey (PackageID 0)(action),100.0,0,controlOn
+67,2020-02-20 23:00:24.418439500,RaplKey (PackageID 0)(action),200.0,0,controlOn
+68,2020-02-20 23:00:13.025658750,RaplKey (PackageID 0)(action),100.0,0,controlOn
+69,2020-02-20 23:00:14.038640000,RaplKey (PackageID 0)(action),100.0,0,controlOn
+70,2020-02-20 23:00:15.050515500,RaplKey (PackageID 0)(action),,0,controlOn
+71,2020-02-20 23:00:16.042400750,RaplKey (PackageID 0)(action),,0,controlOn
+72,2020-02-20 23:00:17.044614000,RaplKey (PackageID 0)(action),,0,controlOn
+73,2020-02-20 23:00:18.033658250,RaplKey (PackageID 0)(action),,0,controlOn
+74,2020-02-20 23:00:19.052067250,RaplKey (PackageID 0)(action),,0,controlOn
+75,2020-02-20 23:00:20.054709500,RaplKey (PackageID 0)(action),,0,controlOn
+76,2020-02-20 23:00:21.055063500,RaplKey (PackageID 0)(action),,0,controlOn
+77,2020-02-20 23:00:22.049599500,RaplKey (PackageID 0)(action),,0,controlOn
+78,2020-02-20 23:00:23.054100500,RaplKey (PackageID 0)(action),,0,controlOn
+79,2020-02-20 23:00:24.055841500,RaplKey (PackageID 0)(action),,0,controlOn
+80,2020-02-20 23:00:24.857378750,RaplKey (PackageID 0)(action),,0,controlOn
+81,2020-02-20 23:00:11.420124000,0.0001-probability,,0,controlOn
+82,2020-02-20 23:00:12.419492750,0.0001-probability,,0,controlOn
+83,2020-02-20 23:00:13.419384000,0.0001-probability,,0,controlOn
+84,2020-02-20 23:00:14.419419250,0.0001-probability,,0,controlOn
+85,2020-02-20 23:00:15.418327500,0.0001-probability,1.0,0,controlOn
+86,2020-02-20 23:00:16.422910000,0.0001-probability,0.37784046688249356,0,controlOn
+87,2020-02-20 23:00:17.418363750,0.0001-probability,0.21289324688480785,0,controlOn
+88,2020-02-20 23:00:18.417303750,0.0001-probability,0.3332885601791266,0,controlOn
+89,2020-02-20 23:00:19.421628250,0.0001-probability,0.20304532167289094,0,controlOn
+90,2020-02-20 23:00:20.417296000,0.0001-probability,0.2816792504880462,0,controlOn
+91,2020-02-20 23:00:21.418383000,0.0001-probability,0.36273901823603905,0,controlOn
+92,2020-02-20 23:00:22.419009000,0.0001-probability,0.25951108296531433,0,controlOn
+93,2020-02-20 23:00:23.418457500,0.0001-probability,0.35817788200992545,0,controlOn
+94,2020-02-20 23:00:24.418439500,0.0001-probability,0.21003266085292233,0,controlOn
+95,2020-02-20 23:00:13.025658750,0.0001-probability,1.0,0,controlOn
+96,2020-02-20 23:00:14.038640000,0.0001-probability,1.0,0,controlOn
+97,2020-02-20 23:00:15.050515500,0.0001-probability,,0,controlOn
+98,2020-02-20 23:00:16.042400750,0.0001-probability,,0,controlOn
+99,2020-02-20 23:00:17.044614000,0.0001-probability,,0,controlOn
+100,2020-02-20 23:00:18.033658250,0.0001-probability,,0,controlOn
+101,2020-02-20 23:00:19.052067250,0.0001-probability,,0,controlOn
+102,2020-02-20 23:00:20.054709500,0.0001-probability,,0,controlOn
+103,2020-02-20 23:00:21.055063500,0.0001-probability,,0,controlOn
+104,2020-02-20 23:00:22.049599500,0.0001-probability,,0,controlOn
+105,2020-02-20 23:00:23.054100500,0.0001-probability,,0,controlOn
+106,2020-02-20 23:00:24.055841500,0.0001-probability,,0,controlOn
+107,2020-02-20 23:00:24.857378750,0.0001-probability,,0,controlOn
+108,2020-02-20 23:00:11.420124000,0.0001-cumulativeLoss,,0,controlOn
+109,2020-02-20 23:00:12.419492750,0.0001-cumulativeLoss,,0,controlOn
+110,2020-02-20 23:00:13.419384000,0.0001-cumulativeLoss,,0,controlOn
+111,2020-02-20 23:00:14.419419250,0.0001-cumulativeLoss,,0,controlOn
+112,2020-02-20 23:00:15.418327500,0.0001-cumulativeLoss,0.0,0,controlOn
+113,2020-02-20 23:00:16.422910000,0.0001-cumulativeLoss,0.599029152000015,0,controlOn
+114,2020-02-20 23:00:17.418363750,0.0001-cumulativeLoss,2.2211005649876103,0,controlOn
+115,2020-02-20 23:00:18.417303750,0.0001-cumulativeLoss,2.2211005649876103,0,controlOn
+116,2020-02-20 23:00:19.421628250,0.0001-cumulativeLoss,4.0634086348175344,0,controlOn
+117,2020-02-20 23:00:20.417296000,0.0001-cumulativeLoss,4.0634086348175344,0,controlOn
+118,2020-02-20 23:00:21.418383000,0.0001-cumulativeLoss,4.0634086348175344,0,controlOn
+119,2020-02-20 23:00:22.419009000,0.0001-cumulativeLoss,5.737560908132784,0,controlOn
+120,2020-02-20 23:00:23.418457500,0.0001-cumulativeLoss,5.737560908132784,0,controlOn
+121,2020-02-20 23:00:24.418439500,0.0001-cumulativeLoss,8.529469761880177,0,controlOn
+122,2020-02-20 23:00:13.025658750,0.0001-cumulativeLoss,0.0,0,controlOn
+123,2020-02-20 23:00:14.038640000,0.0001-cumulativeLoss,0.0,0,controlOn
+124,2020-02-20 23:00:15.050515500,0.0001-cumulativeLoss,,0,controlOn
+125,2020-02-20 23:00:16.042400750,0.0001-cumulativeLoss,,0,controlOn
+126,2020-02-20 23:00:17.044614000,0.0001-cumulativeLoss,,0,controlOn
+127,2020-02-20 23:00:18.033658250,0.0001-cumulativeLoss,,0,controlOn
+128,2020-02-20 23:00:19.052067250,0.0001-cumulativeLoss,,0,controlOn
+129,2020-02-20 23:00:20.054709500,0.0001-cumulativeLoss,,0,controlOn
+130,2020-02-20 23:00:21.055063500,0.0001-cumulativeLoss,,0,controlOn
+131,2020-02-20 23:00:22.049599500,0.0001-cumulativeLoss,,0,controlOn
+132,2020-02-20 23:00:23.054100500,0.0001-cumulativeLoss,,0,controlOn
+133,2020-02-20 23:00:24.055841500,0.0001-cumulativeLoss,,0,controlOn
+134,2020-02-20 23:00:24.857378750,0.0001-cumulativeLoss,,0,controlOn
+135,2020-02-20 23:00:11.420124000,0.0002-probability,,0,controlOn
+136,2020-02-20 23:00:12.419492750,0.0002-probability,,0,controlOn
+137,2020-02-20 23:00:13.419384000,0.0002-probability,,0,controlOn
+138,2020-02-20 23:00:14.419419250,0.0002-probability,,0,controlOn
+139,2020-02-20 23:00:15.418327500,0.0002-probability,1.0,0,controlOn
+140,2020-02-20 23:00:16.422910000,0.0002-probability,0.6221595331175064,0,controlOn
+141,2020-02-20 23:00:17.418363750,0.0002-probability,0.7871067531151922,0,controlOn
+142,2020-02-20 23:00:18.417303750,0.0002-probability,0.6667114398208734,0,controlOn
+143,2020-02-20 23:00:19.421628250,0.0002-probability,0.796954678327109,0,controlOn
+144,2020-02-20 23:00:20.417296000,0.0002-probability,0.7183207495119537,0,controlOn
+145,2020-02-20 23:00:21.418383000,0.0002-probability,0.637260981763961,0,controlOn
+146,2020-02-20 23:00:22.419009000,0.0002-probability,0.7404889170346858,0,controlOn
+147,2020-02-20 23:00:23.418457500,0.0002-probability,0.6418221179900747,0,controlOn
+148,2020-02-20 23:00:24.418439500,0.0002-probability,0.7899673391470776,0,controlOn
+149,2020-02-20 23:00:13.025658750,0.0002-probability,1.0,0,controlOn
+150,2020-02-20 23:00:14.038640000,0.0002-probability,1.0,0,controlOn
+151,2020-02-20 23:00:15.050515500,0.0002-probability,,0,controlOn
+152,2020-02-20 23:00:16.042400750,0.0002-probability,,0,controlOn
+153,2020-02-20 23:00:17.044614000,0.0002-probability,,0,controlOn
+154,2020-02-20 23:00:18.033658250,0.0002-probability,,0,controlOn
+155,2020-02-20 23:00:19.052067250,0.0002-probability,,0,controlOn
+156,2020-02-20 23:00:20.054709500,0.0002-probability,,0,controlOn
+157,2020-02-20 23:00:21.055063500,0.0002-probability,,0,controlOn
+158,2020-02-20 23:00:22.049599500,0.0002-probability,,0,controlOn
+159,2020-02-20 23:00:23.054100500,0.0002-probability,,0,controlOn
+160,2020-02-20 23:00:24.055841500,0.0002-probability,,0,controlOn
+161,2020-02-20 23:00:24.857378750,0.0002-probability,,0,controlOn
+162,2020-02-20 23:00:11.420124000,0.0002-cumulativeLoss,,0,controlOn
+163,2020-02-20 23:00:12.419492750,0.0002-cumulativeLoss,,0,controlOn
+164,2020-02-20 23:00:13.419384000,0.0002-cumulativeLoss,,0,controlOn
+165,2020-02-20 23:00:14.419419250,0.0002-cumulativeLoss,,0,controlOn
+166,2020-02-20 23:00:15.418327500,0.0002-cumulativeLoss,0.0,0,controlOn
+167,2020-02-20 23:00:16.422910000,0.0002-cumulativeLoss,0.0,0,controlOn
+168,2020-02-20 23:00:17.418363750,0.0002-cumulativeLoss,0.0,0,controlOn
+169,2020-02-20 23:00:18.417303750,0.0002-cumulativeLoss,0.7786545059794255,0,controlOn
+170,2020-02-20 23:00:19.421628250,0.0002-cumulativeLoss,0.7786545059794255,0,controlOn
+171,2020-02-20 23:00:20.417296000,0.0002-cumulativeLoss,1.5491126269969135,0,controlOn
+172,2020-02-20 23:00:21.418383000,0.0002-cumulativeLoss,2.4055271972539582,0,controlOn
+173,2020-02-20 23:00:22.419009000,0.0002-cumulativeLoss,2.4055271972539582,0,controlOn
+174,2020-02-20 23:00:23.418457500,0.0002-cumulativeLoss,3.7559863020364253,0,controlOn
+175,2020-02-20 23:00:24.418439500,0.0002-cumulativeLoss,3.7559863020364253,0,controlOn
+176,2020-02-20 23:00:13.025658750,0.0002-cumulativeLoss,0.0,0,controlOn
+177,2020-02-20 23:00:14.038640000,0.0002-cumulativeLoss,0.0,0,controlOn
+178,2020-02-20 23:00:15.050515500,0.0002-cumulativeLoss,,0,controlOn
+179,2020-02-20 23:00:16.042400750,0.0002-cumulativeLoss,,0,controlOn
+180,2020-02-20 23:00:17.044614000,0.0002-cumulativeLoss,,0,controlOn
+181,2020-02-20 23:00:18.033658250,0.0002-cumulativeLoss,,0,controlOn
+182,2020-02-20 23:00:19.052067250,0.0002-cumulativeLoss,,0,controlOn
+183,2020-02-20 23:00:20.054709500,0.0002-cumulativeLoss,,0,controlOn
+184,2020-02-20 23:00:21.055063500,0.0002-cumulativeLoss,,0,controlOn
+185,2020-02-20 23:00:22.049599500,0.0002-cumulativeLoss,,0,controlOn
+186,2020-02-20 23:00:23.054100500,0.0002-cumulativeLoss,,0,controlOn
+187,2020-02-20 23:00:24.055841500,0.0002-cumulativeLoss,,0,controlOn
+188,2020-02-20 23:00:24.857378750,0.0002-cumulativeLoss,,0,controlOn
+189,2020-02-20 23:00:11.420124000,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+190,2020-02-20 23:00:12.419492750,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+191,2020-02-20 23:00:13.419384000,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+192,2020-02-20 23:00:14.419419250,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+193,2020-02-20 23:00:15.418327500,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+194,2020-02-20 23:00:16.422910000,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+195,2020-02-20 23:00:17.418363750,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+196,2020-02-20 23:00:18.417303750,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+197,2020-02-20 23:00:19.421628250,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+198,2020-02-20 23:00:20.417296000,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+199,2020-02-20 23:00:21.418383000,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+200,2020-02-20 23:00:22.419009000,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+201,2020-02-20 23:00:23.418457500,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+202,2020-02-20 23:00:24.418439500,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+203,2020-02-20 23:00:13.025658750,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+204,2020-02-20 23:00:14.038640000,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),,0,controlOn
+205,2020-02-20 23:00:15.050515500,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),34523695331.0,0,controlOn
+206,2020-02-20 23:00:16.042400750,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),30849705890.0,0,controlOn
+207,2020-02-20 23:00:17.044614000,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),30571285627.0,0,controlOn
+208,2020-02-20 23:00:18.033658250,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),31682413664.0,0,controlOn
+209,2020-02-20 23:00:19.052067250,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),32626488703.0,0,controlOn
+210,2020-02-20 23:00:20.054709500,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),32119347170.0,0,controlOn
+211,2020-02-20 23:00:21.055063500,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),32509232092.0,0,controlOn
+212,2020-02-20 23:00:22.049599500,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),31307006071.0,0,controlOn
+213,2020-02-20 23:00:23.054100500,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),26435098437.0,0,controlOn
+214,2020-02-20 23:00:24.055841500,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),31837881338.0,0,controlOn
+215,2020-02-20 23:00:24.857378750,sensor-DownstreamCmdKey (DownstreamCmdID 8c679ff1-fa10-496e-bda9-2283a7057fc4),25015451703.0,0,controlOn
+216,2020-02-20 23:00:11.420124000,constraint-0,,0,controlOn
+217,2020-02-20 23:00:12.419492750,constraint-0,,0,controlOn
+218,2020-02-20 23:00:13.419384000,constraint-0,,0,controlOn
+219,2020-02-20 23:00:14.419419250,constraint-0,,0,controlOn
+220,2020-02-20 23:00:15.418327500,constraint-0,,0,controlOn
+221,2020-02-20 23:00:16.422910000,constraint-0,1.1190931756075133,0,controlOn
+222,2020-02-20 23:00:17.418363750,constraint-0,0.9909749459526626,0,controlOn
+223,2020-02-20 23:00:18.417303750,constraint-0,0.9909749459526765,0,controlOn
+224,2020-02-20 23:00:19.421628250,constraint-0,1.026992405599188,0,controlOn
+225,2020-02-20 23:00:20.417296000,constraint-0,1.041155701273958,0,controlOn
+226,2020-02-20 23:00:21.418383000,constraint-0,1.0411557012739563,0,controlOn
+227,2020-02-20 23:00:22.419009000,constraint-0,1.0148234859233114,0,controlOn
+228,2020-02-20 23:00:23.418457500,constraint-0,0.8568995286781584,0,controlOn
+229,2020-02-20 23:00:24.418439500,constraint-0,0.8568995286781675,0,controlOn
+230,2020-02-20 23:00:13.025658750,constraint-0,,0,controlOn
+231,2020-02-20 23:00:14.038640000,constraint-0,,0,controlOn
+232,2020-02-20 23:00:15.050515500,constraint-0,,0,controlOn
+233,2020-02-20 23:00:16.042400750,constraint-0,,0,controlOn
+234,2020-02-20 23:00:17.044614000,constraint-0,,0,controlOn
+235,2020-02-20 23:00:18.033658250,constraint-0,,0,controlOn
+236,2020-02-20 23:00:19.052067250,constraint-0,,0,controlOn
+237,2020-02-20 23:00:20.054709500,constraint-0,,0,controlOn
+238,2020-02-20 23:00:21.055063500,constraint-0,,0,controlOn
+239,2020-02-20 23:00:22.049599500,constraint-0,,0,controlOn
+240,2020-02-20 23:00:23.054100500,constraint-0,,0,controlOn
+241,2020-02-20 23:00:24.055841500,constraint-0,,0,controlOn
+242,2020-02-20 23:00:24.857378750,constraint-0,,0,controlOn
+243,2020-02-20 23:00:11.420124000,objective-0,,0,controlOn
+244,2020-02-20 23:00:12.419492750,objective-0,,0,controlOn
+245,2020-02-20 23:00:13.419384000,objective-0,,0,controlOn
+246,2020-02-20 23:00:14.419419250,objective-0,,0,controlOn
+247,2020-02-20 23:00:15.418327500,objective-0,,0,controlOn
+248,2020-02-20 23:00:16.422910000,objective-0,0.599029152000015,0,controlOn
+249,2020-02-20 23:00:17.418363750,objective-0,0.6128842199999791,0,controlOn
+250,2020-02-20 23:00:18.417303750,objective-0,0.6128842199999797,0,controlOn
+251,2020-02-20 23:00:19.421628250,objective-0,0.6140202040000012,0,controlOn
+252,2020-02-20 23:00:20.417296000,objective-0,0.614020204000001,0,controlOn
+253,2020-02-20 23:00:21.418383000,objective-0,0.6151803559999981,0,controlOn
+254,2020-02-20 23:00:22.419009000,objective-0,0.6072803520000066,0,controlOn
+255,2020-02-20 23:00:23.418457500,objective-0,0.6072803520000051,0,controlOn
+256,2020-02-20 23:00:24.418439500,objective-0,0.6142842419999945,0,controlOn
+257,2020-02-20 23:00:13.025658750,objective-0,,0,controlOn
+258,2020-02-20 23:00:14.038640000,objective-0,,0,controlOn
+259,2020-02-20 23:00:15.050515500,objective-0,,0,controlOn
+260,2020-02-20 23:00:16.042400750,objective-0,,0,controlOn
+261,2020-02-20 23:00:17.044614000,objective-0,,0,controlOn
+262,2020-02-20 23:00:18.033658250,objective-0,,0,controlOn
+263,2020-02-20 23:00:19.052067250,objective-0,,0,controlOn
+264,2020-02-20 23:00:20.054709500,objective-0,,0,controlOn
+265,2020-02-20 23:00:21.055063500,objective-0,,0,controlOn
+266,2020-02-20 23:00:22.049599500,objective-0,,0,controlOn
+267,2020-02-20 23:00:23.054100500,objective-0,,0,controlOn
+268,2020-02-20 23:00:24.055841500,objective-0,,0,controlOn
+269,2020-02-20 23:00:24.857378750,objective-0,,0,controlOn
+270,2020-02-20 23:00:11.420124000,loss,,0,controlOn
+271,2020-02-20 23:00:12.419492750,loss,,0,controlOn
+272,2020-02-20 23:00:13.419384000,loss,,0,controlOn
+273,2020-02-20 23:00:14.419419250,loss,,0,controlOn
+274,2020-02-20 23:00:15.418327500,loss,,0,controlOn
+275,2020-02-20 23:00:16.422910000,loss,0.599029152000015,0,controlOn
+276,2020-02-20 23:00:17.418363750,loss,0.6128842199999791,0,controlOn
+277,2020-02-20 23:00:18.417303750,loss,0.6128842199999797,0,controlOn
+278,2020-02-20 23:00:19.421628250,loss,0.6140202040000012,0,controlOn
+279,2020-02-20 23:00:20.417296000,loss,0.614020204000001,0,controlOn
+280,2020-02-20 23:00:21.418383000,loss,0.6151803559999981,0,controlOn
+281,2020-02-20 23:00:22.419009000,loss,0.6072803520000066,0,controlOn
+282,2020-02-20 23:00:23.418457500,loss,1.0,0,controlOn
+283,2020-02-20 23:00:24.418439500,loss,1.0,0,controlOn
+284,2020-02-20 23:00:13.025658750,loss,,0,controlOn
+285,2020-02-20 23:00:14.038640000,loss,,0,controlOn
+286,2020-02-20 23:00:15.050515500,loss,,0,controlOn
+287,2020-02-20 23:00:16.042400750,loss,,0,controlOn
+288,2020-02-20 23:00:17.044614000,loss,,0,controlOn
+289,2020-02-20 23:00:18.033658250,loss,,0,controlOn
+290,2020-02-20 23:00:19.052067250,loss,,0,controlOn
+291,2020-02-20 23:00:20.054709500,loss,,0,controlOn
+292,2020-02-20 23:00:21.055063500,loss,,0,controlOn
+293,2020-02-20 23:00:22.049599500,loss,,0,controlOn
+294,2020-02-20 23:00:23.054100500,loss,,0,controlOn
+295,2020-02-20 23:00:24.055841500,loss,,0,controlOn
+296,2020-02-20 23:00:24.857378750,loss,,0,controlOn
+0,2020-02-20 23:00:27.374064500,sensor-RaplKey (PackageID 0),0.0,1,pcap60
+1,2020-02-20 23:00:28.375588750,sensor-RaplKey (PackageID 0),71.31427099999564,1,pcap60
+2,2020-02-20 23:00:29.375535750,sensor-RaplKey (PackageID 0),59.56826800000272,1,pcap60
+3,2020-02-20 23:00:30.376536250,sensor-RaplKey (PackageID 0),59.84316899999976,1,pcap60
+4,2020-02-20 23:00:31.375220250,sensor-RaplKey (PackageID 0),59.58822700000019,1,pcap60
+5,2020-02-20 23:00:32.375376500,sensor-RaplKey (PackageID 0),59.8678879999934,1,pcap60
+6,2020-02-20 23:00:33.383536500,sensor-RaplKey (PackageID 0),60.519255000006524,1,pcap60
+7,2020-02-20 23:00:34.375756250,sensor-RaplKey (PackageID 0),59.65219100000104,1,pcap60
+8,2020-02-20 23:00:35.378106250,sensor-RaplKey (PackageID 0),59.48648099999991,1,pcap60
+9,2020-02-20 23:00:36.375449250,sensor-RaplKey (PackageID 0),59.706695000000764,1,pcap60
+10,2020-02-20 23:00:37.375048000,sensor-RaplKey (PackageID 0),59.54196200000297,1,pcap60
+11,2020-02-20 23:00:38.383585000,sensor-RaplKey (PackageID 0),60.73562300000049,1,pcap60
+12,2020-02-20 23:00:39.376050000,sensor-RaplKey (PackageID 0),59.20553699998709,1,pcap60
+13,2020-02-20 23:00:40.374675750,sensor-RaplKey (PackageID 0),59.84072800001013,1,pcap60
+14,2020-02-20 23:00:41.375041000,sensor-RaplKey (PackageID 0),60.31338300000061,1,pcap60
+15,2020-02-20 23:00:42.374567500,sensor-RaplKey (PackageID 0),59.31936699998914,1,pcap60
+16,2020-02-20 23:00:43.374491750,sensor-RaplKey (PackageID 0),59.90951500000665,1,pcap60
+17,2020-02-20 23:00:44.382556250,sensor-RaplKey (PackageID 0),60.002653999996255,1,pcap60
+18,2020-02-20 23:00:45.376921000,sensor-RaplKey (PackageID 0),59.377166999998735,1,pcap60
+19,2020-02-20 23:00:30.943826500,sensor-RaplKey (PackageID 0),,1,pcap60
+20,2020-02-20 23:00:31.943811500,sensor-RaplKey (PackageID 0),,1,pcap60
+21,2020-02-20 23:00:32.939881750,sensor-RaplKey (PackageID 0),,1,pcap60
+22,2020-02-20 23:00:33.941023500,sensor-RaplKey (PackageID 0),,1,pcap60
+23,2020-02-20 23:00:34.942391750,sensor-RaplKey (PackageID 0),,1,pcap60
+24,2020-02-20 23:00:35.940855500,sensor-RaplKey (PackageID 0),,1,pcap60
+25,2020-02-20 23:00:36.941304000,sensor-RaplKey (PackageID 0),,1,pcap60
+26,2020-02-20 23:00:37.945769750,sensor-RaplKey (PackageID 0),,1,pcap60
+27,2020-02-20 23:00:38.946828000,sensor-RaplKey (PackageID 0),,1,pcap60
+28,2020-02-20 23:00:39.947192000,sensor-RaplKey (PackageID 0),,1,pcap60
+29,2020-02-20 23:00:40.944498000,sensor-RaplKey (PackageID 0),,1,pcap60
+30,2020-02-20 23:00:41.955541500,sensor-RaplKey (PackageID 0),,1,pcap60
+31,2020-02-20 23:00:42.947908750,sensor-RaplKey (PackageID 0),,1,pcap60
+32,2020-02-20 23:00:43.953400250,sensor-RaplKey (PackageID 0),,1,pcap60
+33,2020-02-20 23:00:44.960341750,sensor-RaplKey (PackageID 0),,1,pcap60
+34,2020-02-20 23:00:45.602917000,sensor-RaplKey (PackageID 0),,1,pcap60
+35,2020-02-20 23:00:27.374064500,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+36,2020-02-20 23:00:28.375588750,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+37,2020-02-20 23:00:29.375535750,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+38,2020-02-20 23:00:30.376536250,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+39,2020-02-20 23:00:31.375220250,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+40,2020-02-20 23:00:32.375376500,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+41,2020-02-20 23:00:33.383536500,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+42,2020-02-20 23:00:34.375756250,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+43,2020-02-20 23:00:35.378106250,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+44,2020-02-20 23:00:36.375449250,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+45,2020-02-20 23:00:37.375048000,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+46,2020-02-20 23:00:38.383585000,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+47,2020-02-20 23:00:39.376050000,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+48,2020-02-20 23:00:40.374675750,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+49,2020-02-20 23:00:41.375041000,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+50,2020-02-20 23:00:42.374567500,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+51,2020-02-20 23:00:43.374491750,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+52,2020-02-20 23:00:44.382556250,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+53,2020-02-20 23:00:45.376921000,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),,1,pcap60
+54,2020-02-20 23:00:30.943826500,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),26927702868.0,1,pcap60
+55,2020-02-20 23:00:31.943811500,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),21480571919.0,1,pcap60
+56,2020-02-20 23:00:32.939881750,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),25987343858.0,1,pcap60
+57,2020-02-20 23:00:33.941023500,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),25593458401.0,1,pcap60
+58,2020-02-20 23:00:34.942391750,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),25835477957.0,1,pcap60
+59,2020-02-20 23:00:35.940855500,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),25754312191.0,1,pcap60
+60,2020-02-20 23:00:36.941304000,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),25859788297.0,1,pcap60
+61,2020-02-20 23:00:37.945769750,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),22887310495.0,1,pcap60
+62,2020-02-20 23:00:38.946828000,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),23637717906.0,1,pcap60
+63,2020-02-20 23:00:39.947192000,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),22661605561.0,1,pcap60
+64,2020-02-20 23:00:40.944498000,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),18431138843.0,1,pcap60
+65,2020-02-20 23:00:41.955541500,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),21452446049.0,1,pcap60
+66,2020-02-20 23:00:42.947908750,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),21759048026.0,1,pcap60
+67,2020-02-20 23:00:43.953400250,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),22360496544.0,1,pcap60
+68,2020-02-20 23:00:44.960341750,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),20935420558.0,1,pcap60
+69,2020-02-20 23:00:45.602917000,sensor-DownstreamCmdKey (DownstreamCmdID f3a90f10-fc9f-4c7a-88f3-c182a75317e2),17472009836.0,1,pcap60
+0,2020-02-20 23:00:48.090176500,sensor-RaplKey (PackageID 0),0.0,1,pcap75
+1,2020-02-20 23:00:49.090609000,sensor-RaplKey (PackageID 0),75.55669199999829,1,pcap75
+2,2020-02-20 23:00:50.089202750,sensor-RaplKey (PackageID 0),74.3984300000011,1,pcap75
+3,2020-02-20 23:00:51.089220500,sensor-RaplKey (PackageID 0),74.71776499999396,1,pcap75
+4,2020-02-20 23:00:52.090885000,sensor-RaplKey (PackageID 0),74.83318300000974,1,pcap75
+5,2020-02-20 23:00:53.088595250,sensor-RaplKey (PackageID 0),74.78453699999955,1,pcap75
+6,2020-02-20 23:00:54.088513250,sensor-RaplKey (PackageID 0),74.83849300000293,1,pcap75
+7,2020-02-20 23:00:55.088501750,sensor-RaplKey (PackageID 0),74.85527699999511,1,pcap75
+8,2020-02-20 23:00:56.088334250,sensor-RaplKey (PackageID 0),74.59612200000265,1,pcap75
+9,2020-02-20 23:00:57.089091000,sensor-RaplKey (PackageID 0),74.82237999999779,1,pcap75
+10,2020-02-20 23:00:58.088591250,sensor-RaplKey (PackageID 0),74.90483699999459,1,pcap75
+11,2020-02-20 23:00:59.093566250,sensor-RaplKey (PackageID 0),75.27361100001144,1,pcap75
+12,2020-02-20 23:01:00.089628000,sensor-RaplKey (PackageID 0),74.27501800000027,1,pcap75
+13,2020-02-20 23:01:01.090803250,sensor-RaplKey (PackageID 0),74.81145399999514,1,pcap75
+14,2020-02-20 23:01:02.089524000,sensor-RaplKey (PackageID 0),74.63280399999348,1,pcap75
+15,2020-02-20 23:01:03.088133000,sensor-RaplKey (PackageID 0),74.68047300000035,1,pcap75
+16,2020-02-20 23:00:51.640211000,sensor-RaplKey (PackageID 0),,1,pcap75
+17,2020-02-20 23:00:52.640280250,sensor-RaplKey (PackageID 0),,1,pcap75
+18,2020-02-20 23:00:53.645057500,sensor-RaplKey (PackageID 0),,1,pcap75
+19,2020-02-20 23:00:54.648818500,sensor-RaplKey (PackageID 0),,1,pcap75
+20,2020-02-20 23:00:55.646384250,sensor-RaplKey (PackageID 0),,1,pcap75
+21,2020-02-20 23:00:56.646161250,sensor-RaplKey (PackageID 0),,1,pcap75
+22,2020-02-20 23:00:57.644668500,sensor-RaplKey (PackageID 0),,1,pcap75
+23,2020-02-20 23:00:58.650829500,sensor-RaplKey (PackageID 0),,1,pcap75
+24,2020-02-20 23:00:59.655564750,sensor-RaplKey (PackageID 0),,1,pcap75
+25,2020-02-20 23:01:00.655937000,sensor-RaplKey (PackageID 0),,1,pcap75
+26,2020-02-20 23:01:01.658243250,sensor-RaplKey (PackageID 0),,1,pcap75
+27,2020-02-20 23:01:02.663937250,sensor-RaplKey (PackageID 0),,1,pcap75
+28,2020-02-20 23:01:03.664884500,sensor-RaplKey (PackageID 0),,1,pcap75
+29,2020-02-20 23:01:03.930607750,sensor-RaplKey (PackageID 0),,1,pcap75
+30,2020-02-20 23:00:48.090176500,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+31,2020-02-20 23:00:49.090609000,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+32,2020-02-20 23:00:50.089202750,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+33,2020-02-20 23:00:51.089220500,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+34,2020-02-20 23:00:52.090885000,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+35,2020-02-20 23:00:53.088595250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+36,2020-02-20 23:00:54.088513250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+37,2020-02-20 23:00:55.088501750,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+38,2020-02-20 23:00:56.088334250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+39,2020-02-20 23:00:57.089091000,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+40,2020-02-20 23:00:58.088591250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+41,2020-02-20 23:00:59.093566250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+42,2020-02-20 23:01:00.089628000,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+43,2020-02-20 23:01:01.090803250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+44,2020-02-20 23:01:02.089524000,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+45,2020-02-20 23:01:03.088133000,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),,1,pcap75
+46,2020-02-20 23:00:51.640211000,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),30191555557.0,1,pcap75
+47,2020-02-20 23:00:52.640280250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),19262889830.0,1,pcap75
+48,2020-02-20 23:00:53.645057500,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),23077907370.0,1,pcap75
+49,2020-02-20 23:00:54.648818500,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),28597656187.0,1,pcap75
+50,2020-02-20 23:00:55.646384250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),28734940739.0,1,pcap75
+51,2020-02-20 23:00:56.646161250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),29001562138.0,1,pcap75
+52,2020-02-20 23:00:57.644668500,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),20109271329.0,1,pcap75
+53,2020-02-20 23:00:58.650829500,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),25860594285.0,1,pcap75
+54,2020-02-20 23:00:59.655564750,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),25928235175.0,1,pcap75
+55,2020-02-20 23:01:00.655937000,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),29254055964.0,1,pcap75
+56,2020-02-20 23:01:01.658243250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),29524306063.0,1,pcap75
+57,2020-02-20 23:01:02.663937250,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),29797464247.0,1,pcap75
+58,2020-02-20 23:01:03.664884500,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),26993905103.0,1,pcap75
+59,2020-02-20 23:01:03.930607750,sensor-DownstreamCmdKey (DownstreamCmdID 190bc61f-d82e-4849-b997-a0e583b36450),9711448532.0,1,pcap75
+0,2020-02-20 23:01:06.435618500,sensor-RaplKey (PackageID 0),0.0,1,pcap100
+1,2020-02-20 23:01:07.433485000,sensor-RaplKey (PackageID 0),69.70245799999975,1,pcap100
+2,2020-02-20 23:01:08.434501000,sensor-RaplKey (PackageID 0),111.77797300000384,1,pcap100
+3,2020-02-20 23:01:09.433478750,sensor-RaplKey (PackageID 0),102.32676399999764,1,pcap100
+4,2020-02-20 23:01:10.433373500,sensor-RaplKey (PackageID 0),99.73186200000055,1,pcap100
+5,2020-02-20 23:01:11.439664500,sensor-RaplKey (PackageID 0),100.46843200000876,1,pcap100
+6,2020-02-20 23:01:12.433524750,sensor-RaplKey (PackageID 0),99.11797099999967,1,pcap100
+7,2020-02-20 23:01:13.434420000,sensor-RaplKey (PackageID 0),100.50602899999649,1,pcap100
+8,2020-02-20 23:01:14.433003250,sensor-RaplKey (PackageID 0),98.3777390000032,1,pcap100
+9,2020-02-20 23:01:15.439744250,sensor-RaplKey (PackageID 0),100.59190599998692,1,pcap100
+10,2020-02-20 23:01:16.433407500,sensor-RaplKey (PackageID 0),98.53160800000478,1,pcap100
+11,2020-02-20 23:01:17.434054250,sensor-RaplKey (PackageID 0),99.16386899999634,1,pcap100
+12,2020-02-20 23:01:18.436570750,sensor-RaplKey (PackageID 0),100.16734700000961,1,pcap100
+13,2020-02-20 23:01:19.432473500,sensor-RaplKey (PackageID 0),99.10985300000175,1,pcap100
+14,2020-02-20 23:01:10.130621000,sensor-RaplKey (PackageID 0),,1,pcap100
+15,2020-02-20 23:01:11.141634250,sensor-RaplKey (PackageID 0),,1,pcap100
+16,2020-02-20 23:01:12.136106000,sensor-RaplKey (PackageID 0),,1,pcap100
+17,2020-02-20 23:01:13.137645750,sensor-RaplKey (PackageID 0),,1,pcap100
+18,2020-02-20 23:01:14.130185750,sensor-RaplKey (PackageID 0),,1,pcap100
+19,2020-02-20 23:01:15.128225750,sensor-RaplKey (PackageID 0),,1,pcap100
+20,2020-02-20 23:01:16.127171500,sensor-RaplKey (PackageID 0),,1,pcap100
+21,2020-02-20 23:01:17.132193500,sensor-RaplKey (PackageID 0),,1,pcap100
+22,2020-02-20 23:01:18.131944000,sensor-RaplKey (PackageID 0),,1,pcap100
+23,2020-02-20 23:01:19.132191000,sensor-RaplKey (PackageID 0),,1,pcap100
+24,2020-02-20 23:01:20.129299000,sensor-RaplKey (PackageID 0),,1,pcap100
+25,2020-02-20 23:01:20.264829750,sensor-RaplKey (PackageID 0),,1,pcap100
+26,2020-02-20 23:01:06.435618500,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+27,2020-02-20 23:01:07.433485000,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+28,2020-02-20 23:01:08.434501000,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+29,2020-02-20 23:01:09.433478750,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+30,2020-02-20 23:01:10.433373500,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+31,2020-02-20 23:01:11.439664500,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+32,2020-02-20 23:01:12.433524750,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+33,2020-02-20 23:01:13.434420000,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+34,2020-02-20 23:01:14.433003250,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+35,2020-02-20 23:01:15.439744250,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+36,2020-02-20 23:01:16.433407500,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+37,2020-02-20 23:01:17.434054250,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+38,2020-02-20 23:01:18.436570750,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+39,2020-02-20 23:01:19.432473500,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),,1,pcap100
+40,2020-02-20 23:01:10.130621000,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),34207689047.0,1,pcap100
+41,2020-02-20 23:01:11.141634250,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),31449860586.0,1,pcap100
+42,2020-02-20 23:01:12.136106000,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),32212083034.0,1,pcap100
+43,2020-02-20 23:01:13.137645750,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),32354045817.0,1,pcap100
+44,2020-02-20 23:01:14.130185750,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),32722802482.0,1,pcap100
+45,2020-02-20 23:01:15.128225750,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),29543732789.0,1,pcap100
+46,2020-02-20 23:01:16.127171500,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),23609606583.0,1,pcap100
+47,2020-02-20 23:01:17.132193500,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),31805893914.0,1,pcap100
+48,2020-02-20 23:01:18.131944000,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),27493170042.0,1,pcap100
+49,2020-02-20 23:01:19.132191000,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),30318791084.0,1,pcap100
+50,2020-02-20 23:01:20.129299000,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),29426267667.0,1,pcap100
+51,2020-02-20 23:01:20.264829750,sensor-DownstreamCmdKey (DownstreamCmdID 77d8b2df-f3e3-456a-aac8-420122187a8f),6622739195.0,1,pcap100
+0,2020-02-20 23:01:22.753339000,sensor-RaplKey (PackageID 0),0.0,1,pcap110
+1,2020-02-20 23:01:23.754696000,sensor-RaplKey (PackageID 0),72.6107759999868,1,pcap110
+2,2020-02-20 23:01:24.753527500,sensor-RaplKey (PackageID 0),112.4880550000089,1,pcap110
+3,2020-02-20 23:01:25.754419000,sensor-RaplKey (PackageID 0),112.98634400000446,1,pcap110
+4,2020-02-20 23:01:26.753432500,sensor-RaplKey (PackageID 0),108.75454299998819,1,pcap110
+5,2020-02-20 23:01:27.753321750,sensor-RaplKey (PackageID 0),107.73983700000099,1,pcap110
+6,2020-02-20 23:01:28.757527000,sensor-RaplKey (PackageID 0),108.44851300001028,1,pcap110
+7,2020-02-20 23:01:29.753376500,sensor-RaplKey (PackageID 0),107.6856989999942,1,pcap110
+8,2020-02-20 23:01:30.753007750,sensor-RaplKey (PackageID 0),107.68325699999696,1,pcap110
+9,2020-02-20 23:01:31.752991500,sensor-RaplKey (PackageID 0),109.07717400000547,1,pcap110
+10,2020-02-20 23:01:32.753415500,sensor-RaplKey (PackageID 0),108.43166899999778,1,pcap110
+11,2020-02-20 23:01:33.753623000,sensor-RaplKey (PackageID 0),108.85732599999756,1,pcap110
+12,2020-02-20 23:01:34.752999750,sensor-RaplKey (PackageID 0),110.40383100000327,1,pcap110
+13,2020-02-20 23:01:26.356881000,sensor-RaplKey (PackageID 0),,1,pcap110
+14,2020-02-20 23:01:27.366787000,sensor-RaplKey (PackageID 0),,1,pcap110
+15,2020-02-20 23:01:28.369722750,sensor-RaplKey (PackageID 0),,1,pcap110
+16,2020-02-20 23:01:29.372108000,sensor-RaplKey (PackageID 0),,1,pcap110
+17,2020-02-20 23:01:30.375636250,sensor-RaplKey (PackageID 0),,1,pcap110
+18,2020-02-20 23:01:31.374743000,sensor-RaplKey (PackageID 0),,1,pcap110
+19,2020-02-20 23:01:32.375624500,sensor-RaplKey (PackageID 0),,1,pcap110
+20,2020-02-20 23:01:33.375680750,sensor-RaplKey (PackageID 0),,1,pcap110
+21,2020-02-20 23:01:34.373705750,sensor-RaplKey (PackageID 0),,1,pcap110
+22,2020-02-20 23:01:35.377677750,sensor-RaplKey (PackageID 0),,1,pcap110
+23,2020-02-20 23:01:35.635106750,sensor-RaplKey (PackageID 0),,1,pcap110
+24,2020-02-20 23:01:22.753339000,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+25,2020-02-20 23:01:23.754696000,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+26,2020-02-20 23:01:24.753527500,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+27,2020-02-20 23:01:25.754419000,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+28,2020-02-20 23:01:26.753432500,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+29,2020-02-20 23:01:27.753321750,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+30,2020-02-20 23:01:28.757527000,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+31,2020-02-20 23:01:29.753376500,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+32,2020-02-20 23:01:30.753007750,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+33,2020-02-20 23:01:31.752991500,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+34,2020-02-20 23:01:32.753415500,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+35,2020-02-20 23:01:33.753623000,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+36,2020-02-20 23:01:34.752999750,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),,1,pcap110
+37,2020-02-20 23:01:26.356881000,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),33778037748.0,1,pcap110
+38,2020-02-20 23:01:27.366787000,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),31413991377.0,1,pcap110
+39,2020-02-20 23:01:28.369722750,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),31904564923.0,1,pcap110
+40,2020-02-20 23:01:29.372108000,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),31984029396.0,1,pcap110
+41,2020-02-20 23:01:30.375636250,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),32289748040.0,1,pcap110
+42,2020-02-20 23:01:31.374743000,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),32422268284.0,1,pcap110
+43,2020-02-20 23:01:32.375624500,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),32564217686.0,1,pcap110
+44,2020-02-20 23:01:33.375680750,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),32874746572.0,1,pcap110
+45,2020-02-20 23:01:34.373705750,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),32423143822.0,1,pcap110
+46,2020-02-20 23:01:35.377677750,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),32478597135.0,1,pcap110
+47,2020-02-20 23:01:35.635106750,sensor-DownstreamCmdKey (DownstreamCmdID dca424ee-292a-4fee-89ab-7560f9e52bda),10153038543.0,1,pcap110
+0,2020-02-20 23:01:38.167589250,sensor-RaplKey (PackageID 0),0.0,1,pcap120
+1,2020-02-20 23:01:39.166497750,sensor-RaplKey (PackageID 0),76.68107799999416,1,pcap120
+2,2020-02-20 23:01:40.165419500,sensor-RaplKey (PackageID 0),110.82100500000524,1,pcap120
+3,2020-02-20 23:01:41.165516500,sensor-RaplKey (PackageID 0),112.28505199999199,1,pcap120
+4,2020-02-20 23:01:42.165419000,sensor-RaplKey (PackageID 0),108.67092500001309,1,pcap120
+5,2020-02-20 23:01:43.165378500,sensor-RaplKey (PackageID 0),107.41897599998629,1,pcap120
+6,2020-02-20 23:01:44.165396000,sensor-RaplKey (PackageID 0),107.10995500000718,1,pcap120
+7,2020-02-20 23:01:45.165014500,sensor-RaplKey (PackageID 0),109.2827399999951,1,pcap120
+8,2020-02-20 23:01:46.166580000,sensor-RaplKey (PackageID 0),108.50723000000289,1,pcap120
+9,2020-02-20 23:01:47.164625500,sensor-RaplKey (PackageID 0),107.8970629999967,1,pcap120
+10,2020-02-20 23:01:48.165017250,sensor-RaplKey (PackageID 0),108.844265000007,1,pcap120
+11,2020-02-20 23:01:49.165404250,sensor-RaplKey (PackageID 0),108.45760799999698,1,pcap120
+12,2020-02-20 23:01:50.172257000,sensor-RaplKey (PackageID 0),109.50625000000582,1,pcap120
+13,2020-02-20 23:01:41.744072500,sensor-RaplKey (PackageID 0),,1,pcap120
+14,2020-02-20 23:01:42.743071500,sensor-RaplKey (PackageID 0),,1,pcap120
+15,2020-02-20 23:01:43.751582500,sensor-RaplKey (PackageID 0),,1,pcap120
+16,2020-02-20 23:01:44.762949500,sensor-RaplKey (PackageID 0),,1,pcap120
+17,2020-02-20 23:01:45.749730250,sensor-RaplKey (PackageID 0),,1,pcap120
+18,2020-02-20 23:01:46.750376500,sensor-RaplKey (PackageID 0),,1,pcap120
+19,2020-02-20 23:01:47.748773250,sensor-RaplKey (PackageID 0),,1,pcap120
+20,2020-02-20 23:01:48.747572250,sensor-RaplKey (PackageID 0),,1,pcap120
+21,2020-02-20 23:01:49.753685500,sensor-RaplKey (PackageID 0),,1,pcap120
+22,2020-02-20 23:01:50.744378250,sensor-RaplKey (PackageID 0),,1,pcap120
+23,2020-02-20 23:01:50.915675000,sensor-RaplKey (PackageID 0),,1,pcap120
+24,2020-02-20 23:01:38.167589250,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+25,2020-02-20 23:01:39.166497750,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+26,2020-02-20 23:01:40.165419500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+27,2020-02-20 23:01:41.165516500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+28,2020-02-20 23:01:42.165419000,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+29,2020-02-20 23:01:43.165378500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+30,2020-02-20 23:01:44.165396000,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+31,2020-02-20 23:01:45.165014500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+32,2020-02-20 23:01:46.166580000,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+33,2020-02-20 23:01:47.164625500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+34,2020-02-20 23:01:48.165017250,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+35,2020-02-20 23:01:49.165404250,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+36,2020-02-20 23:01:50.172257000,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),,1,pcap120
+37,2020-02-20 23:01:41.744072500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),35100818163.0,1,pcap120
+38,2020-02-20 23:01:42.743071500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),31719027435.0,1,pcap120
+39,2020-02-20 23:01:43.751582500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),31705926730.0,1,pcap120
+40,2020-02-20 23:01:44.762949500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),33854940184.0,1,pcap120
+41,2020-02-20 23:01:45.749730250,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),33186491794.0,1,pcap120
+42,2020-02-20 23:01:46.750376500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),33034348252.0,1,pcap120
+43,2020-02-20 23:01:47.748773250,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),32777290201.0,1,pcap120
+44,2020-02-20 23:01:48.747572250,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),33101509256.0,1,pcap120
+45,2020-02-20 23:01:49.753685500,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),33326583053.0,1,pcap120
+46,2020-02-20 23:01:50.744378250,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),32084342979.0,1,pcap120
+47,2020-02-20 23:01:50.915675000,sensor-DownstreamCmdKey (DownstreamCmdID 52545bfa-5b7f-4637-b357-5c075b31bc24),6840928590.0,1,pcap120
+0,2020-02-20 23:01:53.428473250,sensor-RaplKey (PackageID 0),0.0,1,pcap150
+1,2020-02-20 23:01:54.427490750,sensor-RaplKey (PackageID 0),69.04279199999291,1,pcap150
+2,2020-02-20 23:01:55.428074750,sensor-RaplKey (PackageID 0),113.97303500000271,1,pcap150
+3,2020-02-20 23:01:56.428641750,sensor-RaplKey (PackageID 0),112.73347600000852,1,pcap150
+4,2020-02-20 23:01:57.427523750,sensor-RaplKey (PackageID 0),107.88345199999458,1,pcap150
+5,2020-02-20 23:01:58.432808500,sensor-RaplKey (PackageID 0),109.11483299999963,1,pcap150
+6,2020-02-20 23:01:59.427579500,sensor-RaplKey (PackageID 0),108.0456220000051,1,pcap150
+7,2020-02-20 23:02:00.427052750,sensor-RaplKey (PackageID 0),108.585659999997,1,pcap150
+8,2020-02-20 23:02:01.427518250,sensor-RaplKey (PackageID 0),110.06520899999305,1,pcap150
+9,2020-02-20 23:02:02.427050750,sensor-RaplKey (PackageID 0),109.30245400000422,1,pcap150
+10,2020-02-20 23:02:03.427048750,sensor-RaplKey (PackageID 0),109.0345110000053,1,pcap150
+11,2020-02-20 23:02:04.427054750,sensor-RaplKey (PackageID 0),109.97725799999898,1,pcap150
+12,2020-02-20 23:02:05.427054500,sensor-RaplKey (PackageID 0),109.42250999998942,1,pcap150
+13,2020-02-20 23:01:57.073650750,sensor-RaplKey (PackageID 0),,1,pcap150
+14,2020-02-20 23:01:58.062764750,sensor-RaplKey (PackageID 0),,1,pcap150
+15,2020-02-20 23:01:59.063621250,sensor-RaplKey (PackageID 0),,1,pcap150
+16,2020-02-20 23:02:00.076749250,sensor-RaplKey (PackageID 0),,1,pcap150
+17,2020-02-20 23:02:01.074662250,sensor-RaplKey (PackageID 0),,1,pcap150
+18,2020-02-20 23:02:02.085694750,sensor-RaplKey (PackageID 0),,1,pcap150
+19,2020-02-20 23:02:03.081766250,sensor-RaplKey (PackageID 0),,1,pcap150
+20,2020-02-20 23:02:04.093148500,sensor-RaplKey (PackageID 0),,1,pcap150
+21,2020-02-20 23:02:05.091681750,sensor-RaplKey (PackageID 0),,1,pcap150
+22,2020-02-20 23:02:06.081150250,sensor-RaplKey (PackageID 0),,1,pcap150
+23,2020-02-20 23:02:06.234784750,sensor-RaplKey (PackageID 0),,1,pcap150
+24,2020-02-20 23:01:53.428473250,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+25,2020-02-20 23:01:54.427490750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+26,2020-02-20 23:01:55.428074750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+27,2020-02-20 23:01:56.428641750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+28,2020-02-20 23:01:57.427523750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+29,2020-02-20 23:01:58.432808500,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+30,2020-02-20 23:01:59.427579500,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+31,2020-02-20 23:02:00.427052750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+32,2020-02-20 23:02:01.427518250,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+33,2020-02-20 23:02:02.427050750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+34,2020-02-20 23:02:03.427048750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+35,2020-02-20 23:02:04.427054750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+36,2020-02-20 23:02:05.427054500,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),,1,pcap150
+37,2020-02-20 23:01:57.073650750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),34292977266.0,1,pcap150
+38,2020-02-20 23:01:58.062764750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),31089748813.0,1,pcap150
+39,2020-02-20 23:01:59.063621250,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),32840599640.0,1,pcap150
+40,2020-02-20 23:02:00.076749250,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),32810651998.0,1,pcap150
+41,2020-02-20 23:02:01.074662250,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),33361228009.0,1,pcap150
+42,2020-02-20 23:02:02.085694750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),33353680022.0,1,pcap150
+43,2020-02-20 23:02:03.081766250,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),33357831807.0,1,pcap150
+44,2020-02-20 23:02:04.093148500,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),33314110235.0,1,pcap150
+45,2020-02-20 23:02:05.091681750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),33011822218.0,1,pcap150
+46,2020-02-20 23:02:06.081150250,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),31197666112.0,1,pcap150
+47,2020-02-20 23:02:06.234784750,sensor-DownstreamCmdKey (DownstreamCmdID d22cfd10-164d-4666-ae6c-11bd965fe6de),6643370434.0,1,pcap150
+0,2020-02-20 23:02:08.719905750,sensor-RaplKey (PackageID 0),0.0,1,pcap180
+1,2020-02-20 23:02:09.720553250,sensor-RaplKey (PackageID 0),72.9067350000114,1,pcap180
+2,2020-02-20 23:02:10.720591250,sensor-RaplKey (PackageID 0),111.66707199999655,1,pcap180
+3,2020-02-20 23:02:11.720584750,sensor-RaplKey (PackageID 0),112.91334699999425,1,pcap180
+4,2020-02-20 23:02:12.725054250,sensor-RaplKey (PackageID 0),109.27010600001086,1,pcap180
+5,2020-02-20 23:02:13.721029500,sensor-RaplKey (PackageID 0),107.69308299999102,1,pcap180
+6,2020-02-20 23:02:14.721629250,sensor-RaplKey (PackageID 0),96.91564600000856,1,pcap180
+7,2020-02-20 23:02:15.720525000,sensor-RaplKey (PackageID 0),95.853575000001,1,pcap180
+8,2020-02-20 23:02:16.719472750,sensor-RaplKey (PackageID 0),100.24424999998882,1,pcap180
+9,2020-02-20 23:02:17.720470750,sensor-RaplKey (PackageID 0),109.5163220000104,1,pcap180
+10,2020-02-20 23:02:18.720403500,sensor-RaplKey (PackageID 0),109.60262399999192,1,pcap180
+11,2020-02-20 23:02:19.726568000,sensor-RaplKey (PackageID 0),110.17324099999678,1,pcap180
+12,2020-02-20 23:02:20.723707500,sensor-RaplKey (PackageID 0),108.8208280000108,1,pcap180
+13,2020-02-20 23:02:21.720023750,sensor-RaplKey (PackageID 0),109.26766399999906,1,pcap180
+14,2020-02-20 23:02:22.718888500,sensor-RaplKey (PackageID 0),100.9720929999894,1,pcap180
+15,2020-02-20 23:02:12.333888500,sensor-RaplKey (PackageID 0),,1,pcap180
+16,2020-02-20 23:02:13.333298000,sensor-RaplKey (PackageID 0),,1,pcap180
+17,2020-02-20 23:02:14.320090500,sensor-RaplKey (PackageID 0),,1,pcap180
+18,2020-02-20 23:02:15.323138750,sensor-RaplKey (PackageID 0),,1,pcap180
+19,2020-02-20 23:02:16.328650750,sensor-RaplKey (PackageID 0),,1,pcap180
+20,2020-02-20 23:02:17.325110750,sensor-RaplKey (PackageID 0),,1,pcap180
+21,2020-02-20 23:02:18.328340750,sensor-RaplKey (PackageID 0),,1,pcap180
+22,2020-02-20 23:02:19.330678000,sensor-RaplKey (PackageID 0),,1,pcap180
+23,2020-02-20 23:02:20.328139000,sensor-RaplKey (PackageID 0),,1,pcap180
+24,2020-02-20 23:02:21.333774750,sensor-RaplKey (PackageID 0),,1,pcap180
+25,2020-02-20 23:02:22.331765250,sensor-RaplKey (PackageID 0),,1,pcap180
+26,2020-02-20 23:02:22.780592500,sensor-RaplKey (PackageID 0),,1,pcap180
+27,2020-02-20 23:02:08.719905750,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+28,2020-02-20 23:02:09.720553250,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+29,2020-02-20 23:02:10.720591250,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+30,2020-02-20 23:02:11.720584750,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+31,2020-02-20 23:02:12.725054250,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+32,2020-02-20 23:02:13.721029500,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+33,2020-02-20 23:02:14.721629250,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+34,2020-02-20 23:02:15.720525000,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+35,2020-02-20 23:02:16.719472750,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+36,2020-02-20 23:02:17.720470750,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+37,2020-02-20 23:02:18.720403500,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+38,2020-02-20 23:02:19.726568000,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+39,2020-02-20 23:02:20.723707500,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+40,2020-02-20 23:02:21.720023750,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+41,2020-02-20 23:02:22.718888500,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),,1,pcap180
+42,2020-02-20 23:02:12.333888500,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),34398210104.0,1,pcap180
+43,2020-02-20 23:02:13.333298000,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),32252689165.0,1,pcap180
+44,2020-02-20 23:02:14.320090500,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),25647527451.0,1,pcap180
+45,2020-02-20 23:02:15.323138750,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),19706903896.0,1,pcap180
+46,2020-02-20 23:02:16.328650750,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),19299278753.0,1,pcap180
+47,2020-02-20 23:02:17.325110750,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),32850261540.0,1,pcap180
+48,2020-02-20 23:02:18.328340750,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),33177069293.0,1,pcap180
+49,2020-02-20 23:02:19.330678000,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),33559875088.0,1,pcap180
+50,2020-02-20 23:02:20.328139000,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),32887977925.0,1,pcap180
+51,2020-02-20 23:02:21.333774750,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),33398963668.0,1,pcap180
+52,2020-02-20 23:02:22.331765250,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),33560467815.0,1,pcap180
+53,2020-02-20 23:02:22.780592500,sensor-DownstreamCmdKey (DownstreamCmdID e55626d4-b641-4701-bab8-9b0b348f8b9c),18770950871.0,1,pcap180
+0,2020-02-20 23:02:25.275232500,sensor-RaplKey (PackageID 0),0.0,1,pcap210
+1,2020-02-20 23:02:26.276430000,sensor-RaplKey (PackageID 0),71.02294999999867,1,pcap210
+2,2020-02-20 23:02:27.274491250,sensor-RaplKey (PackageID 0),112.17763099999866,1,pcap210
+3,2020-02-20 23:02:28.274551250,sensor-RaplKey (PackageID 0),113.47206000000006,1,pcap210
+4,2020-02-20 23:02:29.274508250,sensor-RaplKey (PackageID 0),108.58681900000374,1,pcap210
+5,2020-02-20 23:02:30.274917000,sensor-RaplKey (PackageID 0),100.34691100000055,1,pcap210
+6,2020-02-20 23:02:31.274586750,sensor-RaplKey (PackageID 0),108.69460699999763,1,pcap210
+7,2020-02-20 23:02:32.274655750,sensor-RaplKey (PackageID 0),109.51552799998899,1,pcap210
+8,2020-02-20 23:02:33.274470750,sensor-RaplKey (PackageID 0),106.86410600000818,1,pcap210
+9,2020-02-20 23:02:34.274393750,sensor-RaplKey (PackageID 0),108.26211300000432,1,pcap210
+10,2020-02-20 23:02:35.274021500,sensor-RaplKey (PackageID 0),109.03499999998894,1,pcap210
+11,2020-02-20 23:02:36.274127000,sensor-RaplKey (PackageID 0),108.6446799999976,1,pcap210
+12,2020-02-20 23:02:37.274008250,sensor-RaplKey (PackageID 0),108.60793700000795,1,pcap210
+13,2020-02-20 23:02:38.274510750,sensor-RaplKey (PackageID 0),108.72384299999976,1,pcap210
+14,2020-02-20 23:02:28.960130250,sensor-RaplKey (PackageID 0),,1,pcap210
+15,2020-02-20 23:02:29.952072750,sensor-RaplKey (PackageID 0),,1,pcap210
+16,2020-02-20 23:02:30.957745250,sensor-RaplKey (PackageID 0),,1,pcap210
+17,2020-02-20 23:02:31.956175750,sensor-RaplKey (PackageID 0),,1,pcap210
+18,2020-02-20 23:02:32.957997250,sensor-RaplKey (PackageID 0),,1,pcap210
+19,2020-02-20 23:02:33.956800000,sensor-RaplKey (PackageID 0),,1,pcap210
+20,2020-02-20 23:02:34.971900000,sensor-RaplKey (PackageID 0),,1,pcap210
+21,2020-02-20 23:02:35.961621500,sensor-RaplKey (PackageID 0),,1,pcap210
+22,2020-02-20 23:02:36.965114500,sensor-RaplKey (PackageID 0),,1,pcap210
+23,2020-02-20 23:02:37.961803500,sensor-RaplKey (PackageID 0),,1,pcap210
+24,2020-02-20 23:02:38.937549000,sensor-RaplKey (PackageID 0),,1,pcap210
+25,2020-02-20 23:02:25.275232500,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+26,2020-02-20 23:02:26.276430000,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+27,2020-02-20 23:02:27.274491250,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+28,2020-02-20 23:02:28.274551250,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+29,2020-02-20 23:02:29.274508250,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+30,2020-02-20 23:02:30.274917000,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+31,2020-02-20 23:02:31.274586750,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+32,2020-02-20 23:02:32.274655750,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+33,2020-02-20 23:02:33.274470750,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+34,2020-02-20 23:02:34.274393750,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+35,2020-02-20 23:02:35.274021500,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+36,2020-02-20 23:02:36.274127000,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+37,2020-02-20 23:02:37.274008250,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+38,2020-02-20 23:02:38.274510750,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),,1,pcap210
+39,2020-02-20 23:02:28.960130250,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),33964051232.0,1,pcap210
+40,2020-02-20 23:02:29.952072750,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),22363098476.0,1,pcap210
+41,2020-02-20 23:02:30.957745250,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),31145648570.0,1,pcap210
+42,2020-02-20 23:02:31.956175750,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),31825448498.0,1,pcap210
+43,2020-02-20 23:02:32.957997250,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),29843438698.0,1,pcap210
+44,2020-02-20 23:02:33.956800000,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),31634986030.0,1,pcap210
+45,2020-02-20 23:02:34.971900000,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),32188133322.0,1,pcap210
+46,2020-02-20 23:02:35.961621500,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),32682864995.0,1,pcap210
+47,2020-02-20 23:02:36.965114500,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),32827112504.0,1,pcap210
+48,2020-02-20 23:02:37.961803500,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),31848276251.0,1,pcap210
+49,2020-02-20 23:02:38.937549000,sensor-DownstreamCmdKey (DownstreamCmdID 741dab55-af28-4b47-ac0f-0736c5b21261),25177894408.0,1,pcap210
+0,2020-02-20 23:02:41.427058000,sensor-RaplKey (PackageID 0),0.0,1,controlOn
+1,2020-02-20 23:02:42.427608250,sensor-RaplKey (PackageID 0),76.10118499999226,1,controlOn
+2,2020-02-20 23:02:43.425535250,sensor-RaplKey (PackageID 0),113.19557200001145,1,controlOn
+3,2020-02-20 23:02:44.426565500,sensor-RaplKey (PackageID 0),112.93660000000091,1,controlOn
+4,2020-02-20 23:02:45.425598250,sensor-RaplKey (PackageID 0),105.34439600000042,1,controlOn
+5,2020-02-20 23:02:46.427461000,sensor-RaplKey (PackageID 0),109.01400299998932,1,controlOn
+6,2020-02-20 23:02:47.433017250,sensor-RaplKey (PackageID 0),109.3901620000106,1,controlOn
+7,2020-02-20 23:02:48.435453000,sensor-RaplKey (PackageID 0),108.19308199999796,1,controlOn
+8,2020-02-20 23:02:49.426053500,sensor-RaplKey (PackageID 0),101.93669000000227,1,controlOn
+9,2020-02-20 23:02:50.426057750,sensor-RaplKey (PackageID 0),105.47787899999821,1,controlOn
+10,2020-02-20 23:02:51.427552000,sensor-RaplKey (PackageID 0),108.65884099999676,1,controlOn
+11,2020-02-20 23:02:52.425531750,sensor-RaplKey (PackageID 0),107.10055600000487,1,controlOn
+12,2020-02-20 23:02:53.425471750,sensor-RaplKey (PackageID 0),107.00997999998799,1,controlOn
+13,2020-02-20 23:02:54.426444250,sensor-RaplKey (PackageID 0),99.76176800001122,1,controlOn
+14,2020-02-20 23:02:42.949740750,sensor-RaplKey (PackageID 0),,1,controlOn
+15,2020-02-20 23:02:43.951826500,sensor-RaplKey (PackageID 0),,1,controlOn
+16,2020-02-20 23:02:44.959112500,sensor-RaplKey (PackageID 0),,1,controlOn
+17,2020-02-20 23:02:45.964772500,sensor-RaplKey (PackageID 0),,1,controlOn
+18,2020-02-20 23:02:46.965925500,sensor-RaplKey (PackageID 0),,1,controlOn
+19,2020-02-20 23:02:47.963143750,sensor-RaplKey (PackageID 0),,1,controlOn
+20,2020-02-20 23:02:48.954897500,sensor-RaplKey (PackageID 0),,1,controlOn
+21,2020-02-20 23:02:49.960836000,sensor-RaplKey (PackageID 0),,1,controlOn
+22,2020-02-20 23:02:50.973143500,sensor-RaplKey (PackageID 0),,1,controlOn
+23,2020-02-20 23:02:51.971101250,sensor-RaplKey (PackageID 0),,1,controlOn
+24,2020-02-20 23:02:52.968742750,sensor-RaplKey (PackageID 0),,1,controlOn
+25,2020-02-20 23:02:53.975741500,sensor-RaplKey (PackageID 0),,1,controlOn
+26,2020-02-20 23:02:54.819021500,sensor-RaplKey (PackageID 0),,1,controlOn
+27,2020-02-20 23:02:41.427058000,actionType,,1,controlOn
+28,2020-02-20 23:02:42.427608250,actionType,,1,controlOn
+29,2020-02-20 23:02:43.425535250,actionType,,1,controlOn
+30,2020-02-20 23:02:44.426565500,actionType,,1,controlOn
+31,2020-02-20 23:02:45.425598250,actionType,referenceMeasurementDecision,1,controlOn
+32,2020-02-20 23:02:46.427461000,actionType,innerDecision,1,controlOn
+33,2020-02-20 23:02:47.433017250,actionType,innerDecision,1,controlOn
+34,2020-02-20 23:02:48.435453000,actionType,innerDecision,1,controlOn
+35,2020-02-20 23:02:49.426053500,actionType,innerDecision,1,controlOn
+36,2020-02-20 23:02:50.426057750,actionType,innerDecision,1,controlOn
+37,2020-02-20 23:02:51.427552000,actionType,innerDecision,1,controlOn
+38,2020-02-20 23:02:52.425531750,actionType,innerDecision,1,controlOn
+39,2020-02-20 23:02:53.425471750,actionType,innerDecision,1,controlOn
+40,2020-02-20 23:02:54.426444250,actionType,innerDecision,1,controlOn
+41,2020-02-20 23:02:42.949740750,actionType,initialDecision,1,controlOn
+42,2020-02-20 23:02:43.951826500,actionType,initialDecision,1,controlOn
+43,2020-02-20 23:02:44.959112500,actionType,,1,controlOn
+44,2020-02-20 23:02:45.964772500,actionType,,1,controlOn
+45,2020-02-20 23:02:46.965925500,actionType,,1,controlOn
+46,2020-02-20 23:02:47.963143750,actionType,,1,controlOn
+47,2020-02-20 23:02:48.954897500,actionType,,1,controlOn
+48,2020-02-20 23:02:49.960836000,actionType,,1,controlOn
+49,2020-02-20 23:02:50.973143500,actionType,,1,controlOn
+50,2020-02-20 23:02:51.971101250,actionType,,1,controlOn
+51,2020-02-20 23:02:52.968742750,actionType,,1,controlOn
+52,2020-02-20 23:02:53.975741500,actionType,,1,controlOn
+53,2020-02-20 23:02:54.819021500,actionType,,1,controlOn
+54,2020-02-20 23:02:41.427058000,RaplKey (PackageID 0)(action),,1,controlOn
+55,2020-02-20 23:02:42.427608250,RaplKey (PackageID 0)(action),,1,controlOn
+56,2020-02-20 23:02:43.425535250,RaplKey (PackageID 0)(action),,1,controlOn
+57,2020-02-20 23:02:44.426565500,RaplKey (PackageID 0)(action),,1,controlOn
+58,2020-02-20 23:02:45.425598250,RaplKey (PackageID 0)(action),200.0,1,controlOn
+59,2020-02-20 23:02:46.427461000,RaplKey (PackageID 0)(action),200.0,1,controlOn
+60,2020-02-20 23:02:47.433017250,RaplKey (PackageID 0)(action),100.0,1,controlOn
+61,2020-02-20 23:02:48.435453000,RaplKey (PackageID 0)(action),200.0,1,controlOn
+62,2020-02-20 23:02:49.426053500,RaplKey (PackageID 0)(action),200.0,1,controlOn
+63,2020-02-20 23:02:50.426057750,RaplKey (PackageID 0)(action),100.0,1,controlOn
+64,2020-02-20 23:02:51.427552000,RaplKey (PackageID 0)(action),200.0,1,controlOn
+65,2020-02-20 23:02:52.425531750,RaplKey (PackageID 0)(action),100.0,1,controlOn
+66,2020-02-20 23:02:53.425471750,RaplKey (PackageID 0)(action),100.0,1,controlOn
+67,2020-02-20 23:02:54.426444250,RaplKey (PackageID 0)(action),100.0,1,controlOn
+68,2020-02-20 23:02:42.949740750,RaplKey (PackageID 0)(action),200.0,1,controlOn
+69,2020-02-20 23:02:43.951826500,RaplKey (PackageID 0)(action),100.0,1,controlOn
+70,2020-02-20 23:02:44.959112500,RaplKey (PackageID 0)(action),,1,controlOn
+71,2020-02-20 23:02:45.964772500,RaplKey (PackageID 0)(action),,1,controlOn
+72,2020-02-20 23:02:46.965925500,RaplKey (PackageID 0)(action),,1,controlOn
+73,2020-02-20 23:02:47.963143750,RaplKey (PackageID 0)(action),,1,controlOn
+74,2020-02-20 23:02:48.954897500,RaplKey (PackageID 0)(action),,1,controlOn
+75,2020-02-20 23:02:49.960836000,RaplKey (PackageID 0)(action),,1,controlOn
+76,2020-02-20 23:02:50.973143500,RaplKey (PackageID 0)(action),,1,controlOn
+77,2020-02-20 23:02:51.971101250,RaplKey (PackageID 0)(action),,1,controlOn
+78,2020-02-20 23:02:52.968742750,RaplKey (PackageID 0)(action),,1,controlOn
+79,2020-02-20 23:02:53.975741500,RaplKey (PackageID 0)(action),,1,controlOn
+80,2020-02-20 23:02:54.819021500,RaplKey (PackageID 0)(action),,1,controlOn
+81,2020-02-20 23:02:41.427058000,0.0001-probability,,1,controlOn
+82,2020-02-20 23:02:42.427608250,0.0001-probability,,1,controlOn
+83,2020-02-20 23:02:43.425535250,0.0001-probability,,1,controlOn
+84,2020-02-20 23:02:44.426565500,0.0001-probability,,1,controlOn
+85,2020-02-20 23:02:45.425598250,0.0001-probability,1.0,1,controlOn
+86,2020-02-20 23:02:46.427461000,0.0001-probability,0.37556122720118823,1,controlOn
+87,2020-02-20 23:02:47.433017250,0.0001-probability,0.5555560493086968,1,controlOn
+88,2020-02-20 23:02:48.435453000,0.0001-probability,0.4131134690389064,1,controlOn
+89,2020-02-20 23:02:49.426053500,0.0001-probability,0.5310242316395609,1,controlOn
+90,2020-02-20 23:02:50.426057750,0.0001-probability,0.7119881216158602,1,controlOn
+91,2020-02-20 23:02:51.427552000,0.0001-probability,0.5863319752355838,1,controlOn
+92,2020-02-20 23:02:52.425531750,0.0001-probability,0.6878673495189168,1,controlOn
+93,2020-02-20 23:02:53.425471750,0.0001-probability,0.6168933049884103,1,controlOn
+94,2020-02-20 23:02:54.426444250,0.0001-probability,0.5447384331579682,1,controlOn
+95,2020-02-20 23:02:42.949740750,0.0001-probability,1.0,1,controlOn
+96,2020-02-20 23:02:43.951826500,0.0001-probability,1.0,1,controlOn
+97,2020-02-20 23:02:44.959112500,0.0001-probability,,1,controlOn
+98,2020-02-20 23:02:45.964772500,0.0001-probability,,1,controlOn
+99,2020-02-20 23:02:46.965925500,0.0001-probability,,1,controlOn
+100,2020-02-20 23:02:47.963143750,0.0001-probability,,1,controlOn
+101,2020-02-20 23:02:48.954897500,0.0001-probability,,1,controlOn
+102,2020-02-20 23:02:49.960836000,0.0001-probability,,1,controlOn
+103,2020-02-20 23:02:50.973143500,0.0001-probability,,1,controlOn
+104,2020-02-20 23:02:51.971101250,0.0001-probability,,1,controlOn
+105,2020-02-20 23:02:52.968742750,0.0001-probability,,1,controlOn
+106,2020-02-20 23:02:53.975741500,0.0001-probability,,1,controlOn
+107,2020-02-20 23:02:54.819021500,0.0001-probability,,1,controlOn
+108,2020-02-20 23:02:41.427058000,0.0001-cumulativeLoss,,1,controlOn
+109,2020-02-20 23:02:42.427608250,0.0001-cumulativeLoss,,1,controlOn
+110,2020-02-20 23:02:43.425535250,0.0001-cumulativeLoss,,1,controlOn
+111,2020-02-20 23:02:44.426565500,0.0001-cumulativeLoss,,1,controlOn
+112,2020-02-20 23:02:45.425598250,0.0001-cumulativeLoss,0.0,1,controlOn
+113,2020-02-20 23:02:46.427461000,0.0001-cumulativeLoss,0.6106887920000085,1,controlOn
+114,2020-02-20 23:02:47.433017250,0.0001-cumulativeLoss,0.6106887920000085,1,controlOn
+115,2020-02-20 23:02:48.435453000,0.0001-cumulativeLoss,1.72018290113084,1,controlOn
+116,2020-02-20 23:02:49.426053500,0.0001-cumulativeLoss,1.72018290113084,1,controlOn
+117,2020-02-20 23:02:50.426057750,0.0001-cumulativeLoss,1.72018290113084,1,controlOn
+118,2020-02-20 23:02:51.427552000,0.0001-cumulativeLoss,3.124700714897867,1,controlOn
+119,2020-02-20 23:02:52.425531750,0.0001-cumulativeLoss,3.124700714897867,1,controlOn
+120,2020-02-20 23:02:53.425471750,0.0001-cumulativeLoss,4.017343693852183,1,controlOn
+121,2020-02-20 23:02:54.426444250,0.0001-cumulativeLoss,4.9891868491467495,1,controlOn
+122,2020-02-20 23:02:42.949740750,0.0001-cumulativeLoss,0.0,1,controlOn
+123,2020-02-20 23:02:43.951826500,0.0001-cumulativeLoss,0.0,1,controlOn
+124,2020-02-20 23:02:44.959112500,0.0001-cumulativeLoss,,1,controlOn
+125,2020-02-20 23:02:45.964772500,0.0001-cumulativeLoss,,1,controlOn
+126,2020-02-20 23:02:46.965925500,0.0001-cumulativeLoss,,1,controlOn
+127,2020-02-20 23:02:47.963143750,0.0001-cumulativeLoss,,1,controlOn
+128,2020-02-20 23:02:48.954897500,0.0001-cumulativeLoss,,1,controlOn
+129,2020-02-20 23:02:49.960836000,0.0001-cumulativeLoss,,1,controlOn
+130,2020-02-20 23:02:50.973143500,0.0001-cumulativeLoss,,1,controlOn
+131,2020-02-20 23:02:51.971101250,0.0001-cumulativeLoss,,1,controlOn
+132,2020-02-20 23:02:52.968742750,0.0001-cumulativeLoss,,1,controlOn
+133,2020-02-20 23:02:53.975741500,0.0001-cumulativeLoss,,1,controlOn
+134,2020-02-20 23:02:54.819021500,0.0001-cumulativeLoss,,1,controlOn
+135,2020-02-20 23:02:41.427058000,0.0002-probability,,1,controlOn
+136,2020-02-20 23:02:42.427608250,0.0002-probability,,1,controlOn
+137,2020-02-20 23:02:43.425535250,0.0002-probability,,1,controlOn
+138,2020-02-20 23:02:44.426565500,0.0002-probability,,1,controlOn
+139,2020-02-20 23:02:45.425598250,0.0002-probability,1.0,1,controlOn
+140,2020-02-20 23:02:46.427461000,0.0002-probability,0.6244387727988118,1,controlOn
+141,2020-02-20 23:02:47.433017250,0.0002-probability,0.44444395069130316,1,controlOn
+142,2020-02-20 23:02:48.435453000,0.0002-probability,0.5868865309610937,1,controlOn
+143,2020-02-20 23:02:49.426053500,0.0002-probability,0.46897576836043897,1,controlOn
+144,2020-02-20 23:02:50.426057750,0.0002-probability,0.2880118783841398,1,controlOn
+145,2020-02-20 23:02:51.427552000,0.0002-probability,0.41366802476441616,1,controlOn
+146,2020-02-20 23:02:52.425531750,0.0002-probability,0.31213265048108324,1,controlOn
+147,2020-02-20 23:02:53.425471750,0.0002-probability,0.3831066950115896,1,controlOn
+148,2020-02-20 23:02:54.426444250,0.0002-probability,0.4552615668420318,1,controlOn
+149,2020-02-20 23:02:42.949740750,0.0002-probability,1.0,1,controlOn
+150,2020-02-20 23:02:43.951826500,0.0002-probability,1.0,1,controlOn
+151,2020-02-20 23:02:44.959112500,0.0002-probability,,1,controlOn
+152,2020-02-20 23:02:45.964772500,0.0002-probability,,1,controlOn
+153,2020-02-20 23:02:46.965925500,0.0002-probability,,1,controlOn
+154,2020-02-20 23:02:47.963143750,0.0002-probability,,1,controlOn
+155,2020-02-20 23:02:48.954897500,0.0002-probability,,1,controlOn
+156,2020-02-20 23:02:49.960836000,0.0002-probability,,1,controlOn
+157,2020-02-20 23:02:50.973143500,0.0002-probability,,1,controlOn
+158,2020-02-20 23:02:51.971101250,0.0002-probability,,1,controlOn
+159,2020-02-20 23:02:52.968742750,0.0002-probability,,1,controlOn
+160,2020-02-20 23:02:53.975741500,0.0002-probability,,1,controlOn
+161,2020-02-20 23:02:54.819021500,0.0002-probability,,1,controlOn
+162,2020-02-20 23:02:41.427058000,0.0002-cumulativeLoss,,1,controlOn
+163,2020-02-20 23:02:42.427608250,0.0002-cumulativeLoss,,1,controlOn
+164,2020-02-20 23:02:43.425535250,0.0002-cumulativeLoss,,1,controlOn
+165,2020-02-20 23:02:44.426565500,0.0002-cumulativeLoss,,1,controlOn
+166,2020-02-20 23:02:45.425598250,0.0002-cumulativeLoss,0.0,1,controlOn
+167,2020-02-20 23:02:46.427461000,0.0002-cumulativeLoss,0.0,1,controlOn
+168,2020-02-20 23:02:47.433017250,0.0002-cumulativeLoss,0.9897335542280647,1,controlOn
+169,2020-02-20 23:02:48.435453000,0.0002-cumulativeLoss,0.9897335542280647,1,controlOn
+170,2020-02-20 23:02:49.426053500,0.0002-cumulativeLoss,2.0186775632362446,1,controlOn
+171,2020-02-20 23:02:50.426057750,0.0002-cumulativeLoss,4.1509838943203565,1,controlOn
+172,2020-02-20 23:02:51.427552000,0.0002-cumulativeLoss,4.1509838943203565,1,controlOn
+173,2020-02-20 23:02:52.425531750,0.0002-cumulativeLoss,5.635752054368015,1,controlOn
+174,2020-02-20 23:02:53.425471750,0.0002-cumulativeLoss,5.635752054368015,1,controlOn
+175,2020-02-20 23:02:54.426444250,0.0002-cumulativeLoss,5.635752054368015,1,controlOn
+176,2020-02-20 23:02:42.949740750,0.0002-cumulativeLoss,0.0,1,controlOn
+177,2020-02-20 23:02:43.951826500,0.0002-cumulativeLoss,0.0,1,controlOn
+178,2020-02-20 23:02:44.959112500,0.0002-cumulativeLoss,,1,controlOn
+179,2020-02-20 23:02:45.964772500,0.0002-cumulativeLoss,,1,controlOn
+180,2020-02-20 23:02:46.965925500,0.0002-cumulativeLoss,,1,controlOn
+181,2020-02-20 23:02:47.963143750,0.0002-cumulativeLoss,,1,controlOn
+182,2020-02-20 23:02:48.954897500,0.0002-cumulativeLoss,,1,controlOn
+183,2020-02-20 23:02:49.960836000,0.0002-cumulativeLoss,,1,controlOn
+184,2020-02-20 23:02:50.973143500,0.0002-cumulativeLoss,,1,controlOn
+185,2020-02-20 23:02:51.971101250,0.0002-cumulativeLoss,,1,controlOn
+186,2020-02-20 23:02:52.968742750,0.0002-cumulativeLoss,,1,controlOn
+187,2020-02-20 23:02:53.975741500,0.0002-cumulativeLoss,,1,controlOn
+188,2020-02-20 23:02:54.819021500,0.0002-cumulativeLoss,,1,controlOn
+189,2020-02-20 23:02:41.427058000,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+190,2020-02-20 23:02:42.427608250,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+191,2020-02-20 23:02:43.425535250,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+192,2020-02-20 23:02:44.426565500,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+193,2020-02-20 23:02:45.425598250,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+194,2020-02-20 23:02:46.427461000,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+195,2020-02-20 23:02:47.433017250,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+196,2020-02-20 23:02:48.435453000,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+197,2020-02-20 23:02:49.426053500,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+198,2020-02-20 23:02:50.426057750,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+199,2020-02-20 23:02:51.427552000,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+200,2020-02-20 23:02:52.425531750,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+201,2020-02-20 23:02:53.425471750,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+202,2020-02-20 23:02:54.426444250,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+203,2020-02-20 23:02:42.949740750,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+204,2020-02-20 23:02:43.951826500,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),,1,controlOn
+205,2020-02-20 23:02:44.959112500,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),35487112288.0,1,controlOn
+206,2020-02-20 23:02:45.964772500,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),31621811404.0,1,controlOn
+207,2020-02-20 23:02:46.965925500,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),32777520821.0,1,controlOn
+208,2020-02-20 23:02:47.963143750,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),31779847435.0,1,controlOn
+209,2020-02-20 23:02:48.954897500,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),32454092822.0,1,controlOn
+210,2020-02-20 23:02:49.960836000,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),22698136032.0,1,controlOn
+211,2020-02-20 23:02:50.973143500,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),31663595474.0,1,controlOn
+212,2020-02-20 23:02:51.971101250,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),31334294588.0,1,controlOn
+213,2020-02-20 23:02:52.968742750,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),31241640087.0,1,controlOn
+214,2020-02-20 23:02:53.975741500,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),31310908382.0,1,controlOn
+215,2020-02-20 23:02:54.819021500,sensor-DownstreamCmdKey (DownstreamCmdID 5d8962b9-2b33-46d4-a822-128b1e352617),25075422327.0,1,controlOn
+216,2020-02-20 23:02:41.427058000,constraint-0,,1,controlOn
+217,2020-02-20 23:02:42.427608250,constraint-0,,1,controlOn
+218,2020-02-20 23:02:43.425535250,constraint-0,,1,controlOn
+219,2020-02-20 23:02:44.426565500,constraint-0,,1,controlOn
+220,2020-02-20 23:02:45.425598250,constraint-0,,1,controlOn
+221,2020-02-20 23:02:46.427461000,constraint-0,1.1222352772462907,1,controlOn
+222,2020-02-20 23:02:47.433017250,constraint-0,0.9999999999999579,1,controlOn
+223,2020-02-20 23:02:48.435453000,constraint-0,1.004997690643952,1,controlOn
+224,2020-02-20 23:02:49.426053500,constraint-0,1.004997690643947,1,controlOn
+225,2020-02-20 23:02:50.426057750,constraint-0,0.7177999938717062,1,controlOn
+226,2020-02-20 23:02:51.427552000,constraint-0,0.7177999938716922,1,controlOn
+227,2020-02-20 23:02:52.425531750,constraint-0,0.9909076424393146,1,controlOn
+228,2020-02-20 23:02:53.425471750,constraint-0,0.9879775604204083,1,controlOn
+229,2020-02-20 23:02:54.426444250,constraint-0,0.9879775604204079,1,controlOn
+230,2020-02-20 23:02:42.949740750,constraint-0,,1,controlOn
+231,2020-02-20 23:02:43.951826500,constraint-0,,1,controlOn
+232,2020-02-20 23:02:44.959112500,constraint-0,,1,controlOn
+233,2020-02-20 23:02:45.964772500,constraint-0,,1,controlOn
+234,2020-02-20 23:02:46.965925500,constraint-0,,1,controlOn
+235,2020-02-20 23:02:47.963143750,constraint-0,,1,controlOn
+236,2020-02-20 23:02:48.954897500,constraint-0,,1,controlOn
+237,2020-02-20 23:02:49.960836000,constraint-0,,1,controlOn
+238,2020-02-20 23:02:50.973143500,constraint-0,,1,controlOn
+239,2020-02-20 23:02:51.971101250,constraint-0,,1,controlOn
+240,2020-02-20 23:02:52.968742750,constraint-0,,1,controlOn
+241,2020-02-20 23:02:53.975741500,constraint-0,,1,controlOn
+242,2020-02-20 23:02:54.819021500,constraint-0,,1,controlOn
+243,2020-02-20 23:02:41.427058000,objective-0,,1,controlOn
+244,2020-02-20 23:02:42.427608250,objective-0,,1,controlOn
+245,2020-02-20 23:02:43.425535250,objective-0,,1,controlOn
+246,2020-02-20 23:02:44.426565500,objective-0,,1,controlOn
+247,2020-02-20 23:02:45.425598250,objective-0,,1,controlOn
+248,2020-02-20 23:02:46.427461000,objective-0,0.6106887920000085,1,controlOn
+249,2020-02-20 23:02:47.433017250,objective-0,0.618028005999979,1,controlOn
+250,2020-02-20 23:02:48.435453000,objective-0,0.616386163999997,1,controlOn
+251,2020-02-20 23:02:49.426053500,objective-0,0.6038733800000109,1,controlOn
+252,2020-02-20 23:02:50.426057750,objective-0,0.6038733800000081,1,controlOn
+253,2020-02-20 23:02:51.427552000,objective-0,0.6109557579999996,1,controlOn
+254,2020-02-20 23:02:52.425531750,objective-0,0.6142011120000114,1,controlOn
+255,2020-02-20 23:02:53.425471750,objective-0,0.614019959999976,1,controlOn
+256,2020-02-20 23:02:54.426444250,objective-0,0.5995235360000297,1,controlOn
+257,2020-02-20 23:02:42.949740750,objective-0,,1,controlOn
+258,2020-02-20 23:02:43.951826500,objective-0,,1,controlOn
+259,2020-02-20 23:02:44.959112500,objective-0,,1,controlOn
+260,2020-02-20 23:02:45.964772500,objective-0,,1,controlOn
+261,2020-02-20 23:02:46.965925500,objective-0,,1,controlOn
+262,2020-02-20 23:02:47.963143750,objective-0,,1,controlOn
+263,2020-02-20 23:02:48.954897500,objective-0,,1,controlOn
+264,2020-02-20 23:02:49.960836000,objective-0,,1,controlOn
+265,2020-02-20 23:02:50.973143500,objective-0,,1,controlOn
+266,2020-02-20 23:02:51.971101250,objective-0,,1,controlOn
+267,2020-02-20 23:02:52.968742750,objective-0,,1,controlOn
+268,2020-02-20 23:02:53.975741500,objective-0,,1,controlOn
+269,2020-02-20 23:02:54.819021500,objective-0,,1,controlOn
+270,2020-02-20 23:02:41.427058000,loss,,1,controlOn
+271,2020-02-20 23:02:42.427608250,loss,,1,controlOn
+272,2020-02-20 23:02:43.425535250,loss,,1,controlOn
+273,2020-02-20 23:02:44.426565500,loss,,1,controlOn
+274,2020-02-20 23:02:45.425598250,loss,,1,controlOn
+275,2020-02-20 23:02:46.427461000,loss,0.6106887920000085,1,controlOn
+276,2020-02-20 23:02:47.433017250,loss,0.618028005999979,1,controlOn
+277,2020-02-20 23:02:48.435453000,loss,0.616386163999997,1,controlOn
+278,2020-02-20 23:02:49.426053500,loss,0.6038733800000109,1,controlOn
+279,2020-02-20 23:02:50.426057750,loss,1.0,1,controlOn
+280,2020-02-20 23:02:51.427552000,loss,1.0,1,controlOn
+281,2020-02-20 23:02:52.425531750,loss,0.6142011120000114,1,controlOn
+282,2020-02-20 23:02:53.425471750,loss,0.614019959999976,1,controlOn
+283,2020-02-20 23:02:54.426444250,loss,0.5995235360000297,1,controlOn
+284,2020-02-20 23:02:42.949740750,loss,,1,controlOn
+285,2020-02-20 23:02:43.951826500,loss,,1,controlOn
+286,2020-02-20 23:02:44.959112500,loss,,1,controlOn
+287,2020-02-20 23:02:45.964772500,loss,,1,controlOn
+288,2020-02-20 23:02:46.965925500,loss,,1,controlOn
+289,2020-02-20 23:02:47.963143750,loss,,1,controlOn
+290,2020-02-20 23:02:48.954897500,loss,,1,controlOn
+291,2020-02-20 23:02:49.960836000,loss,,1,controlOn
+292,2020-02-20 23:02:50.973143500,loss,,1,controlOn
+293,2020-02-20 23:02:51.971101250,loss,,1,controlOn
+294,2020-02-20 23:02:52.968742750,loss,,1,controlOn
+295,2020-02-20 23:02:53.975741500,loss,,1,controlOn
+296,2020-02-20 23:02:54.819021500,loss,,1,controlOn
