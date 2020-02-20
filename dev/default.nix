@@ -169,6 +169,7 @@ pkgs // rec {
                 xtable
                 ggthemes
                 data_table
+                JuniperKernel
               ];
             }
           }/bin/R"
