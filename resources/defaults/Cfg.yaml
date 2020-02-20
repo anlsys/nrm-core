@@ -27,6 +27,9 @@ downstreamCfg:
 nodeos: false
 hwloc: hwloc
 raplCfg:
+  raplActions:
+  - fromuW: 100000000
+  - fromuW: 200000000
   raplFrequency:
     fromHz: 1
   raplPath: /sys/devices/virtual/powercap/intel-rapl

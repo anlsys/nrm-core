@@ -1315,10 +1315,18 @@
                                 "raplCfg": {
                                     "required": [
                                         "raplPath",
-                                        "raplFrequency"
+                                        "raplFrequency",
+                                        "raplActions"
                                     ],
                                     "type": "object",
                                     "properties": {
+                                        "raplActions": {
+                                            "uniqueItems": false,
+                                            "items": {
+                                                "type": "number"
+                                            },
+                                            "type": "array"
+                                        },
                                         "raplFrequency": {
                                             "type": "number"
                                         },

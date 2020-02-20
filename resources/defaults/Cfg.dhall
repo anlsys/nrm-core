@@ -42,6 +42,8 @@
         "/sys/devices/virtual/powercap/intel-rapl"
     , raplFrequency =
         { fromHz = 1.0 }
+    , raplActions =
+        [ { fromuW = 1.0e8 }, { fromuW = 2.0e8 } ] : List { fromuW : Double }
     }
 , hwmonCfg =
     { hwmonEnabled = True, hwmonPath = "/sys/class/hwmon" }

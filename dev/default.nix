@@ -90,7 +90,6 @@ pkgs // rec {
     ];
   };
 
-
   hsnrm-hack = pkgs.haskellPackages.shellFor {
     packages = p: [
       haskellPackages.nrmlib
@@ -130,7 +129,6 @@ pkgs // rec {
     python3 = (python37Packages.python.withPackages
       (ps: with ps; [ nb_black msgpack warlock pyzmq pandas seaborn ]));
     definitions = {
-      # This is the Python kernel we have defined above.
       python3 = {
         displayName = "Python 3";
         argv = [
@@ -141,6 +139,46 @@ pkgs // rec {
           "{connection_file}"
         ];
         language = "python";
+        logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
+        logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
+      };
+      Rdf = {
+        displayName = "R";
+        argv = [
+          "${
+            pkgs.rWrapper.override {
+              packages = with pkgs.rPackages; [
+                docopt
+                pracma
+                tidyr
+                readr
+                magrittr
+                formatR
+                purrr
+                wrapr
+                knitr
+                cowplot
+                plotly
+                lubridate
+                dplyr
+                ggplot2
+                fpp2
+                prospectr
+                gridExtra
+                zoo
+                xtable
+                ggthemes
+                data_table
+              ];
+            }
+          }/bin/R"
+          "--slave"
+          "-e"
+          "JuniperKernel::bootKernel()"
+          "--args"
+          "{connection_file}"
+        ];
+        language = "Rlang";
         logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
         logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
       };

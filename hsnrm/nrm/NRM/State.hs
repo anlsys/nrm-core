@@ -60,7 +60,11 @@ initialState c time = do
     Just raplc ->
       getDefaultRAPLDirs (toS $ Cfg.raplPath raplc) >>= \case
         Just (RAPLDirs rapldirs) ->
-          return $ Protolude.foldl goRAPL packages' (LM.toList rapldirs)
+          return $
+            Protolude.foldl
+              (goRAPL (raplActions raplc))
+              packages'
+              (LM.toList rapldirs)
         Nothing -> return packages'
   controlCfg c & \case
     FixedCommand (fromWatts -> cap) ->
@@ -96,10 +100,11 @@ initialState c time = do
     }
   where
     goRAPL ::
+      [Power] ->
       LM.Map PackageID Package ->
       (PackageID, RAPLDir) ->
       LM.Map PackageID Package
-    goRAPL m (pkgid, RAPLDir {..}) =
+    goRAPL defA m (pkgid, RAPLDir {..}) =
       LM.lookup pkgid m & \case
         Nothing -> m
         Just oldPackage ->
@@ -110,8 +115,8 @@ initialState c time = do
                     { frequency = hz 3,
                       raplPath = path,
                       max = watts 300,
-                      discreteChoices = [watts 100, watts 200],
                       defaultPower = watts 200,
+                      discreteChoices = defA,
                       lastRead = Nothing,
                       history = MemBuffer.empty
                     }

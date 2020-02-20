@@ -92,7 +92,8 @@ data HwmonCfg
 data RaplCfg
   = RaplCfg
       { raplPath :: Text,
-        raplFrequency :: Frequency
+        raplFrequency :: Frequency,
+        raplActions :: [Power]
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON RaplCfg
@@ -134,7 +135,8 @@ instance Default HwmonCfg where
 instance Default RaplCfg where
   def = RaplCfg
     { raplPath = "/sys/devices/virtual/powercap/intel-rapl",
-      raplFrequency = 1 & hz
+      raplFrequency = 1 & hz,
+      raplActions = watts <$> [100, 200]
     }
 
 instance Default DownstreamCfg where
