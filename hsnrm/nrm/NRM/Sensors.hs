@@ -47,11 +47,11 @@ cpdSensors st =
 
 data MeasurementOutput = Adjusted NRMState | Ok NRMState Measurement | NotFound
 
-mkValue metaData time mvalue = cumulative metaData & \case
+mkValue :: SensorMeta -> Double -> Double
+mkValue metaData mvalue = cumulative metaData & \case
   Cumulative -> last metaData & \case
     Nothing -> 0
-    Just (lastTime, lastValue) ->
-      (mvalue - lastValue) / fromSeconds (time - lastTime)
+    Just (_, lastValue) -> (mvalue - lastValue)
   IntervalBased -> mvalue
 
 processActiveSensor ::
@@ -66,7 +66,7 @@ processActiveSensor _cfg time st sensorKey mvalue =
     Nothing -> NotFound
     Just (ScopedLens sl) ->
       view sl st & \s ->
-        let value = mkValue (meta s) time mvalue
+        let value = mkValue (meta s) mvalue
          in CPD.validateMeasurement
               (CPD.range . snd $ toCPDSensor (sensorKey, s))
               value
@@ -109,7 +109,7 @@ processPassiveSensor ps@(S.range . meta -> i) time sensorID mvalue
           }
       )
   where
-    value = mkValue (meta ps) time mvalue
+    value = mkValue (meta ps) mvalue
 
 data ProcessPassiveSensorFailureOutput
   = LegalFailure
