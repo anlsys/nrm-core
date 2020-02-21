@@ -161,7 +161,7 @@ processRAPLFolder fp =
   runMaybeT $ do
     namecontent <- maybeTReadLine $ fp <> "/name"
     maxRange <- maybeTReadLine (fp <> "/max_energy_range_uj") >>= (MaybeT . pure . readMaybe . toS)
-    match <- MaybeT $ pure (matchedText (namecontent ?=~ rx) >>= idFromString . drop (T.length "package") . toS)
+    match <- MaybeT $ pure (matchedText (namecontent ?=~ rx) >>= idFromString . drop (T.length "package-") . toS)
     return (match, RAPLDir fp (MaxEnergy . uJ $ maxRange))
   where
     rx = [re|package-([0-9]+)(/\S+)?|]

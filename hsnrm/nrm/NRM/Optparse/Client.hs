@@ -182,9 +182,9 @@ parserActuatorID :: Parser CPD.ActuatorID
 parserActuatorID =
   ActuatorID
     <$> strArgument
-      ( metavar "CONTAINER"
+      ( metavar "ACTUATORID"
           <> help
-            "Name/ID of the slice to kill"
+            "ID of the actuator to use"
       )
 
 parserActuatorValue :: Parser CPD.Discrete
@@ -192,9 +192,9 @@ parserActuatorValue =
   CPD.DiscreteDouble
     <$> argument
       Options.Applicative.auto
-      ( metavar "CONTAINER"
+      ( metavar "VALUE"
           <> help
-            "Name/ID of the slice to kill"
+            "Value of the action"
       )
 
 data Listen = All | CPDOnly | Raw
