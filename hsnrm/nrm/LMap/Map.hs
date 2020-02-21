@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE PatternSynonyms #-}
 
 -- |
 -- Module      : LMap.Map
@@ -7,6 +8,7 @@
 -- Maintainer  : fre@freux.fr
 module LMap.Map
   ( Map,
+    pattern EmptyMap,
     LMap.Map.fromList,
     LMap.Map.toList,
     LMap.Map.fromDataMap,
@@ -43,6 +45,9 @@ newtype Map a b = Map [(a, b)]
 
 mapKV :: ((a, b) -> (c, d)) -> Map a b -> Map c d
 mapKV f m = m & LMap.Map.toList <&> f & fromList
+
+pattern EmptyMap :: Map a b
+pattern EmptyMap = Map []
 
 empty :: Map a b
 empty = Map []

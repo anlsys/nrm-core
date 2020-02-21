@@ -3,38 +3,31 @@
 ## User Documentation
 
 - [User documentation](http://hnrm.readthedocs.io)
-- Shared library [haddocks](https://hnrm.readthedocs.io/en/latest/_static/haddocks/)
 
-## Development
+## Installation/Quickstart
 
-All the following instructions suppose using a local clone, *with submodules
-initialized and updated*:
+All the following instructions suppose using a local clone *with submodules*:
 
 ```
-git clone https://xgitlab.cels.anl.gov/argo/hnrm.git
-cd hnrm
-git submodule init
-git submodule update
+git clone --recurse-submodules https://xgitlab.cels.anl.gov/argo/hnrm.git
 ```
 
-- local nix profile install: `./install.sh` (`nix-env -f. -iA nrm` if binary cache is down)
-- entering a development shell : `./shell.sh` (`nix-shell` if binary cache is down)
-- opening jupyter notebooks: `./shell.sh`, then run `jupyter-notebook` and navigate to the `notebooks` folder
-- local release nix build: `./build.sh` (`nix-build -A nrm` if binary cache is down)
-- deploy to a remote nix-enabled system: `./deploy_nix.sh nrm user@host`
-- deploy a g5k notebook setup: `./deploy_g5k.sh nrm user@host`
-- running CI jobs: `./ci.sh <jobname>` or all jobs using `./ci.sh`
+- local nix build: `nix-build -A nrm`
+- local nix profile install: `nix-env -f. -iA nrm`
 
-Local development builds can be obtained using the following:
+## Development/Local builds
 
-- use `./shake.sh build` to build the `nrm.so` shared library (also runs the code generation step for vendored resources)
+
+- opening jupyter notebooks: `nix-shell -A expe`, which provisions
+  `jupyter-notebook`.
+- running CI jobs locally: `./ci.sh <jobname>` or all jobs using `./ci`
+  (requires gitlab-runner)
+- entering a development shell : `nix-shell -A hack`
+- use `./shake.sh build` to build the `nrm.so` shared library (also runs the
+  code generation step for vendored resources)
 - use `./shake.sh client` to build the `nrm` client
-- use `./shake.sh pyclient` to build the Python shared library (for use by the python module `nrm.tooling`)
-- the appropriate Nix `shellHooks` are in place for you to use `nrm` and `nrmd` after running `./shell.sh`.
+- use `./shake.sh pyclient` to build the Python shared library (for use by the
+  python module `nrm.tooling`)
 
-## CI
-
-- [gitlab-ci(master branch)](https://xgitlab.cels.anl.gov/argo/hnrm/pipelines/master/latest)
-- [gitlab-ci(develop branch)](https://xgitlab.cels.anl.gov/argo/hnrm/pipelines/develop/latest)
-- [hydra(master branch)](http://129.114.24.212/jobset/nrm/master#tabs-jobs)
-- [hydra(develop branch)](http://129.114.24.212/jobset/nrm/develop#tabs-jobs)
+the appropriate Nix `shellHooks` are in place in the `hack` nix derivation for
+you to use the development build using the `nrm` and `nrmd` aliases on the CLI. 

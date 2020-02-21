@@ -4,10 +4,7 @@
 rm -f .ghc.env*
 if [ -z "$IN_NIX_SHELL" ]
 then
-  nix-shell \
-    --run "runhaskell dev/shake.hs $*" \
-    --option extra-substituters http://129.114.24.212/serve \
-    --option trusted-public-keys example-nix-cache-1:HSwzbJmGDidTrax3Lvx1vMSvto04VN2O5cjfXAG9uz0=
+  nix-shell -A hack --run "runhaskell dev/shake.hs $*"
 else
   runhaskell dev/shake.hs $*
 fi

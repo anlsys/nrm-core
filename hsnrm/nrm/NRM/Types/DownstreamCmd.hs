@@ -13,7 +13,7 @@ module NRM.Types.DownstreamCmd
 where
 
 import Control.Lens hiding ((...))
-import Data.Aeson
+import Data.Aeson hiding ((.=))
 import Data.Generics.Product
 import Data.JSON.Schema
 import Data.MessagePack
@@ -22,10 +22,10 @@ import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Types.DownstreamCmdID
 import NRM.Types.MemBuffer
-import NRM.Types.Sensor as S
+import NRM.Types.Sensor
 import NRM.Types.Units as Units
 import Numeric.Interval
-import Protolude
+import Protolude hiding (to)
 
 data DownstreamCmd
   = DownstreamCmd
@@ -52,7 +52,7 @@ instance
       getter (DownstreamCmd _maxValue ratelimit dtLastRef lastRead) =
         ActiveSensor
           { activeMeta = SensorMeta
-              { tags = [S.Maximize, S.DownstreamCmdSignal],
+              { tags = [Maximize, DownstreamCmdSignal],
                 range = 0 ... (maxValue downstreamCmd & fromOps & fromIntegral),
                 lastReferenceMeasurements = dtLastRef,
                 last = lastRead <&> fmap (fromIntegral . fromProgress),
@@ -62,9 +62,8 @@ instance
             process = identity
           }
       setter dc activeSensor =
-        dc & field @"maxValue"
-          .~ Operations (floor . sup . range $ meta activeSensor)
-            & field @"dtLastReferenceMeasurements"
-          .~ lastReferenceMeasurements (meta activeSensor)
-            & field @"lastRead"
-          .~ over _Just (& _2 %~ progress . floor) (S.last (S.meta activeSensor))
+        dc &~ do
+          field @"maxValue"
+            .= activeSensor ^. _meta . field @"range" . to sup . to floor . to Operations
+          field @"dtLastReferenceMeasurements" .= activeSensor ^. _meta . to lastReferenceMeasurements
+          field @"lastRead" .= over _Just (over _2 $ progress . floor) (activeSensor ^. _meta . field @"last")

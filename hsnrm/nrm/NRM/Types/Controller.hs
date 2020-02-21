@@ -18,6 +18,12 @@ module NRM.Types.Controller
     LearnState,
     LearnConfig,
     LagrangeMultiplier (..),
+    CtxCfg (..),
+    Hint (..),
+    Seed (..),
+    Uniform (..),
+    UniformCfg (..),
+    Armstat (..),
     initialController,
     enqueueAll,
   )
@@ -34,16 +40,26 @@ import Dhall hiding (field)
 import HBandit.BwCR as BwCR
 import HBandit.Class
 import HBandit.Exp3 as Exp3
+import HBandit.Exp4R as Exp4R
 import HBandit.Types
-import LMap.Map as LMap
+import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.NonEmpty ()
 import NRM.Orphans.ZeroOne ()
 import NRM.Types.MemBuffer as MemBuffer
 import NRM.Types.Units
 import Protolude hiding (Map)
-import Refined
+import Refined hiding (NonEmpty)
 import Refined.Unsafe
+
+type LearnState =
+  Learn
+    (Exp3 [V.Action])
+    (BwCR [V.Action] [ZeroOne Double])
+    (Uniform [V.Action])
+    (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+
+type LearnConfig = Learn LagrangeMultiplier BwCR.T UniformCfg CtxCfg
 
 data Input
   = -- | A sensor measurement event
@@ -68,35 +84,54 @@ data DecisionMetadata
   | InnerDecision
       { constraints :: [ConstraintValue],
         objectives :: [ObjectiveValue],
-        loss :: ZeroOne Double
+        loss :: ZeroOne Double,
+        reportEvaluatedObjectives :: [(ZeroOne Double, Maybe Double, Maybe (Interval Double))],
+        reportNormalizedObjectives :: [(ZeroOne Double, ZeroOne Double)],
+        reportEvaluatedConstraints :: [(Double, Double, Interval Double)]
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DecisionMetadata
 
 data Decision = DoNothing | Decision [V.Action] DecisionMetadata deriving (Show)
 
-data Learn a b
-  = Lagrange {lagrangeConstraint :: a}
-  | Knapsack {knapsackConstraint :: b}
+data Learn a b c d
+  = Lagrange {lagrange :: a}
+  | Knapsack {knapsack :: b}
+  | Random {random :: c}
+  | Contextual {contextual :: d}
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
-
-type LearnState = Learn (Exp3 [V.Action]) (BwCR [V.Action] [ZeroOne Double])
 
 newtype LagrangeMultiplier = LagrangeMultiplier Double
   deriving (JSONSchema, A.ToJSON, A.FromJSON, Interpret, Inject) via Double
   deriving (Eq, Show, Generic, MessagePack)
 
-type LearnConfig = Learn LagrangeMultiplier BwCR.T
+newtype Seed = Seed Int
+  deriving (JSONSchema, A.ToJSON, A.FromJSON, Interpret, Inject) via Int
+  deriving (Eq, Show, Generic, MessagePack)
+
+newtype CtxCfg = CtxCfg {horizon :: Int}
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CtxCfg
+
+data Hint = Full | Only {only :: NonEmpty [Action]}
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Hint
 
 data Controller
   = Controller
       { integrator :: C.Integrator,
-        bandit :: Maybe (Learn (Exp3 [V.Action]) (BwCR [V.Action] [ZeroOne Double])),
+        bandit :: Maybe LearnState,
+        lastA :: Maybe [V.Action],
+        armstats :: Map [V.Action] Armstat,
         bufferedMeasurements :: Maybe (Map SensorID Double),
         referenceMeasurements :: Map SensorID (MemBuffer Double),
         referenceMeasurementCounter :: Refined NonNegative Int
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
+
+data Armstat = Armstat Int Double [Double] [Double] (Map SensorID Double) (Map SensorID Double)
+  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Armstat
   deriving (Show, Generic, MessagePack, Interpret, Inject)
 
 enqueueAll :: (Ord k) => Map k a -> Map k (MemBuffer a) -> Map k (MemBuffer a)
@@ -118,11 +153,88 @@ initialController ::
   Controller
 initialController time minTime sensorIDs = Controller
   { integrator = initIntegrator time minTime sensorIDs,
+    lastA = Nothing,
     bandit = Nothing,
+    armstats = LM.empty,
     bufferedMeasurements = Nothing,
-    referenceMeasurements = LMap.fromList $ sensorIDs <&> (,MemBuffer.empty),
+    referenceMeasurements = LM.fromList $ sensorIDs <&> (,MemBuffer.empty),
     referenceMeasurementCounter = unsafeRefine 0
   }
+
+newtype UniformCfg = UniformCfg {seed :: Maybe Seed}
+  deriving (Show, Eq, Generic) via (Maybe Seed)
+
+-- Uniform controller
+
+newtype Uniform a = Uniform [a]
+  deriving (Show, Generic)
+
+deriving instance MessagePack UniformCfg
+
+deriving via (Maybe Seed) instance Interpret UniformCfg
+
+deriving via (Maybe Seed) instance Inject UniformCfg
+
+deriving via (GenericJSON UniformCfg) instance JSONSchema UniformCfg
+
+deriving via (GenericJSON UniformCfg) instance A.ToJSON UniformCfg
+
+deriving via (GenericJSON UniformCfg) instance A.FromJSON UniformCfg
+
+deriving instance MessagePack (Uniform [V.Action])
+
+deriving instance Interpret (Uniform [V.Action])
+
+deriving instance Inject (Uniform [V.Action])
+
+deriving via (GenericJSON (Uniform [V.Action])) instance JSONSchema (Uniform [V.Action])
+
+deriving via (GenericJSON (Uniform [V.Action])) instance A.ToJSON (Uniform [V.Action])
+
+deriving via (GenericJSON (Uniform [V.Action])) instance A.FromJSON (Uniform [V.Action])
+
+-- Instances to serialize the bandit state:Exp4R
+deriving instance Show (LastAction [V.Action])
+
+deriving instance Show (ObliviousRep [V.Action])
+
+deriving instance MessagePack (LastAction [V.Action])
+
+deriving instance MessagePack (ObliviousRep [V.Action])
+
+deriving instance Interpret (LastAction [V.Action])
+
+deriving instance Interpret (ObliviousRep [V.Action])
+
+deriving instance Inject (LastAction [V.Action])
+
+deriving instance Inject (ObliviousRep [V.Action])
+
+deriving via (GenericJSON (LastAction [V.Action])) instance JSONSchema (LastAction [V.Action])
+
+deriving via (GenericJSON (ObliviousRep [V.Action])) instance JSONSchema (ObliviousRep [V.Action])
+
+deriving via (GenericJSON (LastAction [V.Action])) instance A.ToJSON (LastAction [V.Action])
+
+deriving via (GenericJSON (ObliviousRep [V.Action])) instance A.ToJSON (ObliviousRep [V.Action])
+
+deriving via (GenericJSON (LastAction [V.Action])) instance A.FromJSON (LastAction [V.Action])
+
+deriving via (GenericJSON (ObliviousRep [V.Action])) instance A.FromJSON (ObliviousRep [V.Action])
+
+deriving instance Show (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+
+deriving instance MessagePack (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+
+deriving instance Interpret (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+
+deriving instance Inject (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+
+deriving via (GenericJSON (Exp4R () [V.Action] (ObliviousRep [V.Action]))) instance JSONSchema (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+
+deriving via (GenericJSON (Exp4R () [V.Action] (ObliviousRep [V.Action]))) instance A.ToJSON (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+
+deriving via (GenericJSON (Exp4R () [V.Action] (ObliviousRep [V.Action]))) instance A.FromJSON (Exp4R () [V.Action] (ObliviousRep [V.Action]))
 
 -- Instances to serialize the bandit state.
 

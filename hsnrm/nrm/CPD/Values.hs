@@ -35,5 +35,5 @@ data Action
       { actuatorID :: ActuatorID,
         actuatorValue :: Discrete
       }
-  deriving (Show, Eq, Generic, MessagePack, Interpret, Inject)
+  deriving (Ord, Show, Eq, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Action

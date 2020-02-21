@@ -130,6 +130,7 @@ library nrmlib
         Algebra.Classes
         HBandit.Class
         HBandit.Exp3
+        HBandit.Exp4R
         HBandit.EpsGreedy
         HBandit.Util
         HBandit.Types
@@ -221,6 +222,7 @@ library banditlib
     exposed-modules:
         HBandit.Class
         HBandit.Exp3
+        HBandit.Exp4R
         HBandit.EpsGreedy
         HBandit.Util
         HBandit.Types
@@ -417,6 +419,7 @@ executable nrm.so
         Algebra.Classes
         HBandit.Class
         HBandit.Exp3
+        HBandit.Exp4R
         HBandit.EpsGreedy
         HBandit.Util
         HBandit.Types
@@ -615,6 +618,7 @@ executable pynrm.so
         Algebra.Classes
         HBandit.Class
         HBandit.Exp3
+        HBandit.Exp4R
         HBandit.EpsGreedy
         HBandit.Util
         HBandit.Types
@@ -811,6 +815,7 @@ executable nrmstatic
         Algebra.Classes
         HBandit.Class
         HBandit.Exp3
+        HBandit.Exp4R
         HBandit.EpsGreedy
         HBandit.Util
         HBandit.Types

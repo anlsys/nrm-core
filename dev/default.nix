@@ -114,6 +114,10 @@ pkgs // rec {
         pandas
         matplotlib
         nb_black
+        msgpack
+        pyzmq
+        warlock
+        seaborn
       ];
 
     shellHook = ''
@@ -148,27 +152,16 @@ pkgs // rec {
           "${
             pkgs.rWrapper.override {
               packages = with pkgs.rPackages; [
-                docopt
-                pracma
                 tidyr
-                readr
-                magrittr
-                formatR
                 purrr
-                wrapr
-                knitr
-                cowplot
-                plotly
-                lubridate
-                dplyr
-                ggplot2
-                fpp2
-                prospectr
-                gridExtra
-                zoo
-                xtable
                 ggthemes
-                data_table
+                ggplot2
+                latex2exp
+                plotly
+                phantomjs
+                webshot
+                pracma
+                knitr
                 JuniperKernel
               ];
             }
@@ -199,20 +192,13 @@ pkgs // rec {
       src = patchedSrc (src + "/hsnrm") cabalFileLib;
       extraCabal2nixOptions = "--extra-arguments src";
     });
-
     NIXFILE_BIN = (haskellPackages.haskellSrc2nix {
       name = "hsnrm";
       src = patchedSrc (src + "/hsnrm") cabalFileBin;
       extraCabal2nixOptions = "--extra-arguments src";
     });
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
-    buildInputs = [
-      pkgs.hwloc
-      ormolu
-      haskellPackages.dhrun
-      jupyterWithBatteries
-      pkgs.daemonize
-    ];
+    buildInputs = [ pkgs.hwloc haskellPackages.dhrun ];
     shellHook = ''
       # path for NRM dev experimentation
       export PYNRMSO=${
@@ -227,7 +213,6 @@ pkgs // rec {
         builtins.toPath ../.
       }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
       export PYTHONPATH=${builtins.toPath ../.}/pynrm/:$PYTHONPATH
-      export JUPYTER_PATH=$JUPYTER_PATH:${builtins.toPath ../.}/pynrm/
       # exports for `ghcide` use
       export NIX_GHC="${haskellPackages.nrmlib.env.NIX_GHC}"
       export NIX_GHCPKG="${haskellPackages.nrmlib.env.NIX_GHCPKG}"
@@ -245,6 +230,37 @@ pkgs // rec {
     LC_ALL = "en_US.UTF-8";
     LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
   };
+
+  hack-with-devtools =
+    hack.overrideAttrs (o: { buildInputs = o.buildInputs ++ [ ormolu ]; });
+
+  expe = hack-with-devtools.overrideAttrs (o: {
+    buildInputs = o.buildInputs ++ [
+      pkgs.phantomjs
+      pkgs.pandoc
+      pkgs.daemonize
+      jupyterWithBatteries
+      pkgs.texlive.combined.scheme-full
+      (pkgs.rstudioWrapper.override {
+        packages = with pkgs.rPackages; [
+          tidyr
+          purrr
+          ggthemes
+          ggplot2
+          latex2exp
+          plotly
+          phantomjs
+          webshot
+          pracma
+          knitr
+          JuniperKernel
+        ];
+      })
+    ];
+    shellHook = o.shellHook + ''
+      export JUPYTER_PATH=$JUPYTER_PATH:${builtins.toPath ../.}/pynrm/
+    '';
+  });
 
   dhrun = haskellPackages.dhrun.overrideAttrs (old: {
     installPhase = old.installPhase + ''
@@ -274,19 +290,6 @@ pkgs // rec {
       ln -s ${dhall-to-cabal-resources} dev/cabal/dhall-to-cabal
     '';
     unpackPhase = "true";
-  };
-
-  expe = pkgs.mkShell {
-    name = "expe";
-    buildInputs = [
-      haskellPackages.nrmbin
-      dhrun
-      pynrm
-      resources
-      pkgs.linuxPackages.perf
-      pkgs.hwloc
-      pkgs.mpich2
-    ];
   };
 
   doDhrun = dhallcall:

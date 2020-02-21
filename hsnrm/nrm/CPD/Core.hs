@@ -34,22 +34,29 @@ module CPD.Core
 
     -- * Objective contstructor helpers
     sID,
+    sRef,
     scalar,
     (\+),
     (\-),
     (\/),
     (\*),
+    thresholded,
 
     -- * Pretty printers
     prettyCPD,
     prettyExpr,
+
+    -- * Useful Newtypes
+    OExprSum (..),
   )
 where
 
 import qualified Data.Aeson as A
+import Data.Coerce
 import Data.JSON.Schema
 import Data.MessagePack
 import qualified Dhall as D
+import HBandit.Types
 import LMap.Map as Map
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
@@ -58,24 +65,24 @@ import qualified NRM.Types.Units as Units
 import NeatInterpolation
 import Numeric.Interval as I hiding (elem)
 import Protolude hiding (Map)
+import Refined
 
 -- METADATA
 newtype Discrete = DiscreteDouble Double
   deriving
     ( Show,
       Eq,
+      Ord,
       Generic,
-      MessagePack,
-      D.Interpret,
-      D.Inject
+      MessagePack
     )
-  deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Discrete
+  deriving (JSONSchema, A.ToJSON, A.FromJSON, D.Interpret, D.Inject) via Double
 
 data Problem
   = Problem
       { sensors :: Map SensorID Sensor,
         actuators :: Map ActuatorID Actuator,
-        objectives :: [(Double, OExpr)],
+        objectives :: [(ZeroOne Double, OExpr)],
         constraints :: [(Double, OExpr)]
       }
   deriving (Show, Generic, MessagePack, D.Interpret, D.Inject)
@@ -152,6 +159,9 @@ newtype Actuator = Actuator {actions :: [Discrete]}
 sID :: SensorID -> OExpr
 sID = OValue
 
+sRef :: SensorID -> OExpr
+sRef = OReference
+
 scalar :: Double -> OExpr
 scalar = OScalar
 
@@ -167,13 +177,19 @@ scalar = OScalar
 (\*) :: OExpr -> OExpr -> OExpr
 (\*) = OMul
 
+thresholded :: Double -> Double -> OExpr -> OExpr
+thresholded low high e = OMax (scalar low) (OMin (scalar high) e)
+
 data OExpr
   = OValue SensorID
+  | OReference SensorID
   | OScalar Double
   | OAdd OExpr OExpr
   | OSub OExpr OExpr
   | OMul OExpr OExpr
   | ODiv OExpr OExpr
+  | OMin OExpr OExpr
+  | OMax OExpr OExpr
   deriving (A.ToJSON, A.FromJSON) via GenericJSON OExpr
   deriving (JSONSchema) via AnyJSON OExpr
   deriving (Show, Eq, Generic, MessagePack, D.Interpret, D.Inject)
@@ -181,23 +197,39 @@ data OExpr
 prettyExpr :: OExpr -> Text
 prettyExpr = \case
   OValue (SensorID id) -> "\"" <> id <> "\""
+  OReference (SensorID id) -> "\"REF:" <> id <> "\""
   OScalar d -> show d
   OAdd a b -> prettyExpr a <> "+" <> prettyExpr b
   OSub a b -> "(" <> prettyExpr a <> "-" <> prettyExpr b <> ")"
   OMul (OScalar d) b -> show d <> "*(" <> prettyExpr b <> ")"
   OMul a b -> "(" <> prettyExpr a <> ")*(" <> prettyExpr b <> ")"
   ODiv a b -> "(" <> prettyExpr a <> ")/(" <> prettyExpr b <> ")"
+  OMin a b -> "min(" <> prettyExpr a <> "," <> prettyExpr b <> ")"
+  OMax a b -> "max(" <> prettyExpr a <> "," <> prettyExpr b <> ")"
 
 prettyCPD :: Problem -> Text
 prettyCPD (Problem sensors actuators objectives constraints) =
   [text|
-  Sensors : $s
-  Actuators : $a
-  Objectives : $objs
-  Constraints : $csts
+  Actuators:
+    $a
+  Sensors:
+    $s
+  Objectives :
+    $objs
+  Constraints:
+    $csts
   |]
   where
-    s = show sensors
-    a = show actuators
-    objs = mconcat . intersperse " " $ objectives <&> \(w, o) -> show w <> prettyExpr o
-    csts = mconcat . intersperse " " $ constraints <&> \(w, c) -> show w <> prettyExpr c
+    s = mconcat . intersperse "\n" $ Map.toList sensors <&> \(sid, sensor) -> "- " <> sensorID sid <> " : " <> show sensor
+    a = mconcat . intersperse "\n" $ Map.toList actuators <&> \(aid, actuator) -> "- " <> actuatorID aid <> " : " <> show actuator
+    objs = mconcat . intersperse "\n" $ objectives <&> \(w, o) -> "- weight " <> show (unrefine w) <> ": " <> prettyExpr o
+    csts = mconcat . intersperse "\n" $ constraints <&> \(w, c) -> "- threshold " <> show w <> ": " <> prettyExpr c
+
+--- Useful newtypes
+newtype OExprSum = OExprSum {getOExprSum :: OExpr}
+
+instance Semigroup OExprSum where
+  (coerce -> x) <> (coerce -> y) = coerce (x \+ y)
+
+instance Monoid OExprSum where
+  mempty = coerce $ OScalar 0

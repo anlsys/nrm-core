@@ -11,7 +11,6 @@ module CPD.Utils
     MeasurementValidation (..),
     ActionValidation (..),
     evalNum,
-    eval,
     evalRange,
   )
 where
@@ -43,35 +42,49 @@ validateAction p action = lookup (CPD.Values.actuatorID action) (actuators p) & 
 
 -- | Standard object evaluation on Num instances.
 evalNum ::
-  (Fractional a) =>
-  (Double -> a) ->
-  Map SensorID a ->
+  Map SensorID Double ->
+  Map SensorID Double ->
   OExpr ->
-  Maybe a
-evalNum scalarLifter m = \case
+  Maybe Double
+evalNum m r = \case
   OValue sensorID -> lookup sensorID m
-  OScalar s -> Just (scalarLifter s)
+  OReference sensorID -> lookup sensorID r
+  OScalar s -> Just s
   OAdd a b -> ev2 a b (+)
   OSub a b -> ev2 a b (-)
   OMul a b -> ev2 a b (*)
   ODiv a b -> ev2 a b (/)
+  OMin a b -> ev2 a b min
+  OMax a b -> ev2 a b max
   where
-    ev = evalNum scalarLifter m
+    ev = evalNum m r
     ev2 a b f = do
       v1 <- ev a
       v2 <- ev b
       return $ f v1 v2
 
--- | Objective value evaluation.
-eval ::
-  Map SensorID Double ->
-  OExpr ->
-  Maybe Double
-eval = evalNum (identity :: Double -> Double)
-
--- | Objective range evaluation.
+-- | Range evaluation
 evalRange ::
   Map SensorID (Interval Double) ->
   OExpr ->
   Maybe (Interval Double)
-evalRange = evalNum (singleton :: Double -> Interval Double)
+evalRange m = \case
+  OValue sensorID -> lookup sensorID m
+  OReference sensorID -> lookup sensorID m
+  OScalar s -> Just (singleton s)
+  OAdd a b -> ev2 a b (+)
+  OSub a b -> ev2 a b (-)
+  OMul a b -> ev2 a b (*)
+  ODiv a b -> ev2 a b (/)
+  OMin a b -> ev2 a b minI
+  OMax a b -> ev2 a b maxI
+  where
+    ev = evalRange m
+    ev2 a b f = do
+      v1 <- ev a
+      v2 <- ev b
+      return $ f v1 v2
+    maxI :: (Ord a) => Interval a -> Interval a -> Interval a
+    maxI i i' = max (inf i) (inf i') ... max (sup i) (sup i')
+    minI :: (Ord a) => Interval a -> Interval a -> Interval a
+    minI i i' = min (inf i) (inf i') ... min (sup i) (sup i')

@@ -13163,10 +13163,10 @@ div#notebook {
 
 
 
-<div id="cb71c992-9455-41d5-b095-fa027071cdff"></div>
+<div id="6d38f27e-f2cd-4a87-83ae-a3988c90cc34"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#cb71c992-9455-41d5-b095-fa027071cdff');
+var element = $('#6d38f27e-f2cd-4a87-83ae-a3988c90cc34');
 
             setTimeout(function() {
                 var nbb_cell_id = 2;
@@ -13236,11 +13236,22 @@ var element = $('#cb71c992-9455-41d5-b095-fa027071cdff');
     &#34;nrm-perfwrapper&#34;
 , controlCfg =
     &lt; ControlCfg :
-        { learnCfg :
-            &lt; Knapsack :
-                { knapsackConstraint : Double }
+        { hint :
+            &lt; Full
+            | Only :
+                { only :
+                    List (List { actuatorID : Text, actuatorValue : Double })
+                }
+            &gt;
+        , learnCfg :
+            &lt; Contextual :
+                { contextual : { horizon : Integer } }
+            | Knapsack :
+                { knapsack : Double }
             | Lagrange :
-                { lagrangeConstraint : Double }
+                { lagrange : Double }
+            | Random :
+                { random : Optional Integer }
             &gt;
         , minimumControlInterval :
             { fromuS : Double }
@@ -13275,7 +13286,9 @@ var element = $('#cb71c992-9455-41d5-b095-fa027071cdff');
     &#34;pmpi_lib&#34;
 , raplCfg =
     Some
-    { raplFrequency =
+    { raplActions =
+        [ { fromuW = 1.0e8 }, { fromuW = 2.0e8 } ]
+    , raplFrequency =
         { fromHz = 1.0 }
     , raplPath =
         &#34;/sys/devices/virtual/powercap/intel-rapl&#34;
@@ -13301,10 +13314,10 @@ var element = $('#cb71c992-9455-41d5-b095-fa027071cdff');
 
 
 
-<div id="57d3bfb9-efc3-4fb6-b8a1-689f6bd5e3b4"></div>
+<div id="e2a2bb8d-ef66-4b22-ace0-d2b57c4685ad"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#57d3bfb9-efc3-4fb6-b8a1-689f6bd5e3b4');
+var element = $('#e2a2bb8d-ef66-4b22-ace0-d2b57c4685ad');
 
             setTimeout(function() {
                 var nbb_cell_id = 3;
@@ -13386,6 +13399,14 @@ cat ./resources/defaults/Cfg.json <span class="p">|</span> jq
   &#34;nodeos&#34;: false,
   &#34;hwloc&#34;: &#34;hwloc&#34;,
   &#34;raplCfg&#34;: {
+    &#34;raplActions&#34;: [
+      {
+        &#34;fromuW&#34;: 100000000
+      },
+      {
+        &#34;fromuW&#34;: 200000000
+      }
+    ],
     &#34;raplFrequency&#34;: {
       &#34;fromHz&#34;: 1
     },
@@ -13410,10 +13431,10 @@ cat ./resources/defaults/Cfg.json <span class="p">|</span> jq
 
 
 
-<div id="34fd950c-3143-47d8-8ad1-45102150933d"></div>
+<div id="badc3f51-4e22-4a6e-b01c-92c74cf7ad54"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#34fd950c-3143-47d8-8ad1-45102150933d');
+var element = $('#badc3f51-4e22-4a6e-b01c-92c74cf7ad54');
 
             setTimeout(function() {
                 var nbb_cell_id = 4;
@@ -13515,10 +13536,10 @@ cat resources/examples/perfwrap.json <span class="p">|</span> jq
 
 
 
-<div id="8918168f-a953-4730-974e-e1eb4ecbf9b7"></div>
+<div id="e7acc268-1222-4b18-8226-f15cb5b9e260"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#8918168f-a953-4730-974e-e1eb4ecbf9b7');
+var element = $('#e7acc268-1222-4b18-8226-f15cb5b9e260');
 
             setTimeout(function() {
                 var nbb_cell_id = 5;
@@ -13620,10 +13641,10 @@ var element = $('#8918168f-a953-4730-974e-e1eb4ecbf9b7');
 
 
 
-<div id="80a15f07-2689-4203-a585-53b01cb6d183"></div>
+<div id="94bbb9ef-a320-44dd-a514-1d22d17e2865"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#80a15f07-2689-4203-a585-53b01cb6d183');
+var element = $('#94bbb9ef-a320-44dd-a514-1d22d17e2865');
 
             setTimeout(function() {
                 var nbb_cell_id = 6;
@@ -13711,10 +13732,10 @@ cat resources/defaults/Manifest.json <span class="p">|</span> jq
 
 
 
-<div id="b88501a7-e255-4d95-99a5-fe750ee2686d"></div>
+<div id="39cdc99d-f939-433d-9311-abc9803b94a1"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#b88501a7-e255-4d95-99a5-fe750ee2686d');
+var element = $('#39cdc99d-f939-433d-9311-abc9803b94a1');
 
             setTimeout(function() {
                 var nbb_cell_id = 7;
@@ -13805,10 +13826,10 @@ dhall-to-json &lt;&lt;&lt; &#39;let Manifest = ./resources/types/Manifest.dhall
 
 
 
-<div id="471ebcb6-43df-44c1-8c3d-4ec6ddcaaaec"></div>
+<div id="5718524c-ff50-41e0-94de-90b720f277c0"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#471ebcb6-43df-44c1-8c3d-4ec6ddcaaaec');
+var element = $('#5718524c-ff50-41e0-94de-90b720f277c0');
 
             setTimeout(function() {
                 var nbb_cell_id = 8;
@@ -13841,107 +13862,6 @@ var element = $('#471ebcb6-43df-44c1-8c3d-4ec6ddcaaaec');
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[9]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;resources/examples/perfwrap.json&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-    <span class="n">pp</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>{   &#39;app&#39;: {   &#39;instrumentation&#39;: None,
-               &#39;perfwrapper&#39;: {   &#39;perfFreq&#39;: {&#39;fromHz&#39;: 1},
-                                  &#39;perfLimit&#39;: {&#39;fromOps&#39;: 100000}},
-               &#39;power&#39;: {   &#39;policy&#39;: &#39;NoPowerPolicy&#39;,
-                            &#39;profile&#39;: False,
-                            &#39;slowdown&#39;: 1},
-               &#39;scheduler&#39;: &#39;FIFO&#39;,
-               &#39;slice&#39;: {&#39;cpus&#39;: 1, &#39;mems&#39;: 1}},
-    &#39;hwbind&#39;: False,
-    &#39;image&#39;: None,
-    &#39;name&#39;: &#39;default&#39;}
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-    <div class="prompt"></div>
-
-
-
-
-
-<div id="ddebc43a-f995-47a8-87ca-651d9a5cb626"></div>
-<div class="output_subarea output_javascript ">
-<script type="text/javascript">
-var element = $('#ddebc43a-f995-47a8-87ca-651d9a5cb626');
-
-            setTimeout(function() {
-                var nbb_cell_id = 9;
-                var nbb_unformatted_code = "with open(\"resources/examples/perfwrap.json\") as f:\n    pp.pprint(json.load(f))";
-                var nbb_formatted_code = "with open(\"resources/examples/perfwrap.json\") as f:\n    pp.pprint(json.load(f))";
-                var nbb_cells = Jupyter.notebook.get_cells();
-                for (var i = 0; i < nbb_cells.length; ++i) {
-                    if (nbb_cells[i].input_prompt_number == nbb_cell_id) {
-                        if (nbb_cells[i].get_text() == nbb_unformatted_code) {
-                             nbb_cells[i].set_text(nbb_formatted_code);
-                        }
-                        break;
-                    }
-                }
-            }, 500);
-            
-</script>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
 </div>
     </div>
   </div>

@@ -14,8 +14,6 @@ module NRM.Behavior
     nrmDownstreamEvent,
     doControl,
     commonSP,
-    commonProcess,
-    folder,
     mayInjectLibnrmPreload,
     mayRep,
     respondContent,
@@ -210,13 +208,14 @@ nrm callTime (DownstreamEvent clientid msg) =
     <&> ( \case
             OOk m -> Event callTime [m]
             ONotFound -> NoEvent callTime
+            ONoValue -> NoEvent callTime
             OAdjustment -> Reconfigure callTime
         )
     >>= doControl
 nrm callTime DoControl = doControl (NoEvent callTime)
 nrm callTime DoSensor = do
   st <- get
-  (st', measurements) <- lift (foldM (folder callTime) (st, Just []) (LM.toList $ lenses st))
+  (st', measurements) <- lift (foldM runSensor (st, Just []) (LM.toList $ lenses st))
   put st'
   measurements & \case
     Just [] ->
@@ -225,6 +224,14 @@ nrm callTime DoSensor = do
       pub (UPub.PubMeasurements callTime ms)
         >> doControl (Event callTime ms)
     Nothing -> doControl (Reconfigure callTime)
+  where
+    runSensor ::
+      (NRMState, Maybe [CPD.Measurement]) -> -- snd = Nothing <=> cpd changed.
+      (PassiveSensorKey, ScopedLens NRMState PassiveSensor) ->
+      IO (NRMState, Maybe [CPD.Measurement])
+    runSensor (s, ms) (k, ScopedLens l) = do
+      (newSensor, maybeMeasurement) <- processPassiveSensor callTime (k, s ^. l)
+      return (s & l .~ newSensor, (:) <$> maybeMeasurement <*> ms) -- somewhat elegant, all considered
 nrm _callTime DoShutdown = return ()
 
 -- | doControl checks the integrator state and triggers a control iteration if NRM is ready.
@@ -259,7 +266,11 @@ doControl input = do
                         Nothing -> log "NRM internal error: actuator not found."
                         Just (ScopedLens l) -> do
                           liftIO $ go (st ^. l) discreteValue
-                          log $ "NRM controller takes action:" <> show discreteValue <> " for actuator" <> show actuatorID
+                          log $
+                            "NRM controller takes action:"
+                              <> show discreteValue
+                              <> " for actuator"
+                              <> show actuatorID
   where
     getTime (Controller.Event t _) = t
     getTime (Controller.NoEvent t) = t
@@ -279,6 +290,7 @@ nrmDownstreamEvent callTime clientid = \case
       (Sensor.DownstreamCmdKey downstreamCmdID)
       (U.fromOps perf & fromIntegral)
       >>= \case
+        ONoValue -> return ONoValue
         ONotFound -> zoom (_cmdID cmdID) $
           get >>= \case
             Nothing -> do
@@ -298,6 +310,7 @@ nrmDownstreamEvent callTime clientid = \case
       (Sensor.DownstreamThreadKey downstreamThreadID)
       (payload & U.fromProgress & fromIntegral)
       >>= \case
+        ONoValue -> return ONoValue
         ONotFound -> zoom (_cmdID (cmdID downstreamThreadID)) $
           get >>= \case
             Nothing -> do
@@ -316,6 +329,7 @@ nrmDownstreamEvent callTime clientid = \case
       (Sensor.DownstreamThreadKey downstreamThreadID)
       (DEvent.computetime phaseContext & fromIntegral)
       >>= \case
+        ONoValue -> return ONoValue
         ONotFound -> zoom (_cmdID (cmdID downstreamThreadID)) $
           get >>= \case
             Nothing -> do
@@ -387,7 +401,7 @@ nrmDownstreamEvent callTime clientid = \case
       log "downstream thread registered."
       return OAdjustment
 
-data CommonOutcome a = OAdjustment | OOk a | ONotFound
+data CommonOutcome a = OAdjustment | OOk a | ONotFound | ONoValue
 
 commonSP ::
   U.Time ->
@@ -395,21 +409,20 @@ commonSP ::
   Double ->
   NRM (CommonOutcome Measurement)
 commonSP callTime key value = do
-  cfg <- ask
   st <- get
-  processActiveSensor cfg callTime st key value & commonProcess callTime
-
-commonProcess :: U.Time -> MeasurementOutput -> NRM (CommonOutcome Measurement)
-commonProcess callTime = \case
-  Sensors.NotFound -> return ONotFound
-  Sensors.Adjusted st' -> do
-    put st'
-    logInfo "Out-of-range value received, sensor adjusted."
-    return OAdjustment
-  Sensors.Ok st' measurement -> do
-    put st'
-    pub $ UPub.PubMeasurements callTime [measurement]
-    return $ OOk measurement
+  LM.lookup key (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor) & \case
+    Nothing -> return ONotFound
+    Just (ScopedLens sl) -> do
+      let (measurementOutput, newSensor) = postProcessSensor callTime key value (st ^. sl)
+      put (st & sl .~ newSensor)
+      measurementOutput & \case
+        Sensors.NoMeasurement -> return ONoValue
+        Sensors.Adjusted -> do
+          logInfo "Out-of-range value received, sensor adjusted."
+          return OAdjustment
+        Sensors.Ok measurement -> do
+          pub $ UPub.PubMeasurements callTime [measurement]
+          return $ OOk measurement
 
 mayRep :: Cmd -> URep.Rep -> Behavior
 mayRep c rp =
@@ -430,22 +443,17 @@ respondContent content cmd cmdID outputType = mayRep cmd $
     URep.StderrOutput ->
       URep.RepStderr $ URep.Stderr {URep.stderrCmdID = cmdID, stderrPayload = content}
 
-folder ::
+processPassiveSensor ::
   U.Time ->
-  (NRMState, Maybe [CPD.Measurement]) -> -- snd = Nothing <=> cpd changed.
-  (PassiveSensorKey, ScopedLens NRMState PassiveSensor) ->
-  IO (NRMState, Maybe [CPD.Measurement])
-folder time (s, ms) (k, ScopedLens l) = perform ps <&> doCase
-  where
-    ps = view l s
-    doCase (Just value) = processPassiveSensor ps time (toS k) value & \case
-      LegalMeasurement sensor' measurement -> ms & \case
-        Nothing -> (s & l .~ sensor', Nothing)
-        Just msValues -> (s & l .~ sensor', Just $ measurement : msValues)
-      IllegalValueRemediation sensor' -> (s & l .~ sensor', Nothing)
-    doCase Nothing = processPassiveSensorFailure ps time & \case
-      LegalFailure -> (s, ms)
-      IllegalFailureRemediation sensor' -> (s & l .~ sensor', Nothing)
+  (PassiveSensorKey, PassiveSensor) ->
+  IO (PassiveSensor, Maybe CPD.Measurement)
+processPassiveSensor time (k, sensor) = perform sensor <&> \case
+  Just value -> postProcessSensor time k value sensor & swap & _2 %~ \case
+    Ok m -> Just m
+    _ -> Nothing
+  Nothing -> processPassiveSensorFailure sensor time & \case
+    LegalFailure -> (sensor, Nothing)
+    IllegalFailureRemediation sensor' -> (sensor', Nothing)
 
 mayInjectLibnrmPreload :: Cfg -> Manifest -> Env -> Env
 mayInjectLibnrmPreload c manifest e =

@@ -80,7 +80,7 @@ initialState c time = do
   return NRMState
     { controller = controlCfg c & \case
         FixedCommand _ -> Nothing
-        ccfg@ControlCfg {} -> Just $ initialController time (minimumControlInterval ccfg) [],
+        ccfg -> Just $ initialController time (minimumControlInterval ccfg) [],
       slices = LM.fromList [],
       pus = LM.fromList $ (,PU) <$> selectPUIDs hwl,
       cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl,
@@ -114,6 +114,7 @@ initialState c time = do
                 { rapl = Just $ Rapl
                     { frequency = hz 3,
                       raplPath = path,
+                      maxEnergyCounterValue = maxEnergy,
                       max = watts 300,
                       defaultPower = watts 200,
                       discreteChoices = defA,

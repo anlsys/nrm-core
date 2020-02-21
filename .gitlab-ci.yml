@@ -270,12 +270,12 @@ nix:app-stream:
     - nix
   script: nix-build -A stream --no-build-output
 
-nix:app-stream-raw:
+nix:app-stream:
   stage: build
   tags:
     - kvm
     - nix
-  script: nix-build -A stream-raw --no-build-output
+  script: nix-build -A stream --no-build-output
 
 nix:nrmFull:
   stage: build

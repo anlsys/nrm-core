@@ -80,7 +80,7 @@ newtype RAPLCommand
 data RAPLDir
   = RAPLDir
       { path :: FilePath,
-        maxEnergy :: MaxEnergy
+        maxEnergy :: Energy
       }
   deriving (Show, Generic, MessagePack)
 
@@ -162,7 +162,7 @@ processRAPLFolder fp =
     namecontent <- maybeTReadLine $ fp <> "/name"
     maxRange <- maybeTReadLine (fp <> "/max_energy_range_uj") >>= (MaybeT . pure . readMaybe . toS)
     match <- MaybeT $ pure (matchedText (namecontent ?=~ rx) >>= idFromString . drop (T.length "package-") . toS)
-    return (match, RAPLDir fp (MaxEnergy . uJ $ maxRange))
+    return (match, RAPLDir fp (uJ maxRange))
   where
     rx = [re|package-([0-9]+)(/\S+)?|]
 
@@ -170,7 +170,7 @@ processRAPLFolder fp =
 applyRAPLPcap :: FilePath -> RAPLCommand -> IO ()
 applyRAPLPcap filePath (RAPLCommand cap) =
   writeFile
-    (filePath <> "/constraint_0_power_limit_uw")
+    (filePath <> "/constraint_1_power_limit_uw")
     (show . (floor :: Double -> Int) $ fromuW cap)
 
 -- | Lists available rapl directories.

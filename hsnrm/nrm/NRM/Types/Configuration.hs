@@ -26,7 +26,6 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
 import Dhall
-import HBandit.Types
 import NRM.Classes.Messaging
 import NRM.Orphans.Dhall ()
 import qualified NRM.Types.Cmd as Cmd
@@ -72,8 +71,9 @@ data ControlCfg
       { minimumControlInterval :: Time,
         staticPower :: Power,
         learnCfg :: LearnConfig,
-        speedThreshold :: ZeroOne Double,
-        referenceMeasurementRoundInterval :: Refined (GreaterThan 5) Int
+        speedThreshold :: Double,
+        referenceMeasurementRoundInterval :: Refined (GreaterThan 5) Int,
+        hint :: Hint
       }
   | FixedCommand
       { fixedPower :: Power
@@ -118,13 +118,11 @@ instance Default ControlCfg where
   def = ControlCfg
     { minimumControlInterval = 0.1 & seconds,
       staticPower = watts 200,
-      speedThreshold = fe (refine 0.9),
+      speedThreshold = 1.1,
       learnCfg = Lagrange (LagrangeMultiplier 0.5),
-      referenceMeasurementRoundInterval = unsafeRefine 6
+      referenceMeasurementRoundInterval = unsafeRefine 6,
+      hint = Full
     }
-    where
-      fe :: Either e (ZeroOne Double) -> ZeroOne Double
-      fe (Right e) = e
 
 instance Default HwmonCfg where
   def = HwmonCfg

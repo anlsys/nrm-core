@@ -26,6 +26,8 @@ module NRM.Types.Sensor
 where
 
 import qualified CPD.Core as CPD
+import Control.Lens
+import Data.Generics.Product
 import NRM.Classes.Sensors
 import NRM.Types.DownstreamCmdID
 import NRM.Types.DownstreamThreadID
@@ -45,33 +47,6 @@ data Tag
   | Maximize
   deriving (Eq, Show)
 
-data PassiveSensor
-  = PassiveSensor
-      { perform :: IO (Maybe Double),
-        frequency :: U.Frequency,
-        passiveMeta :: SensorMeta
-      }
-  deriving (Generic)
-
-data ActiveSensor
-  = ActiveSensor
-      { maxFrequency :: U.Frequency,
-        process :: Double -> Double,
-        activeMeta :: SensorMeta
-      }
-  deriving (Generic)
-
-class HasMeta a where
-  meta :: a -> SensorMeta
-
-instance HasMeta ActiveSensor where
-  meta = activeMeta
-
-instance HasMeta PassiveSensor where
-  meta = passiveMeta
-
-data Cumulative = Cumulative | IntervalBased
-
 data SensorMeta
   = SensorMeta
       { tags :: [Tag],
@@ -81,6 +56,33 @@ data SensorMeta
         cumulative :: Cumulative
       }
   deriving (Generic)
+
+class HasMeta a where
+  _meta :: Lens' a SensorMeta
+
+data PassiveSensor
+  = PassiveSensor
+      { perform :: IO (Maybe Double),
+        frequency :: U.Frequency,
+        passiveMeta :: SensorMeta
+      }
+  deriving (Generic)
+
+instance HasMeta PassiveSensor where
+  _meta = field @"passiveMeta"
+
+data ActiveSensor
+  = ActiveSensor
+      { maxFrequency :: U.Frequency,
+        process :: Double -> Double,
+        activeMeta :: SensorMeta
+      }
+  deriving (Generic)
+
+instance HasMeta ActiveSensor where
+  _meta = field @"activeMeta"
+
+data Cumulative = Cumulative | IntervalBased | CumulativeWithCapacity Double
 
 data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | DownstreamThreadKey DownstreamThreadID
   deriving (Ord, Eq, Show)
@@ -99,16 +101,8 @@ instance StringConv ActiveSensorKey CPD.SensorID where
 
 instance ToCPDSensor ActiveSensorKey ActiveSensor where
   toCPDSensor (id, ActiveSensor {..}) =
-    ( toS id,
-      CPD.Sensor
-        (range activeMeta)
-        maxFrequency
-    )
+    (toS id, CPD.Sensor (range activeMeta) maxFrequency)
 
 instance ToCPDSensor PassiveSensorKey PassiveSensor where
   toCPDSensor (id, PassiveSensor {..}) =
-    ( toS id,
-      CPD.Sensor
-        (range passiveMeta)
-        frequency
-    )
+    (toS id, CPD.Sensor (range passiveMeta) frequency)

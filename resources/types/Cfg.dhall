@@ -55,14 +55,25 @@
             { fromuW : Double }
         , learnCfg :
             < Lagrange :
-                { lagrangeConstraint : Double }
+                { lagrange : Double }
             | Knapsack :
-                { knapsackConstraint : Double }
+                { knapsack : Double }
+            | Random :
+                { random : Optional Integer }
+            | Contextual :
+                { contextual : { horizon : Integer } }
             >
         , speedThreshold :
             Double
         , referenceMeasurementRoundInterval :
             Integer
+        , hint :
+            < Full
+            | Only :
+                { only :
+                    List (List { actuatorID : Text, actuatorValue : Double })
+                }
+            >
         }
     | FixedCommand :
         { fixedPower : { fromuW : Double } }

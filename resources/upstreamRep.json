@@ -1184,12 +1184,68 @@
                                                         "staticPower",
                                                         "learnCfg",
                                                         "speedThreshold",
-                                                        "referenceMeasurementRoundInterval"
+                                                        "referenceMeasurementRoundInterval",
+                                                        "hint"
                                                     ],
                                                     "type": "object",
                                                     "properties": {
                                                         "referenceMeasurementRoundInterval": {
                                                             "type": "number"
+                                                        },
+                                                        "hint": {
+                                                            "oneOf": [
+                                                                {
+                                                                    "required": [
+                                                                        "full"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "full": {
+                                                                            "type": "object",
+                                                                            "properties": {}
+                                                                        }
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "required": [
+                                                                        "only"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "only": {
+                                                                            "required": [
+                                                                                "only"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "only": {
+                                                                                    "uniqueItems": false,
+                                                                                    "items": {
+                                                                                        "uniqueItems": false,
+                                                                                        "items": {
+                                                                                            "required": [
+                                                                                                "actuatorID",
+                                                                                                "actuatorValue"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "actuatorValue": {
+                                                                                                    "type": "number"
+                                                                                                },
+                                                                                                "actuatorID": {
+                                                                                                    "type": "string"
+                                                                                                }
+                                                                                            }
+                                                                                        },
+                                                                                        "type": "array"
+                                                                                    },
+                                                                                    "type": "array"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            ]
                                                         },
                                                         "learnCfg": {
                                                             "oneOf": [
@@ -1201,11 +1257,11 @@
                                                                     "properties": {
                                                                         "lagrange": {
                                                                             "required": [
-                                                                                "lagrangeConstraint"
+                                                                                "lagrange"
                                                                             ],
                                                                             "type": "object",
                                                                             "properties": {
-                                                                                "lagrangeConstraint": {
+                                                                                "lagrange": {
                                                                                     "type": "number"
                                                                                 }
                                                                             }
@@ -1220,12 +1276,82 @@
                                                                     "properties": {
                                                                         "knapsack": {
                                                                             "required": [
-                                                                                "knapsackConstraint"
+                                                                                "knapsack"
                                                                             ],
                                                                             "type": "object",
                                                                             "properties": {
-                                                                                "knapsackConstraint": {
+                                                                                "knapsack": {
                                                                                     "type": "number"
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "required": [
+                                                                        "random"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "random": {
+                                                                            "required": [
+                                                                                "random"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "random": {
+                                                                                    "oneOf": [
+                                                                                        {
+                                                                                            "required": [
+                                                                                                "nothing"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "nothing": {
+                                                                                                    "type": "object",
+                                                                                                    "properties": {}
+                                                                                                }
+                                                                                            }
+                                                                                        },
+                                                                                        {
+                                                                                            "required": [
+                                                                                                "just"
+                                                                                            ],
+                                                                                            "type": "object",
+                                                                                            "properties": {
+                                                                                                "just": {
+                                                                                                    "type": "number"
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    ]
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                },
+                                                                {
+                                                                    "required": [
+                                                                        "contextual"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "contextual": {
+                                                                            "required": [
+                                                                                "contextual"
+                                                                            ],
+                                                                            "type": "object",
+                                                                            "properties": {
+                                                                                "contextual": {
+                                                                                    "required": [
+                                                                                        "horizon"
+                                                                                    ],
+                                                                                    "type": "object",
+                                                                                    "properties": {
+                                                                                        "horizon": {
+                                                                                            "type": "number"
+                                                                                        }
+                                                                                    }
                                                                                 }
                                                                             }
                                                                         }

@@ -319,6 +319,7 @@ let extramodules =
 let banditmodules =
       [ "HBandit.Class"
       , "HBandit.Exp3"
+      , "HBandit.Exp4R"
       , "HBandit.EpsGreedy"
       , "HBandit.Util"
       , "HBandit.Types"

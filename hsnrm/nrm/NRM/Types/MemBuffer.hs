@@ -18,8 +18,8 @@ import Protolude hiding (empty)
 import Refined
 import Refined.Unsafe
 
--- | Memory buffer with 10 points.
-type MemBuffer a = Refined (SizeLessThan 10) [a]
+-- | Memory buffer with 5 points.
+type MemBuffer a = Refined (SizeLessThan 6) [a]
 
 -- | MemBuffer with one element
 singleton :: a -> MemBuffer a
@@ -30,9 +30,9 @@ empty :: MemBuffer a
 empty = unsafeRefine []
 
 -- | adding a data point to a MemBuffer, discarding the oldest point if there
--- are more than 10 points.
+-- are more than 5 points.
 enqueue :: a -> MemBuffer a -> MemBuffer a
-enqueue x xs = unsafeRefine $ take 9 (x : unrefine xs)
+enqueue x xs = unsafeRefine $ take 5 (x : unrefine xs)
 
 -- | MemBuffer average
 avgBuffer :: (Floating a) => MemBuffer a -> a

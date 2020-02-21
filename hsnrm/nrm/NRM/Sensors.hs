@@ -9,10 +9,9 @@
 -- Maintainer  : fre@freux.fr
 module NRM.Sensors
   ( cpdSensors,
-    processActiveSensor,
-    MeasurementOutput (..),
-    processPassiveSensor,
-    ProcessPassiveSensorOutput (..),
+    postProcessSensor,
+    --postProcessSensorLens,
+    MeasurementContext (..),
     processPassiveSensorFailure,
     ProcessPassiveSensorFailureOutput (..),
   )
@@ -26,12 +25,13 @@ import Data.Generics.Product
 import LMap.Map as DM
 import LensMap.Core
 import NRM.Classes.Sensors
-import NRM.Types.Configuration
 import NRM.Types.Sensor as S
 import NRM.Types.State
 import NRM.Types.Units
-import Numeric.Interval
 import Protolude hiding (Map)
+
+--traverseSensors :: Traversal NRMState (Map SensorID CPD.Sensor) (SensorID,CPD.Sensor) (SensorID,CPD.Sensor)
+--traverseSensors = undefined
 
 cpdSensors :: NRMState -> Map SensorID CPD.Sensor
 cpdSensors st =
@@ -45,71 +45,49 @@ cpdSensors st =
           <&> \(k, ScopedLens sl) -> toCPDSensor (k, view sl st)
       ]
 
-data MeasurementOutput = Adjusted NRMState | Ok NRMState Measurement | NotFound
-
-mkValue :: SensorMeta -> Double -> Double
-mkValue metaData mvalue = cumulative metaData & \case
-  Cumulative -> last metaData & \case
-    Nothing -> 0
-    Just (_, lastValue) -> (mvalue - lastValue)
+mkValue :: SensorMeta -> Double -> Maybe Double
+mkValue metaData mvalue = last metaData <&> \(_, lastValue) -> cumulative metaData & \case
+  Cumulative -> mvalue - lastValue
+  CumulativeWithCapacity maxCounterValue ->
+    if lastValue < mvalue
+      then mvalue - lastValue
+      else maxCounterValue - lastValue + mvalue
   IntervalBased -> mvalue
 
-processActiveSensor ::
-  Cfg ->
-  Time ->
-  NRMState ->
-  ActiveSensorKey ->
-  Double ->
-  MeasurementOutput
-processActiveSensor _cfg time st sensorKey mvalue =
-  DM.lookup sensorKey (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor) & \case
-    Nothing -> NotFound
-    Just (ScopedLens sl) ->
-      view sl st & \s ->
-        let value = mkValue (meta s) mvalue
-         in CPD.validateMeasurement
-              (CPD.range . snd $ toCPDSensor (sensorKey, s))
-              value
-              & \case
-                MeasurementOk ->
-                  Ok
-                    (st & sl . field @"activeMeta" . field @"last" ?~ (time, mvalue))
-                    ( Measurement
-                        { sensorID = toS sensorKey,
-                          sensorValue = value,
-                          time = time
-                        }
-                    )
-                AdjustInterval r -> Adjusted (st & sl . field @"activeMeta" . field @"range" .~ r)
+data MeasurementContext a = Adjusted | Ok a | NoMeasurement
 
-data ProcessPassiveSensorOutput
-  = IllegalValueRemediation PassiveSensor
-  | LegalMeasurement PassiveSensor Measurement
+--postProcessSensorLens ::
+--(HasMeta sensor, StringConv key CPD.SensorID) =>
+--Time ->
+--key ->
+--Double ->
+--Maybe sensor ->
+--(MeasurementContext Measurement, Maybe sensor)
+--postProcessSensorLens time key mvalue = \case
+--Nothing -> (NotFound, Nothing)
+--Just sensor -> postProcessSensor time key mvalue sensor & _2 %~ Just
 
-processPassiveSensor ::
-  PassiveSensor ->
+postProcessSensor ::
+  (HasMeta sensor, StringConv key CPD.SensorID) =>
   Time ->
-  SensorID ->
+  key ->
   Double ->
-  ProcessPassiveSensorOutput
-processPassiveSensor ps@(S.range . meta -> i) time sensorID mvalue
-  | value < inf i =
-    IllegalValueRemediation $
-      ps {passiveMeta = (meta ps) {S.range = 2 * value - sup i ... sup i, last = Nothing}}
-  | sup i < value =
-    IllegalValueRemediation $
-      ps {passiveMeta = (meta ps) {S.range = inf i ... 2 * value - inf i, last = Nothing}}
-  | otherwise =
-    LegalMeasurement
-      (ps & field @"passiveMeta" . field @"last" ?~ (time, mvalue))
-      ( Measurement
-          { sensorID = sensorID,
-            sensorValue = value,
-            time = time
-          }
-      )
+  sensor ->
+  (MeasurementContext Measurement, sensor)
+postProcessSensor time sensorKey measurement sensor = maybeValue & \case
+  Nothing -> (NoMeasurement, new)
+  Just value ->
+    CPD.validateMeasurement
+      (sensor ^. _meta . field @"range")
+      value
+      & \case
+        (AdjustInterval r) ->
+          (Adjusted, new & _meta . field @"range" .~ r)
+        MeasurementOk ->
+          (Ok (Measurement (toS sensorKey) value time), new)
   where
-    value = mkValue (meta ps) mvalue
+    maybeValue = mkValue (sensor ^. _meta) measurement
+    new = sensor & _meta . field @"last" ?~ (time, measurement)
 
 data ProcessPassiveSensorFailureOutput
   = LegalFailure
@@ -120,7 +98,7 @@ processPassiveSensorFailure ::
   Time ->
   ProcessPassiveSensorFailureOutput
 processPassiveSensorFailure ps time =
-  last (meta ps) & \case
+  ps ^. _meta . field @"last" & \case
     Nothing -> LegalFailure
     Just (oldTime, _)
       | observedFrequency < fromHz (S.frequency ps) ->

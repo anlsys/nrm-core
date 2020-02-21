@@ -8,7 +8,7 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.Orphans.Refined
-  ( unsafeRefine,
+  (
   )
 where
 

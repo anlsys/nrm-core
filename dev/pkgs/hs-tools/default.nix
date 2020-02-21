@@ -1,26 +1,21 @@
-{ haskell, lib, mkDerivation, stdenv, cabal-install, apply-refact, cabal2nix, 
- wreq, hdevtools, Glob, hindent, fswatch, hlint, protolude, shake, Cabal
-, fix-imports, ghcid, typed-process, optparse-applicative, unix, cabal-helper
-, dhall-json, dhall-to-cabal, useGhcide }:
+{ haskell, lib, mkDerivation, stdenv, cabal-install, apply-refact, cabal2nix
+, wreq, hdevtools, Glob, hindent, fswatch, hlint, protolude, shake, Cabal
+, graphmod, fix-imports, ghcid, typed-process, optparse-applicative, unix
+, cabal-helper, dhall-json, dhall-to-cabal, useGhcide }:
 let
   ghcide = (import (builtins.fetchTarball
-    "https://github.com/hercules-ci/ghcide-nix/tarball/master")
-    { }).ghcide-ghc865;
+    "https://github.com/cachix/ghcide-nix/tarball/master") { }).ghcide-ghc865;
 in mkDerivation {
   pname = "dummy";
   version = "";
   src = "";
   libraryHaskellDepends = [
     cabal-install
-    #apply-refact
+    graphmod
     hdevtools
-    #zmcat
     dhall-to-cabal
-    #hindent
     wreq
-    #fswatch
     hlint
-    #protolude
     fix-imports
     optparse-applicative
     shake
@@ -29,8 +24,6 @@ in mkDerivation {
     ghcid
     dhall-json
     cabal2nix
-    #typed-process
-    #unix
   ] ++ (lib.optional useGhcide ghcide);
   #ghcide;
   description = "";
