@@ -34,8 +34,11 @@ one = unsafeRefine 1
 
 -- | @normalizedSum@ sums the `fst` from the tuple list using weights
 -- in the`snd`. The result is normalized against the list of `snd`s.
-normalizedSum :: (Ord a, Num a) => [(a, ZeroOne a)] -> ZeroOne a
-normalizedSum l = unsafeRefine (sum $ l <&> \(w, v) -> w * unrefine v)
+normalizedSum :: (Ord a, Fractional a) => [(ZeroOne a, ZeroOne a)] -> ZeroOne a
+normalizedSum l =
+  if sum (unrefine . snd <$> l) == 0
+    then HBandit.Types.zero
+    else unsafeRefine $ sum (l <&> \(w, v) -> unrefine w * unrefine v) / sum (unrefine . snd <$> l)
 
 -- | @normalize x xm@ normalizes @x@ using @xm@. Returns @Nothing@
 -- in case the resulting value is not contained in $[0,1]$ .
