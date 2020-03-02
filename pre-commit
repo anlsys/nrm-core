@@ -10,7 +10,7 @@ nix-shell --pure -E '
       "export LANG=en_US.UTF-8";
   }
 ' --run bash <<< '
-  for F in $(fd  -e hs); do
+  for F in $(fd -E shake.hs -e hs); do
     ormolu -o -XTypeApplications -m inplace $F
   done
 '

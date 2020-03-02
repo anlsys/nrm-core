@@ -140,7 +140,6 @@ runshake as =
             proc "cabal"
               [ "v2-haddock"
               , "hbandit"
-              , "--haddock-hyperlink-source"
               , "--haddock-internal"
               , "--builddir=./.build"
               , "--haddock-html-location=\"https://hackage.haskell.org/package/\\$pkg-\\$version/docs\""
