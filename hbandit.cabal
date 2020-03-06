@@ -27,6 +27,7 @@ library hbanditlib
         HBandit.Class
         HBandit.EpsGreedy
         HBandit.Exp3
+        HBandit.Exp4R
         HBandit.Types
         HBandit.Util
     hs-source-dirs: src
@@ -102,6 +103,7 @@ executable hbandit
         HBandit.Class
         HBandit.EpsGreedy
         HBandit.Exp3
+        HBandit.Exp4R
         HBandit.Types
         HBandit.Util
         FFI.TypeUncurry

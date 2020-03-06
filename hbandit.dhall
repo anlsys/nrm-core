@@ -117,6 +117,7 @@ let allmodules =
       , "HBandit.Class"
       , "HBandit.EpsGreedy"
       , "HBandit.Exp3"
+      , "HBandit.Exp4R"
       , "HBandit.Types"
       , "HBandit.Util"
       ]

@@ -30,7 +30,6 @@ ghcidTarget :: Text -> Text -> Maybe Text -> [Text]
 ghcidTarget cabalfile target test =
   [ "--command"
   , "cabal " <> "v2-repl " <> target <> " --ghc-option=-fno-code" <> " --builddir=../.build"
-  , "--restart=hsnrm.cabal"
   , "--restart=default.nix"
   , "--restart=shell.nix"
   , "-l"
@@ -43,7 +42,7 @@ ghcidTarget cabalfile target test =
 runGhcid :: Text -> Text -> Maybe Text -> IO ()
 runGhcid cabalfile target test = do
   runProcess_ "rm -f .ghc.*"
-  runProcess_ $ setWorkingDir "hsnrm" $ shell "cp -f $CABALFILE hsnrm.cabal"
+  runProcess_ $ shell "cp -f $CABALFILE hbandit.cabal"
   executeFile "ghcid" True (toS <$> ghcidTarget cabalfile target test) Nothing
 
 main :: IO ()
@@ -62,10 +61,6 @@ main = do
           ) <>
           OA.command "britt"
             (info (pure runbritt) (progDesc "inplace brittany.")) <>
-          OA.command "cabal"
-            (info (pure cabal) (progDesc "generate cabal file.")) <>
-          OA.command "cabalstatic"
-            (info (pure cabalstatic) (progDesc "generate cabal file for static build.")) <>
           OA.command "shake" (info (pure (runshake [])) (progDesc "run shake.")) <>
           OA.command
             "build"
@@ -112,10 +107,6 @@ runbritt =
     mapM_
       (\fn -> runProcess_ $ shell ("brittany --write-mode inplace " <> toS fn))
 
-cabal = runProcess_ $ shell "dhall-to-cabal ./dev/pkgs/hsnrm/dev.dhall --output-dir-cwd hsnrm"
-
-cabalstatic = runProcess_ $ shell "dhall-to-cabal ./dev/pkgs/hsnrm/static.dhall --output-dir-cwd hsnrm"
-
 runshake as =
   withArgs as $ shakeArgs shakeOptions $ do
     phony "pyclient" $ do
@@ -123,10 +114,10 @@ runshake as =
       ghcPathRaw <- liftIO $ strip . toS <$> readProcessStdout_ "which ghc"
       let ghcPath = dropEnd 8 ghcPathRaw
       liftIO
-        ( runProcess_ $ setWorkingDir "hsnrm" $
+        ( runProcess_ $
           proc "cabal"
             [ "v2-build"
-            , "pynrm.so"
+            , "hbandit"
             , "--ghc-option=-lHSrts_thr-ghc" <> version
             , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
             , "--builddir=../.build"

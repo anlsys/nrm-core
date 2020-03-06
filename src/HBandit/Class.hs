@@ -11,6 +11,7 @@
 module HBandit.Class
   ( -- * Generalized Bandit
     Bandit (..),
+    ContextualBandit (..),
 
     -- * Discrete Multi-Armed-Bandits
     Arms (..),
@@ -47,12 +48,21 @@ import System.Random
 -- known).
 class Bandit b hyper a l | b -> l, b -> hyper where
 
-  -- | Init hyper returns the initial state of the bandit algorithm and the
+  -- | Init hyper returns the initial state of the algorithm and the
   -- first action.
   init :: (RandomGen g) => g -> hyper -> (b, a, g)
 
   -- | @step loss@ iterates the bandit process one step forward.
   step :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
+
+class ContextualBandit b hyper s a l | b -> l, b -> hyper where
+
+  -- | Init hyper returns the initial state of the algorithm and the
+  -- first action.
+  initCtx :: (RandomGen g) => g -> hyper -> (b, a, g)
+
+  -- | @step loss@ iterates the bandit process one step forward.
+  stepCtx :: (RandomGen g, MonadState b m) => g -> l -> s -> m (a, g)
 
 newtype Arms a = Arms (NonEmpty a)
   deriving (Show, Generic)
