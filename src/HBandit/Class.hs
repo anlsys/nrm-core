@@ -62,7 +62,7 @@ class ContextualBandit b hyper s a l | b -> l, b -> hyper where
   initCtx :: (RandomGen g) => g -> hyper -> (b, a, g)
 
   -- | @step loss@ iterates the bandit process one step forward.
-  stepCtx :: (RandomGen g, MonadState b m) => g -> l -> s -> m (a, g)
+  stepCtx :: (RandomGen g, MonadState b m, Ord a) => g -> l -> s -> m (a, g)
 
 newtype Arms a = Arms (NonEmpty a)
   deriving (Show, Generic)
