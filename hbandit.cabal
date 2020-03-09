@@ -95,6 +95,43 @@ library ffi
         data-msgpack -any,
         storable-endian -any
 
+executable validation
+    main-is: ctx.hs
+    hs-source-dirs: validation
+    default-language: Haskell2010
+    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
+                        ExistentialQuantification RecordWildCards TypeSynonymInstances
+                        StandaloneDeriving FlexibleInstances TupleSections
+                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
+                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
+                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
+                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
+                        FlexibleContexts TypeOperators DataKinds PolyKinds
+                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
+                 -Widentities -Wredundant-constraints -Wcpp-undef -fwarn-tabs
+                 -fwarn-unused-imports -fwarn-missing-signatures
+                 -fwarn-name-shadowing -fprint-potential-instances
+                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
+                 -fwarn-incomplete-patterns -Wincomplete-record-updates
+                 -Wmonomorphism-restriction -Wimplicit-prelude
+                 -Wmissing-local-signatures -Wmissing-exported-signatures
+                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
+                 -Wredundant-constraints -Wpartial-fields
+    build-depends:
+        base -any,
+        protolude -any,
+        random -any,
+        refined -any,
+        intervals -any,
+        MonadRandom -any,
+        lens -any,
+        generic-lens -any,
+        hbanditlib -any,
+        inline-r -any,
+        containers -any,
+        primitive -any
+
 executable hbandit
     main-is: Shared.hs
     hs-source-dirs: bin src

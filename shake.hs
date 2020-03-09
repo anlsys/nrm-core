@@ -29,7 +29,7 @@ import qualified Prelude
 ghcidTarget :: Text -> Text -> Maybe Text -> [Text]
 ghcidTarget cabalfile target test =
   [ "--command"
-  , "cabal " <> "v2-repl " <> target <> " --ghc-option=-fno-code" <> " --builddir=../.build"
+  , "cabal " <> "v2-repl " <> target <> " --ghc-option=-fno-code" <> " --builddir=.build"
   , "--restart=default.nix"
   , "--restart=shell.nix"
   , "-l"
@@ -120,7 +120,7 @@ runshake as =
             , "hbandit"
             , "--ghc-option=-lHSrts_thr-ghc" <> version
             , "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/"
-            , "--builddir=../.build"
+            , "--builddir=.build"
             , "--jobs=4"
             ]
         )
