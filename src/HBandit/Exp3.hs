@@ -77,7 +77,7 @@ instance
       g'
     )
     where
-      awl = toList as <&> (1 :: Double,)
+      awl = as <&> (1 :: Double,)
       (a, g') = sampleWL awl g
       ws = as <&> Weight (Probability $ 1.0 / fromIntegral (length (toList as))) (CumulativeLoss 0)
 
@@ -94,7 +94,7 @@ instance
 pickAction :: (RandomGen g, MonadState (Exp3 a) m) => g -> m (a, g)
 pickAction g = do
   bandit <- get
-  let (a, g') = sampleWL (toList (weights bandit) <&> w2tuple) g
+  let (a, g') = sampleWL ((weights bandit) <&> w2tuple) g
   field @"lastAction" .= a
   return (a, g')
   where

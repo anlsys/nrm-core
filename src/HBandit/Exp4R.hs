@@ -37,18 +37,18 @@ data Exp4R s a
         lastAction :: a,
         k :: Int,
         lambda :: R.Refined R.Positive Double,
-        experts :: NonEmpty (R.Refined R.Positive Double, s -> a)
+        experts :: NonEmpty (R.Refined R.Positive Double, s -> NonEmpty (ZeroOne Double, a))
       }
   deriving (Generic)
 
 instance
   (Eq a) =>
-  ContextualBandit (Exp4R s a) (NonEmpty (s -> a)) s a (ZeroOne Double)
+  ContextualBandit (Exp4R s a) (NonEmpty (s -> NonEmpty (ZeroOne Double, a))) s a (ZeroOne Double, ZeroOne Double)
   where
 
   initCtx g (cfgExperts) = undefined
 
-  stepCtx g (R.unrefine -> l) s = do
+  stepCtx g ((R.unrefine -> c, R.unrefine -> r)) s = do
     weightedAdvices <- use (field @"experts") <&> fmap (fmap (\exp -> exp s))
     let p_t :: NonEmpty (Double, a)
         p_t = NE.groupAllWith1 snd weightedAdvices
@@ -56,5 +56,5 @@ instance
             ( getSum $ sconcat (gs <&> Sum . R.unrefine . fst),
               snd $ NE.head gs
             )
-    a <- sampleWL p_t --STOPPED HERE
+    let (a, g') = sampleWL p_t g
     return undefined
