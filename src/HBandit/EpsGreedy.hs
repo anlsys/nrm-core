@@ -133,7 +133,11 @@ pickreturn eeg g = do
 -- | Action selection primitive
 pickAction :: (RandomGen g) => ExploreExploitGreedy a -> g -> (a, g)
 pickAction ExploreExploitGreedy {..} =
-  sampleWL (weights <&> w2tuple)
+  sampleWL
+    ( case normalizeDistribution $ weights <&> w2tuple of
+        Nothing -> panic "distribution normalization failure"
+        Just n -> n
+    )
   where
     w2tuple :: Weight b -> (Double, b)
     w2tuple (Weight avgloss _hits action) = (avgloss, action)

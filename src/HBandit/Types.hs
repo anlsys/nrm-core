@@ -12,8 +12,6 @@ module HBandit.Types
   ( ZeroOne,
     HBandit.Types.zero,
     HBandit.Types.one,
-    normalize,
-    normalizedSum,
   )
 where
 
@@ -31,27 +29,3 @@ zero = unsafeRefine 0
 -- | 1
 one :: (Ord a, Num a) => ZeroOne a
 one = unsafeRefine 1
-
--- | @normalizedSum@ sums the `snd` from the tuple list using weights
--- in the `fst`. The result is normalized against the list of `fst`s.
-normalizedSum ::
-  (Ord a, Fractional a) =>
-  [(ZeroOne a, ZeroOne a)] ->
-  ZeroOne a
-normalizedSum l =
-  if sum (unrefine . fst <$> l) == 0
-    then HBandit.Types.zero
-    else
-      unsafeRefine $
-        sum
-          ( l
-              <&> \(w, v) -> unrefine w * unrefine v
-          )
-          / sum (unrefine . fst <$> l)
-
--- | @normalize x xm@ normalizes @x@ using @xm@. Returns @Nothing@
--- in case the resulting value is not contained in $[0,1]$ .
-normalize :: Double -> Double -> Maybe (ZeroOne Double)
-normalize v m = refine (v / m) & \case
-  Right n -> Just n
-  Left _ -> Nothing
