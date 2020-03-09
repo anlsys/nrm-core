@@ -96,7 +96,7 @@ pickAction g = do
   bandit <- get
   let (a, g') =
         sampleWL
-          ( normalizeDistribution ((weights bandit) <&> w2tuple) & \case
+          ( normalizeDistribution (weights bandit <&> w2tuple) & \case
               Nothing -> panic "Exp3 internal distribution normalization error"
               Just x -> x
           )

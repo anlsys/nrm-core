@@ -31,10 +31,9 @@ normalizeDistribution ::
   Maybe (NonEmpty (ZeroOne p, a))
 normalizeDistribution xs = sequence $
   xs <&> \(p, a) ->
-    ( case normalize p s of
-        Nothing -> Nothing
-        Just p' -> Just (p', a)
-    )
+    case normalize p s of
+      Nothing -> Nothing
+      Just p' -> Just (p', a)
   where
     s = sum (fst <$> xs)
 
@@ -64,7 +63,7 @@ normalize v m = refine (v / m) & \case
 
 -- | @normalize x xm@ normalizes @x@ using @xm@. Returns @Nothing@
 -- in case the resulting value is not contained in $[0,1]$ .
-unsafeNormalizePanic :: (Floating a, Ord a) =>  a -> a -> ZeroOne a
-unsafeNormalizePanic  v m = refine (v / m) & \case
+unsafeNormalizePanic :: (Floating a, Ord a) => a -> a -> ZeroOne a
+unsafeNormalizePanic v m = refine (v / m) & \case
   Right n -> n
-  Left _ -> panic $ "normalizePanic error."
+  Left _ -> panic "normalizePanic error."

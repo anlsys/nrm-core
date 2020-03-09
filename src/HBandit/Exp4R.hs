@@ -57,7 +57,7 @@ data Feedback
 
 data Exp4RCfg s a
   = Exp4RCfg
-      { expertsCfg :: (NonEmpty (s -> NonEmpty (ZeroOne Double, a))),
+      { expertsCfg :: NonEmpty (s -> NonEmpty (ZeroOne Double, a)),
         constraintCfg :: ZeroOne Double,
         horizonCfg :: R.Refined R.Positive Int,
         as :: NonEmpty a
@@ -76,7 +76,7 @@ instance
           lambda = R.unsafeRefine 1,
           constraint = constraintCfg,
           horizon = horizonCfg,
-          experts = (R.unsafeRefine $ 1 / fromIntegral (NE.length expertsCfg),) <$> expertsCfg
+          experts = (R.unsafeRefine (1 / fromIntegral (NE.length expertsCfg)),) <$> expertsCfg
         },
       a,
       g'
@@ -94,7 +94,7 @@ instance
       let weightedAdviceMatrix :: NonEmpty (ZeroOne Double, NonEmpty (ZeroOne Double, a))
           weightedAdviceMatrix = weightedExperts <&> \(wi, pi_i) -> (wi, pi_i s)
           dirtyArmDistribution :: NonEmpty (Double, a)
-          dirtyArmDistribution = sconcat $ weightedAdviceMatrix <&> \(wi, advices) -> (advices <&> \(p, ai) -> (R.unrefine p * R.unrefine wi, ai))
+          dirtyArmDistribution = sconcat $ weightedAdviceMatrix <&> \(wi, advices) -> advices <&> \(p, ai) -> (R.unrefine p * R.unrefine wi, ai)
           dirtyarmDistribution' :: NonEmpty (Double, a)
           dirtyarmDistribution' = groupAllWith1 snd dirtyArmDistribution <&> \gs -> (getSum $ sconcat (gs <&> Sum . fst), snd $ NE.head gs)
           armDistribution :: NonEmpty (ZeroOne Double, a)
@@ -106,16 +106,15 @@ instance
             Nothing -> panic "internal Exp4R algorithm failure: arm pull issue."
             Just p -> fst p
           cHat :: Double
-          cHat = (R.unrefine $ cost feedback) / R.unrefine p_a
+          cHat = R.unrefine (cost feedback) / R.unrefine p_a
           rHat :: Double
-          rHat = (R.unrefine $ risk feedback) / R.unrefine p_a
+          rHat = R.unrefine (risk feedback) / R.unrefine p_a
           probabilityOf_a :: NonEmpty Double
           probabilityOf_a = snd <$> weightedAdviceMatrix
             <&> \e ->
-              ( case find (\x -> snd x == a) e of
-                  Nothing -> panic "internal Exp4R algorithm failure: weight computation"
-                  Just (p, _) -> R.unrefine p
-              )
+              case find (\x -> snd x == a) e of
+                Nothing -> panic "internal Exp4R algorithm failure: weight computation"
+                Just (p, _) -> R.unrefine p
           yHats :: NonEmpty Double
           yHats = (cHat *) <$> probabilityOf_a
           zHats :: NonEmpty Double
@@ -123,11 +122,11 @@ instance
           wOld :: NonEmpty (ZeroOne Double)
           wOld = fst <$> weightedExperts
           expTerms :: NonEmpty Double
-          expTerms = NE.zipWith (\y z -> (y + lam * z)) yHats zHats
+          expTerms = NE.zipWith (\y z -> y + lam * z) yHats zHats
           wUpdate = NE.zipWith (\(R.unrefine -> w) x -> w * exp (- mu * x)) wOld expTerms
           wDenom = getSum $ sconcat $ Sum <$> wUpdate
       field @"experts" .= NE.zipWith (\(_, e) w' -> (unsafeNormalizePanic w' wDenom, e)) weightedExperts wUpdate
-      field @"lambda" .= R.unsafeRefine (max 0 (lam + mu * ((R.unrefine <$> wOld) `neDot` zHats - (R.unrefine beta) - delta * mu * lam)))
+      field @"lambda" .= R.unsafeRefine (max 0 (lam + mu * ((R.unrefine <$> wOld) `neDot` zHats - R.unrefine beta - delta * mu * lam)))
       return (a, g')
 
 neDot :: (Num a) => NonEmpty a -> NonEmpty a -> a
