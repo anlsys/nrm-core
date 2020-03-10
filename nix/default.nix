@@ -125,6 +125,10 @@ in rec {
   hlint = haskellPackages.hlint;
   hbandit = haskellPackages.hbandit;
 
+  r-libs-site = pkgs.runCommand "r-libs-site" {
+    buildInputs = with pkgs; [ R rPackages.ggplot2 rPackages.plotly rPackages.latex2exp ];
+  } "echo $R_LIBS_SITE > $out";
+
   hack = pkgs.haskellPackages.shellFor {
     packages = p: [
       haskellPackages.hbandit
@@ -139,6 +143,7 @@ in rec {
       pythonPackages.black
     ];
     shellHook = ''
+      export R_LIBS_SITE=${builtins.readFile r-libs-site}
       export SHELLSO=${
         builtins.toPath ../.
       }/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/x/hbandit/build/hbandit/hbandit

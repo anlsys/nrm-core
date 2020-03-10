@@ -1,6 +1,6 @@
 # hbandit
 
-Multi-Armed Bandit implementations: UCB & EXP family of algorithms, BwCR.
+Multi-Armed Bandit implementations: EXP, BwCR (wip), Exp4.R
 
 ## Install
 

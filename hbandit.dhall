@@ -96,6 +96,12 @@ let deps =
           nobound "refined"
       , intervals =
           nobound "intervals"
+      , primitive =
+          nobound "primitive"
+      , containers =
+          nobound "containers"
+      , inline-r =
+          nobound "inline-r"
       , bytestring =
           nobound "bytestring"
       , storable-endian =
@@ -117,6 +123,7 @@ let allmodules =
       , "HBandit.Class"
       , "HBandit.EpsGreedy"
       , "HBandit.Exp3"
+      , "HBandit.Exp4R"
       , "HBandit.Types"
       , "HBandit.Util"
       ]
@@ -205,6 +212,25 @@ in    λ(ghcPath : Text)
             ]
         , executables =
             [ { executable =
+                    λ(config : types.Config)
+                  →   prelude.defaults.Executable
+                    ⫽ { main-is =
+                          "ctx.hs"
+                      , build-depends =
+                            common.libdep
+                          # [ nobound "hbanditlib"
+                            , deps.inline-r
+                            , deps.containers
+                            , deps.primitive
+                            ]
+                      , hs-source-dirs =
+                          [ "validation" ]
+                      }
+                    ⫽ common.copts ([] : List Text)
+              , name =
+                  "validation"
+              }
+            , { executable =
                     λ(config : types.Config)
                   →   prelude.defaults.Executable
                     ⫽ { main-is =
