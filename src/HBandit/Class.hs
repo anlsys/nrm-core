@@ -46,7 +46,7 @@ import System.Random
 --
 -- * @l@ is a superset of admissible losses \(\mathbb{L}\) (statically
 -- known).
-class Bandit b hyper a l | b -> l, b -> hyper where
+class Bandit b hyper a l | b -> l, b -> hyper, b -> a where
 
   -- | Init hyper returns the initial state of the algorithm and the
   -- first action.
@@ -55,7 +55,7 @@ class Bandit b hyper a l | b -> l, b -> hyper where
   -- | @step loss@ iterates the bandit process one step forward.
   step :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
 
-class ContextualBandit b hyper s a l | b -> l, b -> hyper where
+class ContextualBandit b hyper s a l | b -> l, b -> hyper, b -> s, b -> a where
 
   -- | Init hyper returns the initial state of the algorithm and the
   -- first action.

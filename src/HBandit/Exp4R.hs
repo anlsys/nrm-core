@@ -39,7 +39,7 @@ data Exp4R s a
         horizon :: R.Refined R.Positive Int,
         lastAction :: a,
         k :: Int,
-        lambda :: R.Refined R.Positive Double,
+        lambda :: R.Refined R.NonNegative Double,
         constraint :: ZeroOne Double,
         experts ::
           NonEmpty
@@ -61,7 +61,7 @@ data Exp4RCfg s a
         constraintCfg :: ZeroOne Double,
         horizonCfg :: R.Refined R.Positive Int,
         as :: NonEmpty a
-      }
+      } deriving (Generic)
 
 instance
   (Eq a) =>
