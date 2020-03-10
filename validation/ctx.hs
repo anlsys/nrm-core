@@ -44,7 +44,9 @@ saveTsPlot ggplot path = \case
 
 data GameState
   = GameState
-      { history :: Seq Int,
+      { historyActions :: Seq Int,
+        historyCosts :: Seq Double,
+        historyConstraints :: Seq Double,
         bandit :: Exp4R () Int
       }
   deriving (Generic)
@@ -64,7 +66,9 @@ onePass dataset =
     g <- liftIO getStdGen
     (a, g') <- zoom (field @"bandit") $ stepCtx g (Feedback c r) ()
     liftIO $ setStdGen g'
-    field @"history" %= (Data.Sequence.|> a)
+    field @"historyActions" %= (Data.Sequence.|> a)
+    field @"historyCosts" %= (Data.Sequence.|> unrefine c)
+    field @"historyConstraints" %= (Data.Sequence.|> unrefine r)
 
 plot1pass ::
   (MonadR m, MonadIO m) =>
@@ -82,21 +86,30 @@ plot1pass comparator one_cost two_cost one_risk two_risk = do
           horizonCfg = unsafeRefine 100,
           as = 1 :| [2]
         }
-  (GameState ((fmap fromIntegral) . toList -> history :: [Double]) _) <- execStateT (onePass dataset) $
+  ( GameState
+      ((fmap fromIntegral) . toList -> hActions :: [Double])
+      (toList -> hCosts :: [Double])
+      (toList -> hConstraints :: [Double])
+      _
+    ) <- execStateT (onePass dataset) $
     GameState
-      { history = Data.Sequence.empty,
+      { historyActions = Data.Sequence.empty,
+        historyCosts = Data.Sequence.empty,
+        historyConstraints = Data.Sequence.empty,
         bandit = b
       }
   [r|
-    d <- data.frame(seq(1, length(history_hs), 1),
-                    history_hs,
+    d <- data.frame(seq(1, length(historyActions_hs), 1),
+                    hActions_hs,
+                    hCosts_hs,
+                    hConstraints_hs,
                     one_cost_hs,
                     two_cost_hs,
                     one_risk_hs,
                     two_risk_hs)
-    summary(d)
-    names(d)=c("t","label","history")
-    d$c = cumsum((d$history - d$label)^2)
+    names(d)=c("t","action","c1", "c2", "r1","r2")
+    print(summary(d))
+    d$best = min(mean(d$c1),mean(d$c2))
     print(head(d))
     ggplot(d,aes(x = t, y = (cumsum((history-label)^2))/t)) +
       geom_point() +
