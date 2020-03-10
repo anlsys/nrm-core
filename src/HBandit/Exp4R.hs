@@ -19,7 +19,7 @@ module HBandit.Exp4R
     Exp4R (..),
     Exp4RCfg (..),
     Feedback (..),
-    LastAction(..),
+    LastAction (..),
     mkMu,
     mkDelta,
     lambdaInitial,

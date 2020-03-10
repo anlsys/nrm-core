@@ -128,7 +128,7 @@ plot1pass one_cost two_cost three_cost one_risk two_risk three_risk = do
   |]
   where
     expertsC :: NonEmpty (() -> NonEmpty (ZeroOne Double, Int))
-    expertsC = [expert1, expert2, expert3,expert4,expert5,expert6]
+    expertsC = [expert1, expert2, expert3, expert4, expert5, expert6]
     expert1 () = [(HBandit.Types.one, 1 :: Int), (HBandit.Types.zero, 2 :: Int), (HBandit.Types.zero, 3 :: Int)]
     expert2 () = [(HBandit.Types.zero, 1 :: Int), (HBandit.Types.one, 2 :: Int), (HBandit.Types.zero, 3 :: Int)]
     expert3 () = [(HBandit.Types.zero, 1 :: Int), (HBandit.Types.zero, 2 :: Int), (HBandit.Types.one, 3 :: Int)]

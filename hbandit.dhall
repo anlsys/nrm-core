@@ -216,7 +216,13 @@ in    λ(ghcPath : Text)
                   →   prelude.defaults.Executable
                     ⫽ { main-is =
                           "ctx.hs"
-                      , build-depends = common.libdep # [ (nobound "hbanditlib") , deps.inline-r, deps.containers, deps.primitive]
+                      , build-depends =
+                            common.libdep
+                          # [ nobound "hbanditlib"
+                            , deps.inline-r
+                            , deps.containers
+                            , deps.primitive
+                            ]
                       , hs-source-dirs =
                           [ "validation" ]
                       }
@@ -224,8 +230,7 @@ in    λ(ghcPath : Text)
               , name =
                   "validation"
               }
-            ,
-            { executable =
+            , { executable =
                     λ(config : types.Config)
                   →   prelude.defaults.Executable
                     ⫽ { main-is =
