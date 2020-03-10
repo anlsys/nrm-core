@@ -57,9 +57,8 @@ class Bandit b hyper a l | b -> l, b -> hyper, b -> a where
 
 class ContextualBandit b hyper s a l | b -> l, b -> hyper, b -> s, b -> a where
 
-  -- | Init hyper returns the initial state of the algorithm and the
-  -- first action.
-  initCtx :: (RandomGen g) => g -> hyper -> (b, a, g)
+  -- | Init hyper returns the initial state of the algorithm
+  initCtx :: hyper -> b
 
   -- | @step loss@ iterates the bandit process one step forward.
   stepCtx :: (RandomGen g, MonadState b m, Ord a) => g -> l -> s -> m (a, g)

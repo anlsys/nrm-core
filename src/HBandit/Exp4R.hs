@@ -19,6 +19,10 @@ module HBandit.Exp4R
     Exp4R (..),
     Exp4RCfg (..),
     Feedback (..),
+    LastAction(..),
+    mkMu,
+    mkDelta,
+    lambdaInitial,
   )
 where
 
@@ -37,8 +41,9 @@ data Exp4R s a
   = Exp4R
       { t :: Int,
         horizon :: R.Refined R.Positive Int,
-        lastAction :: a,
+        lastAction :: Maybe (LastAction a),
         k :: Int,
+        n :: Int,
         lambda :: R.Refined R.NonNegative Double,
         constraint :: ZeroOne Double,
         experts ::
@@ -46,6 +51,14 @@ data Exp4R s a
             ( ZeroOne Double,
               s -> NonEmpty (ZeroOne Double, a)
             )
+      }
+  deriving (Generic)
+
+data LastAction a
+  = LastAction
+      { action :: a,
+        globalProbabilityOfSample :: ZeroOne Double,
+        perExpertProbabilityOfSample :: NonEmpty (ZeroOne Double)
       }
   deriving (Generic)
 
@@ -61,28 +74,25 @@ data Exp4RCfg s a
         constraintCfg :: ZeroOne Double,
         horizonCfg :: R.Refined R.Positive Int,
         as :: NonEmpty a
-      } deriving (Generic)
+      }
+  deriving (Generic)
 
 instance
   (Eq a) =>
-  ContextualBandit (Exp4R s a) (Exp4RCfg s a) s a Feedback
+  ContextualBandit (Exp4R s a) (Exp4RCfg s a) s a (Maybe Feedback)
   where
 
-  initCtx g Exp4RCfg {..} =
-    ( Exp4R
-        { t = 1,
-          lastAction = a,
-          k = NE.length as,
-          lambda = R.unsafeRefine 1,
-          constraint = constraintCfg,
-          horizon = horizonCfg,
-          experts = (R.unsafeRefine (1 / fromIntegral (NE.length expertsCfg)),) <$> expertsCfg
-        },
-      a,
-      g'
-    )
-    where
-      (a, g') = sampleWL (as <&> (HBandit.Types.one,)) g
+  initCtx Exp4RCfg {..} =
+    Exp4R
+      { t = 1,
+        lastAction = Nothing,
+        k = NE.length as,
+        n = NE.length expertsCfg,
+        lambda = lambdaInitial,
+        constraint = constraintCfg,
+        horizon = horizonCfg,
+        experts = (R.unsafeRefine (1 / fromIntegral (NE.length expertsCfg)),) <$> expertsCfg
+      }
 
   stepCtx g feedback s =
     do
@@ -91,6 +101,27 @@ instance
       beta <- use (field @"constraint")
       mu <- get <&> mkMu
       delta <- get <&> mkDelta
+      use (field @"lastAction") >>= \case
+        Nothing -> return ()
+        Just (LastAction _ p_a pPolicy_a) -> feedback & \case
+          Nothing -> panic "exp4R usage error: don't give feedback on first action."
+          Just f -> do
+            let cHat :: Double
+                cHat = R.unrefine (cost f) / R.unrefine p_a
+                rHat :: Double
+                rHat = R.unrefine (risk f) / R.unrefine p_a
+                yHats :: NonEmpty Double
+                yHats = (\p -> cHat * R.unrefine p) <$> pPolicy_a
+                zHats :: NonEmpty Double
+                zHats = (\p -> rHat * R.unrefine p) <$> pPolicy_a
+                wOld :: NonEmpty (ZeroOne Double)
+                wOld = fst <$> weightedExperts
+                expTerms :: NonEmpty Double
+                expTerms = NE.zipWith (\y z -> y + lam * z) yHats zHats
+                wUpdate = NE.zipWith (\(R.unrefine -> w) x -> w * exp (- mu * x)) wOld expTerms
+                wDenom = getSum $ sconcat $ Sum <$> wUpdate
+            field @"experts" .= NE.zipWith (\(_, e) w' -> (unsafeNormalizePanic w' wDenom, e)) weightedExperts wUpdate
+            field @"lambda" .= R.unsafeRefine (max 0 (lam + mu * (((R.unrefine <$> wOld) `neDot` zHats) - R.unrefine beta - delta * mu * lam)))
       let weightedAdviceMatrix :: NonEmpty (ZeroOne Double, NonEmpty (ZeroOne Double, a))
           weightedAdviceMatrix = weightedExperts <&> \(wi, pi_i) -> (wi, pi_i s)
           dirtyArmDistribution :: NonEmpty (Double, a)
@@ -105,36 +136,27 @@ instance
           p_a = find (\x -> snd x == a) armDistribution & \case
             Nothing -> panic "internal Exp4R algorithm failure: arm pull issue."
             Just p -> fst p
-          cHat :: Double
-          cHat = R.unrefine (cost feedback) / R.unrefine p_a
-          rHat :: Double
-          rHat = R.unrefine (risk feedback) / R.unrefine p_a
-          probabilityOf_a :: NonEmpty Double
+          probabilityOf_a :: NonEmpty (ZeroOne Double)
           probabilityOf_a = snd <$> weightedAdviceMatrix
             <&> \e ->
               case find (\x -> snd x == a) e of
                 Nothing -> panic "internal Exp4R algorithm failure: weight computation"
-                Just (p, _) -> R.unrefine p
-          yHats :: NonEmpty Double
-          yHats = (cHat *) <$> probabilityOf_a
-          zHats :: NonEmpty Double
-          zHats = (rHat *) <$> probabilityOf_a
-          wOld :: NonEmpty (ZeroOne Double)
-          wOld = fst <$> weightedExperts
-          expTerms :: NonEmpty Double
-          expTerms = NE.zipWith (\y z -> y + lam * z) yHats zHats
-          wUpdate = NE.zipWith (\(R.unrefine -> w) x -> w * exp (- mu * x)) wOld expTerms
-          wDenom = getSum $ sconcat $ Sum <$> wUpdate
-      field @"experts" .= NE.zipWith (\(_, e) w' -> (unsafeNormalizePanic w' wDenom, e)) weightedExperts wUpdate
-      field @"lambda" .= R.unsafeRefine (max 0 (lam + mu * ((R.unrefine <$> wOld) `neDot` zHats - R.unrefine beta - delta * mu * lam)))
+                Just (p, _) -> p
+      field @"lastAction" ?= LastAction a p_a probabilityOf_a
       return (a, g')
 
 neDot :: (Num a) => NonEmpty a -> NonEmpty a -> a
 neDot x y = getSum $ sconcat (Sum <$> NE.zipWith (*) x y)
 
+-- | \( \mu = \sqrt{\frac{\ln N }{ (T(K+4))}} \)
 mkMu :: Exp4R s a -> Double
 mkMu Exp4R {..} =
-  sqrt $ log (fromIntegral $ NE.length experts) / fromIntegral (R.unrefine horizon * k)
+  sqrt $ log (fromIntegral n) / fromIntegral (R.unrefine horizon * (k + 4))
 
+-- | \( \delta = 3K \)
 mkDelta :: Exp4R s a -> Double
 mkDelta Exp4R {..} = fromIntegral $ 3 * k
+
+-- | \( \lambda_1 = 0 \)
+lambdaInitial :: R.Refined R.NonNegative Double
+lambdaInitial = R.unsafeRefine 0
