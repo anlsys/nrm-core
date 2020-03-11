@@ -20,6 +20,7 @@ module HBandit.Exp4R
     Exp4RCfg (..),
     Feedback (..),
     LastAction (..),
+    OCER (..),
     mkMu,
     mkDelta,
     lambdaInitial,
@@ -37,7 +38,7 @@ import qualified Refined as R
 import qualified Refined.Unsafe as R
 
 -- | The EXP4R state
-data Exp4R s a
+data Exp4R s a er
   = Exp4R
       { t :: Int,
         horizon :: R.Refined R.Positive Int,
@@ -49,7 +50,7 @@ data Exp4R s a
         experts ::
           NonEmpty
             ( ZeroOne Double,
-              s -> NonEmpty (ZeroOne Double, a)
+              er
             )
       }
   deriving (Generic)
@@ -67,19 +68,26 @@ data Feedback
       { cost :: ZeroOne Double,
         risk :: ZeroOne Double
       }
+  deriving (Generic)
 
-data Exp4RCfg s a
+data Exp4RCfg s a er
   = Exp4RCfg
-      { expertsCfg :: NonEmpty (s -> NonEmpty (ZeroOne Double, a)),
+      { expertsCfg :: NonEmpty er,
         constraintCfg :: ZeroOne Double,
         horizonCfg :: R.Refined R.Positive Int,
         as :: NonEmpty a
       }
   deriving (Generic)
 
+-- | Oblivious Categorical Expert Representation
+data OCER a = OCER (NonEmpty (ZeroOne Double, a)) deriving (Generic)
+
+instance ExpertRepresentation (OCER a) () a where
+  represent (OCER l) () = l
+
 instance
-  (Eq a) =>
-  ContextualBandit (Exp4R s a) (Exp4RCfg s a) s a (Maybe Feedback)
+  (Eq a, ExpertRepresentation er s a) =>
+  ContextualBandit (Exp4R s a er) (Exp4RCfg s a er) s a (Maybe Feedback) er
   where
 
   initCtx Exp4RCfg {..} =
@@ -96,7 +104,8 @@ instance
 
   stepCtx g feedback s =
     do
-      weightedExperts <- use (field @"experts")
+      expertRepresentations <- use (field @"experts")
+      weightedExperts <- use (field @"experts") <&> fmap (fmap represent)
       lam <- R.unrefine <$> use (field @"lambda")
       beta <- use (field @"constraint")
       mu <- get <&> mkMu
@@ -120,7 +129,7 @@ instance
                 expTerms = NE.zipWith (\y z -> y + lam * z) yHats zHats
                 wUpdate = NE.zipWith (\(R.unrefine -> w) x -> w * exp (- mu * x)) wOld expTerms
                 wDenom = getSum $ sconcat $ Sum <$> wUpdate
-            field @"experts" .= NE.zipWith (\(_, e) w' -> (unsafeNormalizePanic w' wDenom, e)) weightedExperts wUpdate
+            field @"experts" .= NE.zipWith (\(_, e) w' -> (unsafeNormalizePanic w' wDenom, e)) expertRepresentations wUpdate
             field @"lambda" .= R.unsafeRefine (max 0 (lam + mu * (((R.unrefine <$> wOld) `neDot` zHats) - R.unrefine beta - delta * mu * lam)))
       let weightedAdviceMatrix :: NonEmpty (ZeroOne Double, NonEmpty (ZeroOne Double, a))
           weightedAdviceMatrix = weightedExperts <&> \(wi, pi_i) -> (wi, pi_i s)
@@ -149,12 +158,12 @@ neDot :: (Num a) => NonEmpty a -> NonEmpty a -> a
 neDot x y = getSum $ sconcat (Sum <$> NE.zipWith (*) x y)
 
 -- | \( \mu = \sqrt{\frac{\ln N }{ (T(K+4))}} \)
-mkMu :: Exp4R s a -> Double
+mkMu :: Exp4R s a er -> Double
 mkMu Exp4R {..} =
   sqrt $ log (fromIntegral n) / fromIntegral (R.unrefine horizon * (k + 4))
 
 -- | \( \delta = 3K \)
-mkDelta :: Exp4R s a -> Double
+mkDelta :: Exp4R s a er -> Double
 mkDelta Exp4R {..} = fromIntegral $ 3 * k
 
 -- | \( \lambda_1 = 0 \)
