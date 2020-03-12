@@ -76,7 +76,7 @@ plot1pass one_cost two_cost three_cost one_risk two_risk three_risk = do
   let b = initCtx $ Exp4RCfg
         { expertsCfg = expertsC,
           constraintCfg = unsafeRefine 0.5,
-          horizonCfg = unsafeRefine 500000,
+          horizonCfg = unsafeRefine 5000,
           as = [1, 2, 3]
         }
   ( GameState
@@ -170,4 +170,4 @@ main =
     $ do
       for_ rpackages rrequire
       [r| theme_set(theme_bw()) |]
-      void $ experiment 500000
+      void $ experiment 5000
