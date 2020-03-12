@@ -10,7 +10,7 @@ import Data.Sequence
 import H.Prelude as R
 import HBandit.Class
 import HBandit.Exp4R
-import HBandit.Types
+import HBandit.Types as HBT
 import Protolude
 import Refined hiding (NonEmpty)
 import Refined.Unsafe
@@ -32,7 +32,7 @@ data GameState
       { historyActions :: Seq Int,
         historyCosts :: Seq Double,
         historyConstraints :: Seq Double,
-        bandit :: Exp4R () Int
+        bandit :: Exp4R () Int (ObliviousRep Int)
       }
   deriving (Generic)
 
@@ -40,7 +40,7 @@ onePass ::
   ( MonadState GameState m,
     MonadIO m,
     (Functor (Zoomed m' (Int, StdGen))),
-    (Zoom m' m (Exp4R () Int) GameState)
+    (Zoom m' m (Exp4R () Int (ObliviousRep Int)) GameState)
   ) =>
   [(ZO, ZO, ZO, ZO, ZO, ZO)] ->
   m ()
@@ -127,14 +127,15 @@ plot1pass one_cost two_cost three_cost one_risk two_risk three_risk = do
     ggsave("risk.pdf", riskPlot)
   |]
   where
-    expertsC :: NonEmpty (() -> NonEmpty (ZeroOne Double, Int))
-    expertsC = [expert1, expert2, expert3, expert4, expert5, expert6]
-    expert1 () = [(HBandit.Types.one, 1 :: Int), (HBandit.Types.zero, 2 :: Int), (HBandit.Types.zero, 3 :: Int)]
-    expert2 () = [(HBandit.Types.zero, 1 :: Int), (HBandit.Types.one, 2 :: Int), (HBandit.Types.zero, 3 :: Int)]
-    expert3 () = [(HBandit.Types.zero, 1 :: Int), (HBandit.Types.zero, 2 :: Int), (HBandit.Types.one, 3 :: Int)]
-    expert4 () = [(HBandit.Types.zero, 1 :: Int), (unsafeRefine 0.5, 2 :: Int), (unsafeRefine 0.5, 3 :: Int)]
-    expert5 () = [(unsafeRefine 0.5, 1 :: Int), (unsafeRefine 0.5, 2 :: Int), (HBandit.Types.zero, 3 :: Int)]
-    expert6 () = [(unsafeRefine 0.5, 1 :: Int), (HBandit.Types.zero, 2 :: Int), (unsafeRefine 0.5, 3 :: Int)]
+    expertsC :: NonEmpty (ObliviousRep Int)
+    expertsC =
+      [ ObliviousRep [(HBT.one, 1 :: Int), (HBT.zero, 2 :: Int), (HBT.zero, 3 :: Int)],
+        ObliviousRep [(HBT.zero, 1 :: Int), (HBT.one, 2 :: Int), (HBT.zero, 3 :: Int)],
+        ObliviousRep [(HBT.zero, 1 :: Int), (HBT.zero, 2 :: Int), (HBT.one, 3 :: Int)],
+        ObliviousRep [(HBT.zero, 1 :: Int), (unsafeRefine 0.5, 2 :: Int), (unsafeRefine 0.5, 3 :: Int)],
+        ObliviousRep [(unsafeRefine 0.5, 1 :: Int), (HBT.zero, 2 :: Int), (unsafeRefine 0.5, 3 :: Int)],
+        ObliviousRep [(unsafeRefine 0.5, 1 :: Int), (unsafeRefine 0.5, 2 :: Int), (HBT.zero, 3 :: Int)]
+      ]
     p = ZipList . fmap unsafeRefine
     (ZipList dataset) =
       (\a b c d e f -> (a, b, c, d, e, f) :: (ZO, ZO, ZO, ZO, ZO, ZO))
