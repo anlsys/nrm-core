@@ -21,9 +21,9 @@ module HBandit.Class
   )
 where
 
+import HBandit.Types
 import Protolude
 import System.Random
-import HBandit.Types
 
 -- | Bandit b hyper f a l is the class for a bandit algorithm. This is mostly
 -- here to help structure the library itself.  We have the following bandit
@@ -57,7 +57,7 @@ class Bandit b hyper a l | b -> l, b -> hyper, b -> a where
   -- | @step loss@ iterates the bandit process one step forward.
   step :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
 
-class ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b-> er where
+class ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b -> er where
 
   -- | Init hyper returns the initial state of the algorithm
   initCtx :: hyper -> b
@@ -65,7 +65,7 @@ class ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b-
   -- | @step loss@ iterates the bandit process one step forward.
   stepCtx :: (RandomGen g, MonadState b m, Ord a) => g -> l -> s -> m (a, g)
 
-class ExpertRepresentation er s a | er -> s, er ->a  where
+class ExpertRepresentation er s a | er -> s, er -> a where
   represent :: er -> (s -> NonEmpty (ZeroOne Double, a))
 
 newtype Arms a = Arms (NonEmpty a)
