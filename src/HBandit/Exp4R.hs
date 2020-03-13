@@ -108,48 +108,64 @@ instance
       }
 
   stepCtx g feedback s = do
-    weightedExperts <- use (field @"experts") <&> fmap (fmap represent)
-    lam <- R.unrefine <$> use (field @"lambda")
-    beta <- use (field @"constraint")
-    mu <- get <&> mkMu
-    delta <- get <&> mkDelta
-    use (field @"lastAction")
-      >>= traverse_ \(LastAction _ (R.unrefine -> p_a) (fmap R.unrefine -> pPolicy_a)) ->
-        fromMaybe
-          (panic "exp4R usage error: do not give feedback on first action.")
-          ( feedback
-              <&> \(Feedback (R.unrefine -> c) (R.unrefine -> r)) -> do
-                let numeratorTerm (R.unrefine -> w, _) p = w * exp (- mu * (p * (lam * r + c) / p_a))
-                let wUpdate = NE.zipWith numeratorTerm weightedExperts pPolicy_a
-                    wDenom = getSum $ sconcat $ Sum <$> wUpdate
-                field @"experts" %= NE.zipWith (\w' (_, e) -> (unsafeNormalizePanic w' wDenom, e)) wUpdate
-                let fDot (R.unrefine -> wi, _) p = wi * r * p / p_a
-                let dotted = getSum $ sconcat (Sum <$> NE.zipWith fDot weightedExperts pPolicy_a)
-                field @"lambda" .= R.unsafeRefine (max 0 (lam + mu * (dotted - R.unrefine beta - delta * mu * lam)))
-          )
-    let weightedAdviceMatrix :: NonEmpty (ZeroOne Double, NonEmpty (ZeroOne Double, a))
-        weightedAdviceMatrix = weightedExperts <&> fmap ($ s)
-        armDistribution :: NonEmpty (ZeroOne Double, a)
+    weightedAdvice <- use (field @"experts") <&> fmap (fmap (($ s) . represent))
+    lastAction <- use (field @"lastAction")
+    fromMaybe
+      (return ())
+      (update weightedAdvice <$> lastAction <*> feedback)
+    let armDistribution :: NonEmpty (ZeroOne Double, a)
         armDistribution =
           fromMaybe
             (panic "internal Exp4R algorithm failure: distribution normalization failed.")
-            (combineAdvice weightedAdviceMatrix)
+            (combineAdvice weightedAdvice)
         (a, g') = sampleWL armDistribution g
         p_a =
-          fst $
-            fromMaybe
-              (panic "internal Exp4R algorithm failure: arm pull issue.")
-              (find (\x -> snd x == a) armDistribution)
+          fromMaybe
+            (panic "internal Exp4R algorithm failure: arm pull issue.")
+            (fst <$> find (\x -> snd x == a) armDistribution)
         probabilityOf_a :: NonEmpty (ZeroOne Double)
-        probabilityOf_a = snd <$> weightedAdviceMatrix
-          <&> \e ->
-            ( fst $
-                fromMaybe
-                  (panic "internal Exp4R algorithm failure: weight computation")
-                  (find (\x -> snd x == a) e)
-            )
+        probabilityOf_a = snd <$> weightedAdvice <&> \e ->
+          fromMaybe
+            (panic "internal Exp4R algorithm failure: weight computation")
+            (fst <$> find (\x -> snd x == a) e)
     field @"lastAction" ?= LastAction a p_a probabilityOf_a
     return (a, g')
+
+update ::
+  (MonadState (Exp4R s a er) m) =>
+  NonEmpty (ZeroOne Double, NonEmpty (ZeroOne Double, a)) ->
+  LastAction a ->
+  Feedback ->
+  m ()
+update
+  weightedAdvice
+  (LastAction _ (R.unrefine -> p_a) (fmap R.unrefine -> pPolicy_a))
+  (Feedback (R.unrefine -> c) (R.unrefine -> r)) =
+    do
+      lam <- R.unrefine <$> use (field @"lambda")
+      delta <- get <&> mkDelta
+      mu <- get <&> mkMu
+      beta <- use (field @"constraint") <&> R.unrefine
+      let numeratorTerm (R.unrefine -> w, _) p =
+            w * exp (- mu * (p * (lam * r + c) / p_a))
+      let wUpdate =
+            NE.zipWith numeratorTerm weightedAdvice pPolicy_a
+          wDenom =
+            getSum $ sconcat $ Sum <$> wUpdate
+      field @"experts"
+        %= NE.zipWith
+          (\w' (_, e) -> (unsafeNormalizePanic w' wDenom, e))
+          wUpdate
+      let fDot (R.unrefine -> w, _) p = w * r * p / p_a
+      let dotted =
+            getSum
+              ( sconcat
+                  (Sum <$> NE.zipWith fDot weightedAdvice pPolicy_a)
+              )
+      field @"lambda"
+        .= R.unsafeRefine
+          ( max 0 (lam + mu * (dotted - beta - delta * mu * lam))
+          )
 
 -- | combineAdvice turns weighted expert advice into a probability distribution to
 -- sample from.
@@ -157,13 +173,14 @@ combineAdvice ::
   (Ord a) =>
   NonEmpty (ZeroOne Double, NonEmpty (ZeroOne Double, a)) ->
   Maybe (NonEmpty (ZeroOne Double, a))
-combineAdvice weightedAdviceMatrix = normalizeDistribution $
+combineAdvice weightedAdvice = normalizeDistribution $
   groupAllWith1 snd dirtyArmDistribution
     <&> \gs -> (getSum $ sconcat (gs <&> Sum . fst), snd $ NE.head gs)
   where
     dirtyArmDistribution = sconcat $
-      weightedAdviceMatrix
-        <&> \(wi, advices) -> advices <&> \(p, ai) -> (R.unrefine p * R.unrefine wi, ai)
+      weightedAdvice
+        <&> \(wi, advices) -> advices
+          <&> \(p, ai) -> (R.unrefine p * R.unrefine wi, ai)
 
 -- | \( \mu = \sqrt{\frac{\ln N }{ (T(K+4))}} \)
 mkMu :: Exp4R s a er -> Double
