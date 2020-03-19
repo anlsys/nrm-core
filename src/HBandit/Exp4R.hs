@@ -120,14 +120,16 @@ instance
             (combineAdvice weightedAdvice)
         (a, g') = sampleWL armDistribution g
         p_a =
-          fromMaybe
+          maybe
             (panic "internal Exp4R algorithm failure: arm pull issue.")
-            (fst <$> find (\x -> snd x == a) armDistribution)
+            fst
+            (find (\x -> snd x == a) armDistribution)
         probabilityOf_a :: NonEmpty (ZeroOne Double)
         probabilityOf_a = snd <$> weightedAdvice <&> \e ->
-          fromMaybe
+          maybe
             (panic "internal Exp4R algorithm failure: weight computation")
-            (fst <$> find (\x -> snd x == a) e)
+            fst
+            (find (\x -> snd x == a) e)
     field @"lastAction" ?= LastAction a p_a probabilityOf_a
     return (a, g')
 
@@ -196,7 +198,9 @@ lambdaInitial :: R.Refined R.NonNegative Double
 lambdaInitial = R.unsafeRefine 0
 
 -- | Oblivious Categorical Expert Representation
-data ObliviousRep a = ObliviousRep (NonEmpty (ZeroOne Double, a)) deriving (Generic)
+newtype ObliviousRep a
+  = ObliviousRep (NonEmpty (ZeroOne Double, a))
+  deriving (Generic)
 
 instance ExpertRepresentation (ObliviousRep a) () a where
   represent (ObliviousRep l) () = l
