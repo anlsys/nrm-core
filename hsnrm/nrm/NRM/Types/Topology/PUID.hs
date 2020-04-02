@@ -24,6 +24,3 @@ newtype PUID = PUID Int
 
 instance ToHwlocType PUID where
   getType _ = "PU"
-
-instance IdFromString PUID where
-  idFromString s = PUID <$> readMaybe s

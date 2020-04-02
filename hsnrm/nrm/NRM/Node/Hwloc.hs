@@ -1,3 +1,5 @@
+{-# LANGUAGE ScopedTypeVariables #-}
+
 -- |
 -- Module      : NRM.Node.Hwloc
 -- Description : Hwloc tree queries
@@ -20,6 +22,7 @@ where
 
 import Control.Arrow.ArrowTree (deep)
 import Control.Arrow.ListArrow (runLA)
+import Data.Coerce
 import NRM.Classes.Topology
 import NRM.Types.Topology
 import Protolude
@@ -49,11 +52,10 @@ getHwlocData :: IO HwlocData
 getHwlocData =
   HwlocData <$> (readProcessStdout_ "hwloc-ls -p --whole-system --of xml" <&> xreadDoc . toS)
 
-extractOSindexes ::
-  (ToHwlocType a, IdFromString a) => Proxy a -> HwlocData -> [a]
+extractOSindexes :: forall a. (ToHwlocType a, Coercible a Int) => Proxy a -> HwlocData -> [a]
 extractOSindexes typeAttr xml =
   catMaybes $
-    idFromString
+    fmap (coerce :: Int -> a) . readMaybe
       <$> concat
         ( runLA (deep (getAttrValue "os_index"))
             <$> selectSubtreesOfType (getType typeAttr) xml

@@ -8,6 +8,7 @@ let defexts =
       , types.Extension.DefaultSignatures True
       , types.Extension.ExistentialQuantification True
       , types.Extension.RecordWildCards True
+      , types.Extension.RankNTypes True
       , types.Extension.TypeSynonymInstances True
       , types.Extension.StandaloneDeriving True
       , types.Extension.FlexibleInstances True
@@ -16,12 +17,14 @@ let defexts =
       , types.Extension.ImplicitPrelude False
       , types.Extension.OverloadedStrings True
       , types.Extension.ViewPatterns True
+      , types.Extension.PatternSynonyms True
       , types.Extension.DeriveFunctor True
       , types.Extension.DeriveTraversable True
       , types.Extension.TypeFamilies True
       , types.Extension.DeriveAnyClass True
       , types.Extension.DeriveGeneric True
       , types.Extension.DeriveDataTypeable True
+      , types.Extension.OverloadedLabels True
       , types.Extension.DeriveFoldable True
       , types.Extension.DerivingStrategies True
       , types.Extension.TypeApplications True
@@ -297,23 +300,6 @@ let extramodules =
       , "CPD.Values"
       , "CPD.Utils"
       , "CPD.Text"
-      , "Control.Monad.LPMonad.Internal"
-      , "Control.Monad.LPMonad.Supply.Class"
-      , "Control.Monad.LPMonad.Supply"
-      , "Control.Monad.LPMonad"
-      , "Data.LinearProgram"
-      , "Data.LinearProgram.Common"
-      , "Data.LinearProgram.GLPK"
-      , "Data.LinearProgram.GLPK.Common"
-      , "Data.LinearProgram.GLPK.Internal"
-      , "Data.LinearProgram.GLPK.IO.Internal"
-      , "Data.LinearProgram.GLPK.IO"
-      , "Data.LinearProgram.GLPK.Solver"
-      , "Data.LinearProgram.GLPK.Types"
-      , "Data.LinearProgram.LinExpr"
-      , "Data.LinearProgram.Spec"
-      , "Data.LinearProgram.Types"
-      , "Algebra.Classes"
       ]
 
 let banditmodules =

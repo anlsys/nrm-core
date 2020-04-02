@@ -1,5 +1,3 @@
-{-# LANGUAGE ExistentialQuantification #-}
-
 -- |
 --
 -- Module      : NRM.Types.Sensor
@@ -27,7 +25,7 @@ where
 
 import qualified CPD.Core as CPD
 import Control.Lens
-import Data.Generics.Product
+import Data.Generics.Labels ()
 import NRM.Classes.Sensors
 import NRM.Types.DownstreamCmdID
 import NRM.Types.DownstreamThreadID
@@ -69,7 +67,7 @@ data PassiveSensor
   deriving (Generic)
 
 instance HasMeta PassiveSensor where
-  _meta = field @"passiveMeta"
+  _meta = #passiveMeta
 
 data ActiveSensor
   = ActiveSensor
@@ -80,7 +78,7 @@ data ActiveSensor
   deriving (Generic)
 
 instance HasMeta ActiveSensor where
-  _meta = field @"activeMeta"
+  _meta = #activeMeta
 
 data Cumulative = Cumulative | IntervalBased | CumulativeWithCapacity Double
 

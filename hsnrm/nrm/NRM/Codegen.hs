@@ -1,5 +1,5 @@
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE ViewPatterns #-}
 
 -- |
 -- Module      : NRM.Codegen
@@ -29,7 +29,7 @@ import Codegen.Schema as CS
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import Data.Default
 import Data.JSON.Schema as S
-import qualified Data.Map as DM
+import qualified Data.Map as M
 import Data.Yaml as Y
 import Dhall
 import qualified Dhall.Core as Dhall
@@ -51,7 +51,6 @@ import NRM.Types.Messaging.UpstreamReq
 import NeatInterpolation
 import Protolude hiding (Rep)
 import System.Directory
-import Prelude (String)
 
 -- | The main code generation binary.
 main :: IO ()
@@ -66,7 +65,6 @@ main = do
   verboseWriteSchema prefix "upstreamReq" upstreamReqSchema
   verboseWriteSchema prefix "downstreamEvent" downstreamEventSchema
   verboseWriteSchema prefix "manifestSchema" manifestSchema
-  verboseWriteSchema prefix "configurationSchema" manifestSchema
   generateResources prefix
   where
     verboseWriteSchema :: Text -> Text -> Text -> IO ()
@@ -94,11 +92,11 @@ downstreamEventSchema = generatePretty (Proxy :: Proxy Event)
 
 -- | The manifest schema.
 manifestSchema :: Text
-manifestSchema = toS $ AP.encodePretty $ CS.toAeson $ S.schema (Proxy :: Proxy MI.Manifest)
+manifestSchema = toS . AP.encodePretty . CS.toAeson $ S.schema (Proxy :: Proxy MI.Manifest)
 
 -- | The configuration schema.
 configurationSchema :: Text
-configurationSchema = toS $ AP.encodePretty $ CS.toAeson $ S.schema (Proxy :: Proxy C.Cfg)
+configurationSchema = toS . AP.encodePretty . CS.toAeson $ S.schema (Proxy :: Proxy C.Cfg)
 
 -- | The libnrm C header.
 libnrmHeader :: Text
@@ -178,8 +176,8 @@ getDefault x =
 generateResources :: Text -> IO ()
 generateResources prefix = do
   putText "Codegen: Dhall types."
-  typeToFile (Proxy :: Proxy [CPD.Values.Measurement]) $ toS prefix <> "/types/CPDMeasurements.dhall"
-  typeToFile (Proxy :: Proxy [CPD.Values.Action]) $ toS prefix <> "/types/CPDActions.dhall"
+  typeToFile (Proxy :: Proxy [CPD.Values.Measurement]) $ prefix <> "/types/CPDMeasurements.dhall"
+  typeToFile (Proxy :: Proxy [CPD.Values.Action]) $ prefix <> "/types/CPDActions.dhall"
   --typeToFile (Proxy :: Proxy CPD.Core.Problem) $ toS prefix <> "/types/CPDProblem.dhall"
   for_ [minBound .. maxBound] $ \t -> do
     let dest = toS prefix <> typeFile t
@@ -191,7 +189,7 @@ generateResources prefix = do
     Dhall.load (Lint.lint (getDefault defaultType))
       >>= exprToDir "defaults/" (show defaultType)
   putText "Codegen: examples."
-  for_ (DM.toList (Examples.examples :: Map Text MI.Manifest)) $ \(defName, defValue) ->
+  for_ (M.toList (Examples.examples :: Map Text MI.Manifest)) $ \(defName, defValue) ->
     Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
       >>= exprToDir "examples/" defName
   where
@@ -215,12 +213,12 @@ generateResources prefix = do
         resourcePath dir defName ".yaml"
       )
 
-typeToFile :: (Interpret x) => Proxy x -> String -> IO ()
+typeToFile :: (Interpret x) => Proxy x -> Text -> IO ()
 typeToFile (Proxy :: Proxy x) fp = do
   let destCPD = fp
   putText $ "  Writing types for CPD format. " <> " to " <> toS destCPD
-  createDirectoryIfMissing True (takeDirectory destCPD)
+  createDirectoryIfMissing True (takeDirectory $ toS destCPD)
   writeOutput
     licenseDhall
-    destCPD
+    (toS destCPD)
     (Dhall.expected (Dhall.auto :: Dhall.Type x))

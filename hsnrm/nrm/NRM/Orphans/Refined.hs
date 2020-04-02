@@ -20,7 +20,6 @@ import Protolude
 import Refined
 import Refined.Orphan.Aeson ()
 import Refined.Unsafe
-import Prelude (fail)
 
 instance (JSONSchema a) => JSONSchema (Refined p a) where
   schema _ = schema (Proxy :: Proxy a)
@@ -32,7 +31,7 @@ instance (Predicate p a, MessagePack a) => MessagePack (Refined p a) where
   fromObject x =
     fromObject x >>= \y ->
       case refine y of
-        Left e -> fail (show e)
+        Left e -> panic $ show e
         Right t -> return t
 
 instance (Predicate p a, Interpret a) => Interpret (Refined p a) where

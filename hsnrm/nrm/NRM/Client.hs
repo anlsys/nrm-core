@@ -1,3 +1,5 @@
+{-# LANGUAGE QuasiQuotes #-}
+
 -- |
 -- Module      : NRM.Client
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -14,7 +16,6 @@ module NRM.Client
   )
 where
 
-import qualified CPD.Core as CPD
 import CPD.Core (prettyCPD)
 import qualified Data.Aeson as A
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
@@ -88,7 +89,7 @@ subClient l s common =
       Nothing -> putText ("Couldn't decode published message: " <> toS m)
       Just message ->
         filterCPD l message & \case
-          Nothing -> return ()
+          Nothing -> pass
           Just filtered -> liftIO . putText . (if C.jsonPrint common then encodeT else toS . pShow) $ filtered
 
 filterCPD :: C.Listen -> UPub.Pub -> Maybe UPub.Pub
@@ -148,23 +149,14 @@ reqrep s opts proto =
       Just rep -> (proto, rep) & \case
         (Protocols.CPD, URep.RepCPD cpd) ->
           putText
-            [text|
-                asynchronous Control Problem Description:
-                $cpdT
-
-                $actuatorcount actuator(s) currently registered.
-                $sensorcount sensor(s) currently registered.
-               |]
+            [text| asynchronous Control Problem Description:
+                   $cpdT |]
           where
             cpdT = prettyCPD cpd
-            actuatorcount = show $ length (CPD.actuators cpd)
-            sensorcount = show $ length (CPD.sensors cpd)
         (Protocols.SliceList, URep.RepList (URep.SliceList l)) ->
           putText
-            [text|
-                      $slicecount slice(s) currently running.
-                       $slices
-                     |]
+            [text| $slicecount slice(s) currently running.
+                     $slices |]
           where
             slicecount = show $ length l
             slices = showSliceList l
@@ -208,7 +200,7 @@ reqstream s c Protocols.Run UReq.Run {..} = do
   where
     go = do
       msg <- ZMQ.receive s
-      when (C.verbose c == C.Verbose) $ liftIO $ print msg
+      when (C.verbose c == C.Verbose) . liftIO $ print msg
       case ((decodeT $ toS msg) :: Maybe URep.Rep) of
         Just (URep.RepStdout (URep.stdoutPayload -> x)) -> putStr x >> go
         Just (URep.RepStderr (URep.stderrPayload -> x)) -> hPutStr stderr x >> go
@@ -222,7 +214,7 @@ reqstream s c Protocols.Run UReq.Run {..} = do
         Nothing -> putText "error: NRM client received malformed message."
         _ -> putText "error: NRM client received wrong type of message."
     zmqCCHandler :: IO () -> ZMQ.ZMQ z ()
-    zmqCCHandler h = void $ liftIO $ SPS.installHandler SPS.keyboardSignal (SPS.CatchOnce h) Nothing
+    zmqCCHandler h = void . liftIO $ SPS.installHandler SPS.keyboardSignal (SPS.CatchOnce h) Nothing
 
 kill :: CmdID -> C.CommonOpts -> IO ()
 kill cmdID c =
@@ -234,7 +226,7 @@ kill cmdID c =
           Nothing -> panic "couldn't generate next client ID"
           Just clientID -> (restrict (toS $ UC.toText clientID) :: Restricted (N1, N254) BS.ByteString)
     connectWithOptions uuid c s
-    ZMQ.send s [] (toS $ encode $ UReq.ReqKillCmd (UReq.KillCmd cmdID))
+    ZMQ.send s [] (toS . encode $ UReq.ReqKillCmd (UReq.KillCmd cmdID))
 
 connectWithOptions :: Restricted (N1, N254) ByteString -> C.CommonOpts -> ZMQ.Socket z t -> ZMQ.ZMQ z ()
 connectWithOptions uuid c s = do

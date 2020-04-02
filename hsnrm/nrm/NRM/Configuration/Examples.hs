@@ -11,10 +11,9 @@ module NRM.Configuration.Examples
 where
 
 import Data.Default
-{-import Protolude-}
-import qualified Data.Map as DM
+import qualified Data.Map as M
 import NRM.Classes.Examples
 import NRM.Types.Configuration
 
 instance Examples Cfg where
-  examples = DM.fromList [("default", def)]
+  examples = M.fromList [("default", def)]

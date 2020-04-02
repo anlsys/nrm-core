@@ -16,6 +16,7 @@ import argparse
 import time
 import logging
 import os
+import math
 import tempfile
 import subprocess
 import uuid
@@ -62,7 +63,11 @@ class PerfWrapper(object):
             "-v", "--verbose", help="verbose logging information", action="store_true"
         )
         parser.add_argument(
-            "-f", "--frequency", help="sampling frequency in ms", type=int, default=1000
+            "-f",
+            "--frequency",
+            help="sampling frequency in Hz",
+            type=float,
+            default=1.0,
         )
         parser.add_argument(
             "cmd", help="command and arguments", nargs=argparse.REMAINDER
@@ -93,7 +98,7 @@ class PerfWrapper(object):
             "-x",
             ",",
             "-I",
-            str(args.frequency),
+            str(math.floor(1000 / args.frequency)),
             "-o",
             fifoname,
             "--",

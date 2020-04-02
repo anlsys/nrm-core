@@ -25,7 +25,7 @@ import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import Dhall (Inject, Interpret)
-import LMap.Map as DM
+import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Types.Units
 import Protolude hiding (Map)
@@ -75,7 +75,7 @@ squeeze ::
   Map SensorID MeasurementState ->
   Maybe (Map SensorID Double, Map SensorID MeasurementState)
 squeeze _t mstM =
-  if all isDone (DM.elems mstM)
+  if all isDone (LM.elems mstM)
     then Just (mstM <&> totalAverageDone, newMeasurements)
     else Nothing
   where
@@ -114,5 +114,5 @@ initIntegrator ::
 initIntegrator t tmin sensorIDs = Integrator
   { tLast = t,
     minimumControlInterval = tmin,
-    measured = DM.fromList (sensorIDs <&> (,Never))
+    measured = LM.fromList (sensorIDs <&> (,Never))
   }

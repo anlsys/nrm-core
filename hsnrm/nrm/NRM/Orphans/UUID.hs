@@ -18,7 +18,6 @@ import Data.MessagePack
 import Data.UUID as U (UUID, fromText, toText)
 import Dhall
 import Protolude
-import Prelude (fail)
 
 instance JSONSchema UUID where
   schema Proxy = schema (Proxy :: Proxy Text)
@@ -30,7 +29,7 @@ instance MessagePack UUID where
   fromObject x =
     fromObject x >>= \y ->
       case fromText y of
-        Nothing -> fail "Couldn't parse CmdID"
+        Nothing -> panic "Couldn't parse CmdID"
         Just t -> return t
 
 instance Interpret UUID where

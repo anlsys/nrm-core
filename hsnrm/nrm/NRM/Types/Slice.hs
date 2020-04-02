@@ -18,7 +18,7 @@ where
 
 import Control.Lens
 import Data.Aeson
-import Data.Generics.Product
+import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.MessagePack
 import qualified Data.UUID as U (UUID, fromText, toText)
@@ -71,4 +71,4 @@ toText (Name n) = n
 
 instance HasLensMap (SliceID, Slice) ActiveSensorKey ActiveSensor where
   lenses (_sliceID, slice) =
-    addPath (_2 . field @"cmds") <$> lenses (cmds slice)
+    addPath (_2 . #cmds) <$> lenses (cmds slice)

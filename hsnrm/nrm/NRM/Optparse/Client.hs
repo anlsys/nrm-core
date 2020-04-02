@@ -20,7 +20,6 @@ import qualified Data.ByteString as B
 import Data.Default
 import Data.MessagePack
 import Dhall
-import LMap.Map as LM
 import NRM.Optparse.Daemon hiding (opts)
 import qualified NRM.Types.Cmd as Cmd
 import NRM.Types.CmdID
@@ -309,11 +308,7 @@ run rc common = do
     Opts
       ( Right . ReqRun $ Run
           { manifest = manifest,
-            spec = Cmd.CmdSpec
-              { cmd = Cmd.Command $ cmd rc,
-                args = Cmd.Arguments $ Cmd.Arg <$> runargs rc,
-                env = Cmd.Env $ LM.fromList env
-              },
+            spec = Cmd.mkCmdSpec (cmd rc) (runargs rc) env,
             detachCmd = detach rc,
             runSliceID = cn
           }

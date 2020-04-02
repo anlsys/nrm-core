@@ -1,6 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
-{-# LANGUAGE PatternSynonyms #-}
-{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
@@ -19,7 +18,7 @@ import CPD.Integrated
 import CPD.Utils
 import CPD.Values
 import Control.Lens hiding ((...))
-import Data.Generics.Product
+import Data.Generics.Labels ()
 import Data.List.NonEmpty as NE
 import Data.Map.Merge.Lazy
 import HBandit.BwCR as BwCR
@@ -54,8 +53,8 @@ banditCartesianProductControl ::
   ControlM Decision
 banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
   pub (UPub.PubCPD t cpd)
-  minTime <- use $ field @"integrator" . field @"minimumControlInterval"
-  field @"integrator" .= initIntegrator t minTime (LM.keys $ sensors cpd)
+  minTime <- use $ #integrator . #minimumControlInterval
+  #integrator .= initIntegrator t minTime (LM.keys $ sensors cpd)
   case (CPD.Core.objectives cpd, LM.toList (actuators cpd)) of
     ([], _) -> reset
     (_, l) -> nonEmpty l & \case
@@ -85,7 +84,7 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
               -- per terminology of sun wen
               let riskThreshold :: ZeroOne Double
                   riskThreshold = fromMaybe BT.zero $ do
-                    (threshold, expression) <- cpd ^? (field @"constraints" . folded)
+                    (threshold, expression) <- cpd ^? (#constraints . folded)
                     r <- evalRange (range <$> sensors cpd) expression
                     hush . refine $ (threshold - inf r) / width r
               let b =
@@ -112,26 +111,26 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
               let (b, a, g') = initUniform (maybe g (\(Seed s) -> mkStdGen s) seed) availableActions & _1 %~ Random
               liftIO $ setStdGen g'
               return (b, a)
-          field @"bandit" .= Just b
-          field @"armstats" .= LM.empty
+          #bandit .= Just b
+          #armstats .= LM.empty
           return $ Decision aInitial InitialDecision
   where
     reset = do
       logInfo "control: reset"
-      field @"bandit" .= Nothing
-      field @"bufferedMeasurements" .= Nothing
-      field @"referenceMeasurements" .= (sensors cpd $> MemBuffer.empty)
+      #bandit .= Nothing
+      #bufferedMeasurements .= Nothing
+      #referenceMeasurements .= (sensors cpd $> MemBuffer.empty)
       refine 0 & \case
         Left _ -> logError "refinement failed in banditCartesianProductControl" >> doNothing
         Right v -> do
-          field @"referenceMeasurementCounter" .= v
+          #referenceMeasurementCounter .= v
           doNothing
 banditCartesianProductControl ccfg cpd (NoEvent t) mRefActions =
   tryControlStep ccfg cpd t mRefActions
 banditCartesianProductControl ccfg cpd (Event t ms) mRefActions = do
   forM_ ms $ \m@(Measurement sensorID sensorValue sensorTime) -> do
     log $ "Processing measurement " <> show m
-    field @"integrator" %= \(Integrator tlast delta measuredM) ->
+    #integrator %= \(Integrator tlast delta measuredM) ->
       Integrator
         tlast
         delta
@@ -193,16 +192,16 @@ wrappedCStep ::
   ControlM Decision
 wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
   logInfo "control: squeeze attempt"
-  use (field @"integrator" . field @"measured") <&> squeeze t >>= \case
+  use (#integrator . #measured) <&> squeeze t >>= \case
     Nothing -> logInfo "control: integrator squeeze failure" >> doNothing
     Just (measurements, newMeasured) -> do
       -- squeeze was successfull: setting the new integrator state
       logInfo "control: integrator squeeze success"
-      field @"integrator" . field @"measured" .= newMeasured
+      #integrator . #measured .= newMeasured
       -- acquiring fields
-      counter <- use $ field @"referenceMeasurementCounter"
-      bufM <- use (field @"bufferedMeasurements")
-      refM <- use $ field @"referenceMeasurements"
+      counter <- use #referenceMeasurementCounter
+      bufM <- use #bufferedMeasurements
+      refM <- use #referenceMeasurements
       let maxCounter = referenceMeasurementRoundInterval cc
       -- helper bindings
       let controlStep = stepFromSqueezed stepObjectives stepConstraints sensorRanges
@@ -211,14 +210,14 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
         case mRefActions of
           Nothing -> innerStep
           Just refActions -> do
-            field @"referenceMeasurementCounter" .= counterValue
+            #referenceMeasurementCounter .= counterValue
             -- define a ControlM monad value for starting the buffering
             let startBuffering = do
                   logInfo "control: meta control - starting reference measurement step"
                   -- reset the counter
-                  field @"referenceMeasurementCounter" .= unsafeRefine 0
+                  #referenceMeasurementCounter .= unsafeRefine 0
                   -- put the current measurements in "bufferedMeasurements"
-                  field @"bufferedMeasurements" ?= measurements
+                  #bufferedMeasurements ?= measurements
                   -- take the reference actions
                   return $ Decision refActions ReferenceMeasurementDecision
             if unrefine counterValue <= unrefine maxCounter
@@ -236,9 +235,9 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
                     "control: meta control - concluding reference"
                       <> " measurement step, resuming inner control"
                   -- put the measurements that were just done in referenceMeasurements
-                  field @"referenceMeasurements" %= enqueueAll measurements
+                  #referenceMeasurements %= enqueueAll measurements
                   -- clear the buffered measurements
-                  field @"bufferedMeasurements" .= Nothing
+                  #bufferedMeasurements .= Nothing
                   -- feed the buffered measurements to the bandit
                   controlStep buffered
               else startBuffering
@@ -259,7 +258,7 @@ stepFromSqueezed ::
   ControlM Decision
 stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
   logInfo "in inner control"
-  refMeasurements <- use (field @"referenceMeasurements") <&> fmap MemBuffer.avgBuffer
+  refMeasurements <- use #referenceMeasurements <&> fmap MemBuffer.avgBuffer
   let evaluatedObjectives :: [(ZeroOne Double, Maybe Double, Maybe (Interval Double))]
       evaluatedObjectives = stepObjectives <&> \(w, v) ->
         (w, evalNum measurements refMeasurements v, evalRange sensorRanges v)
@@ -284,7 +283,7 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
             <> "\n refined constraints:"
             <> show rconstr
         )
-      use (field @"bandit") >>= \case
+      use #bandit >>= \case
         Nothing -> doNothing
         Just bandit -> do
           g <- liftIO getStdGen
@@ -298,33 +297,33 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
                             g
                             ( Just
                                 ( Feedback
-                                    (fst $ fromMaybe (panic "no objective in inner stepFromSqueezed") $ Protolude.head robjs)
+                                    (fst . fromMaybe (panic "no objective in inner stepFromSqueezed") $ Protolude.head robjs)
                                     (maybe BT.zero unsafeRefine (Protolude.head rconstr <&> \(_, v, r) -> (v - inf r) / width r))
                                 )
                             )
                             ()
                         )
                         b
-                field @"bandit" ?= Contextual s'
+                #bandit ?= Contextual s'
                 return (a, g', hco)
               Random b -> do
                 let ((a, g'), s') = runState (stepUniform g) b
-                field @"bandit" ?= Random s'
+                #bandit ?= Random s'
                 return (a, g', hco)
               Knapsack b -> do
                 let ((a, g'), s') = runState (stepBwCR g ((snd <$> robjs) <> [])) b
-                field @"bandit" ?= Knapsack s'
+                #bandit ?= Knapsack s'
                 return (a, g', hco)
               Lagrange b -> do
                 logInfo $ "computed Hard Constrained Objective of :" <> show hco
                 --step :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
                 let ((a, g'), s') = runState (stepPFMAB g hco) b
-                field @"bandit" ?= Lagrange s'
+                #bandit ?= Lagrange s'
                 return (a, g', hco)
-          use (field @"lastA") >>= \case
-            Nothing -> return ()
+          use #lastA >>= \case
+            Nothing -> pass
             Just a' ->
-              field @"armstats"
+              #armstats
                 %= ( \stats ->
                        lookup a' stats & \case
                          Nothing -> LM.insert a' (Armstat 1 (unrefine hco) (unrefine . snd <$> robjs) (rconstr <&> \(_, v, _) -> v) measurements refMeasurements) stats
@@ -341,7 +340,7 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
                              )
                              stats
                    )
-          field @"lastA" .= Just a
+          #lastA .= Just a
           liftIO $ setStdGen g'
           return $
             Decision

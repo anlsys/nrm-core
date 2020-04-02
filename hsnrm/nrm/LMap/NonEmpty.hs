@@ -29,7 +29,7 @@ where
 import Control.Lens
 import Data.Data
 import qualified Data.List.NonEmpty as NE (fromList, toList)
-import qualified Data.Map as DM
+import qualified Data.Map as M
 import Data.MessagePack
 import qualified LMap.Map as LM
 import NRM.Orphans.NonEmpty ()
@@ -41,8 +41,8 @@ newtype Map a b = Map (NonEmpty (a, b))
   deriving (Show, Generic, Data, MessagePack, Functor, Foldable)
   deriving (Semigroup) via (NonEmpty (a, b))
 
-toMap :: (Ord a) => Map a b -> DM.Map a b
-toMap = DM.fromList . toList
+toMap :: (Ord a) => Map a b -> M.Map a b
+toMap = M.fromList . toList
 
 toLMap :: Map a b -> LM.Map a b
 toLMap = LM.fromList . toList
@@ -63,22 +63,22 @@ toList :: Map a b -> [(a, b)]
 toList (Map m) = NE.toList m
 
 lookup :: Ord k => k -> Map k a -> Maybe a
-lookup k (Map m) = DM.lookup k (DM.fromList $ NE.toList m)
+lookup k (Map m) = M.lookup k (M.fromList $ NE.toList m)
 
 insert :: Ord k => k -> a -> Map k a -> Map k a
-insert k x (Map m) = DM.insert k x (DM.fromList $ NE.toList m) & DM.toList & unsafeFromList
+insert k x (Map m) = M.insert k x (M.fromList $ NE.toList m) & M.toList & unsafeFromList
 
 alter :: Ord k => (Maybe a -> Maybe a) -> k -> Map k a -> Map k a
-alter f k m = m & toList & DM.fromList & DM.alter f k & DM.toList & unsafeFromList
+alter f k m = m & toList & M.fromList & M.alter f k & M.toList & unsafeFromList
 
 delete :: Ord k => k -> Map k a -> Maybe (Map k a)
-delete k m = DM.delete k (DM.fromList $ toList m) & DM.toList & fromList
+delete k m = M.delete k (M.fromList $ toList m) & M.toList & fromList
 
 update :: Ord k => (a -> Maybe a) -> k -> Map k a -> Map k a
-update f k m = DM.update f k (DM.fromList $ toList m) & DM.toList & unsafeFromList
+update f k m = M.update f k (M.fromList $ toList m) & M.toList & unsafeFromList
 
 elems :: Ord k => Map k a -> [a]
-elems m = DM.elems (DM.fromList $ toList m)
+elems m = M.elems (M.fromList $ toList m)
 
 keys :: Map k a -> NonEmpty k
 keys (Map m) = fst <$> m
@@ -93,4 +93,4 @@ type instance Index (Map k a) = k
 
 type instance IxValue (Map k a) = a
 --instance (IsString a, JSONSchema b) => JSONSchema (Map a b) where
---schema _ = schema (Proxy :: Proxy (DM.Map a b))
+--schema _ = schema (Proxy :: Proxy (M.Map a b))

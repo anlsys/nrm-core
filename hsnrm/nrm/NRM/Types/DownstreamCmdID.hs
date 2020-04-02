@@ -19,7 +19,6 @@ import Data.MessagePack
 import Data.String (IsString (..))
 import qualified Data.UUID as U
 import Protolude
-import Prelude (fail)
 
 newtype DownstreamCmdID = DownstreamCmdID U.UUID
   deriving (Show, Eq, Ord, Generic, Data, Read, ToJSONKey, FromJSONKey)
@@ -52,5 +51,5 @@ instance MessagePack DownstreamCmdID where
   fromObject x =
     fromObject x >>= \y ->
       case DownstreamCmdID <$> U.fromText y of
-        Nothing -> fail "Couldn't parse DownstreamCmdID"
+        Nothing -> panic "Couldn't parse DownstreamCmdID"
         Just t -> return t

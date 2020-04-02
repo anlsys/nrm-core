@@ -26,7 +26,7 @@ data ApplicationProcess
 data AppStartConfig
   = AppStartConfig
       { command :: Command,
-        arguments :: Arguments,
+        arguments :: [Arg],
         cmdID :: Cmd.CmdID
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
@@ -52,7 +52,7 @@ class
     runtime ->
     SliceID ->
     AppStartConfig ->
-    m (Either Text (runtime, Command, Arguments))
+    m (Either Text (runtime, Command, [Arg]))
 
   doStopSlice ::
     runtime ->

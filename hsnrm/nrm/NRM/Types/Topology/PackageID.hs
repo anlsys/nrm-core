@@ -20,11 +20,8 @@ import Refined.Orphan.Aeson ()
 
 -- | A Package OS identifier.
 newtype PackageID = PackageID Int
-  deriving (Eq, Ord, Show, Read, Generic, Data, FromJSONKey, ToJSONKey, MessagePack)
+  deriving (Show, Read, Eq, Ord, Generic, Data, FromJSONKey, ToJSONKey, MessagePack)
   deriving (FromJSON, ToJSON, JSONSchema) via GenericJSON PackageID
-
-instance IdFromString PackageID where
-  idFromString s = PackageID <$> readMaybe s
 
 instance ToHwlocType PackageID where
   getType _ = "Package"

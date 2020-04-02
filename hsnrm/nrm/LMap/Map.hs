@@ -1,5 +1,4 @@
 {-# LANGUAGE DerivingVia #-}
-{-# LANGUAGE PatternSynonyms #-}
 
 -- |
 -- Module      : LMap.Map
@@ -32,7 +31,7 @@ where
 
 import Control.Lens
 import Data.Data
-import qualified Data.Map as DM
+import qualified Data.Map as M
 import Data.MessagePack
 import Dhall hiding (maybe)
 import Protolude hiding (Map, toList)
@@ -40,7 +39,7 @@ import Protolude hiding (Map, toList)
 -- | Association list with Data.Map interface and Control.Lens.At
 -- instance. Useful to us because of the generic representation.
 newtype Map a b = Map [(a, b)]
-  deriving (Show, Generic, Data, MessagePack, Functor, Foldable)
+  deriving (Show, Generic, Data, MessagePack, Functor, Foldable, Traversable)
   deriving (Semigroup, Monoid, Inject, Interpret) via [(a, b)]
 
 mapKV :: ((a, b) -> (c, d)) -> Map a b -> Map c d
@@ -59,11 +58,11 @@ null _ = False
 singleton :: k -> v -> Map k v
 singleton k v = Map [(k, v)]
 
-fromDataMap :: DM.Map k v -> Map k v
-fromDataMap = fromList . DM.toList
+fromDataMap :: M.Map k v -> Map k v
+fromDataMap = fromList . M.toList
 
-toDataMap :: (Ord k) => Map k v -> DM.Map k v
-toDataMap = DM.fromList . toList
+toDataMap :: (Ord k) => Map k v -> M.Map k v
+toDataMap = M.fromList . toList
 
 fromList :: [(a, b)] -> Map a b
 fromList = Map
@@ -72,34 +71,34 @@ toList :: Map a b -> [(a, b)]
 toList (Map m) = m
 
 lookup :: Ord k => k -> Map k a -> Maybe a
-lookup k (Map m) = DM.lookup k (DM.fromList m)
+lookup k (Map m) = M.lookup k (M.fromList m)
 
 insert :: Ord k => k -> a -> Map k a -> Map k a
-insert k x (Map m) = DM.insert k x (DM.fromList m) & DM.toList & fromList
+insert k x (Map m) = M.insert k x (M.fromList m) & M.toList & fromList
 
 alter :: Ord k => (Maybe a -> Maybe a) -> k -> Map k a -> Map k a
-alter f k m = m & toList & DM.fromList & DM.alter f k & DM.toList & fromList
+alter f k m = m & toList & M.fromList & M.alter f k & M.toList & fromList
 
 delete :: Ord k => k -> Map k a -> Map k a
-delete k (Map m) = DM.delete k (DM.fromList m) & DM.toList & fromList
+delete k (Map m) = M.delete k (M.fromList m) & M.toList & fromList
 
 update :: Ord k => (a -> Maybe a) -> k -> Map k a -> Map k a
-update f k (Map m) = DM.update f k (DM.fromList m) & DM.toList & fromList
+update f k (Map m) = M.update f k (M.fromList m) & M.toList & fromList
 
 elems :: Ord k => Map k a -> [a]
-elems (Map m) = DM.elems (DM.fromList m)
+elems (Map m) = M.elems (M.fromList m)
 
 keys :: Ord k => Map k a -> [k]
-keys (Map m) = DM.keys (DM.fromList m)
+keys (Map m) = M.keys (M.fromList m)
 
 map :: (Ord k) => (a -> b) -> Map k a -> Map k b
-map f (Map m) = DM.map f (DM.fromList m) & DM.toList & fromList
+map f (Map m) = M.map f (M.fromList m) & M.toList & fromList
 
 mapWithKey :: (Ord k) => (k -> a -> b) -> Map k a -> Map k b
-mapWithKey f (Map m) = DM.mapWithKey f (DM.fromList m) & DM.toList & fromList
+mapWithKey f (Map m) = M.mapWithKey f (M.fromList m) & M.toList & fromList
 
 filterWithKey :: Ord k => (k -> a -> Bool) -> Map k a -> Map k a
-filterWithKey kf m = fromDataMap $ DM.filterWithKey kf (toDataMap m)
+filterWithKey kf m = fromDataMap $ M.filterWithKey kf (toDataMap m)
 
 type instance Index (Map k a) = k
 
@@ -117,3 +116,10 @@ instance Ord k => At (Map k a) where
       Just v' -> insert k v' m
     where
       mv = lookup k m
+
+instance (Ord k) => FunctorWithIndex k (Map k)
+
+instance (Ord k) => FoldableWithIndex k (Map k)
+
+instance (Ord k) => TraversableWithIndex k (Map k) where
+  itraverse f = sequenceA . mapWithKey f

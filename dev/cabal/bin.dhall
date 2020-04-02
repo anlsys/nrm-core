@@ -37,10 +37,6 @@ in    λ ( ghcPath
                           ]
                       , hs-source-dirs =
                           [ "bin" ]
-                      , c-sources =
-                          [ "glpk/glpk.c" ]
-                      , extra-libraries =
-                          [ "glpk" ]
                       }
                     ⫽ common.copts
                       [ "-Wmissed-specialisations"
@@ -68,10 +64,6 @@ in    λ ( ghcPath
                           [ common.nobound "nrmlib" ]
                       , hs-source-dirs =
                           [ "bin", "src", "hbandit/src" ]
-                      , c-sources =
-                          [ "glpk/glpk.c" ]
-                      , extra-libraries =
-                          [ "glpk" ]
                       }
                     ⫽ common.copts [ "-main-is", "Hnrm" ]
               , name =
@@ -88,18 +80,6 @@ in    λ ( ghcPath
                     ⫽ common.copts [ "-main-is", "Hnrm" ]
               , name =
                   "nrm"
-              }
-            , { executable =
-                    λ(config : types.Config)
-                  →   prelude.defaults.Executable
-                    ⫽ { main-is =
-                          "bin/Hnrmd.hs"
-                      , build-depends =
-                          [ common.nobound "nrmlib" ]
-                      }
-                    ⫽ common.copts [ "-main-is", "Hnrmd" ]
-              , name =
-                  "fake-daemon"
               }
             , { executable =
                     λ(config : types.Config)

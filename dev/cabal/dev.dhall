@@ -65,10 +65,6 @@ in    λ ( ghcPath
                           [ "bin", "nrm", "hbandit/src" ]
                       , other-modules =
                           common.allmodules
-                      , c-sources =
-                          [ "glpk/glpk.c" ]
-                      , extra-libraries =
-                          [ "glpk" ]
                       }
                     ⫽ common.copts
                       [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]
@@ -86,10 +82,6 @@ in    λ ( ghcPath
                           [ "bin", "nrm", "hbandit/src" ]
                       , other-modules =
                           common.allmodules
-                      , c-sources =
-                          [ "glpk/glpk.c" ]
-                      , extra-libraries =
-                          [ "glpk" ]
                       }
                     ⫽ common.copts
                       [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]

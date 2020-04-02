@@ -1,5 +1,5 @@
-{ mkDerivation, base, enclosed-exceptions, glpk, nrmlib, protolude
-, src, stdenv
+{ mkDerivation, base, enclosed-exceptions, nrmlib, protolude, src
+, stdenv
 }:
 mkDerivation {
   pname = "hsnrm";
@@ -10,7 +10,6 @@ mkDerivation {
   executableHaskellDepends = [
     base enclosed-exceptions nrmlib protolude
   ];
-  executableSystemDepends = [ glpk ];
   description = "hsnrm";
   license = stdenv.lib.licenses.bsd3;
 }

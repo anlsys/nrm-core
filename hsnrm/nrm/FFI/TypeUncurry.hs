@@ -1,8 +1,3 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeOperators #-}
-
 -- |
 -- Module      : FFI.TypeUncurry
 -- Copyright   : Copyright (c) 2018  Niklas Hambüchen.

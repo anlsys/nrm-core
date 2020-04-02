@@ -40,6 +40,8 @@ data Pub
     PubProgress Time DownstreamThreadID Progress
   | -- | Publishing when an action was taken.
     PubAction Time [CPD.Action] DecisionMetadata Controller
+  | -- | Publishing when a command ends.
+    PubEnd CmdID
   deriving (Show, Generic, MessagePack, NRMMessage)
 
 data Control

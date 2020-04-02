@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-incomplete-uni-patterns #-}
-{-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
-
 -- |
 -- Module      : NRM.Types.Topology.Package
 -- Copyright   : (c) UChicago Argonne, 2019
@@ -14,10 +11,10 @@ where
 
 import Control.Lens hiding ((...))
 import Data.Aeson hiding ((.=))
-import Data.Generics.Product
+import Data.Generics.Labels ()
 import Data.Maybe (fromJust)
 import Data.MessagePack
-import LMap.Map as DM
+import LMap.Map as LM
 import LensMap.Core
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
@@ -46,17 +43,18 @@ data Rapl
 newtype Package = Package {rapl :: Maybe Rapl}
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
+unsafeJAA :: p -> a -> Maybe a
 unsafeJAA _ = Just
 
 instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
   lenses (packageID, package) =
     rapl package & \case
-      Nothing -> DM.empty
+      Nothing -> LM.empty
       Just _ ->
-        DM.singleton
+        LM.singleton
           (A.RaplKey packageID)
           ( ScopedLens
-              ( _2 . field @"rapl"
+              ( _2 . #rapl
                   . lens fromJust unsafeJAA
                   . lens getter setter
               )
@@ -68,20 +66,21 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
             referenceAction = fromWatts defaultPower,
             go = setRAPLPowercap path . RAPLCommand . watts
           }
+      setter :: Rapl -> Actuator -> Rapl
       setter rapl (Actuator actions referenceAction _go) =
         rapl &~ do
-          field @"discreteChoices" .= fmap watts actions
-          field @"defaultPower" .= watts referenceAction
+          #discreteChoices .= fmap watts actions
+          #defaultPower .= watts referenceAction
 
 instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor where
   lenses (packageID, package) =
     rapl package & \case
-      Nothing -> DM.empty
+      Nothing -> LM.empty
       Just _ ->
-        DM.singleton
+        LM.singleton
           (S.RaplKey packageID)
           ( ScopedLens
-              ( _2 . field @"rapl"
+              ( _2 . #rapl
                   . lens fromJust unsafeJAA
                   . lens getter setter
               )
@@ -99,8 +98,9 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
             frequency = freq,
             perform = measureRAPLDir path <&> fmap (fromJoules . energy)
           }
+      setter :: Rapl -> S.PassiveSensor -> Rapl
       setter rapl passiveSensor =
         rapl &~ do
-          field @"max" .= passiveSensor ^. S._meta . field @"range" . to (watts . sup)
-          field @"history" .= passiveSensor ^. S._meta . field @"lastReferenceMeasurements"
-          field @"lastRead" .= (fmap joules <$> passiveSensor ^. S._meta . field @"last")
+          #max .= passiveSensor ^. S._meta . #range . to (watts . sup)
+          #history .= passiveSensor ^. S._meta . #lastReferenceMeasurements
+          #lastRead .= (fmap joules <$> passiveSensor ^. S._meta . #last)

@@ -42,10 +42,34 @@ pkgs // rec {
       ${haskellPackages.dhall-to-cabal}/bin/dhall-to-cabal <<< "./${dhallFileName} \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
     '';
 
+  nrmstatic = let
+    staticCabal = cabalFile ./cabal "static.dhall";
+    staticNix = (haskellPackages.haskellSrc2nix {
+      name = "hsnrm";
+      src = patchedSrc (src + "/hsnrm") staticCabal;
+      extraCabal2nixOptions = "--extra-arguments src";
+    });
+  in (pkgs.pkgsMusl.haskellPackages.callPackage staticNix ({ })).overrideAttrs
+  (o: {
+    doHoogle = false;
+    isLibrary = false;
+    isExecutable = true;
+    enableSharedExecutables = false;
+    enableSharedLibraries = false;
+    configureFlags = o.configureFlags ++ [
+      "--ghc-option=-optl=-static"
+      "--extra-lib-dirs=${pkgs.gmp6.override { withStatic = true; }}/lib"
+      "--extra-lib-dirs=${pkgs.zlib.static}/lib"
+      "--extra-lib-dirs=${
+        pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })
+      }/lib"
+    ];
+  });
+
   patchedSrc = source: cabalFile:
     pkgs.runCommand "patchedSrc" { } ''
       mkdir -p $out
-      cp -r ${source}/ $out
+      cp -r ${source}/* $out
       chmod -R +rw $out
       cp ${cabalFile} $out/hsnrm.cabal
     '';
@@ -60,6 +84,22 @@ pkgs // rec {
   in (import source { }).ormolu;
 
   nrmso-nodoc = pkgs.haskell.lib.dontHaddock haskellPackages.nrmlib;
+
+  static = pkgs.haskell.lib.overrideCabal
+    (pkgs.haskell.lib.dontHaddock haskellPackages.nrmbin) (drv: {
+
+      enableSharedExecutables = false;
+      enableSharedLibraries = false;
+      configureFlags = [
+        "--ghc-option=-optl=-shared"
+        "--ghc-option=-optl=-dynamic"
+        "--ghc-option=-optl=-fPIC"
+        "--ghc-option=-optl=-L${pkgs.gmp6.override { withStatic = true; }}/lib"
+        "--ghc-option=-optl=-L${pkgs.zlib.static}/lib"
+        "--ghc-option=-optl=-L${pkgs.glibc.static}/lib"
+      ];
+
+    });
 
   resources = pkgs.runCommand "patchedSrc" { } ''
     mkdir -p $out/share/nrm
@@ -156,6 +196,7 @@ pkgs // rec {
                 purrr
                 ggthemes
                 ggplot2
+                RcppRoll
                 latex2exp
                 plotly
                 phantomjs
@@ -184,9 +225,9 @@ pkgs // rec {
     cabalFileLib = cabalFile ./cabal "lib.dhall";
     cabalFileBin = cabalFile ./cabal "bin.dhall";
   in pkgs.mkShell {
-    CABALFILE = cabalFile ./cabal "dev.dhall"; # for easy manual vendoring
-    CABALFILE_LIB = cabalFileLib; # for easy manual vendoring
-    CABALFILE_BIN = cabalFileBin; # for easy manual vendoring
+    CABALFILE = cabalFile ./cabal "dev.dhall";
+    CABALFILE_LIB = cabalFileLib;
+    CABALFILE_BIN = cabalFileBin;
     NIXFILE_LIB = (haskellPackages.haskellSrc2nix {
       name = "hsnrm";
       src = patchedSrc (src + "/hsnrm") cabalFileLib;
@@ -198,34 +239,36 @@ pkgs // rec {
       extraCabal2nixOptions = "--extra-arguments src";
     });
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
-    buildInputs = [ pkgs.hwloc haskellPackages.dhrun ];
+    buildInputs = [ pkgs.hwloc haskellPackages.dhrun  pkgs.which pkgs.jq pkgs.yq];
     shellHook = ''
       # path for NRM dev experimentation
       export PYNRMSO=${
+      # export for locating the client-side shared lib
+      # (used by python lib nrm.tooling)
         builtins.toPath ../.
       }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
       export NRMSO=${
+      #export for locating the server-side shared lib
+      # (used by `nrmd`)
         builtins.toPath ../.
       }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
       export PATH=${builtins.toPath ../.}/dev/:${
+      #export for locating the client and server binaries
+      # (`nrmd`, `nrm-perfwrapper`)
         builtins.toPath ../.
       }/pynrm/bin:${
+      #export for locating the client binary
+      # (`nrm`)
         builtins.toPath ../.
       }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
+      # export for locating the nrm python libraries
+      # (`nrm.<module>`)
       export PYTHONPATH=${builtins.toPath ../.}/pynrm/:$PYTHONPATH
-      # exports for `ghcide` use
+      # exports for `ghcide` use:
       export NIX_GHC="${haskellPackages.nrmlib.env.NIX_GHC}"
       export NIX_GHCPKG="${haskellPackages.nrmlib.env.NIX_GHCPKG}"
       export NIX_GHC_DOCDIR="${haskellPackages.nrmlib.env.NIX_GHC_DOCDIR}"
       export NIX_GHC_LIBDIR="${haskellPackages.nrmlib.env.NIX_GHC_LIBDIR}"
-      cp $CABALFILE hsnrm/hsnrm.cabal
-      cp $CABALFILE_LIB dev/pkgs/hnrm/lib.cabal
-      cp $CABALFILE_BIN dev/pkgs/hnrm/bin.cabal
-      cp $NIXFILE_LIB/default.nix dev/pkgs/hnrm/lib.nix
-      cp $NIXFILE_BIN/default.nix dev/pkgs/hnrm/bin.nix
-      chmod +rw hsnrm/hsnrm.cabal dev/pkgs/hnrm/bin.nix dev/pkgs/hnrm/lib.nix dev/pkgs/hnrm/bin.cabal dev/pkgs/hnrm/lib.cabal
-      sed -i 's/src = .*/inherit src;/' dev/pkgs/hnrm/lib.nix
-      sed -i 's/src = .*/inherit src;/' dev/pkgs/hnrm/bin.nix
     '';
     LC_ALL = "en_US.UTF-8";
     LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
@@ -234,28 +277,30 @@ pkgs // rec {
   hack-with-devtools =
     hack.overrideAttrs (o: { buildInputs = o.buildInputs ++ [ ormolu ]; });
 
+  myRPackages = with pkgs.rPackages; [
+    tidyr
+    purrr
+    ggthemes
+    ggplot2
+    RcppRoll
+    latex2exp
+    plotly
+    phantomjs
+    webshot
+    pracma
+    knitr
+    JuniperKernel
+  ];
+
   expe = hack-with-devtools.overrideAttrs (o: {
     buildInputs = o.buildInputs ++ [
       pkgs.phantomjs
       pkgs.pandoc
       pkgs.daemonize
-      jupyterWithBatteries
+      #jupyterWithBatteries
       pkgs.texlive.combined.scheme-full
-      (pkgs.rstudioWrapper.override {
-        packages = with pkgs.rPackages; [
-          tidyr
-          purrr
-          ggthemes
-          ggplot2
-          latex2exp
-          plotly
-          phantomjs
-          webshot
-          pracma
-          knitr
-          JuniperKernel
-        ];
-      })
+      (pkgs.rstudioWrapper.override { packages = myRPackages; })
+      (pkgs.rWrapper.override { packages = myRPackages; })
     ];
     shellHook = o.shellHook + ''
       export JUPYTER_PATH=$JUPYTER_PATH:${builtins.toPath ../.}/pynrm/

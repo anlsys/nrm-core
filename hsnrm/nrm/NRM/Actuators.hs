@@ -10,7 +10,7 @@ where
 
 import qualified CPD.Core as CPD
 import Control.Lens
-import LMap.Map as DM
+import LMap.Map as LM
 import LensMap.Core
 import NRM.Classes.Actuators
 import NRM.Types.Actuator
@@ -19,7 +19,7 @@ import Protolude hiding (Map)
 
 cpdActuators :: NRMState -> Map CPD.ActuatorID CPD.Actuator
 cpdActuators st =
-  DM.fromList $
-    DM.toList
+  LM.fromList $
+    LM.toList
       (lenses st :: LensMap NRMState ActuatorKey Actuator)
       <&> \(k, ScopedLens sl) -> toCPDActuator (k, view sl st)

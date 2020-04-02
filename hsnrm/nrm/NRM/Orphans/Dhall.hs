@@ -12,7 +12,7 @@ module NRM.Orphans.Dhall
 where
 
 import Data.Functor.Contravariant (contramap)
-import Data.Map as DM
+import Data.Map as M
 import Dhall
 import Protolude
 
@@ -25,7 +25,7 @@ instance
   where
   autoWith _ =
     fmap
-      DM.fromList
+      M.fromList
       ( Dhall.list
           (pair (auto :: Dhall.Type a) (auto :: Dhall.Type b))
       )
@@ -34,4 +34,4 @@ instance
   (Inject a, Inject b) =>
   Dhall.Inject (Map a b)
   where
-  injectWith = fmap (contramap DM.toList) Dhall.injectWith
+  injectWith = fmap (contramap M.toList) Dhall.injectWith

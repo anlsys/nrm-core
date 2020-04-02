@@ -1,6 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE TypeApplications #-}
-
 -- |
 -- Module      : NRM.Types.State
 -- Copyright   : (c) UChicago Argonne, 2019
@@ -16,11 +13,8 @@ module NRM.Types.State
     cmdIDMap,
     pidMap,
     awaitingCmdIDMap,
-    runningCmdIDCmdMap,
-    awaitingCmdIDCmdMap,
 
     -- * lookups
-    lookupCmd,
     lookupProcess,
 
     -- * Rendering views
@@ -36,7 +30,7 @@ where
 import Control.Lens
 import Data.Aeson
 import Data.Data
-import Data.Generics.Product
+import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.MessagePack
 import LMap.Map as LM
@@ -70,19 +64,19 @@ data NRMState
 instance HasLensMap NRMState ActuatorKey Actuator where
   lenses s =
     mconcat
-      [ addPath (field @"packages") <$> lenses (view (field @"packages") s)
+      [ addPath #packages <$> lenses (view #packages s)
       ]
 
 instance HasLensMap NRMState ActiveSensorKey ActiveSensor where
   lenses s =
     mconcat
-      [ addPath (field @"slices") <$> lenses (view (field @"slices") s)
+      [ addPath #slices <$> lenses (view #slices s)
       ]
 
 instance HasLensMap NRMState PassiveSensorKey PassiveSensor where
   lenses s =
     mconcat
-      [ addPath (field @"packages") <$> lenses (view (field @"packages") s)
+      [ addPath #packages <$> lenses (view #packages s)
       ]
 
 instance JSONSchema NRMState where
@@ -98,17 +92,9 @@ showSliceList l =
       " command: ID " <> CmdID.toText cmdID
         <> descSpec cmdPath arguments
         <> "\n"
-    descSpec ::
-      ( IsString a,
-        Monoid a,
-        StringConv Text a,
-        StringConv Arg a
-      ) =>
-      Command ->
-      Arguments ->
-      a
-    descSpec (Command cmd) (Arguments args) =
-      " : " <> toS cmd <> " " <> (mconcat . intersperse " " $ toS <$> args)
+    descSpec (Command cmd) args =
+      " : " <> toS cmd <> " " <> (mconcat . intersperse " " $ showArg <$> args)
+    showArg (Arg a) = a
 
 -- | Renders a textual view of running slices
 showSlices :: NRMState -> Text
@@ -139,7 +125,7 @@ mkTriple (cid, c) (cmid, cm) = (cmid, cm, cid, c)
 lookupCmd :: CmdID -> NRMState -> Maybe (Cmd, SliceID, Slice)
 lookupCmd cmdID st = LM.lookup cmdID (cmdIDMap st)
 
--- | NRM state map view by cmdID of "running" commands..
+-- | NRM state map view by cmdID of "running" commands.
 cmdIDMap :: NRMState -> LM.Map CmdID (Cmd, SliceID, Slice)
 cmdIDMap = mkCmdIDMap cmds
 
@@ -162,29 +148,9 @@ mkCmdIDMap accessor s = mconcat $ LM.toList (slices s) <&> mkMap
     mk :: (b, c) -> a -> (a, b, c)
     mk (cid, c) cm = (cm, cid, c)
 
-{-# WARNING runningCmdIDCmdMap "To remove" #-}
-
--- | List commands currently registered as running
-runningCmdIDCmdMap :: NRMState -> LM.Map CmdID Cmd
-runningCmdIDCmdMap = cmdsMap cmds
-
--- | List commands awaiting to be launched
-awaitingCmdIDCmdMap :: NRMState -> LM.Map CmdID CmdCore
-awaitingCmdIDCmdMap = cmdsMap awaiting
-
--- | List commands awaiting to be launched
-cmdsMap ::
-  (Slice -> LM.Map CmdID a) ->
-  NRMState ->
-  LM.Map CmdID a
-cmdsMap accessor s =
-  LM.fromList . LM.toList . mconcat $
-    accessor
-      <$> LM.elems (slices s)
-
 -- Lenses
 _sliceID :: SliceID -> Lens' NRMState (Maybe Slice)
-_sliceID sliceID = field @"slices" . at sliceID
+_sliceID sliceID = #slices . at sliceID
 
 _cmdID :: CmdID -> Lens' NRMState (Maybe Cmd)
 _cmdID cmdID = lens getter setter
@@ -194,7 +160,7 @@ _cmdID cmdID = lens getter setter
     setter st (Just cmd) =
       lookupCmd cmdID st & \case
         Just (_, sliceID, slice) ->
-          st & _sliceID sliceID ?~ (slice & (field @"cmds" . at cmdID) ?~ cmd)
+          st & _sliceID sliceID ?~ (slice & (#cmds . at cmdID) ?~ cmd)
         Nothing -> st
     setter st Nothing =
       lookupCmd cmdID st & \case
@@ -206,4 +172,4 @@ _cmdID cmdID = lens getter setter
       x >>= \slice ->
         if length (cmds slice) == 1
           then Nothing
-          else Just $ slice & field @"cmds" . at cmdID .~ Nothing
+          else Just $ slice & #cmds . at cmdID .~ Nothing

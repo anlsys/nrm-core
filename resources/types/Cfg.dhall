@@ -40,10 +40,10 @@
     Optional
     { raplPath :
         Text
-    , raplFrequency :
-        { fromHz : Double }
     , raplActions :
         List { fromuW : Double }
+    , referencePower :
+        { fromuW : Double }
     }
 , hwmonCfg :
     { hwmonEnabled : Bool, hwmonPath : Text }
@@ -78,4 +78,6 @@
     | FixedCommand :
         { fixedPower : { fromuW : Double } }
     >
+, activeSensorFrequency :
+    { fromHz : Double }
 }

@@ -17,7 +17,6 @@ import Data.Maybe
 import Data.MessagePack
 import Dhall
 import Protolude
-import Prelude (fail)
 
 instance (JSONSchema a) => JSONSchema (NonEmpty a) where
   schema _ = schema (Proxy :: Proxy [a])
@@ -29,7 +28,7 @@ instance (MessagePack a) => MessagePack (NonEmpty a) where
   fromObject x =
     fromObject x >>= \y ->
       case nonEmpty y of
-        Nothing -> fail "NonEmpty error in msgpack message"
+        Nothing -> panic "NonEmpty error in msgpack message"
         Just t -> return t
 
 instance (Interpret a) => Interpret (NonEmpty a) where

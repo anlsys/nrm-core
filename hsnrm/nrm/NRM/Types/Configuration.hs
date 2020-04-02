@@ -1,5 +1,4 @@
 {-# LANGUAGE DerivingVia #-}
-{-# OPTIONS_GHC -fno-warn-incomplete-patterns #-}
 {-# OPTIONS_GHC -fno-warn-partial-fields #-}
 
 -- |
@@ -61,7 +60,8 @@ data Cfg
         upstreamCfg :: UpstreamCfg,
         raplCfg :: Maybe RaplCfg,
         hwmonCfg :: HwmonCfg,
-        controlCfg :: ControlCfg
+        controlCfg :: ControlCfg,
+        activeSensorFrequency :: Frequency
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
@@ -92,8 +92,8 @@ data HwmonCfg
 data RaplCfg
   = RaplCfg
       { raplPath :: Text,
-        raplFrequency :: Frequency,
-        raplActions :: [Power]
+        raplActions :: [Power],
+        referencePower :: Power
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON RaplCfg
@@ -133,8 +133,8 @@ instance Default HwmonCfg where
 instance Default RaplCfg where
   def = RaplCfg
     { raplPath = "/sys/devices/virtual/powercap/intel-rapl",
-      raplFrequency = 1 & hz,
-      raplActions = watts <$> [100, 200]
+      raplActions = watts <$> [100, 200],
+      referencePower = watts 250
     }
 
 instance Default DownstreamCfg where
@@ -158,7 +158,8 @@ instance Default Cfg where
       raplCfg = Just def,
       hwmonCfg = def,
       verbose = NRM.Types.Configuration.Error,
-      controlCfg = FixedCommand (watts 200)
+      controlCfg = FixedCommand (watts 250),
+      activeSensorFrequency = 1 & hz
     }
 
 instance Default UpstreamCfg where

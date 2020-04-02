@@ -14,12 +14,14 @@ singularity: false
 argo_nodeos_config: argo_nodeos_config
 controlCfg:
   fixedPower:
-    fromuW: 200000000
+    fromuW: 250000000
 upstreamCfg:
   upstreamBindAddress: '*'
   rpcPort: 3456
   pubPort: 2345
 libnrmPath: null
+activeSensorFrequency:
+  fromHz: 1
 perf: perf
 argo_perf_wrapper: nrm-perfwrapper
 downstreamCfg:
@@ -27,11 +29,11 @@ downstreamCfg:
 nodeos: false
 hwloc: hwloc
 raplCfg:
+  referencePower:
+    fromuW: 250000000
   raplActions:
   - fromuW: 100000000
   - fromuW: 200000000
-  raplFrequency:
-    fromHz: 1
   raplPath: /sys/devices/virtual/powercap/intel-rapl
 dummy: true
 slice_runtime: Dummy

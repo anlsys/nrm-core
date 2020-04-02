@@ -18,7 +18,7 @@ import CPD.Core
 import Control.Lens hiding ((...))
 import Data.Coerce
 import HBandit.Types
-import LMap.Map as DM
+import LMap.Map as LM
 import LensMap.Core
 import NRM.Actuators
 import NRM.Sensors
@@ -54,7 +54,7 @@ throughputConstrained cfg st =
         let powerTerm =
               coerce (foldMap (OExprSum . sID) ids)
                 \+ scalar (fromWatts $ staticPower cfg)
-         in [(HBandit.Types.one, maybe powerTerm (powerTerm \*) normalizedSumSlowdown)],
+         in [(HBandit.Types.one, maybe powerTerm (powerTerm \/) normalizedSumSlowdown)],
     normalizedSumSlowdown & \case
       Nothing -> []
       Just expr -> [(speedThreshold cfg, expr)]
@@ -62,22 +62,22 @@ throughputConstrained cfg st =
   where
     normalizedSumSlowdown :: Maybe OExpr
     normalizedSumSlowdown =
-      nonEmpty (DM.toList constrained) <&> \(fmap fst -> ids) ->
-        thresholded 0.5 1.5 (coerce (foldMap (OExprSum . sRef) ids) \/ (coerce (foldMap (OExprSum . sID) ids) \+ scalar 1))
+      nonEmpty (LM.toList constrained) <&> \(fmap fst -> ids) ->
+        thresholded 0.5 1.5 (coerce (foldMap (OExprSum . sID) ids) \/ (coerce (foldMap (OExprSum . sRef) ids) \+ scalar 1))
     idsToMinimize :: Maybe (NonEmpty SensorID)
-    idsToMinimize = nonEmpty (fst <$> DM.toList toMinimize)
+    idsToMinimize = nonEmpty (fst <$> LM.toList toMinimize)
     toMinimize :: Map SensorID SensorMeta
-    toMinimize = DM.filterWithKey (\_ m -> Power `elem` tags m) allSensorMeta
+    toMinimize = LM.filterWithKey (\_ m -> Power `elem` tags m) allSensorMeta
     constrained :: Map SensorID SensorMeta
-    constrained = DM.filterWithKey (\_ m -> DownstreamCmdSignal `elem` tags m) allSensorMeta
+    constrained = LM.filterWithKey (\_ m -> DownstreamCmdSignal `elem` tags m) allSensorMeta
     allSensorMeta :: Map SensorID S.SensorMeta
     allSensorMeta =
-      DM.fromList
+      LM.fromList
         ( (bimap toS (\(ScopedLens l) -> st ^. l . _meta) <$> lA)
             <> (bimap toS (\(ScopedLens l) -> st ^. l . _meta) <$> lP)
         )
-    lA = DM.toList (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor)
-    lP = DM.toList (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor)
+    lA = LM.toList (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor)
+    lP = LM.toList (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor)
 
 -- | produces a sum objective normalized by #sensors
 addAll :: NonEmpty SensorID -> OExpr
