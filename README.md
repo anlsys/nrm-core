@@ -7,8 +7,6 @@ Multi-Armed Bandit implementations: EXP, BwCR (wip), Exp4.R
 Provision using either Cabal or Nix toolchain. Both cabal file and nix packages
 are provided in the repository.
 
-Dependencies: hackage packages, glpk
-
 ## Notebooks
 
 Provision using Nix (`nix-shell`) and run notebook
