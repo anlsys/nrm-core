@@ -1,6 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeApplications #-}
 
 -- |
 -- Module      : HBandit.Exp4R
@@ -36,7 +35,7 @@ module HBandit.Exp4R
 where
 
 import Control.Lens
-import Data.Generics.Product
+import Data.Generics.Labels ()
 import Data.List.NonEmpty as NE
 import HBandit.Class
 import HBandit.Types
@@ -108,10 +107,10 @@ instance
       }
 
   stepCtx g feedback s = do
-    weightedAdvice <- use (field @"experts") <&> fmap (fmap (($ s) . represent))
-    lastAction <- use (field @"lastAction")
+    weightedAdvice <- use #experts <&> fmap (fmap (($ s) . represent))
+    lastAction <- use #lastAction
     fromMaybe
-      (return ())
+      pass
       (update weightedAdvice <$> lastAction <*> feedback)
     let armDistribution :: NonEmpty (ZeroOne Double, a)
         armDistribution =
@@ -130,7 +129,7 @@ instance
             (panic "internal Exp4R algorithm failure: weight computation")
             fst
             (find (\x -> snd x == a) e)
-    field @"lastAction" ?= LastAction a p_a probabilityOf_a
+    #lastAction ?= LastAction a p_a probabilityOf_a
     return (a, g')
 
 update ::
@@ -142,32 +141,22 @@ update ::
 update
   weightedAdvice
   (LastAction _ (R.unrefine -> p_a) (fmap R.unrefine -> pPolicy_a))
-  (Feedback (R.unrefine -> c) (R.unrefine -> r)) =
-    do
-      lam <- R.unrefine <$> use (field @"lambda")
-      delta <- get <&> mkDelta
-      mu <- get <&> mkMu
-      beta <- use (field @"constraint") <&> R.unrefine
-      let numeratorTerm (R.unrefine -> w, _) p =
-            w * exp (- mu * (p * (lam * r + c) / p_a))
-      let wUpdate =
-            NE.zipWith numeratorTerm weightedAdvice pPolicy_a
-          wDenom =
-            getSum $ sconcat $ Sum <$> wUpdate
-      field @"experts"
-        %= NE.zipWith
-          (\w' (_, e) -> (unsafeNormalizePanic w' wDenom, e))
-          wUpdate
-      let fDot (R.unrefine -> w, _) p = w * r * p / p_a
-      let dotted =
-            getSum
-              ( sconcat
-                  (Sum <$> NE.zipWith fDot weightedAdvice pPolicy_a)
-              )
-      field @"lambda"
-        .= R.unsafeRefine
-          ( max 0 (lam + mu * (dotted - beta - delta * mu * lam))
-          )
+  (Feedback (R.unrefine -> c) (R.unrefine -> r)) = do
+    lam <- R.unrefine <$> use #lambda
+    delta <- get <&> mkDelta
+    mu <- get <&> mkMu
+    beta <- use #constraint <&> R.unrefine
+    let numeratorTerm (R.unrefine -> w, _) p =
+          w * exp (- mu * (p * (lam * r + c) / p_a))
+        wUpdate = NE.zipWith numeratorTerm weightedAdvice pPolicy_a
+        wDenom = getSum . sconcat $ Sum <$> wUpdate
+    #experts
+      %= NE.zipWith (\w' (_, e) -> (unsafeNormalizePanic w' wDenom, e)) wUpdate
+    let fDot (R.unrefine -> w, _) p = w * r * p / p_a
+    let dotted =
+          getSum $ sconcat (Sum <$> NE.zipWith fDot weightedAdvice pPolicy_a)
+    #lambda
+      .= R.unsafeRefine (max 0 (lam + mu * (dotted - beta - delta * mu * lam)))
 
 -- | combineAdvice turns weighted expert advice into a probability distribution to
 -- sample from.

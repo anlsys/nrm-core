@@ -39,17 +39,6 @@ hlint:
   script:
     - nix-shell --pure -p '(import ./.).hlint' --run bash <<< 'hlint src/ --hint=./.hlint.yaml'
 
-black:
-  stage: source
-  tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell --pure -p '(import ./.).pythonPackages.black' --run bash <<< '
-        black validation/*.py --check
-      '
-
 dhall-format:
   stage: source
   tags:
@@ -75,7 +64,6 @@ nix-build:
     - kvm
     - nix
   script: nix-build -A hbandit --no-build-output
-
 
 check-vendored-documentation:
   stage: docs

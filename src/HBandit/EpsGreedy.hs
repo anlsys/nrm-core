@@ -6,7 +6,7 @@
 --
 -- This module implements the fixed rate \(\epsilon\)-Greedy MAB algorithm.
 --
--- The E\(\epsilon\)-Greedy algorithm selects a random action with
+-- The \(\epsilon\)()-Greedy algorithm selects a random action with
 -- probability \(\epsilon\), or select the action with best average
 -- with probability \(1-\epsilon\).
 module HBandit.EpsGreedy
@@ -16,11 +16,12 @@ module HBandit.EpsGreedy
     ScreeningGreedy (..),
     ExploreExploitGreedy (..),
     pickreturn,
-    pickAction,
+    pickRandom,
     updateAvgLoss,
   )
 where
 
+import Control.Monad.Random as MR (fromList, runRand)
 import HBandit.Class
 import HBandit.Util
 import Protolude
@@ -32,6 +33,7 @@ data EpsGreedy a
     Screening (ScreeningGreedy a)
   | -- | The sampling procedure has started.
     ExploreExploit (ExploreExploitGreedy a)
+  deriving (Show)
 
 data ScreeningGreedy a
   = ScreeningGreedy
@@ -41,6 +43,7 @@ data ScreeningGreedy a
         screened :: [(Double, a)],
         screenQueue :: [a]
       }
+  deriving (Show)
 
 data ExploreExploitGreedy a
   = ExploreExploitGreedy
@@ -50,6 +53,7 @@ data ExploreExploitGreedy a
         k :: Int,
         weights :: NonEmpty (Weight a)
       }
+  deriving (Show)
 
 -- | The information maintaining structure for one action.
 data Weight a
@@ -58,6 +62,7 @@ data Weight a
         hits :: Int,
         action :: a
       }
+  deriving (Show)
   deriving (Generic)
 
 -- | The epsilon-greedy hyperparameter.
@@ -66,6 +71,7 @@ data EpsGreedyHyper a
       { epsilon :: Double,
         arms :: Arms a
       }
+  deriving (Show)
 
 -- | The fixed rate \(\epsilon\)-Greedy MAB algorithm.
 -- Offers no interesting guarantees, works well in practice.
@@ -126,20 +132,22 @@ pickreturn ::
   g ->
   m (b, g)
 pickreturn eeg g = do
-  let (a, g') = pickAction eeg g
-  put $ ExploreExploit $ eeg {lastAction = a}
+  let (a, g') = runRand (MR.fromList [(True, toRational $ eps eeg), (False, toRational $ 1 - eps eeg)]) g & \case
+        (True, g'') -> pickRandom eeg g''
+        (False, g'') -> (action $ minimumBy (\(averageLoss -> a1) (averageLoss -> a2) -> compare a1 a2) (weights eeg), g'')
+  put . ExploreExploit $ eeg {lastAction = a}
   return (a, g')
 
--- | Action selection primitive
-pickAction :: (RandomGen g) => ExploreExploitGreedy a -> g -> (a, g)
-pickAction ExploreExploitGreedy {..} =
+-- | Random action selection primitive
+pickRandom :: (RandomGen g) => ExploreExploitGreedy a -> g -> (a, g)
+pickRandom ExploreExploitGreedy {..} =
   sampleWL $
     fromMaybe
       (panic "distribution normalization failure")
       (normalizeDistribution $ weights <&> w2tuple)
   where
     w2tuple :: Weight b -> (Double, b)
-    w2tuple (Weight avgloss _hits action) = (avgloss, action)
+    w2tuple (Weight _avgloss _hits action) = (1, action)
 
 -- | rudimentary online mean accumulator.
 updateAvgLoss :: Double -> Weight a -> Weight a

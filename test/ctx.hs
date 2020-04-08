@@ -1,11 +1,13 @@
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE OverloadedLists #-}
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+
+module Main
+  ( main,
+  )
+where
 
 import Control.Lens
 import Control.Monad.Primitive
-import Data.Generics.Product
+import Data.Generics.Labels ()
 import Data.Sequence
 import H.Prelude as R
 import HBandit.Class
@@ -46,21 +48,21 @@ onePass ::
   m ()
 onePass dataset =
   for_ dataset $ \(c1, c2, c3, r1, r2, r3) ->
-    use (field @"bandit" . field @"lastAction") >>= \case
+    use (#bandit . #lastAction) >>= \case
       Just (LastAction a _ _) -> do
         let (c, r) = case a of
               1 -> (c1, r1)
               2 -> (c2, r2)
               3 -> (c3, r3)
         g <- liftIO getStdGen
-        (a', g') <- zoom (field @"bandit") $ stepCtx g (Just $ Feedback c r) ()
+        (a', g') <- zoom (#bandit) $ stepCtx g (Just $ Feedback c r) ()
         liftIO $ setStdGen g'
-        field @"historyActions" %= (Data.Sequence.|> a')
-        field @"historyCosts" %= (Data.Sequence.|> unrefine c)
-        field @"historyConstraints" %= (Data.Sequence.|> unrefine r)
+        #historyActions %= (Data.Sequence.|> a')
+        #historyCosts %= (Data.Sequence.|> unrefine c)
+        #historyConstraints %= (Data.Sequence.|> unrefine r)
       Nothing -> do
         g <- liftIO getStdGen
-        (a', g') <- zoom (field @"bandit") $ stepCtx g Nothing ()
+        (a', g') <- zoom (#bandit) $ stepCtx g Nothing ()
         liftIO $ setStdGen g'
 
 plot1pass ::
@@ -123,8 +125,8 @@ plot1pass one_cost two_cost three_cost one_risk two_risk three_risk = do
                   geom_hline(yintercept = 0.9, linetype="dashed", color = "black") +
                   geom_hline(yintercept = 0.3, linetype="dashed", color = "black") +
                   geom_hline(yintercept = 0.4, linetype="dashed", color = "green")
-    ggsave("cost.pdf", costPlot)
-    ggsave("risk.pdf", riskPlot)
+    ggsave("data/cost.png", costPlot)
+    ggsave("data/risk.png", riskPlot)
   |]
   where
     expertsC :: NonEmpty (ObliviousRep Int)
@@ -147,6 +149,7 @@ experiment ::
   (MonadR m) =>
   Double ->
   m (SomeSEXP (PrimState m))
+
 experiment n = do
   one_cost <- gen01TS 0.3 <&> fromSomeSEXP
   two_cost <- gen01TS 0.7 <&> fromSomeSEXP

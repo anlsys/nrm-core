@@ -25,10 +25,9 @@ import HBandit.Types
 import Protolude
 import System.Random
 
--- | Bandit b hyper f a l is the class for a bandit algorithm. This is mostly
--- here to help structure the library itself.  We have the following bandit
--- process, (say, parametrized by hyperparameter \(\eta \in \mathbb{H}\)) for
--- \(t \in {1,\ldots,T}\):
+-- | Bandit b hyper a l is the class for a bandit algorithm. We have the
+-- following bandit process, (say, parametrized by hyperparameter
+-- \(\eta \in \mathbb{H}\)) for \(t \in {1,\ldots,T}\):
 --
 -- - Nature selects losses \(\ell_{a}^t \in \mathbb{L} \forall a \in \mathbb{A}\)
 --

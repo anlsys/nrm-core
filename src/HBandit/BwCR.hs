@@ -109,6 +109,7 @@ data BwCRHyper a l
       }
   deriving (Generic)
 
+-- | The Bandits with Concave Rewards and Convex Knapsacks (BwCR) algorithm.
 instance Bandit (BwCR a [ZeroOne Double]) (BwCRHyper a [ZeroOne Double]) a [ZeroOne Double] where
 
   init g h@(BwCRHyper _ (Arms (a :| as)) _ _) =
@@ -162,7 +163,7 @@ pickreturn ::
   m (a, g)
 pickreturn eeg g = do
   let a = pickAction eeg
-  put $ UCB $ eeg {lastAction = a}
+  put . UCB $ eeg {lastAction = a}
   return (a, g)
 
 -- | The BwCR algorithm with a linear combination as objective. Under IID data sources,

@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-incomplete-patterns #-}
-{-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
-
 -- |
 -- Module      : HBandit.Util
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
