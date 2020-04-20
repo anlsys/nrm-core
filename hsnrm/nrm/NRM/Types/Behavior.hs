@@ -64,7 +64,7 @@ data Behavior
   | -- | Publish messages on upstream
     Pub UPub.Pub
   | -- | Start a child process
-    StartChild CmdID Command Arguments Env
+    StartChild CmdID Command [Arg] Env
   | -- | Kill children processes and send some messages back upstream.
     KillChildren [CmdID] [(UpstreamClientID, Rep)]
   | -- | Pop one child process and may send a message back upstream.

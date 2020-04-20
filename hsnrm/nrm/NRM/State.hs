@@ -55,17 +55,18 @@ initialState c time = do
         LM.fromList $
           (,Package {rapl = Nothing})
             <$> selectPackageIDs hwl
-  packages <- raplCfg c & \case
-    Nothing -> return packages'
-    Just raplc ->
-      getDefaultRAPLDirs (toS $ Cfg.raplPath raplc) >>= \case
-        Just (RAPLDirs rapldirs) ->
-          return $
-            Protolude.foldl
-              (goRAPL (raplActions raplc))
-              packages'
-              (LM.toList rapldirs)
-        Nothing -> return packages'
+  packages <-
+    raplCfg c & \case
+      Nothing -> return packages'
+      Just raplc ->
+        getDefaultRAPLDirs (toS $ Cfg.raplPath raplc) >>= \case
+          Just (RAPLDirs rapldirs) ->
+            return $
+              Protolude.foldl
+                (goRAPL (referencePower raplc) (raplActions raplc))
+                packages'
+                (LM.toList rapldirs)
+          Nothing -> return packages'
   controlCfg c & \case
     FixedCommand (fromWatts -> cap) ->
       for_ (LM.toList packages) $ \(pkid, pk) ->
@@ -76,7 +77,7 @@ initialState c time = do
               )
           )
           $ \(_, ScopedLens l) -> go ((pkid, pk) ^. l) cap
-    _ -> return ()
+    _ -> pass
   return NRMState
     { controller = controlCfg c & \case
         FixedCommand _ -> Nothing
@@ -100,11 +101,12 @@ initialState c time = do
     }
   where
     goRAPL ::
+      Power ->
       [Power] ->
       LM.Map PackageID Package ->
       (PackageID, RAPLDir) ->
       LM.Map PackageID Package
-    goRAPL defA m (pkgid, RAPLDir {..}) =
+    goRAPL defP defA m (pkgid, RAPLDir {..}) =
       LM.lookup pkgid m & \case
         Nothing -> m
         Just oldPackage ->
@@ -116,7 +118,7 @@ initialState c time = do
                       raplPath = path,
                       maxEnergyCounterValue = maxEnergy,
                       max = watts 300,
-                      defaultPower = watts 200,
+                      defaultPower = defP,
                       discreteChoices = defA,
                       lastRead = Nothing,
                       history = MemBuffer.empty

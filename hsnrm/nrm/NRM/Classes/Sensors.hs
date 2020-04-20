@@ -1,5 +1,3 @@
-{-# LANGUAGE RankNTypes #-}
-
 -- |
 -- Module      : NRM.Classes.Sensors
 -- Copyright   : (c) UChicago Argonne, 2019

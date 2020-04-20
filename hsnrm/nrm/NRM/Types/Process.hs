@@ -1,5 +1,4 @@
 {-# LANGUAGE DerivingVia #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
 -- Module      : NRM.Types.Process
@@ -15,7 +14,6 @@ module NRM.Types.Process
 where
 
 import Data.Aeson as A
-import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import Dhall
@@ -31,10 +29,8 @@ data ProcessState
         stdoutFinished :: Bool,
         stderrFinished :: Bool
       }
-  deriving (Show, Generic, Data, MessagePack)
+  deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ProcessState
-
-deriving instance Data P.CPid
 
 blankState :: ProcessState
 blankState = ProcessState Nothing False False
@@ -45,7 +41,7 @@ isDone ProcessState {..} = case ended of
   _ -> Nothing
 
 newtype ProcessID = ProcessID {rawPid :: P.CPid}
-  deriving (Eq, Ord, Show, Read, Generic, Data)
+  deriving (Eq, Ord, Show, Read, Generic)
   deriving (Num, Real, Enum, Integral) via P.CPid
 
 instance MessagePack ProcessID where

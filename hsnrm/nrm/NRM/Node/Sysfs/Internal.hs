@@ -39,7 +39,6 @@ import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
 import LMap.Map as LM
-import NRM.Classes.Topology
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
 import Protolude
@@ -161,7 +160,7 @@ processRAPLFolder fp =
   runMaybeT $ do
     namecontent <- maybeTReadLine $ fp <> "/name"
     maxRange <- maybeTReadLine (fp <> "/max_energy_range_uj") >>= (MaybeT . pure . readMaybe . toS)
-    match <- MaybeT $ pure (matchedText (namecontent ?=~ rx) >>= idFromString . drop (T.length "package-") . toS)
+    match <- MaybeT $ pure (matchedText (namecontent ?=~ rx) >>= fmap PackageID . readMaybe . drop (T.length "package-") . toS)
     return (match, RAPLDir fp (uJ maxRange))
   where
     rx = [re|package-([0-9]+)(/\S+)?|]
@@ -189,7 +188,7 @@ hasCoretempInNameFile :: FilePath -> IO (Maybe HwmonDir)
 hasCoretempInNameFile fp =
   runMaybeT $
     maybeTReadLine (fp <> "/name") >>= \case
-      "coretemp" -> MaybeT $ pure $ Just $ HwmonDir fp
+      "coretemp" -> MaybeT . pure . Just $ HwmonDir fp
       _ -> mzero
 
 -- | Lists available hwmon directories.

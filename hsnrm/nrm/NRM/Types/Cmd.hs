@@ -1,5 +1,4 @@
 {-# LANGUAGE DerivingVia #-}
-{-# LANGUAGE TypeApplications #-}
 
 -- |
 -- Module      : NRM.Types.Cmd
@@ -8,26 +7,24 @@
 -- Maintainer  : fre@freux.fr
 module NRM.Types.Cmd
   ( Cmd (..),
+    mkCmd,
     CmdCore (..),
     CmdSpec (..),
-    mkCmd,
+    mkCmdSpec,
     registerPID,
     TaskID (..),
     Command (..),
-    Arguments (..),
     Arg (..),
     Env (..),
     wrapCmd,
     addDownstreamCmdClient,
     addDownstreamThreadClient,
-    removeDownstreamCmdClient,
-    removeDownstreamThreadClient,
   )
 where
 
 import Control.Lens
 import Data.Aeson as A
-import Data.Generics.Product
+import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.String (IsString (..))
@@ -53,16 +50,23 @@ import Protolude
 data CmdSpec
   = CmdSpec
       { cmd :: Command,
-        args :: Arguments,
+        args :: [Arg],
         env :: Env
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CmdSpec
 
+mkCmdSpec :: Text -> [Text] -> [(Text, Text)] -> CmdSpec
+mkCmdSpec command arguments environment = CmdSpec
+  { cmd = Command command,
+    args = Arg <$> arguments,
+    env = Env $ LM.fromList environment
+  }
+
 data CmdCore
   = CmdCore
       { cmdPath :: Command,
-        arguments :: Arguments,
+        arguments :: [Arg],
         upstreamClientID :: Maybe UC.UpstreamClientID,
         manifest :: Manifest
       }
@@ -81,7 +85,12 @@ data Cmd
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cmd
 
 mkCmd :: CmdSpec -> Manifest -> Maybe UC.UpstreamClientID -> CmdCore
-mkCmd s manifest clientID = CmdCore {cmdPath = cmd s, arguments = args s, upstreamClientID = clientID, ..}
+mkCmd s manifest clientID = CmdCore
+  { cmdPath = cmd s,
+    arguments = args s,
+    upstreamClientID = clientID,
+    manifest = manifest
+  }
 
 registerPID :: CmdCore -> ProcessID -> Cmd
 registerPID c pid = Cmd
@@ -89,91 +98,62 @@ registerPID c pid = Cmd
     processState = blankState,
     downstreamCmds = LM.empty,
     downstreamThreads = LM.empty,
-    ..
+    pid = pid
   }
 
 addDownstreamCmdClient ::
   Cmd ->
   DownstreamCmdID ->
   Maybe Cmd
-addDownstreamCmdClient Cmd {..} downstreamCmdClientID =
-  cmdCore & manifest & Manifest.app & Manifest.perfwrapper & \case
+addDownstreamCmdClient c downstreamCmdClientID =
+  c ^. #cmdCore . #manifest . #app . #perfwrapper & \case
     PerfwrapperDisabled -> Nothing
     Perfwrapper perfFreq perfLimit ->
-      Just $ Cmd
-        { downstreamCmds =
-            LM.insert
-              downstreamCmdClientID
-              DownstreamCmd
-                { maxValue = perfLimit,
-                  ratelimit = perfFreq,
-                  dtLastReferenceMeasurements = MemBuffer.empty,
-                  lastRead = Nothing
-                }
-              downstreamCmds,
-          ..
-        }
+      Just $
+        c
+          & #downstreamCmds
+          . at downstreamCmdClientID ?~ DownstreamCmd
+            { maxValue = perfLimit,
+              ratelimit = perfFreq,
+              dtLastReferenceMeasurements = MemBuffer.empty,
+              lastRead = Nothing
+            }
 
 addDownstreamThreadClient ::
   Cmd ->
   DownstreamThreadID ->
   Maybe Cmd
-addDownstreamThreadClient Cmd {..} downstreamThreadClientID =
-  cmdCore & manifest & Manifest.app & Manifest.instrumentation <&> \(Manifest.Instrumentation ratelimit) ->
-    Cmd
-      { downstreamThreads =
-          LM.insert
-            downstreamThreadClientID
-            DownstreamThread
-              { maxValue = 1 & progress,
-                ratelimit = ratelimit,
-                dtLastReferenceMeasurements = MemBuffer.empty,
-                lastRead = Nothing
-              }
-            downstreamThreads,
-        ..
+addDownstreamThreadClient c downstreamThreadClientID =
+  c ^. #cmdCore . #manifest . #app . #instrumentation <&> \(Manifest.Instrumentation ratelimit) ->
+    c & #downstreamThreads . at downstreamThreadClientID ?~ DownstreamThread
+      { maxValue = 1 & progress,
+        ratelimit = ratelimit,
+        dtLastReferenceMeasurements = MemBuffer.empty,
+        lastRead = Nothing
       }
 
-removeDownstreamThreadClient :: Cmd -> DownstreamThreadID -> Cmd
-removeDownstreamThreadClient Cmd {..} downstreamThreadClientID = Cmd
-  { downstreamThreads = LM.delete downstreamThreadClientID downstreamThreads,
-    ..
-  }
-
-removeDownstreamCmdClient :: Cmd -> DownstreamCmdID -> Cmd
-removeDownstreamCmdClient Cmd {..} downstreamCmdClientID = Cmd
-  { downstreamCmds = LM.delete downstreamCmdClientID downstreamCmds,
-    ..
-  }
-
+-- | newtype wrapper for an argument.
 newtype Arg = Arg Text
   deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Arg
+  deriving (JSONSchema, ToJSON, FromJSON, IsString) via Text
 
-instance StringConv Arg Text where
-  strConv _ (Arg x) = toS x
-
+-- | newtype wrapper for a command name.
 newtype Command = Command Text
   deriving (Show, Eq, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Command
-  deriving (IsString, Interpret, Inject) via Text
+  deriving (JSONSchema, ToJSON, FromJSON, IsString, Interpret, Inject) via Text
 
-instance StringConv Command Text where
-  strConv _ (Command x) = toS x
-
-newtype Arguments = Arguments [Arg]
-  deriving (Show, Generic, MessagePack)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Arguments
-
+-- | newtype wrapper for environment variables.
 newtype Env = Env {fromEnv :: LM.Map Text Text}
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Env
   deriving (Semigroup, Monoid) via LM.Map Text Text
 
-wrapCmd :: Command -> (Command, Arguments) -> (Command, Arguments)
-wrapCmd c (Command a, Arguments as) = (c, Arguments $ Arg a : as)
+-- | @wrapCmd command args (command',args')@ builds the wrapped command
+-- @command@ @args@ @command'@ @args'@.
+wrapCmd :: Command -> [Arg] -> (Command, [Arg]) -> (Command, [Arg])
+wrapCmd c options (Command a, as) = (c, options <> [Arg a] <> as)
 
 instance HasLensMap (CmdID, Cmd) ActiveSensorKey ActiveSensor where
   lenses (_cmdID, cmd) =
-    (addPath (_2 . field @"downstreamCmds") <$> lenses (downstreamCmds cmd))
-      <> (addPath (_2 . field @"downstreamThreads") <$> lenses (downstreamThreads cmd))
+    (addPath (_2 . #downstreamCmds) <$> lenses (downstreamCmds cmd))
+      <> (addPath (_2 . #downstreamThreads) <$> lenses (downstreamThreads cmd))

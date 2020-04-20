@@ -23,8 +23,5 @@ newtype CoreID = CoreID Int
   deriving (Show, Eq, Ord, Generic, Data, ToJSONKey, FromJSONKey, MessagePack)
   deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON CoreID
 
-instance IdFromString CoreID where
-  idFromString s = CoreID <$> readMaybe s
-
 instance ToHwlocType CoreID where
   getType _ = "Core"

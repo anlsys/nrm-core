@@ -1,5 +1,4 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE ViewPatterns #-}
 
 -- |
 -- Module      : Codegen.Dhall
@@ -38,7 +37,7 @@ import qualified System.IO
 
 writeOutput :: (Pretty.Pretty a) => Text -> FilePath -> Expr s a -> IO ()
 writeOutput header dest e =
-  System.IO.withFile dest System.IO.WriteMode $ \hnd -> do
+  withFile dest WriteMode $ \hnd -> do
     System.IO.hPutStrLn hnd (toS header)
     Pretty.renderIO
       hnd
@@ -72,7 +71,7 @@ relativeTo =
       | a == b = go as bs
       | a == "." = go as (b : bs)
       | b == "." = go (a : as) bs
-      | otherwise = (".." <$ (a : as)) ++ (b : bs)
+      | otherwise = (".." <$ (a : as)) <> (b : bs)
     go [] bs = bs
     go as [] = ".." <$ as
 

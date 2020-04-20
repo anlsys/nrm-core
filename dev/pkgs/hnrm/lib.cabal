@@ -111,23 +111,6 @@ library
         CPD.Values
         CPD.Utils
         CPD.Text
-        Control.Monad.LPMonad.Internal
-        Control.Monad.LPMonad.Supply.Class
-        Control.Monad.LPMonad.Supply
-        Control.Monad.LPMonad
-        Data.LinearProgram
-        Data.LinearProgram.Common
-        Data.LinearProgram.GLPK
-        Data.LinearProgram.GLPK.Common
-        Data.LinearProgram.GLPK.Internal
-        Data.LinearProgram.GLPK.IO.Internal
-        Data.LinearProgram.GLPK.IO
-        Data.LinearProgram.GLPK.Solver
-        Data.LinearProgram.GLPK.Types
-        Data.LinearProgram.LinExpr
-        Data.LinearProgram.Spec
-        Data.LinearProgram.Types
-        Algebra.Classes
         HBandit.Class
         HBandit.Exp3
         HBandit.Exp4R
@@ -135,22 +118,19 @@ library
         HBandit.Util
         HBandit.Types
         HBandit.BwCR
-    c-sources:
-        glpk/glpk.c
     hs-source-dirs: nrm hbandit/src
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
-    extra-libraries:
-        glpk
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports

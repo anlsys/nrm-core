@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-missing-exported-signatures #-}
-
 -- |
 -- Module      : ExportIO
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -13,6 +11,7 @@ module NRM.ExportIO
     verbosity,
     showConfiguration,
     logfile,
+    activeSensorFrequency,
     upstreamPubAddress,
     upstreamRpcAddress,
     downstreamEventAddress,
@@ -45,6 +44,9 @@ verbosity = return . E.verbosity
 
 logfile :: C.Cfg -> IO Text
 logfile = return . E.logfile
+
+activeSensorFrequency :: C.Cfg -> IO Double
+activeSensorFrequency = return . E.activeSensorFrequency
 
 upstreamPubAddress :: C.Cfg -> IO Text
 upstreamPubAddress = return . E.upstreamPubAddress

@@ -13163,10 +13163,10 @@ div#notebook {
 
 
 
-<div id="6d38f27e-f2cd-4a87-83ae-a3988c90cc34"></div>
+<div id="82fd134f-3573-4faa-a094-75696baa1575"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#6d38f27e-f2cd-4a87-83ae-a3988c90cc34');
+var element = $('#82fd134f-3573-4faa-a094-75696baa1575');
 
             setTimeout(function() {
                 var nbb_cell_id = 2;
@@ -13230,7 +13230,9 @@ var element = $('#6d38f27e-f2cd-4a87-83ae-a3988c90cc34');
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>{ argo_nodeos_config =
+<pre>{ activeSensorFrequency =
+    { fromHz = 1.0 }
+, argo_nodeos_config =
     &#34;argo_nodeos_config&#34;
 , argo_perf_wrapper =
     &#34;nrm-perfwrapper&#34;
@@ -13265,7 +13267,7 @@ var element = $('#6d38f27e-f2cd-4a87-83ae-a3988c90cc34');
     | FixedCommand :
         { fixedPower : { fromuW : Double } }
     &gt;.FixedCommand
-    { fixedPower = { fromuW = 2.0e8 } }
+    { fixedPower = { fromuW = 2.5e8 } }
 , downstreamCfg =
     { downstreamBindAddress = &#34;ipc:///tmp/nrm-downstream-event&#34; }
 , dummy =
@@ -13288,10 +13290,10 @@ var element = $('#6d38f27e-f2cd-4a87-83ae-a3988c90cc34');
     Some
     { raplActions =
         [ { fromuW = 1.0e8 }, { fromuW = 2.0e8 } ]
-    , raplFrequency =
-        { fromHz = 1.0 }
     , raplPath =
         &#34;/sys/devices/virtual/powercap/intel-rapl&#34;
+    , referencePower =
+        { fromuW = 2.5e8 }
     }
 , singularity =
     False
@@ -13314,10 +13316,10 @@ var element = $('#6d38f27e-f2cd-4a87-83ae-a3988c90cc34');
 
 
 
-<div id="e2a2bb8d-ef66-4b22-ace0-d2b57c4685ad"></div>
+<div id="5e0a23dc-c7e6-4bf9-83a0-53a376187d16"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#e2a2bb8d-ef66-4b22-ace0-d2b57c4685ad');
+var element = $('#5e0a23dc-c7e6-4bf9-83a0-53a376187d16');
 
             setTimeout(function() {
                 var nbb_cell_id = 3;
@@ -13382,7 +13384,7 @@ cat ./resources/defaults/Cfg.json <span class="p">|</span> jq
   &#34;argo_nodeos_config&#34;: &#34;argo_nodeos_config&#34;,
   &#34;controlCfg&#34;: {
     &#34;fixedPower&#34;: {
-      &#34;fromuW&#34;: 200000000
+      &#34;fromuW&#34;: 250000000
     }
   },
   &#34;upstreamCfg&#34;: {
@@ -13391,6 +13393,9 @@ cat ./resources/defaults/Cfg.json <span class="p">|</span> jq
     &#34;pubPort&#34;: 2345
   },
   &#34;libnrmPath&#34;: null,
+  &#34;activeSensorFrequency&#34;: {
+    &#34;fromHz&#34;: 1
+  },
   &#34;perf&#34;: &#34;perf&#34;,
   &#34;argo_perf_wrapper&#34;: &#34;nrm-perfwrapper&#34;,
   &#34;downstreamCfg&#34;: {
@@ -13399,6 +13404,9 @@ cat ./resources/defaults/Cfg.json <span class="p">|</span> jq
   &#34;nodeos&#34;: false,
   &#34;hwloc&#34;: &#34;hwloc&#34;,
   &#34;raplCfg&#34;: {
+    &#34;referencePower&#34;: {
+      &#34;fromuW&#34;: 250000000
+    },
     &#34;raplActions&#34;: [
       {
         &#34;fromuW&#34;: 100000000
@@ -13407,9 +13415,6 @@ cat ./resources/defaults/Cfg.json <span class="p">|</span> jq
         &#34;fromuW&#34;: 200000000
       }
     ],
-    &#34;raplFrequency&#34;: {
-      &#34;fromHz&#34;: 1
-    },
     &#34;raplPath&#34;: &#34;/sys/devices/virtual/powercap/intel-rapl&#34;
   },
   &#34;dummy&#34;: true,
@@ -13431,10 +13436,10 @@ cat ./resources/defaults/Cfg.json <span class="p">|</span> jq
 
 
 
-<div id="badc3f51-4e22-4a6e-b01c-92c74cf7ad54"></div>
+<div id="5c29b3dc-3fb1-44d1-9bb0-da4ec65c11ca"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#badc3f51-4e22-4a6e-b01c-92c74cf7ad54');
+var element = $('#5c29b3dc-3fb1-44d1-9bb0-da4ec65c11ca');
 
             setTimeout(function() {
                 var nbb_cell_id = 4;
@@ -13536,10 +13541,10 @@ cat resources/examples/perfwrap.json <span class="p">|</span> jq
 
 
 
-<div id="e7acc268-1222-4b18-8226-f15cb5b9e260"></div>
+<div id="49d4c993-306b-423b-8bd7-50334c4f0557"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#e7acc268-1222-4b18-8226-f15cb5b9e260');
+var element = $('#49d4c993-306b-423b-8bd7-50334c4f0557');
 
             setTimeout(function() {
                 var nbb_cell_id = 5;
@@ -13641,10 +13646,10 @@ var element = $('#e7acc268-1222-4b18-8226-f15cb5b9e260');
 
 
 
-<div id="94bbb9ef-a320-44dd-a514-1d22d17e2865"></div>
+<div id="2a22ecb9-e97d-4d8c-8325-6e07cfc05cce"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#94bbb9ef-a320-44dd-a514-1d22d17e2865');
+var element = $('#2a22ecb9-e97d-4d8c-8325-6e07cfc05cce');
 
             setTimeout(function() {
                 var nbb_cell_id = 6;
@@ -13732,10 +13737,10 @@ cat resources/defaults/Manifest.json <span class="p">|</span> jq
 
 
 
-<div id="39cdc99d-f939-433d-9311-abc9803b94a1"></div>
+<div id="54d4e977-edac-4744-8113-832e9ca8c34c"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#39cdc99d-f939-433d-9311-abc9803b94a1');
+var element = $('#54d4e977-edac-4744-8113-832e9ca8c34c');
 
             setTimeout(function() {
                 var nbb_cell_id = 7;
@@ -13826,10 +13831,10 @@ dhall-to-json &lt;&lt;&lt; &#39;let Manifest = ./resources/types/Manifest.dhall
 
 
 
-<div id="5718524c-ff50-41e0-94de-90b720f277c0"></div>
+<div id="957f0a02-6d73-4947-8713-25f7721d53e8"></div>
 <div class="output_subarea output_javascript ">
 <script type="text/javascript">
-var element = $('#5718524c-ff50-41e0-94de-90b720f277c0');
+var element = $('#957f0a02-6d73-4947-8713-25f7721d53e8');
 
             setTimeout(function() {
                 var nbb_cell_id = 8;

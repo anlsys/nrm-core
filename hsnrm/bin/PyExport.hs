@@ -76,7 +76,7 @@ mkSimpleRunExport = exportIO mkSimpleRun
         { manifest = m,
           spec = CmdSpec
             { cmd = Command cmd,
-              args = Arguments (Arg <$> args),
+              args = Arg <$> args,
               env = Env $ LM.fromList env
             },
           runSliceID = parseSliceID sliceID,
@@ -105,7 +105,7 @@ actionExport :: Ex
 actionExport = exportIO actuate
   where
     actuate :: CommonOpts -> [(Text, Double)] -> IO Bool
-    actuate c actions = doReqRep c (ReqActuate (toAction <$> actions)) $ Right $ \case
+    actuate c actions = doReqRep c (ReqActuate (toAction <$> actions)) . Right $ \case
       (Rep.RepActuate Rep.Actuated) -> True
       (Rep.RepActuate Rep.NotActuated) -> False
       _ -> panic "action protocol failed"
@@ -116,19 +116,19 @@ runExport :: Ex
 runExport = exportIO $ \c runreq -> doReqRep c (ReqRun runreq) $ Left ()
 
 stateExport :: Ex
-stateExport = exportIO $ \c -> doReqRep c (ReqGetState Req.GetState) $ Right $ \case
+stateExport = exportIO $ \c -> doReqRep c (ReqGetState Req.GetState) . Right $ \case
   (RepGetState st) -> st
   _ -> protoError
 
 finishedExport :: Ex
-finishedExport = exportIO $ \common -> doReqRep common (ReqSliceList Req.SliceList) $ Right $ \case
+finishedExport = exportIO $ \common -> doReqRep common (ReqSliceList Req.SliceList) . Right $ \case
   (RepList (Rep.SliceList l)) -> l & \case
     [] -> True
     _ -> False
   _ -> protoError
 
 cpdExport :: Ex
-cpdExport = exportIO $ \c -> doReqRep c (ReqCPD Req.CPD) $ Right $ \case
+cpdExport = exportIO $ \c -> doReqRep c (ReqCPD Req.CPD) . Right $ \case
   (RepCPD problem) -> problem
   _ -> protoError
 

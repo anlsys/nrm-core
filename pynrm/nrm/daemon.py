@@ -62,7 +62,9 @@ class Daemon(object):
         self.downstream_event.setup_recv_callback(self.wrap("downstreamReceive"))
 
         # setup periodic sensor updates
-        self.sensor_cb = ioloop.PeriodicCallback(self.wrap("doSensor"), 1000)
+        self.sensor_cb = ioloop.PeriodicCallback(
+            self.wrap("doSensor"), 1000 / self.lib.activeSensorFrequency(self.cfg)
+        )
         self.sensor_cb.start()
 
         # take care of signals

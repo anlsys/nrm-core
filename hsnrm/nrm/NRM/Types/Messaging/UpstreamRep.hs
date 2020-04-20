@@ -1,5 +1,4 @@
 {-# LANGUAGE DerivingVia #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
 -- Module      : NRM.Types.Messaging.UpstreamRep

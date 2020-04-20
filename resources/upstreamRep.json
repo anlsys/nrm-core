@@ -1141,7 +1141,8 @@
                                 "downstreamCfg",
                                 "upstreamCfg",
                                 "hwmonCfg",
-                                "controlCfg"
+                                "controlCfg",
+                                "activeSensorFrequency"
                             ],
                             "type": "object",
                             "properties": {
@@ -1415,6 +1416,9 @@
                                 "libnrmPath": {
                                     "type": "string"
                                 },
+                                "activeSensorFrequency": {
+                                    "type": "number"
+                                },
                                 "perf": {
                                     "type": "string"
                                 },
@@ -1441,20 +1445,20 @@
                                 "raplCfg": {
                                     "required": [
                                         "raplPath",
-                                        "raplFrequency",
-                                        "raplActions"
+                                        "raplActions",
+                                        "referencePower"
                                     ],
                                     "type": "object",
                                     "properties": {
+                                        "referencePower": {
+                                            "type": "number"
+                                        },
                                         "raplActions": {
                                             "uniqueItems": false,
                                             "items": {
                                                 "type": "number"
                                             },
                                             "type": "array"
-                                        },
-                                        "raplFrequency": {
-                                            "type": "number"
                                         },
                                         "raplPath": {
                                             "type": "string"

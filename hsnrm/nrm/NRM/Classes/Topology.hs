@@ -6,16 +6,11 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.Classes.Topology
-  ( IdFromString (..),
-    ToHwlocType (..),
+  ( ToHwlocType (..),
   )
 where
 
 import Protolude
-import Prelude (String)
-
-class IdFromString a where
-  idFromString :: String -> Maybe a
 
 -- | translating to hwloc XML "type" field.
 class ToHwlocType a where

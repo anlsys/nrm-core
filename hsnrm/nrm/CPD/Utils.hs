@@ -58,10 +58,7 @@ evalNum m r = \case
   OMax a b -> ev2 a b max
   where
     ev = evalNum m r
-    ev2 a b f = do
-      v1 <- ev a
-      v2 <- ev b
-      return $ f v1 v2
+    ev2 a b f = f <$> ev a <*> ev b
 
 -- | Range evaluation
 evalRange ::
@@ -80,10 +77,7 @@ evalRange m = \case
   OMax a b -> ev2 a b maxI
   where
     ev = evalRange m
-    ev2 a b f = do
-      v1 <- ev a
-      v2 <- ev b
-      return $ f v1 v2
+    ev2 a b f = f <$> ev a <*> ev b
     maxI :: (Ord a) => Interval a -> Interval a -> Interval a
     maxI i i' = max (inf i) (inf i') ... max (sup i) (sup i')
     minI :: (Ord a) => Interval a -> Interval a -> Interval a

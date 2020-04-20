@@ -1,6 +1,4 @@
 {-# LANGUAGE DerivingVia #-}
-{-# LANGUAGE TypeApplications #-}
-{-# OPTIONS_GHC -fno-warn-missing-local-signatures #-}
 
 -- |
 -- Module      : NRM.Types.DownstreamThread
@@ -14,10 +12,10 @@ where
 
 import Control.Lens hiding ((...))
 import Data.Aeson hiding ((.=))
-import Data.Generics.Product
+import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.MessagePack
-import LMap.Map as DM
+import LMap.Map as LM
 import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Types.DownstreamThreadID
@@ -43,7 +41,7 @@ instance
     ActiveSensor
   where
   lenses (downstreamThreadID, downstreamThread) =
-    DM.singleton
+    LM.singleton
       (DownstreamThreadKey downstreamThreadID)
       (ScopedLens (_2 . lens getter setter))
     where
@@ -59,8 +57,9 @@ instance
             maxFrequency = ratelimit,
             process = identity
           }
+      setter :: DownstreamThread -> ActiveSensor -> DownstreamThread
       setter dc activeSensor =
         dc &~ do
-          field @"maxValue" .= activeSensor ^. _meta . field @"range" . to sup . to floor . to progress
-          field @"dtLastReferenceMeasurements" .= activeSensor ^. _meta . field @"lastReferenceMeasurements"
-          field @"lastRead" .= over _Just (& _2 %~ progress . floor) (activeSensor ^. _meta . field @"last")
+          #maxValue .= activeSensor ^. _meta . #range . to sup . to floor . to progress
+          #dtLastReferenceMeasurements .= activeSensor ^. _meta . #lastReferenceMeasurements
+          #lastRead .= over _Just (& _2 %~ progress . floor) (activeSensor ^. _meta . #last)

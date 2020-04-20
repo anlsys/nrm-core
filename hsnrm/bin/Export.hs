@@ -48,6 +48,8 @@ foreign export ccall verbosityExport :: Ex
 
 foreign export ccall logfileExport :: Ex
 
+foreign export ccall activeSensorFrequencyExport :: Ex
+
 foreign export ccall upstreamRpcAddressExport :: Ex
 
 foreign export ccall upstreamPubAddressExport :: Ex
@@ -85,6 +87,8 @@ doStderrExport = exportIO E.doStderr
 verbosityExport = exportIO E.verbosity
 
 logfileExport = exportIO E.logfile
+
+activeSensorFrequencyExport = exportIO E.activeSensorFrequency
 
 upstreamRpcAddressExport = exportIO E.upstreamRpcAddress
 

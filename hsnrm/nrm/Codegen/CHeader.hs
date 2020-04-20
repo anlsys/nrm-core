@@ -1,5 +1,4 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# OPTIONS_GHC -fno-warn-incomplete-uni-patterns #-}
 
 -- |
 -- Module      : Codegen.CHeader
@@ -27,7 +26,7 @@ toCHeader = toHeader . goToplevel . M.messageSchema
 
 toHeader :: [(Text, AT.Value)] -> Text
 toHeader h =
-  mconcat $ intersperse "\n" $
+  mconcat . intersperse "\n" $
     h <&> \(msgname, khl) ->
       "#define NRM_"
         <> toUpper msgname

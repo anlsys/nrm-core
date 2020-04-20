@@ -11,6 +11,7 @@ module NRM.Export
     verbosity,
     showConfiguration,
     C.logfile,
+    activeSensorFrequency,
     upstreamPubAddress,
     upstreamRpcAddress,
     downstreamEventAddress,
@@ -45,6 +46,7 @@ import qualified NRM.Types.Configuration as C
     DaemonVerbosity (..),
     DownstreamCfg (..),
     UpstreamCfg (..),
+    activeSensorFrequency,
     logfile,
     verbose,
   )
@@ -60,6 +62,10 @@ import Text.Pretty.Simple
 -- | Parses Daemon CLI arguments
 parseDaemon :: [Text] -> IO C.Cfg
 parseDaemon = O.parseArgDaemonCli
+
+-- | Parses Daemon CLI arguments
+activeSensorFrequency :: C.Cfg -> Double
+activeSensorFrequency = fromHz . C.activeSensorFrequency
 
 -- | Queries configuration for 'verbose' verbosity
 verbosity :: C.Cfg -> Int
@@ -179,7 +185,7 @@ registerCmdSuccess ::
   Int ->
   IO (TS.NRMState, [B.Behavior])
 registerCmdSuccess cfg s t cmdIDT pid =
-  B.RegisterCmd <$> CmdID.fromText cmdIDT ?? B.Launched (Process.ProcessID $ SPT.CPid $ fromIntegral pid) & \case
+  B.RegisterCmd <$> CmdID.fromText cmdIDT ?? B.Launched (Process.ProcessID . SPT.CPid $ fromIntegral pid) & \case
     Nothing -> return (s, [B.Log C.Error "couldn't decode cmdID in registerCmdSuccess nrm.so call"])
     Just ev -> B.behavior cfg s (t & seconds) ev
 

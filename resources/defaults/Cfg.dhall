@@ -40,10 +40,10 @@
     Some
     { raplPath =
         "/sys/devices/virtual/powercap/intel-rapl"
-    , raplFrequency =
-        { fromHz = 1.0 }
     , raplActions =
         [ { fromuW = 1.0e8 }, { fromuW = 2.0e8 } ] : List { fromuW : Double }
+    , referencePower =
+        { fromuW = 2.5e8 }
     }
 , hwmonCfg =
     { hwmonEnabled = True, hwmonPath = "/sys/class/hwmon" }
@@ -78,5 +78,7 @@
     | FixedCommand :
         { fixedPower : { fromuW : Double } }
     >.FixedCommand
-    { fixedPower = { fromuW = 2.0e8 } }
+    { fixedPower = { fromuW = 2.5e8 } }
+, activeSensorFrequency =
+    { fromHz = 1.0 }
 }

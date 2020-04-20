@@ -16,7 +16,7 @@ where
 
 import Data.Aeson
 import Data.Data
-import Data.Map as DM
+import Data.Map as M
 import Data.MessagePack
 import NRM.Processes
 import NRM.Slices.Class
@@ -42,7 +42,7 @@ instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
     where
       killIfRegistered :: (MonadIO m) => ApplicationProcess -> m ()
       killIfRegistered (Registered _ pid) = liftIO $ signalProcess Signals.sigKILL pid
-      killIfRegistered (Unregistered _) = return ()
+      killIfRegistered (Unregistered _) = pass
 
   doCreateSlice runtime () =
     liftIO $
@@ -53,7 +53,7 @@ instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
   doPrepareStartApp runtime sliceID AppStartConfig {..} =
     return $
       Right
-        ( DM.adjust (Unregistered cmdID :) sliceID <$> runtime,
+        ( M.adjust (Unregistered cmdID :) sliceID <$> runtime,
           command,
           arguments
         )
@@ -64,7 +64,7 @@ instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
       Just dals -> do
         let pids = catMaybes $ go <$> dals
         for_ pids $ liftIO . signalProcess Signals.sigKILL
-        return $ Right $ Dummy $ delete sliceID x
+        return . Right . Dummy $ delete sliceID x
     where
       go (Registered _ pid) = Just pid
       go (Unregistered _) = Nothing
@@ -72,17 +72,17 @@ instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
   listSlices (Dummy l) = keys l
 
   registerStartApp runtime sliceID cmdID pid =
-    DM.adjust (go <$>) sliceID <$> runtime
+    M.adjust (go <$>) sliceID <$> runtime
     where
       go x
         | x == Unregistered cmdID = Registered cmdID pid
         | otherwise = x
 
-  registerStopApp runtime (Left processID) = DM.map (Protolude.filter f) <$> runtime
+  registerStopApp runtime (Left processID) = M.map (Protolude.filter f) <$> runtime
     where
       f (Registered _ pid) = pid == processID
       f (Unregistered _) = False
-  registerStopApp runtime (Right cmdID) = DM.map (Protolude.filter f) <$> runtime
+  registerStopApp runtime (Right cmdID) = M.map (Protolude.filter f) <$> runtime
     where
       f (Registered appid _) = appid == cmdID
       f (Unregistered appid) = appid == cmdID

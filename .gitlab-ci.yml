@@ -4,7 +4,7 @@ variables:
 stages:
   - source
   - build
-  - integration
+  - tests
   - vendoring
   - deploy
 
@@ -26,7 +26,7 @@ ormolu:
       ' --run bash <<< '
         RETURN=0
         for F in $(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e hs); do
-          ormolu -o -XTypeApplications -m check $F
+          ormolu -o -XTypeApplications -o -XPatternSynonyms -m check $F
           if [ $? -ne 0 ]; then
             echo "[!] $F does not pass ormolu haskell format check." >&2
             RETURN=1
@@ -63,8 +63,8 @@ hlint:
   script:
     - |
       nix-shell --pure -p '(import ./. {}).hlint' --run bash <<< '
-        hlint hsnrm/nrm/ --hint=./.hlint.yaml
-        hlint hsnrm/bin/ --hint=./.hlint.yaml
+        hlint hsnrm/nrm/ --hint=hsnrm/.hlint.yaml
+        hlint hsnrm/bin/ --hint=hsnrm/.hlint.yaml
       '
 
 black:
@@ -118,14 +118,14 @@ dhall-format:
         if [ $RETURN -ne 0 ]; then exit 1; fi
       '
 
-nix:nrm.so:
+nix-build:nrm.so:
   stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A haskellPackages.nrmlib --no-build-output
 
-nix:hs-nrmbin:
+nix-build:hs-nrmbin:
   stage: build
   tags:
     - kvm
@@ -145,7 +145,7 @@ vendoring:copy:
     - cp -r doc/ tmpdoc
     - cp -r resources/ tmpresources
 
-codegen:
+make:codegen:
   stage: build
   artifacts:
     paths:
@@ -154,9 +154,9 @@ codegen:
     - kvm
     - nix
   script:
-    - ./shake.sh codegen
+    - nix-shell -p 'gnumake' --run "make codegen"
 
-doc:
+make:doc:
   stage: build
   artifacts:
     paths:
@@ -165,9 +165,9 @@ doc:
     - kvm
     - nix
   script:
-    - ./shake.sh doc
+    - nix-shell -p 'gnumake' --run "make doc"
 
-pyclient:
+make:pyclient:
   stage: build
   artifacts:
     paths:
@@ -176,9 +176,9 @@ pyclient:
     - kvm
     - nix
   script:
-    - ./shake.sh pyclient
+    - nix-shell -p 'gnumake' --run "make pyclient"
 
-build:
+make:build:
   stage: build
   artifacts:
     paths:
@@ -187,10 +187,10 @@ build:
     - kvm
     - nix
   script:
-    - ./shake.sh build
+    - nix-shell -p 'gnumake' --run "make build"
 
 notebooks:
-  stage: integration
+  stage: tests
   artifacts:
     paths:
       - doc
@@ -198,7 +198,7 @@ notebooks:
     - kvm
     - nix
   script:
-    - ./shake.sh notebooks
+    - nix-shell -p 'gnumake' --run "make notebooks"
 
 vendoring:haddock:
   stage: vendoring
@@ -215,21 +215,21 @@ vendoring:resources:
   stage: vendoring
   dependencies:
     - vendoring:copy
-    - codegen
+    - make:codegen
   tags:
     - kvm
     - nix
   script:
     - diff -r resources tmpresources
 
-nix:resources:
+nix-build:resources:
   stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A resources --no-build-output
 
-libnrm:
+autotools:libnrm:
   stage: build
   tags:
     - kvm
@@ -249,84 +249,54 @@ libnrm:
         make
       '
 
-nix:libnrm:
+nix-build:libnrm:
   stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A libnrm --no-build-output
 
-nix:pynrm:
+nix-build:pynrm:
   stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A pynrm --no-build-output
 
-nix:app-stream:
+nix-build:app-stream:
   stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A stream --no-build-output
 
-nix:app-stream:
+nix-build:nrmFull:
   stage: build
   tags:
     - kvm
     - nix
-  script: nix-build -A stream --no-build-output
-
-nix:nrmFull:
-  stage: build
-  tags:
-    - integration
   script: nix-build -A nrm --no-build-output
 
 dhrun:hello:
-  stage: integration
+  stage: tests
   tags:
     - kvm
     - nix
-  script:
-    - |
-      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun -i" <<< '
-        let all = ./dev/dhrun/all-tests.dh
-          "../dev/dhrun/assets/"
-          "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
-          "../resources/examples/"
-        in all.hello
-      '
+  script: nix-shell -p gnumake --run "make dhrun-hello"
 
 dhrun:exitcode:
-  stage: integration
+  stage: tests
   tags:
     - kvm
     - nix
-  script:
-    - |
-      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun -i" <<< '
-        let all = ./dev/dhrun/all-tests.dh
-          "../dev/dhrun/assets/"
-          "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
-          "../resources/examples/"
-        in all.exitcode
-      '
+  script: nix-shell -p gnumake --run "make dhrun-exitcode"
 
 dhrun:listen:
-  stage: integration
+  stage: tests
   tags:
     - kvm
     - nix
-  script:
-    - |
-      nix-shell --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' --run "dhrun -i" <<< '
-        let all = ./dev/dhrun/all-tests.dh
-          "../dev/dhrun/assets/"
-          "../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
-          "../resources/examples/"
-        in all.listen
-      '
+  script: nix-shell -p gnumake --run "make dhrun-listen"
 
 readthedocs:
   stage: deploy

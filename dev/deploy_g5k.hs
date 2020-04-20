@@ -1,12 +1,9 @@
 {-# LANGUAGE DeriveAnyClass #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE DerivingStrategies #-}
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE OverloadedStrings #-}
-{-# LANGUAGE QuasiQuotes #-}
-{-# LANGUAGE RecordWildCards #-}
 
 import Control.Lens
 import Data.Aeson
@@ -117,7 +114,7 @@ httpOpts (CommonOpts (User u) (Password p) _) =
     .~ Left (mkManagerSettings (TLSSettingsSimple False False False) Nothing)
 
 main :: IO ()
-main = do
+main =
   SIO.hSetBuffering SIO.stdout SIO.NoBuffering
     <> void (join (execParser (info (parseOpts <**> helper) idm)))
 
@@ -134,7 +131,7 @@ hosts cOpts@(CommonOpts _ _ (Site s)) jobID = do
 
 reserve :: CommonOpts -> ReservationCLI -> IO (Maybe UID)
 reserve cOpts@(CommonOpts _ _ (Site s)) (ReservationCLI (NodeCount n) (Walltime w)) = do
-  let req = (ReservationRequest ("nodes=" <> show n <> ",walltime=" <> w) "sleep 100000" ["deploy"])
+  let req = ReservationRequest ("nodes=" <> show n <> ",walltime=" <> w) "sleep 100000" ["deploy"]
   r <-
     postWith
       (httpOpts cOpts)
@@ -143,7 +140,7 @@ reserve cOpts@(CommonOpts _ _ (Site s)) (ReservationCLI (NodeCount n) (Walltime 
   let uid = UID . floor <$> (r ^? responseBody . A.key "uid" . _Number)
   return uid
 
-deploy :: CommonOpts -> DeployCLI -> IO (Bool)
+deploy :: CommonOpts -> DeployCLI -> IO Bool
 deploy cOpts@(CommonOpts _ _ (Site s)) (DeployCLI hosts (Pubfile pubkey) environment) = do
   print hosts
   key <- Pubkey <$> readFile (toS pubkey)
@@ -153,7 +150,7 @@ deploy cOpts@(CommonOpts _ _ (Site s)) (DeployCLI hosts (Pubfile pubkey) environ
   if r ^. responseStatus . statusCode == 201 then return True else print r >> return False
 
 allOperations :: CommonOpts -> AllCLI -> IO ()
-allOperations c r = do
+allOperations c r =
   reserve c (reservationCLI r) >>= \case
     Nothing -> die "Reservation failure"
     Just uid -> do
@@ -202,25 +199,25 @@ parseOpts =
   hsubparser $
     OA.command
       "reserve"
-      ( info ((reserveAndPrint <$> parserCommon <*> parserReservationCLI)) $
+      ( info (reserveAndPrint <$> parserCommon <*> parserReservationCLI) $
           progDesc "Reserve a node"
       )
       <> OA.command
         "deploy"
-        ( info ((deployAndPrint <$> parserCommon <*> parserDeployCLI)) $
+        ( info (deployAndPrint <$> parserCommon <*> parserDeployCLI) $
             progDesc "Deploy to a reserved node"
         )
       <> OA.command
         "hosts"
         ( info
-            ( (hostsAndPrint <$> parserCommon <*> parserUID)
+            ( hostsAndPrint <$> parserCommon <*> parserUID
             )
             $ progDesc "Query job hosts"
         )
       <> OA.command
         "all"
         ( info
-            ( (allOperations <$> parserCommon <*> (AllCLI <$> parserReservationCLI <*> parserPubfile <*> parserEnvironment))
+            ( allOperations <$> parserCommon <*> (AllCLI <$> parserReservationCLI <*> parserPubfile <*> parserEnvironment)
             )
             $ progDesc "Deploy and reserve"
         )
@@ -231,13 +228,13 @@ parserUID :: OA.Parser UID
 parserUID = UID <$> OA.argument auto (metavar "UID")
 
 parserHosts :: OA.Parser Hosts
-parserHosts = Hosts <$> OA.option auto ((metavar "HOSTS") <> long "hosts")
+parserHosts = Hosts <$> OA.option auto (metavar "HOSTS" <> long "hosts")
 
 parserPubfile :: OA.Parser Pubfile
-parserPubfile = Pubfile <$> OA.strOption ((metavar "PUBKEY") <> long "pubfile" <> short 'k')
+parserPubfile = Pubfile <$> OA.strOption (metavar "PUBKEY" <> long "pubfile" <> short 'k')
 
 parserEnvironment :: OA.Parser Environment
-parserEnvironment = Environment <$> OA.strOption ((metavar "ENVIRONMENT") <> value "http://public.nancy.grid5000.fr/~orichard/nixos-19.09.yaml" <> long "environment" <> short 'e')
+parserEnvironment = Environment <$> OA.strOption (metavar "ENVIRONMENT" <> value "http://public.nancy.grid5000.fr/~orichard/nixos-19.09.yaml" <> long "environment" <> short 'e')
 
 parserDeployCLI :: OA.Parser DeployCLI
 parserDeployCLI = DeployCLI <$> parserHosts <*> parserPubfile <*> parserEnvironment
@@ -275,7 +272,7 @@ parserCommon =
             <$> strOption
               ( long "site"
                   <> metavar "SITE"
-                  <> help ("g5k site. default: rennes")
+                  <> help "g5k site. default: rennes"
                   <> value "rennes"
                   <> short 's'
               )

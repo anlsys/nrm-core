@@ -10,7 +10,7 @@ in    λ ( ghcPath
     → λ(ghcNumericVersion : Text)
     →   prelude.defaults.Package
       ⫽ { name =
-            "nrmlib"
+            "hsnrm"
         , version =
             prelude.v "1.0.0"
         , author =
@@ -23,19 +23,24 @@ in    λ ( ghcPath
             "tools"
         , description =
             "The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications."
-        , library =
-            Some
-            (   λ(config : types.Config)
-              →   prelude.defaults.Library
-                ⫽ { build-depends =
-                      common.libdep
-                  , hs-source-dirs =
-                      [ "nrm", "hbandit/src" ]
-                  , exposed-modules =
-                      common.allmodules
-                  }
-                ⫽ common.copts ([] : List Text)
-            )
+        , executables =
+            [ { executable =
+                    λ(config : types.Config)
+                  →   prelude.defaults.Executable
+                    ⫽ { main-is =
+                          "Hnrm.hs"
+                      , build-depends =
+                          common.libdep
+                      , hs-source-dirs =
+                          [ "bin", "nrm", "hbandit/src" ]
+                      , other-modules =
+                          common.allmodules
+                      }
+                    ⫽ common.copts [ "-main-is", "Hnrm" ]
+              , name =
+                  "nrm"
+              }
+            ]
         , extra-source-files =
             [ "ChangeLog.md" ]
         , license =

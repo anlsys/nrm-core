@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
@@ -51,13 +52,17 @@ module CPD.Core
   )
 where
 
+import Control.Arrow
+import Control.Lens
 import qualified Data.Aeson as A
 import Data.Coerce
+import Data.Data
+import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.MessagePack
 import qualified Dhall as D
 import HBandit.Types
-import LMap.Map as Map
+import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import NRM.Orphans.ZeroOne ()
@@ -89,8 +94,9 @@ data Problem
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
 
 emptyProblem :: Problem
-emptyProblem = Problem Map.empty Map.empty [] []
+emptyProblem = Problem LM.empty LM.empty [] []
 
+-- | A sensor's metadata.
 data Sensor = Sensor {range :: Interval Double, maxFrequency :: Units.Frequency}
   deriving (Show, Generic, MessagePack, D.Interpret, D.Inject)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Sensor
@@ -112,6 +118,8 @@ newtype Admissible = Admissible {admissibleValues :: [Discrete]}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Admissible
 
 -------- SENSORS
+
+-- | An unique identifier for a sensor.
 newtype SensorID = SensorID {sensorID :: Text}
   deriving
     ( Ord,
@@ -122,7 +130,8 @@ newtype SensorID = SensorID {sensorID :: Text}
       A.ToJSONKey,
       A.FromJSONKey,
       D.Interpret,
-      D.Inject
+      D.Inject,
+      Data
     )
   deriving (IsString, JSONSchema, A.ToJSON, A.FromJSON) via Text
 
@@ -130,6 +139,7 @@ newtype SensorID = SensorID {sensorID :: Text}
 class CPDLActuator a where
   toActuator :: a -> Actuator
 
+-- | An unique identifier for an actuator.
 newtype ActuatorID = ActuatorID {actuatorID :: Text}
   deriving
     ( Ord,
@@ -150,6 +160,7 @@ newtype ActuatorID = ActuatorID {actuatorID :: Text}
     )
     via Text
 
+-- | An actuator's metadata.
 newtype Actuator = Actuator {actions :: [Discrete]}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator
   deriving (Show, Generic, MessagePack)
@@ -192,38 +203,54 @@ data OExpr
   | OMax OExpr OExpr
   deriving (A.ToJSON, A.FromJSON) via GenericJSON OExpr
   deriving (JSONSchema) via AnyJSON OExpr
-  deriving (Show, Eq, Generic, MessagePack, D.Interpret, D.Inject)
+  deriving (Show, Eq, Generic, MessagePack, D.Interpret, D.Inject, Data)
+
+deriving instance Plated OExpr
+
+rules :: OExpr -> Maybe OExpr
+rules = \case
+  (OScalar 0 `OAdd` e) -> Just e
+  (e `OAdd` OScalar 0) -> Just e
+  (e `OSub` OScalar 0) -> Just e
+  (OScalar 1 `OMul` e) -> Just e
+  (e `OMul` OScalar 1) -> Just e
+  (e `ODiv` OScalar 1) -> Just e
+  _ -> Nothing
+
+simplify :: OExpr -> OExpr
+simplify = rewrite rules
 
 prettyExpr :: OExpr -> Text
 prettyExpr = \case
-  OValue (SensorID id) -> "\"" <> id <> "\""
-  OReference (SensorID id) -> "\"REF:" <> id <> "\""
+  OValue (SensorID id) -> [text| "SENSOR: $id" |]
+  OReference (SensorID id) -> [text| "REF: $id" |]
   OScalar d -> show d
-  OAdd a b -> prettyExpr a <> "+" <> prettyExpr b
-  OSub a b -> "(" <> prettyExpr a <> "-" <> prettyExpr b <> ")"
-  OMul (OScalar d) b -> show d <> "*(" <> prettyExpr b <> ")"
-  OMul a b -> "(" <> prettyExpr a <> ")*(" <> prettyExpr b <> ")"
-  ODiv a b -> "(" <> prettyExpr a <> ")/(" <> prettyExpr b <> ")"
-  OMin a b -> "min(" <> prettyExpr a <> "," <> prettyExpr b <> ")"
-  OMax a b -> "max(" <> prettyExpr a <> "," <> prettyExpr b <> ")"
+  OAdd (prettyExpr -> a) (prettyExpr -> b) -> [text|$a+$b|]
+  OSub (prettyExpr -> a) (prettyExpr -> b) -> [text|$a-$b|]
+  OMul (OScalar (show -> d)) (prettyExpr -> b) -> [text|$d*($b)|]
+  OMul (prettyExpr -> a) (prettyExpr -> b) -> [text|($a)*($b)|]
+  ODiv (prettyExpr -> a) (prettyExpr -> b) -> [text|($a)/($b)|]
+  OMin (prettyExpr -> a) (prettyExpr -> b) -> [text|min($a,$b)|]
+  OMax (prettyExpr -> a) (prettyExpr -> b) -> [text|max($a,$b)|]
+
+showExpr :: OExpr -> Text
+showExpr = prettyExpr . simplify
 
 prettyCPD :: Problem -> Text
-prettyCPD (Problem sensors actuators objectives constraints) =
-  [text|
-  Actuators:
-    $a
-  Sensors:
-    $s
-  Objectives :
-    $objs
-  Constraints:
-    $csts
-  |]
+prettyCPD p =
+  [text| Actuators:     $a
+         Sensors:       $s
+         Objectives:    $objs
+         Constraints:   $csts |]
   where
-    s = mconcat . intersperse "\n" $ Map.toList sensors <&> \(sid, sensor) -> "- " <> sensorID sid <> " : " <> show sensor
-    a = mconcat . intersperse "\n" $ Map.toList actuators <&> \(aid, actuator) -> "- " <> actuatorID aid <> " : " <> show actuator
-    objs = mconcat . intersperse "\n" $ objectives <&> \(w, o) -> "- weight " <> show (unrefine w) <> ": " <> prettyExpr o
-    csts = mconcat . intersperse "\n" $ constraints <&> \(w, c) -> "- threshold " <> show w <> ": " <> prettyExpr c
+    s = mcUnlines $ p ^@.. #sensors . itraversed <&> ((sensorID *** show) >>> desc)
+    a = mcUnlines $ p ^@.. #actuators . itraversed <&> ((actuatorID *** show) >>> desc)
+    objs = mcUnlines $ p ^. #objectives <&> (show . unrefine *** showExpr >>> desc)
+    csts = mcUnlines $ p ^. #constraints <&> (show *** showExpr >>> desc)
+    desc :: (Text, Text) -> Text
+    desc (d, e) = "- " <> d <> " : " <> e
+    mcUnlines :: [Text] -> Text
+    mcUnlines = mconcat . intersperse "\n"
 
 --- Useful newtypes
 newtype OExprSum = OExprSum {getOExprSum :: OExpr}

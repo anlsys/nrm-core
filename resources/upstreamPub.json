@@ -1529,6 +1529,17 @@
                     "type": "array"
                 }
             }
+        },
+        {
+            "required": [
+                "pubEnd"
+            ],
+            "type": "object",
+            "properties": {
+                "pubEnd": {
+                    "type": "string"
+                }
+            }
         }
     ]
 }

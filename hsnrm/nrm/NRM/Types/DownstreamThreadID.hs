@@ -13,7 +13,6 @@ module NRM.Types.DownstreamThreadID
 where
 
 import Data.Aeson
-import Data.Data
 import Data.JSON.Schema
 import Data.MessagePack
 import NRM.Classes.Messaging
@@ -34,7 +33,6 @@ data DownstreamThreadID
       Ord,
       Show,
       Generic,
-      Data,
       MessagePack,
       ToJSONKey,
       FromJSONKey
@@ -47,7 +45,7 @@ data DownstreamThreadID
     via GenericJSON DownstreamThreadID
 
 newtype RankID = RankID {fromRankID :: Int}
-  deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
+  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
   deriving
     ( JSONSchema,
       ToJSON,
@@ -60,11 +58,11 @@ newtype RankID = RankID {fromRankID :: Int}
     via Int
 
 newtype TaskID = TaskID {fromTaskID :: Text}
-  deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
+  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via Text
 
 newtype ThreadID = ThreadID Int
-  deriving (Eq, Ord, Show, Read, Generic, Data, MessagePack)
+  deriving (Eq, Ord, Show, Read, Generic, MessagePack)
   deriving
     ( JSONSchema,
       ToJSON,

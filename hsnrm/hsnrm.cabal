@@ -111,23 +111,6 @@ library nrmlib
         CPD.Values
         CPD.Utils
         CPD.Text
-        Control.Monad.LPMonad.Internal
-        Control.Monad.LPMonad.Supply.Class
-        Control.Monad.LPMonad.Supply
-        Control.Monad.LPMonad
-        Data.LinearProgram
-        Data.LinearProgram.Common
-        Data.LinearProgram.GLPK
-        Data.LinearProgram.GLPK.Common
-        Data.LinearProgram.GLPK.Internal
-        Data.LinearProgram.GLPK.IO.Internal
-        Data.LinearProgram.GLPK.IO
-        Data.LinearProgram.GLPK.Solver
-        Data.LinearProgram.GLPK.Types
-        Data.LinearProgram.LinExpr
-        Data.LinearProgram.Spec
-        Data.LinearProgram.Types
-        Algebra.Classes
         HBandit.Class
         HBandit.Exp3
         HBandit.Exp4R
@@ -138,11 +121,12 @@ library nrmlib
     hs-source-dirs: nrm bin hbandit/src
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
@@ -230,11 +214,12 @@ library banditlib
     hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
@@ -312,8 +297,6 @@ library banditlib
 
 executable nrm.so
     main-is: Export.hs
-    c-sources:
-        glpk/glpk.c
     hs-source-dirs: bin nrm hbandit/src
     other-modules:
         NRM.Slices
@@ -400,23 +383,6 @@ executable nrm.so
         CPD.Values
         CPD.Utils
         CPD.Text
-        Control.Monad.LPMonad.Internal
-        Control.Monad.LPMonad.Supply.Class
-        Control.Monad.LPMonad.Supply
-        Control.Monad.LPMonad
-        Data.LinearProgram
-        Data.LinearProgram.Common
-        Data.LinearProgram.GLPK
-        Data.LinearProgram.GLPK.Common
-        Data.LinearProgram.GLPK.Internal
-        Data.LinearProgram.GLPK.IO.Internal
-        Data.LinearProgram.GLPK.IO
-        Data.LinearProgram.GLPK.Solver
-        Data.LinearProgram.GLPK.Types
-        Data.LinearProgram.LinExpr
-        Data.LinearProgram.Spec
-        Data.LinearProgram.Types
-        Algebra.Classes
         HBandit.Class
         HBandit.Exp3
         HBandit.Exp4R
@@ -426,17 +392,16 @@ executable nrm.so
         HBandit.BwCR
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
-    extra-libraries:
-        glpk
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -511,8 +476,6 @@ executable nrm.so
 
 executable pynrm.so
     main-is: PyExport.hs
-    c-sources:
-        glpk/glpk.c
     hs-source-dirs: bin nrm hbandit/src
     other-modules:
         NRM.Slices
@@ -599,23 +562,6 @@ executable pynrm.so
         CPD.Values
         CPD.Utils
         CPD.Text
-        Control.Monad.LPMonad.Internal
-        Control.Monad.LPMonad.Supply.Class
-        Control.Monad.LPMonad.Supply
-        Control.Monad.LPMonad
-        Data.LinearProgram
-        Data.LinearProgram.Common
-        Data.LinearProgram.GLPK
-        Data.LinearProgram.GLPK.Common
-        Data.LinearProgram.GLPK.Internal
-        Data.LinearProgram.GLPK.IO.Internal
-        Data.LinearProgram.GLPK.IO
-        Data.LinearProgram.GLPK.Solver
-        Data.LinearProgram.GLPK.Types
-        Data.LinearProgram.LinExpr
-        Data.LinearProgram.Spec
-        Data.LinearProgram.Types
-        Algebra.Classes
         HBandit.Class
         HBandit.Exp3
         HBandit.Exp4R
@@ -625,17 +571,16 @@ executable pynrm.so
         HBandit.BwCR
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
-    extra-libraries:
-        glpk
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -796,23 +741,6 @@ executable nrmstatic
         CPD.Values
         CPD.Utils
         CPD.Text
-        Control.Monad.LPMonad.Internal
-        Control.Monad.LPMonad.Supply.Class
-        Control.Monad.LPMonad.Supply
-        Control.Monad.LPMonad
-        Data.LinearProgram
-        Data.LinearProgram.Common
-        Data.LinearProgram.GLPK
-        Data.LinearProgram.GLPK.Common
-        Data.LinearProgram.GLPK.Internal
-        Data.LinearProgram.GLPK.IO.Internal
-        Data.LinearProgram.GLPK.IO
-        Data.LinearProgram.GLPK.Solver
-        Data.LinearProgram.GLPK.Types
-        Data.LinearProgram.LinExpr
-        Data.LinearProgram.Spec
-        Data.LinearProgram.Types
-        Algebra.Classes
         HBandit.Class
         HBandit.Exp3
         HBandit.Exp4R
@@ -822,11 +750,12 @@ executable nrmstatic
         HBandit.BwCR
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
@@ -906,11 +835,12 @@ executable nrm
     main-is: bin/Hnrm.hs
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
@@ -933,11 +863,12 @@ executable nrmddep
     main-is: bin/Hnrmd.hs
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
@@ -960,11 +891,12 @@ executable codegen
     main-is: bin/Codegen.hs
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies

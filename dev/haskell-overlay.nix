@@ -18,6 +18,19 @@ let
         '' + o.configurePhase;
       });
 
+      #zeromq4-haskell = super.zeromq4-haskell.overrideAttrs (o: {
+        #extraLibraries = ["stdc++"];
+      #});
+
+      nrmstatic = (self.callPackage (./pkgs/hnrm/static.nix) {
+        src = src + "/hsnrm";
+      }).overrideAttrs (o: {
+        doHoogle = false;
+        configurePhase = ''
+          cp ${./pkgs/hnrm/bin.cabal} hsnrm.cabal
+        '' + o.configurePhase;
+      });
+
       nrmbin = (self.callPackage (./pkgs/hnrm/bin.nix) {
         src = src + "/hsnrm";
       }).overrideAttrs (o: {

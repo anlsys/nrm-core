@@ -1,6 +1,3 @@
-{-# LANGUAGE InstanceSigs #-}
-{-# LANGUAGE RankNTypes #-}
-
 -- |
 -- Module      : LensMap.Core
 -- Copyright   : (c) UChicago Argonne, 2019
@@ -16,8 +13,7 @@ where
 
 import Control.Lens
 import Data.Maybe (fromJust)
-import LMap.Map as DM
-import qualified LMap.Map as LM
+import LMap.Map as LM
 import qualified LMap.NonEmpty as NELM
 import Protolude hiding (Map)
 
@@ -29,7 +25,7 @@ class HasLensMap s k a where
   lenses :: s -> LensMap s k a
 
 instance (Ord k, HasLensMap (k, v) key a) => HasLensMap (LM.Map k v) key a where
-  lenses s = DM.fromList . mconcat $ LM.toList s <&> \(k, v) -> go k (lenses (k, v))
+  lenses s = LM.fromList . mconcat $ LM.toList s <&> \(k, v) -> go k (lenses (k, v))
     where
       go ::
         forall key k v a.
@@ -38,7 +34,7 @@ instance (Ord k, HasLensMap (k, v) key a) => HasLensMap (LM.Map k v) key a where
         Map key (ScopedLens (k, v) a) ->
         [(key, ScopedLens (LM.Map k v) a)]
       go k lensMap =
-        DM.toList lensMap <&> second (augmentedLens k)
+        LM.toList lensMap <&> second (augmentedLens k)
       augmentedLens ::
         forall k v a.
         Ord k =>
@@ -51,7 +47,7 @@ instance (Ord k, HasLensMap (k, v) key a) => HasLensMap (LM.Map k v) key a where
           setter m (_, value) = LM.insert k value m
 
 instance (Ord k, HasLensMap (k, v) key a) => HasLensMap (NELM.Map k v) key a where
-  lenses s = DM.fromList . mconcat $ NELM.toList s <&> \(k, v) -> go k (lenses (k, v))
+  lenses s = LM.fromList . mconcat $ NELM.toList s <&> \(k, v) -> go k (lenses (k, v))
     where
       go ::
         forall key k v a.
@@ -60,7 +56,7 @@ instance (Ord k, HasLensMap (k, v) key a) => HasLensMap (NELM.Map k v) key a whe
         Map key (ScopedLens (k, v) a) ->
         [(key, ScopedLens (NELM.Map k v) a)]
       go k lensMap =
-        DM.toList lensMap <&> second (augmentedLens k)
+        LM.toList lensMap <&> second (augmentedLens k)
       augmentedLens ::
         forall k v a.
         Ord k =>

@@ -27,22 +27,19 @@ source-repository head
 
 executable nrm.so
     main-is: Export.hs
-    c-sources:
-        glpk/glpk.c
     hs-source-dirs: bin
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
-    extra-libraries:
-        glpk
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -65,22 +62,19 @@ executable nrm.so
 
 executable nrmstatic
     main-is: Hnrm.hs
-    c-sources:
-        glpk/glpk.c
     hs-source-dirs: bin src hbandit/src
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
                         UndecidableInstances
-    extra-libraries:
-        glpk
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -99,11 +93,12 @@ executable nrm
     main-is: bin/Hnrm.hs
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
@@ -122,42 +117,16 @@ executable nrm
     build-depends:
         nrmlib -any
 
-executable fake-daemon
-    main-is: bin/Hnrmd.hs
-    default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
-                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
-    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
-                 -Wmissing-home-modules -Widentities -Wredundant-constraints
-                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
-                 -fwarn-missing-signatures -fwarn-name-shadowing
-                 -fprint-potential-instances -Wmissing-export-lists
-                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -Wincomplete-record-updates
-                 -Wmonomorphism-restriction -Wimplicit-prelude
-                 -Wmissing-local-signatures -Wmissing-exported-signatures
-                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -main-is Hnrmd
-    build-depends:
-        nrmlib -any
-
 executable codegen
     main-is: bin/Codegen.hs
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor DeriveTraversable TypeFamilies
-                        DeriveAnyClass DeriveGeneric DeriveDataTypeable DeriveFoldable
+                        ExistentialQuantification RecordWildCards RankNTypes
+                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
+                        TupleSections MultiParamTypeClasses NoImplicitPrelude
+                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
+                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
+                        DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies
