@@ -67,9 +67,9 @@ pkgs // rec {
   });
 
   patchedSrc = source: cabalFile:
-    pkgs.runCommand "patchedSrc" { } ''
+      pkgs.runCommand "patchedSrc" { } ''
       mkdir -p $out
-      cp -r ${source}/* $out
+      cp -r ${src}/* $out
       chmod -R +rw $out
       cp ${cabalFile} $out/hsnrm.cabal
     '';
@@ -239,7 +239,8 @@ pkgs // rec {
       extraCabal2nixOptions = "--extra-arguments src";
     });
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
-    buildInputs = [ pkgs.hwloc haskellPackages.dhrun  pkgs.which pkgs.jq pkgs.yq];
+    buildInputs =
+      [ pkgs.hwloc haskellPackages.dhrun pkgs.which pkgs.jq pkgs.yq ];
     shellHook = ''
       # path for NRM dev experimentation
       export PYNRMSO=${

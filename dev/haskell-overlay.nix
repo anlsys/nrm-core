@@ -10,7 +10,7 @@ let
       json-schema = unbreak (doJailbreak super.json-schema);
       zeromq4-conduit = unbreak (dontCheck super.zeromq4-conduit);
       nrmlib = (self.callPackage (./pkgs/hnrm/lib.nix) {
-        src = src + "/hsnrm";
+        src = pkgs.nix-gitignore.gitignoreSource [ ] (src + "/hsnrm");
       }).overrideAttrs (o: {
 
         configurePhase = ''
@@ -19,11 +19,11 @@ let
       });
 
       #zeromq4-haskell = super.zeromq4-haskell.overrideAttrs (o: {
-        #extraLibraries = ["stdc++"];
+      #extraLibraries = ["stdc++"];
       #});
 
       nrmstatic = (self.callPackage (./pkgs/hnrm/static.nix) {
-        src = src + "/hsnrm";
+        src = pkgs.nix-gitignore.gitignoreSource [ ] (src + "/hsnrm");
       }).overrideAttrs (o: {
         doHoogle = false;
         configurePhase = ''
@@ -32,7 +32,7 @@ let
       });
 
       nrmbin = (self.callPackage (./pkgs/hnrm/bin.nix) {
-        src = src + "/hsnrm";
+        src = pkgs.nix-gitignore.gitignoreSource [ ] (src + "/hsnrm");
       }).overrideAttrs (o: {
         doHoogle = false;
         configurePhase = ''
