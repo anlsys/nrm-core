@@ -6,6 +6,8 @@ SHELL := $(shell which bash)
 # this allows omitting newlines.
 .ONESHELL:
 
+all: build client pyclient
+
 .PHONY: ci
 ci:
 	@nix-shell -p yq -p jq --run bash <<< '
