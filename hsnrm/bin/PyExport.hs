@@ -11,7 +11,7 @@ module PyExport
   )
 where
 
-import CPD.Core (ActuatorID (..), Discrete (..), Problem)
+import CPD.Core (ActuatorID (..), Discrete (..), Problem, prettyCPD)
 import CPD.Values (Action (..))
 import Data.Aeson as A
 import qualified Data.ByteString as BS
@@ -96,7 +96,7 @@ jsonStateExport :: Ex
 jsonStateExport = exportIO (return . toS . A.encode :: NRMState -> IO Text)
 
 showCpdExport :: Ex
-showCpdExport = exportIO (return . toS . pShow :: Problem -> IO Text)
+showCpdExport = exportIO (return . prettyCPD :: Problem -> IO Text)
 
 jsonCpdExport :: Ex
 jsonCpdExport = exportIO (return . toS . A.encode :: Problem -> IO Text)

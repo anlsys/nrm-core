@@ -130,7 +130,14 @@ data Controller
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
   deriving (Show, Generic, MessagePack, Interpret, Inject)
 
-data Armstat = Armstat Int Double [Double] [Double] (Map SensorID Double) (Map SensorID Double)
+data Armstat
+  = Armstat
+      Int -- pulls
+      Double -- avgLoss
+      [Double] --avgObj
+      [Double] --avgCst
+      (Map SensorID Double) --avgMeasurements
+      (Map SensorID Double) --avgReferences
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Armstat
   deriving (Show, Generic, MessagePack, Interpret, Inject)
 

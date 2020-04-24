@@ -196,6 +196,8 @@ pkgs // rec {
                 purrr
                 ggthemes
                 ggplot2
+                huxtable
+                formatR
                 RcppRoll
                 latex2exp
                 plotly
@@ -283,6 +285,8 @@ pkgs // rec {
     purrr
     ggthemes
     ggplot2
+    huxtable
+    formatR
     RcppRoll
     latex2exp
     plotly
