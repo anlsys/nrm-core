@@ -1,49 +1,53 @@
 stages:
   - source
-  - lib
+  - build
   - docs
 
 variables:
   NIX_PATH: "nixpkgs=./."
 
-ormolu:
+make:ormolu:
   stage: source
   tags:
     - kvm
     - nix
-  script:
-    - nix-shell -p gnumake --run "make ormolu"
+  script: nix-shell -p gnumake --run "make ormolu"
 
-hlint:
+make:hlint:
   stage: source
   tags:
     - kvm
     - nix
-  script:
-    - nix-shell -p gnumake --run "make hlint"
+  script: nix-shell -p gnumake --run "make hlint"
 
-shellcheck:
+make:shellcheck:
   stage: source
   tags:
     - kvm
     - nix
-  script:
-    - nix-shell -p gnumake --run "make shellcheck"
+  script: nix-shell -p gnumake --run "make shellcheck"
 
-dhall-format:
+make:dhall-format:
   stage: source
   tags:
     - kvm
     - nix
-  script:
-    - nix-shell -p gnumake --run "make dhall-format"
+  script: nix-shell -p gnumake --run "make dhall-format"
 
-nix-build:
-  stage: lib
+nix:package:
+  stage: build
   tags:
     - kvm
     - nix
   script: nix-build -A hbandit --no-build-output
+
+
+make:doc:
+  stage: build
+  tags:
+    - kvm
+    - nix
+  script: nix-shell -p gnumake --run "make doc"
 
 readthedocs:
   stage: docs

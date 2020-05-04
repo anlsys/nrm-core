@@ -24,8 +24,9 @@ in pkgs // rec {
     overrides = self: super:
       with pkgs.haskell.lib; rec {
         hbandit = self.callPackage ./hbandit.nix {};
-        panpipe = doJailbreak super.panpipe;
+        panpipe = unmarkBroken (doJailbreak super.panpipe);
         refined = unmarkBroken super.refined;
+        dhall-to-cabal = unmarkBroken super.dhall-to-cabal;
         lazysmallcheck2012 = null;
         panhandle = doJailbreak (dontCheck (self.callCabal2nix "panhandle"
           (builtins.fetchTarball
