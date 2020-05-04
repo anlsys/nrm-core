@@ -1,6 +1,7 @@
 stages:
   - source
   - build
+  - docs
 
 variables:
   NIX_PATH: "nixpkgs=./."
