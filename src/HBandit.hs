@@ -5,9 +5,9 @@
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
 module HBandit
-  ( module HBandit.Class
-  , module HBandit.Types
-  , module HBandit.Util
+  ( module HBandit.Class,
+    module HBandit.Types,
+    module HBandit.Util,
   )
 where
 

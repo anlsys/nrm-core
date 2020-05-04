@@ -167,7 +167,6 @@ in    prelude.defaults.Package
           prelude.v "2.0"
       , category =
           "algorithms"
-
       , description =
           "hbandit"
       , library =
@@ -187,8 +186,7 @@ in    prelude.defaults.Package
             "test"
             (   prelude.defaults.TestSuite
               ⫽ { build-depends =
-                      common.libdep
-                    # [ nobound "hbandit" ]
+                    common.libdep # [ nobound "hbandit" ]
                 , hs-source-dirs =
                     [ "test" ]
                 , type =
@@ -198,7 +196,7 @@ in    prelude.defaults.Package
             )
           ]
       , extra-doc-files =
-          ["literate/*.png"] : List Text
+          [ "literate/*.png" ] : List Text
       , extra-source-files =
           [] : List Text
       , license =

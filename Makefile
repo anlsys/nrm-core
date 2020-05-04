@@ -90,18 +90,31 @@ shellcheck:
 		done
 	'
 
+.PHONY: hlint
+dhall-format:
+	@nix-shell --pure -p hlint --run bash <<< '
+		hlint src/ --hint=./.hlint.yaml
+	'
+
 .PHONY: dhall-format
 dhall-format:
 	@nix-shell --pure -p fd haskellPackages.dhall --run bash <<< '
+		RETURN=0
 		for F in $$(fd -e dhall); do
-			dhall format --inplace $$F
+			dhall format < $$F | cmp -s $$F -
+			if [ $$? -ne 0 ]; then
+				echo "[!] $$F does not pass dhall-format format check. Formatting.." >&2
+				dhall format --inplace $$F
+				RETURN=1
+			fi
 		done
+		if [ $$RETURN -ne 0 ]; then exit 1; fi
 	'
 
 .PHONY: ormolu
 ormolu:
 	@nix-shell --pure -E '
-		let pkgs = (import ./. {});
+		let pkgs = import <nixpkgs> {};
 		in pkgs.mkShell {
 			buildInputs = [pkgs.fd pkgs.ormolu];
 			shellHook =
@@ -109,9 +122,16 @@ ormolu:
 				"export LANG=en_US.UTF-8";
 		}
 	' --run bash <<< '
-		for F in $$(fd  -e hs); do
-			ormolu -o -XTypeApplications -o -XPatternSynonyms -m inplace $$F
+		RETURN=0
+		for F in $$(fd -E src/HBandit/Tutorial.hs -e hs); do
+			ormolu -o -XTypeApplications -o -XPatternSynonyms -m check $$F
+			if [ $$? -ne 0 ]; then
+				echo "[!] $$F does not pass ormolu format check. Formatting.." >&2
+				ormolu -o -XTypeApplications -o -XPatternSynonyms -m inplace $$F
+				RETURN=1
+			fi
 		done
+		if [ $$RETURN -ne 0 ]; then exit 1; fi
 	'
 
 .PHONY: doc

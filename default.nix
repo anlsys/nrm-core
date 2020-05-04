@@ -25,6 +25,7 @@ in pkgs // rec {
       with pkgs.haskell.lib; rec {
         hbandit = self.callPackage ./hbandit.nix {};
         panpipe = doJailbreak super.panpipe;
+        refined = unmarkBroken super.refined;
         lazysmallcheck2012 = null;
         panhandle = doJailbreak (dontCheck (self.callCabal2nix "panhandle"
           (builtins.fetchTarball
