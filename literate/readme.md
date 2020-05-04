@@ -6,7 +6,7 @@ link-citations: true
 
 # hbandit
 
-Safe Multi-Armed Bandit implementations: 
+Safe multi-armed bandit implementations: 
 
 - Eps-Greedy (fixed rate)
 - EXP3 (hyperparameter-free rate from @bubeck2012regret)

@@ -118,7 +118,6 @@ let deps =
 
 let allmodules =
       [ "Bandit"
-      , "Bandit.BwCR"
       , "Bandit.Class"
       , "Bandit.EpsGreedy"
       , "Bandit.Exp3"

@@ -161,7 +161,7 @@ Bandit.Class.Bandit(..)
 ,Bandit.Types.ZeroOne
 
 -- ** Algorithm comparison
--- | This subsection runs bandit experiments on an example dataset with some of the instances for 'Bandit.Bandit'.
+-- | This subsection runs bandit experiments on an example dataset with some of the @Bandit@ instances.
 -- The data for this tutorial is generated in R using the [inline-r](https://hackagehaskell.org/package/inline-r) package.
 -- Let's define a simple problem with three gaussian arms. We will threshold all cost values to \(\left[0,1\right]\).
 
@@ -279,45 +279,11 @@ import Bandit.EpsGreedy
 -- > Resolving dependencies...
 -- > Build profile: -w ghc-8.6.5 -O1
 -- > In order, the following will be built (use -v for more details):
--- >  - hbandit-1.0.0 (lib) (file src/Bandit.hs changed)
+-- >  - hbandit-1.0.0 (lib) (configuration changed)
 -- >  - fake-package-0 (exe:script) (configuration changed)
+-- > Configuring library for hbandit-1.0.0..
 -- > Preprocessing library for hbandit-1.0.0..
 -- > Building library for hbandit-1.0.0..
--- > [8 of 9] Compiling Bandit.Tutorial  ( src/Bandit/Tutorial.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Tutorial.o )
--- > [9 of 9] Compiling Bandit           ( src/Bandit.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit.o )
--- > Configuring executable 'script' for fake-package-0..
--- > Preprocessing executable 'script' for fake-package-0..
--- > Building executable 'script' for fake-package-0..
--- > [1 of 1] Compiling Main             ( Main.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/fake-package-0/x/script/build/script/script-tmp/Main.o )
--- > Linking /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/fake-package-0/x/script/build/script/script ...
--- $eg
--- > Action series:[True,True,False,True]
--- > Loss series:[10.0,44.0,40.0]
--- $summaryProblem
--- >        V1                V2               V3        
--- >  Min.   :0.00000   Min.   :0.1141   Min.   :0.3602  
--- >  1st Qu.:0.02809   1st Qu.:0.4279   1st Qu.:0.5433  
--- >  Median :0.10136   Median :0.4959   Median :0.6043  
--- >  Mean   :0.11087   Mean   :0.4985   Mean   :0.6072  
--- >  3rd Qu.:0.17558   3rd Qu.:0.5647   3rd Qu.:0.6685  
--- >  Max.   :0.38586   Max.   :0.7899   Max.   :0.8843  
--- $summaryPlot
--- <<literate/summaryPlot.png>>
--- $expe
--- >        X1              X2           X3                X4        
--- >  Min.   :  1.0   Min.   : 2   Min.   :0.00000   Min.   :0.0000  
--- >  1st Qu.:100.8   1st Qu.: 4   1st Qu.:0.06609   1st Qu.:0.0498  
--- >  Median :200.5   Median : 6   Median :0.16996   Median :0.1322  
--- >  Mean   :200.5   Mean   : 6   Mean   :0.25850   Mean   :0.1935  
--- >  3rd Qu.:300.2   3rd Qu.: 8   3rd Qu.:0.47440   3rd Qu.:0.2517  
--- >  Max.   :400.0   Max.   :10   Max.   :0.97830   Max.   :0.8723  
--- >        X5         
--- >  Min.   :0.00000  
--- >  1st Qu.:0.04174  
--- >  Median :0.11186  
--- >  Mean   :0.14680  
--- >  3rd Qu.:0.19227  
--- >  Max.   :0.80434  
--- $regretPlot
--- <<literate/regretPlot.png>>
+-- > [3 of 8] Compiling Bandit.Tutorial  ( src/Bandit/Tutorial.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Tutorial.o )
+-- > [4 of 8] Compiling Bandit.Class     ( src/Bandit/Class.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Class.o )
 

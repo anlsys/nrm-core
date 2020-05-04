@@ -17,7 +17,6 @@ module Bandit.Class
     -- * Discrete Multi-Armed-Bandits
     Arms (..),
     ParameterFreeMAB (..),
-    BwCRMAB (..),
   )
 where
 
@@ -55,7 +54,6 @@ class Bandit b hyper a l | b -> l, b -> hyper, b -> a where
 
   -- | @step loss@ iterates the bandit process one step forward.
   step :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
-
 
 -- | ContextualBandit b hyper a l er is the class for a contextual bandit algorithm.
 -- The same concepts as 'Bandit' apply, with the addition of:
@@ -98,25 +96,3 @@ class (Eq a, Bandit b (Arms a) a l) => ParameterFreeMAB b a l | b -> l where
   -- value @l@.
   stepPFMAB :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
   stepPFMAB = step
-
--- | The BwCR bandit framework.
---
--- In this context, (\mathbb{L} \in \mathbb{[0,1]}^d\), \(\mathbb{A}\) is
--- specified by \(\mathbb{H}\)=@p l@, which specifies the set of arms,
--- objective function and constraint set.
---
--- We define two notions of regret: The objective-regret \(R_{\text{obj}}\),
--- and the constraint-regret \(R_{\text{cst}}\).
---
--- \[ R_{obj} = \] \[ R_{cst} = \]
-class (Eq a, Bandit b (p l) a l) => BwCRMAB b a p l | b -> l, b -> p where
-
-  -- | @init as@ returns the initial state of the bandit algorithm, where @as@
-  -- is a set of available actions.
-  initBwCR :: (RandomGen g) => g -> p l -> (b, a, g)
-  initBwCR = init
-
-  -- | @step l@ iterates the bandit process one step forward by feeding loss
-  -- value @l@.
-  stepBwCR :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
-  stepBwCR = step

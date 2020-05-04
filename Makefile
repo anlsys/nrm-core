@@ -80,7 +80,7 @@ ghcid-test: hbandit.cabal .hlint.yaml hbandit.nix
 	'
 
 .PHONY: pre-commit
-pre-commit: ormolu dhall-format shellcheck
+pre-commit: ormolu dhall-format shellcheck src/Bandit/Tutorial.hs README.md
 
 .PHONY: shellcheck
 shellcheck:
