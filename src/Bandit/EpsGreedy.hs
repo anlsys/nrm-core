@@ -6,7 +6,7 @@
 --
 -- This module implements the fixed rate \(\epsilon\)-Greedy MAB algorithm.
 --
--- The \(\epsilon\)()-Greedy algorithm selects a random action with
+-- The \(\epsilon\)-Greedy algorithm selects a random action with
 -- probability \(\epsilon\), or select the action with best average
 -- with probability \(1-\epsilon\).
 module Bandit.EpsGreedy

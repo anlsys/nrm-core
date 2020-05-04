@@ -218,7 +218,7 @@ printOnePassEG = putText $
 > ,Bandit.Types.ZeroOne
 
 > -- ** Algorithm comparison
-> -- | This subsection runs bandit experiments on an example dataset with some of the instances for 'Bandit.Bandit'.
+> -- | This subsection runs bandit experiments on an example dataset with some of the @Bandit@ instances.
 > -- The data for this tutorial is generated in R using the [inline-r](https://hackagehaskell.org/package/inline-r) package.
 > -- Let's define a simple problem with three gaussian arms. We will threshold all cost values to \(\left[0,1\right]\).
 
