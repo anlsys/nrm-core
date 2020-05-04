@@ -1,5 +1,5 @@
 -- |
--- Module      : HBandit.EpsGreedy
+-- Module      : Bandit.EpsGreedy
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
@@ -9,7 +9,7 @@
 -- The \(\epsilon\)()-Greedy algorithm selects a random action with
 -- probability \(\epsilon\), or select the action with best average
 -- with probability \(1-\epsilon\).
-module HBandit.EpsGreedy
+module Bandit.EpsGreedy
   ( EpsGreedy (..),
     Weight (..),
     EpsGreedyHyper (..),
@@ -22,8 +22,8 @@ module HBandit.EpsGreedy
 where
 
 import Control.Monad.Random as MR (fromList, runRand)
-import HBandit.Class
-import HBandit.Util
+import Bandit.Class
+import Bandit.Util
 import Protolude
 import System.Random
 

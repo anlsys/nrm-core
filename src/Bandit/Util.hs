@@ -1,11 +1,11 @@
 -- |
--- Module      : HBandit.Util
+-- Module      : Bandit.Util
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
 --
 -- Utility functions for MAB algorithms.
-module HBandit.Util
+module Bandit.Util
   ( sampleWL,
     normalize,
     unsafeNormalizePanic,
@@ -15,7 +15,7 @@ module HBandit.Util
 where
 
 import Control.Monad.Random as MR
-import HBandit.Types
+import Bandit.Types
 import Protolude
 import Refined hiding (NonEmpty)
 import Refined.Unsafe
@@ -45,7 +45,7 @@ normalizedSum ::
   ZeroOne a
 normalizedSum l =
   if sum (unrefine . fst <$> l) == 0
-    then HBandit.Types.zero
+    then Bandit.Types.zero
     else
       unsafeRefine $
         sum

@@ -1,14 +1,14 @@
 -- |
--- Module      : HBandit.Util
+-- Module      : Bandit.Util
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
 --
 -- Utility functions for MAB algorithms.
-module HBandit.Types
+module Bandit.Types
   ( ZeroOne,
-    HBandit.Types.zero,
-    HBandit.Types.one,
+    Bandit.Types.zero,
+    Bandit.Types.one,
   )
 where
 

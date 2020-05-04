@@ -1,14 +1,14 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- |
--- Module      : HBandit.Class
+-- Module      : Bandit.Class
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
 --
 -- This module implements the common interface for instanciating
 -- and interacting with Multi-Armed Bandit algoritms.
-module HBandit.Class
+module Bandit.Class
   ( -- * Generalized Bandit
     Bandit (..),
     ExpertRepresentation (..),
@@ -21,7 +21,7 @@ module HBandit.Class
   )
 where
 
-import HBandit.Types
+import Bandit.Types
 import Protolude
 import System.Random
 

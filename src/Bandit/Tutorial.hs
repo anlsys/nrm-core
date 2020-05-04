@@ -1,8 +1,8 @@
 
-{-| This module serves as an introduction to the HBandit Multi-Armed Bandit library.
+{-| This module serves as an introduction to the `hbandit` Multi-Armed Bandit library.
 -}
 
-module HBandit.Tutorial (
+module Bandit.Tutorial (
 -- *** Setup
 
 -- | The code snippets displayed in this tutorial require the following list of extensions and modules.
@@ -37,9 +37,9 @@ module HBandit.Tutorial (
 -- >  import Control.Monad.Primitive
 -- >  import qualified Language.R.Instance as R
 -- >  import Control.Lens
--- >  import HBandit
--- >  import HBandit.EpsGreedy
--- >  import HBandit.Exp3
+-- >  import Bandit
+-- >  import Bandit.EpsGreedy
+-- >  import Bandit.Exp3
 -- >  import qualified Data.Text.Lazy.Encoding as T
 -- >  import qualified Data.Text.Lazy as T
 -- >  import Data.Aeson hiding ((.=))
@@ -79,14 +79,14 @@ module HBandit.Tutorial (
 -- types for a basic bandit game between a learner and an environment, where the
 -- learner has access to a random generator and is defined via a stateful 'step'
 -- function. All non-contetual bandit algorithms in this library are instances of this.
-HBandit.Class.Bandit(..)
+Bandit.Class.Bandit(..)
 
 -- *** Example instance: Epsilon-Greedy
 --
 -- | Let's take a look at the instance for the classic fixed-rate \(\epsilon\)-Greedy
 -- algorithm. The necessary hyperparameters are the number of arms and the rate value,
 -- as the 'EpsGreedyHyper' datatype shows.
-,HBandit.EpsGreedy.EpsGreedyHyper(..)
+,Bandit.EpsGreedy.EpsGreedyHyper(..)
 
 -- | Let's use that instance on some toy data with a few rounds.
 --
@@ -112,7 +112,7 @@ HBandit.Class.Bandit(..)
 -- >    GameState b a l
 -- >  onePass hyper g adversary = runGame initialGame
 -- >   where
--- >    (initialBanditState, initialAction, g') = HBandit.init g hyper
+-- >    (initialBanditState, initialAction, g') = Bandit.init g hyper
 -- >    initialGame =  GameState
 -- >      { historyActions = [initialAction],
 -- >        historyLosses = [],
@@ -136,7 +136,7 @@ HBandit.Class.Bandit(..)
 -- >  runOnePassEG g = onePass hyper g (getZipList $ f <$> ZipList [40, 2, 10] <*> ZipList [4, 44 ,3] )
 -- >   where
 -- >    f a b = \case True -> a; False -> b
--- >    hyper = EpsGreedyHyper {epsilon = 0.5, arms = HBandit.Arms [True, False]}
+-- >    hyper = EpsGreedyHyper {epsilon = 0.5, arms = Bandit.Arms [True, False]}
 -- >  
 -- >  printOnePassEG :: IO ()
 -- >  printOnePassEG = putText $
@@ -151,17 +151,17 @@ HBandit.Class.Bandit(..)
 -- $eg
 
 -- *** Other classes
--- | Some other, more restrictive classes are available in [HBandit.Class](HBandit-Class.html) for convenience. See for
--- example 'HBandit.Class.ParameterFreeMAB', which exposes a hyperparameter-free interface for
+-- | Some other, more restrictive classes are available in [Bandit.Class](Bandit-Class.html) for convenience. See for
+-- example 'Bandit.Class.ParameterFreeMAB', which exposes a hyperparameter-free interface for
 -- algorithms that don't need any information besides the arm count. Those instances are not necessary
 -- per se, and the 'Bandit' class is always sufficient. Note that some instances make agressive use
--- of type refinement (See e.g. HBandit.Exp3.Exp3) through the 'Refined' package.
+-- of type refinement (See e.g. Bandit.Exp3.Exp3) through the 'Refined' package.
 -- In particular, we are about to make use of the \(\left[0,1\right]\) interval through the 'ZeroOne'
 -- type alias.
-,HBandit.Types.ZeroOne
+,Bandit.Types.ZeroOne
 
 -- ** Algorithm comparison
--- | This subsection runs bandit experiments on an example dataset with some of the instances for 'HBandit.Bandit'.
+-- | This subsection runs bandit experiments on an example dataset with some of the instances for 'Bandit.Bandit'.
 -- The data for this tutorial is generated in R using the [inline-r](https://hackagehaskell.org/package/inline-r) package.
 -- Let's define a simple problem with three gaussian arms. We will threshold all cost values to \(\left[0,1\right]\).
 
@@ -213,14 +213,14 @@ HBandit.Class.Bandit(..)
 -- >  exp3 :: [[Double]] -> StdGen -> GameState (Exp3 Int) Int (ZeroOne Double)
 -- >  exp3 dataset g = 
 -- >    onePass
--- >      (HBandit.Arms [0..2])
+-- >      (Bandit.Arms [0..2])
 -- >      g
 -- >      (toAdversary $ refineDataset dataset)
 -- >                   
 -- >  greedy :: [[Double]] -> StdGen -> Double -> GameState (EpsGreedy Int) Int (Double)
 -- >  greedy dataset g eps =  
 -- >    onePass
--- >      (EpsGreedyHyper {epsilon = eps, arms = HBandit.Arms [0..2]})
+-- >      (EpsGreedyHyper {epsilon = eps, arms = Bandit.Arms [0..2]})
 -- >      g
 -- >      (toAdversary dataset)
 -- >  
@@ -270,49 +270,62 @@ HBandit.Class.Bandit(..)
 -- $regretPlot
 
   ) where
-import HBandit.Class
-import HBandit.Types
-import HBandit.EpsGreedy
+import Bandit.Class
+import Bandit.Types
+import Bandit.EpsGreedy
 
 --   pass
 
 -- > Resolving dependencies...
 -- > Build profile: -w ghc-8.6.5 -O1
 -- > In order, the following will be built (use -v for more details):
--- >  - fake-package-0 (exe:script) (configuration changed)
+-- >  - hbandit-1.0.0 (lib) (configuration changed)
+-- >  - fake-package-0 (exe:script) (first run)
+-- > Configuring library for hbandit-1.0.0..
+-- > Preprocessing library for hbandit-1.0.0..
+-- > Building library for hbandit-1.0.0..
+-- > [1 of 9] Compiling Bandit.Tutorial  ( src/Bandit/Tutorial.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Tutorial.o )
+-- > [2 of 9] Compiling Bandit.Types     ( src/Bandit/Types.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Types.o )
+-- > [3 of 9] Compiling Bandit.Class     ( src/Bandit/Class.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Class.o )
+-- > [4 of 9] Compiling Bandit.BwCR      ( src/Bandit/BwCR.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/BwCR.o )
+-- > [5 of 9] Compiling Bandit.Util      ( src/Bandit/Util.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Util.o )
+-- > [6 of 9] Compiling Bandit.Exp4R     ( src/Bandit/Exp4R.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Exp4R.o )
+-- > [7 of 9] Compiling Bandit.Exp3      ( src/Bandit/Exp3.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Exp3.o )
+-- > [8 of 9] Compiling Bandit.EpsGreedy ( src/Bandit/EpsGreedy.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/EpsGreedy.o )
+-- > [9 of 9] Compiling Bandit           ( src/Bandit.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit.o )
 -- > Configuring executable 'script' for fake-package-0..
 -- > Preprocessing executable 'script' for fake-package-0..
 -- > Building executable 'script' for fake-package-0..
--- > [1 of 1] Compiling Main             ( Main.hs, /home/fre/workspace/hnrm/hsnrm/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/fake-package-0/x/script/build/script/script-tmp/Main.o )
--- > Linking /home/fre/workspace/hnrm/hsnrm/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/fake-package-0/x/script/build/script/script ...
+-- > [1 of 1] Compiling Main             ( Main.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/fake-package-0/x/script/build/script/script-tmp/Main.o )
+-- > Linking /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/fake-package-0/x/script/build/script/script ...
 -- $eg
 -- > Action series:[True,True,False,True]
 -- > Loss series:[10.0,44.0,40.0]
 -- $summaryProblem
 -- >        V1                V2               V3        
--- >  Min.   :0.00000   Min.   :0.2177   Min.   :0.3204  
--- >  1st Qu.:0.03759   1st Qu.:0.4262   1st Qu.:0.5360  
--- >  Median :0.10699   Median :0.4992   Median :0.6002  
--- >  Mean   :0.11695   Mean   :0.5005   Mean   :0.5981  
--- >  3rd Qu.:0.18245   3rd Qu.:0.5760   3rd Qu.:0.6641  
--- >  Max.   :0.50439   Max.   :0.7961   Max.   :0.8704  
+-- >  Min.   :0.00000   Min.   :0.1680   Min.   :0.3114  
+-- >  1st Qu.:0.03342   1st Qu.:0.4344   1st Qu.:0.5364  
+-- >  Median :0.09630   Median :0.5043   Median :0.6046  
+-- >  Mean   :0.10652   Mean   :0.5029   Mean   :0.6035  
+-- >  3rd Qu.:0.16340   3rd Qu.:0.5766   3rd Qu.:0.6681  
+-- >  Max.   :0.35062   Max.   :0.8347   Max.   :0.9120  
 -- $summaryPlot
 -- <<literate/summaryPlot.png>>
 -- $expe
 -- >        X1              X2           X3                X4         
 -- >  Min.   :  1.0   Min.   : 2   Min.   :0.00000   Min.   :0.00000  
--- >  1st Qu.:100.8   1st Qu.: 4   1st Qu.:0.06706   1st Qu.:0.04882  
--- >  Median :200.5   Median : 6   Median :0.16770   Median :0.13212  
--- >  Mean   :200.5   Mean   : 6   Mean   :0.25577   Mean   :0.19508  
--- >  3rd Qu.:300.2   3rd Qu.: 8   3rd Qu.:0.47926   3rd Qu.:0.25144  
--- >  Max.   :400.0   Max.   :10   Max.   :0.91150   Max.   :0.86625  
+-- >  1st Qu.:100.8   1st Qu.: 4   1st Qu.:0.06729   1st Qu.:0.04959  
+-- >  Median :200.5   Median : 6   Median :0.16685   Median :0.13263  
+-- >  Mean   :200.5   Mean   : 6   Mean   :0.25524   Mean   :0.19597  
+-- >  3rd Qu.:300.2   3rd Qu.: 8   3rd Qu.:0.47088   3rd Qu.:0.25251  
+-- >  Max.   :400.0   Max.   :10   Max.   :0.90096   Max.   :0.93750  
 -- >        X5         
 -- >  Min.   :0.00000  
--- >  1st Qu.:0.03967  
--- >  Median :0.11315  
--- >  Mean   :0.14714  
--- >  3rd Qu.:0.18850  
--- >  Max.   :0.91526  
+-- >  1st Qu.:0.04083  
+-- >  Median :0.11239  
+-- >  Mean   :0.14753  
+-- >  3rd Qu.:0.18977  
+-- >  Max.   :0.92357  
 -- $regretPlot
 -- <<literate/regretPlot.png>>
 

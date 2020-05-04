@@ -2,7 +2,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- |
--- Module      : HBandit.Exp4R
+-- Module      : Bandit.Exp4R
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
@@ -13,7 +13,7 @@
 -- - [1] Sun, W., Dey, D. & Kapoor, A.. (2017). Safety-Aware Algorithms for
 -- Adversarial Contextual Bandit. Proceedings of the 34th International
 -- Conference on Machine Learning, in PMLR 70:3280-3288
-module HBandit.Exp4R
+module Bandit.Exp4R
   ( -- * Interface
     Feedback (..),
 
@@ -37,9 +37,9 @@ where
 import Control.Lens
 import Data.Generics.Labels ()
 import Data.List.NonEmpty as NE
-import HBandit.Class
-import HBandit.Types
-import HBandit.Util
+import Bandit.Class
+import Bandit.Types
+import Bandit.Util
 import Protolude
 import qualified Refined as R
 import qualified Refined.Unsafe as R
