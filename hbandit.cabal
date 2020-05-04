@@ -4,31 +4,34 @@ cabal-version: 2.0
 --
 -- Do not edit it by hand, because your changes will be over-written!
 --
--- Instead, edit the source Dhall file (which may have the
--- '.dhall' extension) and re-run dhall-to-cabal, passing 
--- the source file's name as its argument.
+-- Instead, edit the source Dhall file, namely
+-- 'hbandit.dhall', and re-generate this file by running
+-- 'dhall-to-cabal -- hbandit.dhall'.
 -- * * * * * * * * * * * * WARNING * * * * * * * * * * * *
 name: hbandit
 version: 1.0.0
 license: BSD3
-maintainer: mail@server.ext
+maintainer: fre@freux.fr
 author: Name Lastname
 synopsis: hbandit
 description:
     hbandit
 category: algorithms
 build-type: Simple
+extra-doc-files: literate/*.png
 
 source-repository head
 
-library hbanditlib
+library
     exposed-modules:
+        HBandit
         HBandit.BwCR
         HBandit.Class
         HBandit.EpsGreedy
         HBandit.Exp3
         HBandit.Exp4R
         HBandit.Types
+        HBandit.Tutorial
         HBandit.Util
     hs-source-dirs: src
     default-language: Haskell2010
@@ -36,11 +39,12 @@ library hbanditlib
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+                        OverloadedLists ViewPatterns OverloadedLabels DeriveFunctor
+                        TypeFamilies DeriveAnyClass DeriveGeneric DeriveDataTypeable
+                        DeriveFoldable DerivingStrategies TypeApplications MultiWayIf
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Widentities -Wredundant-constraints -Wcpp-undef -fwarn-tabs
                  -fwarn-unused-imports -fwarn-missing-signatures
@@ -61,53 +65,21 @@ library hbanditlib
         lens -any,
         generic-lens -any
 
-library ffi
-    exposed-modules:
-        FFI.TypeUncurry
-        FFI.TypeUncurry.DataKinds
-        FFI.TypeUncurry.Msgpack
-    hs-source-dirs: src
-    default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
-    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
-                 -Widentities -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -Wincomplete-record-updates
-                 -Wmonomorphism-restriction -Wimplicit-prelude
-                 -Wmissing-local-signatures -Wmissing-exported-signatures
-                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields
-    build-depends:
-        protolude -any,
-        base -any,
-        bytestring -any,
-        enclosed-exceptions -any,
-        data-msgpack -any,
-        storable-endian -any
-
-executable validation
+test-suite test
+    type: exitcode-stdio-1.0
     main-is: ctx.hs
-    hs-source-dirs: validation
+    hs-source-dirs: test
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards TypeSynonymInstances
                         StandaloneDeriving FlexibleInstances TupleSections
                         MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
+                        OverloadedLists ViewPatterns OverloadedLabels DeriveFunctor
+                        TypeFamilies DeriveAnyClass DeriveGeneric DeriveDataTypeable
+                        DeriveFoldable DerivingStrategies TypeApplications MultiWayIf
+                        TemplateHaskell BlockArguments GADTs FlexibleContexts TypeOperators
+                        DataKinds PolyKinds AllowAmbiguousTypes FunctionalDependencies
+                        UndecidableInstances
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Widentities -Wredundant-constraints -Wcpp-undef -fwarn-tabs
                  -fwarn-unused-imports -fwarn-missing-signatures
@@ -127,59 +99,4 @@ executable validation
         MonadRandom -any,
         lens -any,
         generic-lens -any,
-        hbanditlib -any,
-        inline-r -any,
-        containers -any,
-        primitive -any
-
-executable hbandit
-    main-is: Shared.hs
-    hs-source-dirs: bin src
-    other-modules:
-        HBandit.BwCR
-        HBandit.Class
-        HBandit.EpsGreedy
-        HBandit.Exp3
-        HBandit.Exp4R
-        HBandit.Types
-        HBandit.Util
-        FFI.TypeUncurry
-        FFI.TypeUncurry.DataKinds
-        FFI.TypeUncurry.Msgpack
-    default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards TypeSynonymInstances
-                        StandaloneDeriving FlexibleInstances TupleSections
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns DeriveFunctor TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable DeriveFoldable DerivingStrategies
-                        TypeApplications MultiWayIf NoTemplateHaskell BlockArguments GADTs
-                        FlexibleContexts TypeOperators DataKinds PolyKinds
-                        AllowAmbiguousTypes FunctionalDependencies UndecidableInstances
-    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
-                 -Widentities -Wredundant-constraints -Wcpp-undef -fwarn-tabs
-                 -fwarn-unused-imports -fwarn-missing-signatures
-                 -fwarn-name-shadowing -fprint-potential-instances
-                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -Wincomplete-record-updates
-                 -Wmonomorphism-restriction -Wimplicit-prelude
-                 -Wmissing-local-signatures -Wmissing-exported-signatures
-                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -fPIC -shared -no-hs-main
-                 -dynamic -lHSrts-ghc8.6.5
-                 -L/nix/store/3xl80cnpsga01hpnjnrxw0j3kr3cbgfd-ghc-8.6.5/lib/ghc-8.6.5/rts/
-    build-depends:
-        base -any,
-        protolude -any,
-        random -any,
-        refined -any,
-        intervals -any,
-        MonadRandom -any,
-        lens -any,
-        generic-lens -any,
-        data-msgpack -any,
-        bytestring -any,
-        enclosed-exceptions -any,
-        data-msgpack -any,
-        storable-endian -any
-
+        hbandit -any

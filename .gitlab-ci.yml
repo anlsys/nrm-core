@@ -3,33 +3,16 @@ stages:
   - lib
   - docs
 
+variables:
+  NIX_PATH: "nixpkgs=./."
+
 ormolu:
   stage: source
   tags:
     - kvm
     - nix
   script:
-    - |
-      nix-shell --pure -E '
-        let pkgs = (import ./.);
-        in pkgs.mkShell {
-          buildInputs = [pkgs.fd pkgs.ormolu];
-          shellHook =
-            "export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive \n" +
-            "export LANG=en_US.UTF-8";
-        }
-      ' --run bash <<< '
-        RETURN=0
-        cd src
-        for F in $(fd -e hs); do
-          ormolu -o -XTypeApplications -m check $F
-          if [ $? -ne 0 ]; then
-            echo "[!] $F does not pass ormolu haskell format check." >&2
-            RETURN=1
-          fi
-        done
-        if [ $RETURN -ne 0 ]; then exit 1; fi
-      '
+    - nix-shell -p gnumake --run "make ormolu"
 
 hlint:
   stage: source
@@ -37,18 +20,15 @@ hlint:
     - kvm
     - nix
   script:
-    - nix-shell --pure -p '(import ./.).hlint' --run bash <<< 'hlint src/ --hint=./.hlint.yaml'
+    - nix-shell -p gnumake --run "make hlint"
 
-black:
+shellcheck:
   stage: source
   tags:
     - kvm
     - nix
   script:
-    - |
-      nix-shell --pure -p '(import ./.).pythonPackages.black' --run bash <<< '
-        black validation/*.py --check
-      '
+    - nix-shell -p gnumake --run "make shellcheck"
 
 dhall-format:
   stage: source
@@ -56,18 +36,7 @@ dhall-format:
     - kvm
     - nix
   script:
-    - |
-      nix-shell --pure -p '(import ./.).fd' '(import ./.).haskellPackages.dhall' --run bash <<< '
-        RETURN=0
-        for F in $(fd -e dhall); do
-          dhall format < $F | cmp -s $F -
-          if [ $? -ne 0 ]; then
-            echo "[!] $F does not pass dhall-format format check." >&2
-            RETURN=1
-          fi
-        done
-        if [ $RETURN -ne 0 ]; then exit 1; fi
-      '
+    - nix-shell -p gnumake --run "make dhall-format"
 
 nix-build:
   stage: lib
@@ -75,21 +44,6 @@ nix-build:
     - kvm
     - nix
   script: nix-build -A hbandit --no-build-output
-
-
-check-vendored-documentation:
-  stage: docs
-  tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell nix/default.nix -A hack --run bash --arg useGhcide false <<< '
-        echo "check: is vendored documentation up to date?"
-        cp -r doc/ doc2
-        ./shake doc
-        diff -r doc doc2
-        '
 
 readthedocs:
   stage: docs

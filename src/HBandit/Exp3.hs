@@ -1,5 +1,4 @@
 {-# LANGUAGE DerivingVia #-}
-{-# LANGUAGE TypeApplications #-}
 
 -- |
 -- Module      : HBandit.Exp3
@@ -22,8 +21,9 @@ module HBandit.Exp3
   )
 where
 
-import Control.Lens
-import Data.Generics.Product
+import Control.Lens hiding (_Unwrapped)
+import Data.Generics.Labels ()
+import Data.Generics.Wrapped
 import HBandit.Class
 import HBandit.Types
 import HBandit.Util
@@ -58,9 +58,7 @@ data Weight a
       }
   deriving (Generic)
 
-_weights :: Data.Generics.Product.HasField "weights" s t a b => Lens s t a b
-_weights = field @"weights"
-
+-- | The Exponential-weight algorithm for Exploration and Exploitation (EXP3).
 instance
   (Eq a) =>
   Bandit (Exp3 a) (Arms a) a (ZeroOne Double)
@@ -81,15 +79,14 @@ instance
       (a, g') = sampleWL awl g
       ws = as <&> Weight (Probability $ 1.0 / fromIntegral (length (toList as))) (CumulativeLoss 0)
 
-  step g (R.unrefine -> l) =
-    get <&> lastAction >>= \oldAction -> do
-      _weights
-        %= fmap (\w -> if action w == oldAction then updateCumLoss l w else w)
-      t <- use $ field @"t"
-      k <- use $ field @"k"
-      _weights %= recompute t k
-      field @"t" += 1
-      pickAction g
+  step g (R.unrefine -> l) = do
+    oldAction <- use #lastAction
+    #weights %= fmap (\w -> if action w == oldAction then updateCumLoss l w else w)
+    t <- use #t
+    k <- use #k
+    #weights %= recompute t k
+    #t += 1
+    pickAction g
 
 pickAction :: (RandomGen g, MonadState (Exp3 a) m) => g -> m (a, g)
 pickAction g = do
@@ -101,21 +98,21 @@ pickAction g = do
               Just x -> x
           )
           g
-  field @"lastAction" .= a
+  #lastAction .= a
   return (a, g')
   where
     w2tuple :: forall b. Weight b -> (Double, b)
     w2tuple (Weight p _ action) = (getProbability p, action)
 
 updateCumLoss :: Double -> Weight a -> Weight a
-updateCumLoss l w@(Weight (Probability p) (CumulativeLoss cL) _) =
-  w & field @"cumulativeLoss" .~ CumulativeLoss (cL + (l / p))
+updateCumLoss l w@(Weight (Probability p) _ _) =
+  w & #cumulativeLoss . _Unwrapped +~ l / p
 
 recompute :: Int -> Int -> NonEmpty (Weight a) -> NonEmpty (Weight a)
 recompute t k weights = updatep <$> weights
   where
     updatep w@(Weight _ (CumulativeLoss cL) _) =
-      w & field @"probability" . field @"getProbability"
+      w & #probability . #getProbability
         .~ expw cL
         / denom
     expw cL =
