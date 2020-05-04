@@ -111,14 +111,7 @@ library
         CPD.Values
         CPD.Utils
         CPD.Text
-        HBandit.Class
-        HBandit.Exp3
-        HBandit.Exp4R
-        HBandit.EpsGreedy
-        HBandit.Util
-        HBandit.Types
-        HBandit.BwCR
-    hs-source-dirs: nrm hbandit/src
+    hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards RankNTypes
@@ -144,6 +137,7 @@ library
                  -Wredundant-constraints -Wpartial-fields
     build-depends:
         base -any,
+        hbandit -any,
         protolude -any,
         enclosed-exceptions -any,
         MonadRandom -any,

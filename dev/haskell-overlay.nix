@@ -18,9 +18,13 @@ let
         '' + o.configurePhase;
       });
 
-      #zeromq4-haskell = super.zeromq4-haskell.overrideAttrs (o: {
-      #extraLibraries = ["stdc++"];
-      #});
+      hbandit = self.callPackage (./pkgs/hnrm/hbandit.nix) {
+        src = pkgs.fetchurl {
+          url =
+            "https://xgitlab.cels.anl.gov/argo/hbandit/-/archive/master/hbandit-master.tar.gz";
+          hash = "067akzy18nwwpyw59vm3v3bxgzqbaxaiha0sfcp9dii8qvifnd6w";
+        };
+      };
 
       nrmstatic = (self.callPackage (./pkgs/hnrm/static.nix) {
         src = pkgs.nix-gitignore.gitignoreSource [ ] (src + "/hsnrm");

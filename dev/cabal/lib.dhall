@@ -30,7 +30,7 @@ in    λ ( ghcPath
                 ⫽ { build-depends =
                       common.libdep
                   , hs-source-dirs =
-                      [ "nrm", "hbandit/src" ]
+                      [ "nrm" ]
                   , exposed-modules =
                       common.allmodules
                   }

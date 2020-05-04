@@ -1,0 +1,1 @@
+(import ./. {}).hack-with-devtools

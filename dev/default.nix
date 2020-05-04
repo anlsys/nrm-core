@@ -1,6 +1,6 @@
 { src ? ../.
 
-, nixpkgs ? <nixpkgs>
+, nixpkgs ? builtins.fetchTarball "http://nixos.org/channels/nixos-20.03/nixexprs.tar.xz"
 
 , pkgs ? import ./nixpkgs.nix {
   inherit nixpkgs;
@@ -286,6 +286,7 @@ pkgs // rec {
     ggthemes
     ggplot2
     huxtable
+    plotly
     formatR
     RcppRoll
     latex2exp

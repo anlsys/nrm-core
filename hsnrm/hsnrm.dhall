@@ -23,6 +23,22 @@ in    λ ( ghcPath
             "tools"
         , description =
             "The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications."
+        , sub-libraries =
+            [ { library =
+                    λ(config : types.Config)
+                  →   prelude.defaults.Library
+                    ⫽ { build-depends =
+                          common.libdep
+                      , hs-source-dirs =
+                          [ "nrm", "bin"]
+                      , exposed-modules =
+                          common.allmodules
+                      }
+                    ⫽ common.copts ([] : List Text)
+              , name =
+                  "nrmlib"
+              }
+            ]
         , executables =
             [ { executable =
                     λ(config : types.Config)
@@ -30,13 +46,11 @@ in    λ ( ghcPath
                     ⫽ { main-is =
                           "Export.hs"
                       , build-depends =
-                          [ common.nobound "nrmlib"
-                          , common.deps.base
-                          , common.deps.protolude
-                          , common.deps.enclosed-exceptions
-                          ]
+                          common.libdep
                       , hs-source-dirs =
-                          [ "bin" ]
+                          [ "bin", "nrm"]
+                      , other-modules =
+                          common.allmodules
                       }
                     ⫽ common.copts
                       [ "-Wmissed-specialisations"
@@ -59,11 +73,30 @@ in    λ ( ghcPath
                     λ(config : types.Config)
                   →   prelude.defaults.Executable
                     ⫽ { main-is =
+                          "PyExport.hs"
+                      , build-depends =
+                          common.libdep
+                      , hs-source-dirs =
+                          [ "bin", "nrm"]
+                      , other-modules =
+                          common.allmodules
+                      }
+                    ⫽ common.copts
+                      [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]
+              , name =
+                  "pynrm.so"
+              }
+            , { executable =
+                    λ(config : types.Config)
+                  →   prelude.defaults.Executable
+                    ⫽ { main-is =
                           "Hnrm.hs"
                       , build-depends =
-                          [ common.nobound "nrmlib" ]
+                          common.libdep
                       , hs-source-dirs =
-                          [ "bin", "src"]
+                          [ "bin", "nrm" ]
+                      , other-modules =
+                          common.allmodules
                       }
                     ⫽ common.copts [ "-main-is", "Hnrm" ]
               , name =
@@ -80,6 +113,18 @@ in    λ ( ghcPath
                     ⫽ common.copts [ "-main-is", "Hnrm" ]
               , name =
                   "nrm"
+              }
+            , { executable =
+                    λ(config : types.Config)
+                  →   prelude.defaults.Executable
+                    ⫽ { main-is =
+                          "bin/Hnrmd.hs"
+                      , build-depends =
+                          [ common.nobound "nrmlib" ]
+                      }
+                    ⫽ common.copts [ "-main-is", "Hnrmd" ]
+              , name =
+                  "nrmddep"
               }
             , { executable =
                     λ(config : types.Config)

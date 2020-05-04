@@ -111,14 +111,7 @@ library nrmlib
         CPD.Values
         CPD.Utils
         CPD.Text
-        HBandit.Class
-        HBandit.Exp3
-        HBandit.Exp4R
-        HBandit.EpsGreedy
-        HBandit.Util
-        HBandit.Types
-        HBandit.BwCR
-    hs-source-dirs: nrm bin hbandit/src
+    hs-source-dirs: nrm bin
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards RankNTypes
@@ -144,99 +137,7 @@ library nrmlib
                  -Wredundant-constraints -Wpartial-fields
     build-depends:
         base -any,
-        protolude -any,
-        enclosed-exceptions -any,
-        MonadRandom -any,
-        mtl-compat -any,
-        vcs-revision -any,
-        transformers -any,
-        generic-data -any,
-        bytestring -any,
-        random -any,
-        prettyprinter -any,
-        zeromq4-haskell -any,
-        zeromq4-conduit -any,
-        generic-lens -any,
-        data-msgpack -any,
-        containers -any,
-        binary -any,
-        unordered-containers -any,
-        mtl -any,
-        aeson -any,
-        dhall -any,
-        dhall-json -any,
-        conduit -any,
-        conduit-extra -any,
-        aeson-extra -any,
-        resourcet -any,
-        intervals -any,
-        neat-interpolation -any,
-        generic-aeson -any,
-        aeson-pretty -any,
-        pretty-simple -any,
-        typed-process -any,
-        hxt -any,
-        recursion-schemes -any,
-        hxt-xpath -any,
-        json-schema -any,
-        yaml -any,
-        data-default -any,
-        flat -any,
-        refined -any,
-        vector -any,
-        optparse-applicative -any,
-        directory -any,
-        regex -any,
-        units -any,
-        unix -any,
-        generic-deriving -any,
-        uuid -any,
-        async -any,
-        text -any,
-        units-defs -any,
-        storable-endian -any,
-        template-haskell -any,
-        mtl -any,
-        brick -any,
-        filepath -any,
-        lens -any,
-        editor-open -any
-
-library banditlib
-    exposed-modules:
-        HBandit.Class
-        HBandit.Exp3
-        HBandit.Exp4R
-        HBandit.EpsGreedy
-        HBandit.Util
-        HBandit.Types
-        HBandit.BwCR
-    hs-source-dirs: nrm
-    default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards RankNTypes
-                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
-                        TupleSections MultiParamTypeClasses NoImplicitPrelude
-                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
-                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
-                        DeriveDataTypeable OverloadedLabels DeriveFoldable
-                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
-    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
-                 -Wmissing-home-modules -Widentities -Wredundant-constraints
-                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
-                 -fwarn-missing-signatures -fwarn-name-shadowing
-                 -fprint-potential-instances -Wmissing-export-lists
-                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -Wincomplete-record-updates
-                 -Wmonomorphism-restriction -Wimplicit-prelude
-                 -Wmissing-local-signatures -Wmissing-exported-signatures
-                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields
-    build-depends:
-        base -any,
+        hbandit -any,
         protolude -any,
         enclosed-exceptions -any,
         MonadRandom -any,
@@ -297,7 +198,7 @@ library banditlib
 
 executable nrm.so
     main-is: Export.hs
-    hs-source-dirs: bin nrm hbandit/src
+    hs-source-dirs: bin nrm
     other-modules:
         NRM.Slices
         NRM.Slices.Class
@@ -383,13 +284,6 @@ executable nrm.so
         CPD.Values
         CPD.Utils
         CPD.Text
-        HBandit.Class
-        HBandit.Exp3
-        HBandit.Exp4R
-        HBandit.EpsGreedy
-        HBandit.Util
-        HBandit.Types
-        HBandit.BwCR
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards RankNTypes
@@ -412,10 +306,12 @@ executable nrm.so
                  -Wmonomorphism-restriction -Wimplicit-prelude
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -fPIC -shared -no-hs-main
-                 -dynamic
+                 -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
+                 -Wall-missed-specialisations -fPIC -shared -no-hs-main -dynamic
+                 -lHSrts-ghc -L/lib/ghc-/rts/
     build-depends:
         base -any,
+        hbandit -any,
         protolude -any,
         enclosed-exceptions -any,
         MonadRandom -any,
@@ -476,7 +372,7 @@ executable nrm.so
 
 executable pynrm.so
     main-is: PyExport.hs
-    hs-source-dirs: bin nrm hbandit/src
+    hs-source-dirs: bin nrm
     other-modules:
         NRM.Slices
         NRM.Slices.Class
@@ -562,13 +458,6 @@ executable pynrm.so
         CPD.Values
         CPD.Utils
         CPD.Text
-        HBandit.Class
-        HBandit.Exp3
-        HBandit.Exp4R
-        HBandit.EpsGreedy
-        HBandit.Util
-        HBandit.Types
-        HBandit.BwCR
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards RankNTypes
@@ -595,6 +484,7 @@ executable pynrm.so
                  -dynamic
     build-depends:
         base -any,
+        hbandit -any,
         protolude -any,
         enclosed-exceptions -any,
         MonadRandom -any,
@@ -655,7 +545,7 @@ executable pynrm.so
 
 executable nrmstatic
     main-is: Hnrm.hs
-    hs-source-dirs: bin nrm hbandit/src
+    hs-source-dirs: bin nrm
     other-modules:
         NRM.Slices
         NRM.Slices.Class
@@ -741,13 +631,6 @@ executable nrmstatic
         CPD.Values
         CPD.Utils
         CPD.Text
-        HBandit.Class
-        HBandit.Exp3
-        HBandit.Exp4R
-        HBandit.EpsGreedy
-        HBandit.Util
-        HBandit.Types
-        HBandit.BwCR
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards RankNTypes
@@ -773,6 +656,7 @@ executable nrmstatic
                  -Wredundant-constraints -Wpartial-fields -main-is Hnrm
     build-depends:
         base -any,
+        hbandit -any,
         protolude -any,
         enclosed-exceptions -any,
         MonadRandom -any,
@@ -914,4 +798,3 @@ executable codegen
                  -Wredundant-constraints -Wpartial-fields -main-is Codegen
     build-depends:
         nrmlib -any
-

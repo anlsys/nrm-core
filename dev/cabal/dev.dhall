@@ -30,27 +30,13 @@ in    λ ( ghcPath
                     ⫽ { build-depends =
                           common.libdep
                       , hs-source-dirs =
-                          [ "nrm", "bin", "hbandit/src" ]
+                          [ "nrm", "bin"]
                       , exposed-modules =
                           common.allmodules
                       }
                     ⫽ common.copts ([] : List Text)
               , name =
                   "nrmlib"
-              }
-            , { library =
-                    λ(config : types.Config)
-                  →   prelude.defaults.Library
-                    ⫽ { build-depends =
-                          common.libdep
-                      , hs-source-dirs =
-                          [ "nrm" ]
-                      , exposed-modules =
-                          common.banditmodules
-                      }
-                    ⫽ common.copts ([] : List Text)
-              , name =
-                  "banditlib"
               }
             ]
         , executables =
@@ -62,7 +48,7 @@ in    λ ( ghcPath
                       , build-depends =
                           common.libdep
                       , hs-source-dirs =
-                          [ "bin", "nrm", "hbandit/src" ]
+                          [ "bin", "nrm"]
                       , other-modules =
                           common.allmodules
                       }
@@ -79,7 +65,7 @@ in    λ ( ghcPath
                       , build-depends =
                           common.libdep
                       , hs-source-dirs =
-                          [ "bin", "nrm", "hbandit/src" ]
+                          [ "bin", "nrm"]
                       , other-modules =
                           common.allmodules
                       }
@@ -96,7 +82,7 @@ in    λ ( ghcPath
                       , build-depends =
                           common.libdep
                       , hs-source-dirs =
-                          [ "bin", "nrm", "hbandit/src" ]
+                          [ "bin", "nrm" ]
                       , other-modules =
                           common.allmodules
                       }
