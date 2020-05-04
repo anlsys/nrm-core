@@ -7,6 +7,11 @@ Safe multi-armed bandit implementations:
 -   EXP3 (hyperparameter-free rate from \[[1](#ref-bubeck2012regret)\])
 -   Exp4.R \[[2](#ref-sun2017safety)\]
 
+documentation
+-------------
+
+      nix-build /path/to/hbandit/or/url/to/tarball -A hbandit.doc
+
 <!-- vim: set ft=markdown.pandoc cole=0: -->
 
 \[1\] Bubeck, S. et al. 2012. Regret analysis of stochastic and
