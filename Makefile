@@ -176,6 +176,7 @@ src/Bandit/Tutorial.hs: literate/tutorial.md hbandit.nix src
 				aeson
 				pretty-simple
 				panhandle
+				pandoc-citeproc
 				panpipe
 				unlit
 				pandoc
@@ -186,6 +187,29 @@ src/Bandit/Tutorial.hs: literate/tutorial.md hbandit.nix src
 		}
 	' --run bash <<< '
 		pandoc --filter $$(which panpipe) --filter $$(which panhandle) -f markdown+lhs -t markdown+lhs $< | unlit -f bird > $@
+	'
+
+README.md: literate/readme.md
+	@nix-shell --pure -E '
+		with import <nixpkgs> {};
+		with haskellPackages;
+		mkShell {
+			name="pandoc-tools";
+			buildInputs = [
+			  inline-r
+				aeson
+				pretty-simple
+				panhandle
+				pandoc-citeproc
+				panpipe
+				pandoc
+				pkgs.which
+				cabal-install
+				R];
+			R_LIBS_SITE = "$${builtins.readFile r-libs-site}";
+		}
+	' --run bash <<< '
+		pandoc -t markdown_strict  --filter $$(which pandoc-citeproc) -s  $< -o $@
 	'
 
 .PHONY:clean

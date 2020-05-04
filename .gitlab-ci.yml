@@ -42,6 +42,13 @@ nix:package:
   script: nix-build -A hbandit --no-build-output
 
 
+make:readme:
+  stage: build
+  tags:
+    - kvm
+    - nix
+  script: nix-shell -p gnumake --run "make README.md"
+
 make:doc:
   stage: build
   tags:
