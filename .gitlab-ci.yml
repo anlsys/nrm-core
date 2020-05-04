@@ -11,32 +11,28 @@ make:ormolu:
   tags:
     - kvm
     - nix
-  script:
-    - nix-shell -p gnumake --run "make ormolu"
+  script: nix-shell -p gnumake --run "make ormolu"
 
 make:hlint:
   stage: source
   tags:
     - kvm
     - nix
-  script:
-    - nix-shell -p gnumake --run "make hlint"
+  script: nix-shell -p gnumake --run "make hlint"
 
 make:shellcheck:
   stage: source
   tags:
     - kvm
     - nix
-  script:
-    - nix-shell -p gnumake --run "make shellcheck"
+  script: nix-shell -p gnumake --run "make shellcheck"
 
 make:dhall-format:
   stage: source
   tags:
     - kvm
     - nix
-  script:
-    - nix-shell -p gnumake --run "make dhall-format"
+  script: nix-shell -p gnumake --run "make dhall-format"
 
 nix:package:
   stage: build
@@ -51,7 +47,7 @@ make:doc:
   tags:
     - kvm
     - nix
-  script: make doc
+  script: nix-shell -p gnumake --run "make doc"
 
 readthedocs:
   stage: docs
