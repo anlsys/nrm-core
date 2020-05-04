@@ -80,7 +80,7 @@ ghcid-test: hbandit.cabal .hlint.yaml hbandit.nix
 	'
 
 .PHONY: pre-commit
-pre-commit: ormolu dhall-format shellcheck
+pre-commit: ormolu dhall-format shellcheck src/Bandit/Tutorial.hs README.md
 
 .PHONY: shellcheck
 shellcheck:
@@ -91,7 +91,7 @@ shellcheck:
 	'
 
 .PHONY: hlint
-dhall-format:
+hlint:
 	@nix-shell --pure -p hlint --run bash <<< '
 		hlint src/ --hint=./.hlint.yaml
 	'
@@ -123,7 +123,7 @@ ormolu:
 		}
 	' --run bash <<< '
 		RETURN=0
-		for F in $$(fd -E src/HBandit/Tutorial.hs -e hs); do
+		for F in $$(fd -E src/Bandit/Tutorial.hs -e hs); do
 			ormolu -o -XTypeApplications -o -XPatternSynonyms -m check $$F
 			if [ $$? -ne 0 ]; then
 				echo "[!] $$F does not pass ormolu format check. Formatting.." >&2
@@ -135,7 +135,7 @@ ormolu:
 	'
 
 .PHONY: doc
-doc: src/HBandit/Tutorial.hs hbandit.cabal hbandit.nix
+doc: src/Bandit/Tutorial.hs hbandit.cabal hbandit.nix
 	@nix-shell -E '
 		with import <nixpkgs> {};
 		with haskellPackages;
@@ -147,8 +147,8 @@ doc: src/HBandit/Tutorial.hs hbandit.cabal hbandit.nix
 		cabal v2-haddock hbandit --haddock-internal --builddir=.build
 	'
 
-.PRECIOUS: src/HBandit/Tutorial.hs
-src/HBandit/Tutorial.hs: literate/tutorial.md hbandit.nix src
+.PRECIOUS: src/Bandit/Tutorial.hs
+src/Bandit/Tutorial.hs: literate/tutorial.md hbandit.nix src
 	@nix-shell --pure -E '
 		with import <nixpkgs> {};
 		with haskellPackages;
@@ -176,6 +176,7 @@ src/HBandit/Tutorial.hs: literate/tutorial.md hbandit.nix src
 				aeson
 				pretty-simple
 				panhandle
+				pandoc-citeproc
 				panpipe
 				unlit
 				pandoc
@@ -188,12 +189,35 @@ src/HBandit/Tutorial.hs: literate/tutorial.md hbandit.nix src
 		pandoc --filter $$(which panpipe) --filter $$(which panhandle) -f markdown+lhs -t markdown+lhs $< | unlit -f bird > $@
 	'
 
+README.md: literate/readme.md
+	@nix-shell --pure -E '
+		with import <nixpkgs> {};
+		with haskellPackages;
+		mkShell {
+			name="pandoc-tools";
+			buildInputs = [
+			  inline-r
+				aeson
+				pretty-simple
+				panhandle
+				pandoc-citeproc
+				panpipe
+				pandoc
+				pkgs.which
+				cabal-install
+				R];
+			R_LIBS_SITE = "$${builtins.readFile r-libs-site}";
+		}
+	' --run bash <<< '
+		pandoc -t markdown_strict  --filter $$(which pandoc-citeproc) -s  $< -o $@
+	'
+
 .PHONY:clean
 clean:
 	rm -rf .build
 	rm -rf dist*
 	rm -f literate/main.hs
-	rm -f src/HBandit/Tutorial.hs
+	rm -f src/Bandit/Tutorial.hs
 	rm -f hbandit.nix
 	rm -f hbandit.cabal
 	rm -rf dhall-to-cabal

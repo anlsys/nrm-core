@@ -1,14 +1,14 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- |
--- Module      : HBandit.Class
+-- Module      : Bandit.Class
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
 --
 -- This module implements the common interface for instanciating
 -- and interacting with Multi-Armed Bandit algoritms.
-module HBandit.Class
+module Bandit.Class
   ( -- * Generalized Bandit
     Bandit (..),
     ExpertRepresentation (..),
@@ -17,11 +17,10 @@ module HBandit.Class
     -- * Discrete Multi-Armed-Bandits
     Arms (..),
     ParameterFreeMAB (..),
-    BwCRMAB (..),
   )
 where
 
-import HBandit.Types
+import Bandit.Types
 import Protolude
 import System.Random
 
@@ -56,7 +55,11 @@ class Bandit b hyper a l | b -> l, b -> hyper, b -> a where
   -- | @step loss@ iterates the bandit process one step forward.
   step :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
 
-class ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b -> er where
+-- | ContextualBandit b hyper a l er is the class for a contextual bandit algorithm.
+-- The same concepts as 'Bandit' apply, with the addition of:
+--
+-- * @er@ is an expert representation (see 'ExpertRepresentation')
+class (ExpertRepresentation er s a) => ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b -> er where
 
   -- | Init hyper returns the initial state of the algorithm
   initCtx :: hyper -> b
@@ -64,9 +67,15 @@ class ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b 
   -- | @step loss@ iterates the bandit process one step forward.
   stepCtx :: (RandomGen g, MonadState b m, Ord a) => g -> l -> s -> m (a, g)
 
+-- | ExpertRepresentation er s a is a distribution over
+-- experts.
+--
+-- @represent er@ returns this distribution encoded as a conditional
+-- distribution over actions.
 class ExpertRepresentation er s a | er -> s, er -> a where
   represent :: er -> (s -> NonEmpty (ZeroOne Double, a))
 
+-- | Arms a represents a set of possible actions.
 newtype Arms a = Arms (NonEmpty a)
   deriving (Show, Generic)
 
@@ -87,25 +96,3 @@ class (Eq a, Bandit b (Arms a) a l) => ParameterFreeMAB b a l | b -> l where
   -- value @l@.
   stepPFMAB :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
   stepPFMAB = step
-
--- | The BwCR bandit framework.
---
--- In this context, (\mathbb{L} \in \mathbb{[0,1]}^d\), \(\mathbb{A}\) is
--- specified by \(\mathbb{H}\)=@p l@, which specifies the set of arms,
--- objective function and constraint set.
---
--- We define two notions of regret: The objective-regret \(R_{\text{obj}}\),
--- and the constraint-regret \(R_{\text{cst}}\).
---
--- \[ R_{obj} = \] \[ R_{cst} = \]
-class (Eq a, Bandit b (p l) a l) => BwCRMAB b a p l | b -> l, b -> p where
-
-  -- | @init as@ returns the initial state of the bandit algorithm, where @as@
-  -- is a set of available actions.
-  initBwCR :: (RandomGen g) => g -> p l -> (b, a, g)
-  initBwCR = init
-
-  -- | @step l@ iterates the bandit process one step forward by feeding loss
-  -- value @l@.
-  stepBwCR :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
-  stepBwCR = step

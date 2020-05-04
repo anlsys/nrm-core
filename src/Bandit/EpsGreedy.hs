@@ -1,15 +1,15 @@
 -- |
--- Module      : HBandit.EpsGreedy
+-- Module      : Bandit.EpsGreedy
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
 --
 -- This module implements the fixed rate \(\epsilon\)-Greedy MAB algorithm.
 --
--- The \(\epsilon\)()-Greedy algorithm selects a random action with
+-- The \(\epsilon\)-Greedy algorithm selects a random action with
 -- probability \(\epsilon\), or select the action with best average
 -- with probability \(1-\epsilon\).
-module HBandit.EpsGreedy
+module Bandit.EpsGreedy
   ( EpsGreedy (..),
     Weight (..),
     EpsGreedyHyper (..),
@@ -21,9 +21,9 @@ module HBandit.EpsGreedy
   )
 where
 
+import Bandit.Class
+import Bandit.Util
 import Control.Monad.Random as MR (fromList, runRand)
-import HBandit.Class
-import HBandit.Util
 import Protolude
 import System.Random
 
@@ -35,6 +35,7 @@ data EpsGreedy a
     ExploreExploit (ExploreExploitGreedy a)
   deriving (Show)
 
+-- | A subcomponent of the EpsGreedy state.
 data ScreeningGreedy a
   = ScreeningGreedy
       { tScreening :: Int,
@@ -45,6 +46,7 @@ data ScreeningGreedy a
       }
   deriving (Show)
 
+-- | A subcomponent of the EpsGreedy state.
 data ExploreExploitGreedy a
   = ExploreExploitGreedy
       { t :: Int,

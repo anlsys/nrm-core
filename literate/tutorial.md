@@ -1,4 +1,4 @@
-String manipulation, the bane
+the string manipulating bash snippets used in this literate file are:
 
 ```{.bash pipe="tee -a execute.sh"}
   #usage: cat content | execute.sh section_identifier
@@ -10,7 +10,6 @@ String manipulation, the bane
   echo "> -- \$$1"
 ```
 
-
 ```{.bash pipe="tee -a ggplot.sh"}
   #usage: cat content | ggplot.sh filename width height
   echo '> -- |'
@@ -20,7 +19,12 @@ String manipulation, the bane
   echo "> -- \$$1"
 ```
 
+We print a warning in the output:
+> -- Do not modify. This file has been automatically generated from file literate/tutorial.md,
+> -- your changes will be erased.
+
 cabal packaging for the executable file:
+
 ```{.hidden pipe="tee -a Tmodule.hs > /dev/null"}
 {- cabal:
 build-depends:
@@ -41,10 +45,10 @@ build-depends:
 
 ```
 
-> {-| This module serves as an introduction to the HBandit Multi-Armed Bandit library.
+> {-| This module serves as an introduction to the `hbandit` Multi-Armed Bandit library.
 > -}
 >
-> module HBandit.Tutorial (
+> module Bandit.Tutorial (
 > -- *** Setup
 >
 > -- | The code snippets displayed in this tutorial require the following list of extensions and modules.
@@ -79,9 +83,9 @@ import System.IO hiding (print)
 import Control.Monad.Primitive
 import qualified Language.R.Instance as R
 import Control.Lens
-import HBandit
-import HBandit.EpsGreedy
-import HBandit.Exp3
+import Bandit
+import Bandit.EpsGreedy
+import Bandit.Exp3
 import qualified Data.Text.Lazy.Encoding as T
 import qualified Data.Text.Lazy as T
 import Data.Aeson hiding ((.=))
@@ -126,14 +130,14 @@ main = do
 > -- types for a basic bandit game between a learner and an environment, where the
 > -- learner has access to a random generator and is defined via a stateful 'step'
 > -- function. All non-contetual bandit algorithms in this library are instances of this.
-> HBandit.Class.Bandit(..)
+> Bandit.Class.Bandit(..)
 >
 > -- *** Example instance: Epsilon-Greedy
 > --
 > -- | Let's take a look at the instance for the classic fixed-rate \(\epsilon\)-Greedy
 > -- algorithm. The necessary hyperparameters are the number of arms and the rate value,
 > -- as the 'EpsGreedyHyper' datatype shows.
-> ,HBandit.EpsGreedy.EpsGreedyHyper(..)
+> ,Bandit.EpsGreedy.EpsGreedyHyper(..)
 >
 > -- | Let's use that instance on some toy data with a few rounds.
 > --
@@ -159,7 +163,7 @@ onePass :: (Bandit b hyper a l) =>
   GameState b a l
 onePass hyper g adversary = runGame initialGame
  where
-  (initialBanditState, initialAction, g') = HBandit.init g hyper
+  (initialBanditState, initialAction, g') = Bandit.init g hyper
   initialGame =  GameState
     { historyActions = [initialAction],
       historyLosses = [],
@@ -186,7 +190,7 @@ runOnePassEG :: StdGen -> GameState (EpsGreedy Bool) Bool Double
 runOnePassEG g = onePass hyper g (getZipList $ f <$> ZipList [40, 2, 10] <*> ZipList [4, 44 ,3] )
  where
   f a b = \case True -> a; False -> b
-  hyper = EpsGreedyHyper {epsilon = 0.5, arms = HBandit.Arms [True, False]}
+  hyper = EpsGreedyHyper {epsilon = 0.5, arms = Bandit.Arms [True, False]}
 
 printOnePassEG :: IO ()
 printOnePassEG = putText $
@@ -204,17 +208,17 @@ printOnePassEG = putText $
 ```
 
 > -- *** Other classes
-> -- | Some other, more restrictive classes are available in [HBandit.Class](HBandit-Class.html) for convenience. See for
-> -- example 'HBandit.Class.ParameterFreeMAB', which exposes a hyperparameter-free interface for
+> -- | Some other, more restrictive classes are available in [Bandit.Class](Bandit-Class.html) for convenience. See for
+> -- example 'Bandit.Class.ParameterFreeMAB', which exposes a hyperparameter-free interface for
 > -- algorithms that don't need any information besides the arm count. Those instances are not necessary
 > -- per se, and the 'Bandit' class is always sufficient. Note that some instances make agressive use
-> -- of type refinement (See e.g. HBandit.Exp3.Exp3) through the 'Refined' package.
+> -- of type refinement (See e.g. Bandit.Exp3.Exp3) through the 'Refined' package.
 > -- In particular, we are about to make use of the \(\left[0,1\right]\) interval through the 'ZeroOne'
 > -- type alias.
-> ,HBandit.Types.ZeroOne
+> ,Bandit.Types.ZeroOne
 
 > -- ** Algorithm comparison
-> -- | This subsection runs bandit experiments on an example dataset with some of the instances for 'HBandit.Bandit'.
+> -- | This subsection runs bandit experiments on an example dataset with some of the @Bandit@ instances.
 > -- The data for this tutorial is generated in R using the [inline-r](https://hackagehaskell.org/package/inline-r) package.
 > -- Let's define a simple problem with three gaussian arms. We will threshold all cost values to \(\left[0,1\right]\).
 
@@ -273,14 +277,14 @@ toAdversary xss = Protolude.transpose xss <&> listToAdversary
 exp3 :: [[Double]] -> StdGen -> GameState (Exp3 Int) Int (ZeroOne Double)
 exp3 dataset g = 
   onePass
-    (HBandit.Arms [0..2])
+    (Bandit.Arms [0..2])
     g
     (toAdversary $ refineDataset dataset)
                  
 greedy :: [[Double]] -> StdGen -> Double -> GameState (EpsGreedy Int) Int (Double)
 greedy dataset g eps =  
   onePass
-    (EpsGreedyHyper {epsilon = eps, arms = HBandit.Arms [0..2]})
+    (EpsGreedyHyper {epsilon = eps, arms = Bandit.Arms [0..2]})
     g
     (toAdversary dataset)
 
@@ -335,21 +339,22 @@ instance Monoid Reducer where
 
 
 >   ) where
-> import HBandit.Class
-> import HBandit.Types
-> import HBandit.EpsGreedy
+> import Bandit.Class
+> import Bandit.Types
+> import Bandit.EpsGreedy
 
 ```{.haskell pipe="tee -a main.hs | awk '{print \"> -- \" $0}'"}
   pass
 
 ```
 
+final code execution:
 
 ```{.haskell pipe="sh | awk '{print \"> -- > \" $0}' | sed 's/\> \<//g'"}
 set -e
 cat main.hs >> Tmodule.hs
 cp Tmodule.hs root/literate/main.hs
 cd root
-echo "module HBandit.Tutorial () where" > src/HBandit/Tutorial.hs
+echo "module Bandit.Tutorial () where" > src/Bandit/Tutorial.hs
 cabal v2-run literate/main.hs
 ```

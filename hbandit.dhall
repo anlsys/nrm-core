@@ -117,15 +117,14 @@ let deps =
       }
 
 let allmodules =
-      [ "HBandit"
-      , "HBandit.BwCR"
-      , "HBandit.Class"
-      , "HBandit.EpsGreedy"
-      , "HBandit.Exp3"
-      , "HBandit.Exp4R"
-      , "HBandit.Types"
-      , "HBandit.Tutorial"
-      , "HBandit.Util"
+      [ "Bandit"
+      , "Bandit.Class"
+      , "Bandit.EpsGreedy"
+      , "Bandit.Exp3"
+      , "Bandit.Exp4R"
+      , "Bandit.Types"
+      , "Bandit.Tutorial"
+      , "Bandit.Util"
       ]
 
 let libdep =

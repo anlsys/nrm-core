@@ -1,7 +1,7 @@
 {-# LANGUAGE DerivingVia #-}
 
 -- |
--- Module      : HBandit.Exp3
+-- Module      : Bandit.Exp3
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
 -- Maintainer  : fre@freux.fr
@@ -10,7 +10,7 @@
 --
 -- - [1] Regret Analysis of Stochastic and Nonstochastic Multi-armed Bandit Problems,
 --   Sebastien Bubeck and Nicolo Cesa-Bianchi. http://arxiv.org/abs/1204.5721
-module HBandit.Exp3
+module Bandit.Exp3
   ( -- * State
     Exp3 (..),
 
@@ -21,12 +21,12 @@ module HBandit.Exp3
   )
 where
 
+import Bandit.Class
+import Bandit.Types
+import Bandit.Util
 import Control.Lens hiding (_Unwrapped)
 import Data.Generics.Labels ()
 import Data.Generics.Wrapped
-import HBandit.Class
-import HBandit.Types
-import HBandit.Util
 import Protolude
 import qualified Refined as R
 import System.Random
@@ -75,7 +75,7 @@ instance
       g'
     )
     where
-      awl = as <&> (HBandit.Types.one,)
+      awl = as <&> (Bandit.Types.one,)
       (a, g') = sampleWL awl g
       ws = as <&> Weight (Probability $ 1.0 / fromIntegral (length (toList as))) (CumulativeLoss 0)
 
