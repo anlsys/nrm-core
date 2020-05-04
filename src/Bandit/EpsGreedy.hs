@@ -21,9 +21,9 @@ module Bandit.EpsGreedy
   )
 where
 
-import Control.Monad.Random as MR (fromList, runRand)
 import Bandit.Class
 import Bandit.Util
+import Control.Monad.Random as MR (fromList, runRand)
 import Protolude
 import System.Random
 

@@ -34,12 +34,12 @@ module Bandit.Exp4R
   )
 where
 
-import Control.Lens
-import Data.Generics.Labels ()
-import Data.List.NonEmpty as NE
 import Bandit.Class
 import Bandit.Types
 import Bandit.Util
+import Control.Lens
+import Data.Generics.Labels ()
+import Data.List.NonEmpty as NE
 import Protolude
 import qualified Refined as R
 import qualified Refined.Unsafe as R

@@ -21,12 +21,12 @@ module Bandit.Exp3
   )
 where
 
-import Control.Lens hiding (_Unwrapped)
-import Data.Generics.Labels ()
-import Data.Generics.Wrapped
 import Bandit.Class
 import Bandit.Types
 import Bandit.Util
+import Control.Lens hiding (_Unwrapped)
+import Data.Generics.Labels ()
+import Data.Generics.Wrapped
 import Protolude
 import qualified Refined as R
 import System.Random

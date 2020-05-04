@@ -14,8 +14,8 @@ module Bandit.Util
   )
 where
 
-import Control.Monad.Random as MR
 import Bandit.Types
+import Control.Monad.Random as MR
 import Protolude
 import Refined hiding (NonEmpty)
 import Refined.Unsafe
