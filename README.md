@@ -4,7 +4,7 @@ hbandit
 Safe multi-armed bandit implementations:
 
 -   Eps-Greedy (fixed rate)
--   EXP3 (hyperparameter-free rate from \[[1](#ref-bubeck2012regret)\])
+-   Exp3 (hyperparameter-free rate from \[[1](#ref-bubeck2012regret)\])
 -   Exp4.R \[[2](#ref-sun2017safety)\]
 
 documentation
