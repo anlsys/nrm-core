@@ -56,7 +56,12 @@ class Bandit b hyper a l | b -> l, b -> hyper, b -> a where
   -- | @step loss@ iterates the bandit process one step forward.
   step :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
 
-class ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b -> er where
+
+-- | ContextualBandit b hyper a l er is the class for a contextual bandit algorithm.
+-- The same concepts as 'Bandit' apply, with the addition of:
+--
+-- * @er@ is an expert representation (see 'ExpertRepresentation')
+class (ExpertRepresentation er s a) => ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b -> er where
 
   -- | Init hyper returns the initial state of the algorithm
   initCtx :: hyper -> b
@@ -64,9 +69,15 @@ class ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b 
   -- | @step loss@ iterates the bandit process one step forward.
   stepCtx :: (RandomGen g, MonadState b m, Ord a) => g -> l -> s -> m (a, g)
 
+-- | ExpertRepresentation er s a is a distribution over
+-- experts.
+--
+-- @represent er@ returns this distribution encoded as a conditional
+-- distribution over actions.
 class ExpertRepresentation er s a | er -> s, er -> a where
   represent :: er -> (s -> NonEmpty (ZeroOne Double, a))
 
+-- | Arms a represents a set of possible actions.
 newtype Arms a = Arms (NonEmpty a)
   deriving (Show, Generic)
 

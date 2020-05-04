@@ -279,19 +279,11 @@ import Bandit.EpsGreedy
 -- > Resolving dependencies...
 -- > Build profile: -w ghc-8.6.5 -O1
 -- > In order, the following will be built (use -v for more details):
--- >  - hbandit-1.0.0 (lib) (configuration changed)
--- >  - fake-package-0 (exe:script) (first run)
--- > Configuring library for hbandit-1.0.0..
+-- >  - hbandit-1.0.0 (lib) (file src/Bandit.hs changed)
+-- >  - fake-package-0 (exe:script) (configuration changed)
 -- > Preprocessing library for hbandit-1.0.0..
 -- > Building library for hbandit-1.0.0..
--- > [1 of 9] Compiling Bandit.Tutorial  ( src/Bandit/Tutorial.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Tutorial.o )
--- > [2 of 9] Compiling Bandit.Types     ( src/Bandit/Types.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Types.o )
--- > [3 of 9] Compiling Bandit.Class     ( src/Bandit/Class.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Class.o )
--- > [4 of 9] Compiling Bandit.BwCR      ( src/Bandit/BwCR.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/BwCR.o )
--- > [5 of 9] Compiling Bandit.Util      ( src/Bandit/Util.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Util.o )
--- > [6 of 9] Compiling Bandit.Exp4R     ( src/Bandit/Exp4R.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Exp4R.o )
--- > [7 of 9] Compiling Bandit.Exp3      ( src/Bandit/Exp3.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Exp3.o )
--- > [8 of 9] Compiling Bandit.EpsGreedy ( src/Bandit/EpsGreedy.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/EpsGreedy.o )
+-- > [8 of 9] Compiling Bandit.Tutorial  ( src/Bandit/Tutorial.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Tutorial.o )
 -- > [9 of 9] Compiling Bandit           ( src/Bandit.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit.o )
 -- > Configuring executable 'script' for fake-package-0..
 -- > Preprocessing executable 'script' for fake-package-0..
@@ -303,29 +295,29 @@ import Bandit.EpsGreedy
 -- > Loss series:[10.0,44.0,40.0]
 -- $summaryProblem
 -- >        V1                V2               V3        
--- >  Min.   :0.00000   Min.   :0.1680   Min.   :0.3114  
--- >  1st Qu.:0.03342   1st Qu.:0.4344   1st Qu.:0.5364  
--- >  Median :0.09630   Median :0.5043   Median :0.6046  
--- >  Mean   :0.10652   Mean   :0.5029   Mean   :0.6035  
--- >  3rd Qu.:0.16340   3rd Qu.:0.5766   3rd Qu.:0.6681  
--- >  Max.   :0.35062   Max.   :0.8347   Max.   :0.9120  
+-- >  Min.   :0.00000   Min.   :0.1141   Min.   :0.3602  
+-- >  1st Qu.:0.02809   1st Qu.:0.4279   1st Qu.:0.5433  
+-- >  Median :0.10136   Median :0.4959   Median :0.6043  
+-- >  Mean   :0.11087   Mean   :0.4985   Mean   :0.6072  
+-- >  3rd Qu.:0.17558   3rd Qu.:0.5647   3rd Qu.:0.6685  
+-- >  Max.   :0.38586   Max.   :0.7899   Max.   :0.8843  
 -- $summaryPlot
 -- <<literate/summaryPlot.png>>
 -- $expe
--- >        X1              X2           X3                X4         
--- >  Min.   :  1.0   Min.   : 2   Min.   :0.00000   Min.   :0.00000  
--- >  1st Qu.:100.8   1st Qu.: 4   1st Qu.:0.06729   1st Qu.:0.04959  
--- >  Median :200.5   Median : 6   Median :0.16685   Median :0.13263  
--- >  Mean   :200.5   Mean   : 6   Mean   :0.25524   Mean   :0.19597  
--- >  3rd Qu.:300.2   3rd Qu.: 8   3rd Qu.:0.47088   3rd Qu.:0.25251  
--- >  Max.   :400.0   Max.   :10   Max.   :0.90096   Max.   :0.93750  
+-- >        X1              X2           X3                X4        
+-- >  Min.   :  1.0   Min.   : 2   Min.   :0.00000   Min.   :0.0000  
+-- >  1st Qu.:100.8   1st Qu.: 4   1st Qu.:0.06609   1st Qu.:0.0498  
+-- >  Median :200.5   Median : 6   Median :0.16996   Median :0.1322  
+-- >  Mean   :200.5   Mean   : 6   Mean   :0.25850   Mean   :0.1935  
+-- >  3rd Qu.:300.2   3rd Qu.: 8   3rd Qu.:0.47440   3rd Qu.:0.2517  
+-- >  Max.   :400.0   Max.   :10   Max.   :0.97830   Max.   :0.8723  
 -- >        X5         
 -- >  Min.   :0.00000  
--- >  1st Qu.:0.04083  
--- >  Median :0.11239  
--- >  Mean   :0.14753  
--- >  3rd Qu.:0.18977  
--- >  Max.   :0.92357  
+-- >  1st Qu.:0.04174  
+-- >  Median :0.11186  
+-- >  Mean   :0.14680  
+-- >  3rd Qu.:0.19227  
+-- >  Max.   :0.80434  
 -- $regretPlot
 -- <<literate/regretPlot.png>>
 

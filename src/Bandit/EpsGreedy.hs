@@ -35,6 +35,7 @@ data EpsGreedy a
     ExploreExploit (ExploreExploitGreedy a)
   deriving (Show)
 
+-- | A subcomponent of the EpsGreedy state.
 data ScreeningGreedy a
   = ScreeningGreedy
       { tScreening :: Int,
@@ -45,6 +46,7 @@ data ScreeningGreedy a
       }
   deriving (Show)
 
+-- | A subcomponent of the EpsGreedy state.
 data ExploreExploitGreedy a
   = ExploreExploitGreedy
       { t :: Int,

@@ -42,8 +42,7 @@ import Bandit.Types
 import Numeric.Interval
 import Protolude
 
---import System.Random
-
+-- | The @T@ newtype is used to wrap the horizon.
 newtype T = T Double deriving (Generic, Eq)
 
 -- | The BwCR state
@@ -54,6 +53,7 @@ data BwCR a l
     UCB (UCBBwCR a l)
   deriving (Generic)
 
+-- | ScreeningBwCR is a component of the BwCR state.
 data ScreeningBwCR a l
   = ScreeningBwCR
       { tScreening :: Int,
@@ -73,6 +73,7 @@ data Weight a
       }
   deriving (Generic)
 
+-- | UCBBwCR is a component of the BwCR state.
 data UCBBwCR a l
   = UCBBwCR
       { t :: Int,

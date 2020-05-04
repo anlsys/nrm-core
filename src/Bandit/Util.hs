@@ -25,6 +25,8 @@ import Refined.Unsafe
 sampleWL :: RandomGen g => NonEmpty (ZeroOne Double, a) -> g -> (a, g)
 sampleWL weights = runRand (MR.fromList $ toList (weights <&> \(r, x) -> (x, toRational (unrefine r))))
 
+-- | normalizeDistribution normalizes a distribution, for consumption
+-- by sampleWL for instance.
 normalizeDistribution ::
   (Floating p, Ord p) =>
   NonEmpty (p, a) ->
