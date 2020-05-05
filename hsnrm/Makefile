@@ -44,7 +44,7 @@ dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm
 	cabal new-build
 
 resources: hsnrm.cabal
-	rf -rf resources
+	rm -rf resources
 	mkdir resources
 	cabal v2-run bin/Codegen.hs resources/
 
