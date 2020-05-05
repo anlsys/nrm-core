@@ -12,7 +12,6 @@ variables:
   NIX_PATH: "nixpkgs=./."
 
 include:
-  - '/hsnrm/.gitlab-ci.yml'
   - '/pynrm/.gitlab-ci.yml'
   - '/libnrm/.gitlab-ci.yml'
 
@@ -97,3 +96,86 @@ nix-build:app-stream:
   #script:
     #- echo "token=$RTD_TOKEN"
     #- nix run nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hnrm/104604/
+
+
+make:hsnrm.nix:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script:
+    - cd hsnrm
+    - nix-shell -p gnumake --run "make hsnrm.nix"
+
+make:hsnrm.cabal:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script:
+    - cd hsnrm
+    - nix-shell -p gnumake --run "make hsnrm.cabal"
+
+make:ormolu:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script:
+    - cd hsnrm
+    - nix-shell -p gnumake --run "make ormolu"
+
+make:hlint:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script:
+    - cd hsnrm
+    - nix-shell -p gnumake --run "make hlint"
+
+make:shellcheck:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script:
+    - cd hsnrm
+    - nix-shell -p gnumake --run "make shellcheck"
+
+make:dhall-format:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script:
+    - cd hsnrm
+    - nix-shell -p gnumake --run "make dhall-format"
+
+make:resources:
+  stage: build
+  tags:
+    - kvm
+    - nix
+  script:
+    - cd hsnrm
+    - nix-shell -p gnumake --run "make resources"
+
+nix:package:
+  stage: build
+  tags:
+    - kvm
+    - nix
+  script:
+    - cd hsnrm
+    - nix-build -A hsnrm --no-build-output
+
+make:doc:
+  stage: build
+  tags:
+    - kvm
+    - nix
+  script:
+    - cd hsnrm
+    - nix-shell -p gnumake --run "make doc"
+
