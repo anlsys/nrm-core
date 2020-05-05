@@ -29,6 +29,10 @@ module NRM.Types.Controller
   )
 where
 
+import Bandit.Class
+import Bandit.Exp3 as Exp3
+import Bandit.Exp4R as Exp4R
+import Bandit.Types
 import CPD.Core
 import CPD.Integrated as C
 import CPD.Values as V
@@ -37,10 +41,6 @@ import Data.JSON.Schema
 import Data.Map.Merge.Lazy
 import Data.MessagePack
 import Dhall hiding (field)
-import Bandit.Class
-import Bandit.Exp3 as Exp3
-import Bandit.Exp4R as Exp4R
-import Bandit.Types
 import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.NonEmpty ()

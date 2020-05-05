@@ -39,33 +39,14 @@ pkgs // rec {
     };
   in (import source { }).ormolu;
 
-  nrmso-nodoc = pkgs.haskell.lib.dontHaddock haskellPackages.hsnrm;
-
-  static = pkgs.haskell.lib.overrideCabal
-    (pkgs.haskell.lib.dontHaddock haskellPackages.nrmbin) (drv: {
-
-      enableSharedExecutables = false;
-      enableSharedLibraries = false;
-      configureFlags = [
-        "--ghc-option=-optl=-shared"
-        "--ghc-option=-optl=-dynamic"
-        "--ghc-option=-optl=-fPIC"
-        "--ghc-option=-optl=-L${pkgs.gmp6.override { withStatic = true; }}/lib"
-        "--ghc-option=-optl=-L${pkgs.zlib.static}/lib"
-        "--ghc-option=-optl=-L${pkgs.glibc.static}/lib"
-      ];
-
-    });
-
   resources = pkgs.runCommand "patchedSrc" { } ''
     mkdir -p $out/share/nrm
-    ${haskellPackages.nrmbin}/bin/codegen $out/share/nrm/
+    ${haskellPackages.hsnrm}/bin/codegen $out/share/nrm/
   '';
 
   libnrm = pkgs.callPackage ./pkgs/libnrm {
     inherit resources;
     src = src + "/libnrm";
-    hsnrm = haskellPackages.nrmbin;
   };
 
   pynrm = pkgs.callPackage ./pkgs/pynrm {

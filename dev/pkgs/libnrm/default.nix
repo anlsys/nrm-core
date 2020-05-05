@@ -1,5 +1,5 @@
 { stdenv, src, resources, autoreconfHook, fetchgit, zeromq, gfortran, pkgconfig
-, openmpi, llvmPackages, hsnrm ,czmq}:
+, openmpi, llvmPackages, czmq}:
 stdenv.mkDerivation {
   inherit src;
   name = "libnrm";

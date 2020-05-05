@@ -56,8 +56,6 @@
         , learnCfg :
             < Lagrange :
                 { lagrange : Double }
-            | Knapsack :
-                { knapsack : Double }
             | Random :
                 { random : Optional Integer }
             | Contextual :

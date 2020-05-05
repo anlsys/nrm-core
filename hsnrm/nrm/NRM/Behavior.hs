@@ -245,7 +245,7 @@ doControl input = do
       ccfg@ControlCfg {} ->
         let cpd = NRMCPD.toCPD ccfg st
             mRefActions =
-              if [] /= CPD.constraints cpd
+              if not (Protolude.null (CPD.constraints cpd))
                 then Just $
                   (LM.toList (lenses st) :: [(ActuatorKey, ScopedLens NRMState A.Actuator)]) <&> \(k, ScopedLens l) -> CPD.Action
                     { actuatorID = toS k,

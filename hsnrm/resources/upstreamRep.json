@@ -1271,25 +1271,6 @@
                                                                 },
                                                                 {
                                                                     "required": [
-                                                                        "knapsack"
-                                                                    ],
-                                                                    "type": "object",
-                                                                    "properties": {
-                                                                        "knapsack": {
-                                                                            "required": [
-                                                                                "knapsack"
-                                                                            ],
-                                                                            "type": "object",
-                                                                            "properties": {
-                                                                                "knapsack": {
-                                                                                    "type": "number"
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                },
-                                                                {
-                                                                    "required": [
                                                                         "random"
                                                                     ],
                                                                     "type": "object",

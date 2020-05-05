@@ -52,6 +52,7 @@ module CPD.Core
   )
 where
 
+import Bandit.Types
 import Control.Arrow
 import Control.Lens
 import qualified Data.Aeson as A
@@ -61,7 +62,6 @@ import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.MessagePack
 import qualified Dhall as D
-import Bandit.Types
 import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()

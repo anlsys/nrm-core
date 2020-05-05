@@ -25,7 +25,7 @@ source-repository head
     type: git
     location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
 
-library nrmlib
+library
     exposed-modules:
         NRM.Slices
         NRM.Slices.Class
@@ -111,7 +111,7 @@ library nrmlib
         CPD.Values
         CPD.Utils
         CPD.Text
-    hs-source-dirs: nrm bin
+    hs-source-dirs: nrm
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         ExistentialQuantification RecordWildCards RankNTypes
@@ -308,7 +308,6 @@ executable nrm.so
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
                  -Wall-missed-specialisations -fPIC -shared -no-hs-main -dynamic
-                 -lHSrts-ghc -L/lib/ghc-/rts/
     build-depends:
         base -any,
         hbandit -any,
@@ -741,60 +740,4 @@ executable nrm
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wpartial-fields -main-is Hnrm
     build-depends:
-        nrmlib -any
-
-executable nrmddep
-    main-is: bin/Hnrmd.hs
-    default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards RankNTypes
-                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
-                        TupleSections MultiParamTypeClasses NoImplicitPrelude
-                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
-                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
-                        DeriveDataTypeable OverloadedLabels DeriveFoldable
-                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
-    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
-                 -Wmissing-home-modules -Widentities -Wredundant-constraints
-                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
-                 -fwarn-missing-signatures -fwarn-name-shadowing
-                 -fprint-potential-instances -Wmissing-export-lists
-                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -Wincomplete-record-updates
-                 -Wmonomorphism-restriction -Wimplicit-prelude
-                 -Wmissing-local-signatures -Wmissing-exported-signatures
-                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -main-is Hnrmd
-    build-depends:
-        nrmlib -any
-
-executable codegen
-    main-is: bin/Codegen.hs
-    default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards RankNTypes
-                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
-                        TupleSections MultiParamTypeClasses NoImplicitPrelude
-                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
-                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
-                        DeriveDataTypeable OverloadedLabels DeriveFoldable
-                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
-    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
-                 -Wmissing-home-modules -Widentities -Wredundant-constraints
-                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
-                 -fwarn-missing-signatures -fwarn-name-shadowing
-                 -fprint-potential-instances -Wmissing-export-lists
-                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -Wincomplete-record-updates
-                 -Wmonomorphism-restriction -Wimplicit-prelude
-                 -Wmissing-local-signatures -Wmissing-exported-signatures
-                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -main-is Codegen
-    build-depends:
-        nrmlib -any
+        hsnrm -any

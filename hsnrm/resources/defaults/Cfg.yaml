@@ -14,7 +14,7 @@ singularity: false
 argo_nodeos_config: argo_nodeos_config
 controlCfg:
   fixedPower:
-    fromuW: 250000000
+    fromuW: 2.5e8
 upstreamCfg:
   upstreamBindAddress: '*'
   rpcPort: 3456
@@ -30,10 +30,10 @@ nodeos: false
 hwloc: hwloc
 raplCfg:
   referencePower:
-    fromuW: 250000000
+    fromuW: 2.5e8
   raplActions:
-  - fromuW: 100000000
-  - fromuW: 200000000
+  - fromuW: 1.0e8
+  - fromuW: 2.0e8
   raplPath: /sys/devices/virtual/powercap/intel-rapl
 dummy: true
 slice_runtime: Dummy

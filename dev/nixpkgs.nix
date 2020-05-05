@@ -17,7 +17,8 @@ let
     (import ./haskell-overlay.nix { inherit src; })
   ];
   overlaysAll = defaultOverlays ++ overlays;
-in import (fetched ./pkgs.json) {
+
+in import (builtins.fetchTarball "http://nixos.org/channels/nixos-20.03/nixexprs.tar.xz") {
   inherit config;
   overlays = overlaysAll;
 }

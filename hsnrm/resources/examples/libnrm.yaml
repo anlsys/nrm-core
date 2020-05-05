@@ -13,7 +13,7 @@ app:
   scheduler: FIFO
   instrumentation:
     ratelimit:
-      fromHz: 1000000
+      fromHz: 1000000.0
   power:
     slowdown: 1
     profile: false

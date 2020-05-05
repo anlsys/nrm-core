@@ -14,10 +14,10 @@ module NRM.CPD
   )
 where
 
+import Bandit.Types
 import CPD.Core
 import Control.Lens hiding ((...))
 import Data.Coerce
-import Bandit.Types
 import LMap.Map as LM
 import LensMap.Core
 import NRM.Actuators

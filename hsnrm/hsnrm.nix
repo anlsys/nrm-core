@@ -16,7 +16,7 @@ mkDerivation {
   pname = "hsnrm";
   version = "1.0.0";
   src = ./.;
-  isLibrary = false;
+  isLibrary = true;
   isExecutable = true;
   libraryHaskellDepends = [
     aeson aeson-extra aeson-pretty async base binary brick bytestring
@@ -42,7 +42,6 @@ mkDerivation {
     units units-defs unix unordered-containers uuid vcs-revision vector
     yaml zeromq4-conduit zeromq4-haskell
   ];
-  doHaddock = false;
   description = "hsnrm";
   license = stdenv.lib.licenses.bsd3;
 }

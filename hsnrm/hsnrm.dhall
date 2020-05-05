@@ -23,22 +23,18 @@ in    λ ( ghcPath
             "tools"
         , description =
             "The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications."
-        , sub-libraries =
-            [ { library =
-                    λ(config : types.Config)
-                  →   prelude.defaults.Library
-                    ⫽ { build-depends =
-                          common.libdep
-                      , hs-source-dirs =
-                          [ "nrm", "bin"]
-                      , exposed-modules =
-                          common.allmodules
-                      }
-                    ⫽ common.copts ([] : List Text)
-              , name =
-                  "nrmlib"
-              }
-            ]
+        , library =
+            prelude.unconditional.library
+            (   prelude.defaults.Library
+              ⫽ { build-depends =
+                    common.libdep
+                , hs-source-dirs =
+                    [ "nrm" ]
+                , exposed-modules =
+                    common.allmodules
+                }
+              ⫽ common.copts ([] : List Text)
+            )
         , executables =
             [ { executable =
                     λ(config : types.Config)
@@ -48,7 +44,7 @@ in    λ ( ghcPath
                       , build-depends =
                           common.libdep
                       , hs-source-dirs =
-                          [ "bin", "nrm"]
+                          [ "bin", "nrm" ]
                       , other-modules =
                           common.allmodules
                       }
@@ -59,12 +55,6 @@ in    λ ( ghcPath
                       , "-shared"
                       , "-no-hs-main"
                       , "-dynamic"
-                      , "-lHSrts-ghc" ++ ghcNumericVersion
-                      ,     "-L"
-                        ++  ghcPath
-                        ++  "/lib/ghc-"
-                        ++  ghcNumericVersion
-                        ++  "/rts/"
                       ]
               , name =
                   "nrm.so"
@@ -77,7 +67,7 @@ in    λ ( ghcPath
                       , build-depends =
                           common.libdep
                       , hs-source-dirs =
-                          [ "bin", "nrm"]
+                          [ "bin", "nrm" ]
                       , other-modules =
                           common.allmodules
                       }
@@ -108,35 +98,11 @@ in    λ ( ghcPath
                     ⫽ { main-is =
                           "bin/Hnrm.hs"
                       , build-depends =
-                          [ common.nobound "nrmlib" ]
+                          [ common.nobound "hsnrm" ]
                       }
                     ⫽ common.copts [ "-main-is", "Hnrm" ]
               , name =
                   "nrm"
-              }
-            , { executable =
-                    λ(config : types.Config)
-                  →   prelude.defaults.Executable
-                    ⫽ { main-is =
-                          "bin/Hnrmd.hs"
-                      , build-depends =
-                          [ common.nobound "nrmlib" ]
-                      }
-                    ⫽ common.copts [ "-main-is", "Hnrmd" ]
-              , name =
-                  "nrmddep"
-              }
-            , { executable =
-                    λ(config : types.Config)
-                  →   prelude.defaults.Executable
-                    ⫽ { main-is =
-                          "bin/Codegen.hs"
-                      , build-depends =
-                          [ common.nobound "nrmlib" ]
-                      }
-                    ⫽ common.copts [ "-main-is", "Codegen" ]
-              , name =
-                  "codegen"
               }
             ]
         , extra-source-files =
