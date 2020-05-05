@@ -37,11 +37,10 @@ import Data.JSON.Schema
 import Data.Map.Merge.Lazy
 import Data.MessagePack
 import Dhall hiding (field)
-import HBandit.BwCR as BwCR
-import HBandit.Class
-import HBandit.Exp3 as Exp3
-import HBandit.Exp4R as Exp4R
-import HBandit.Types
+import Bandit.Class
+import Bandit.Exp3 as Exp3
+import Bandit.Exp4R as Exp4R
+import Bandit.Types
 import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.NonEmpty ()
@@ -55,11 +54,10 @@ import Refined.Unsafe
 type LearnState =
   Learn
     (Exp3 [V.Action])
-    (BwCR [V.Action] [ZeroOne Double])
     (Uniform [V.Action])
     (Exp4R () [V.Action] (ObliviousRep [V.Action]))
 
-type LearnConfig = Learn LagrangeMultiplier BwCR.T UniformCfg CtxCfg
+type LearnConfig = Learn LagrangeMultiplier UniformCfg CtxCfg
 
 data Input
   = -- | A sensor measurement event
@@ -94,9 +92,8 @@ data DecisionMetadata
 
 data Decision = DoNothing | Decision [V.Action] DecisionMetadata deriving (Show)
 
-data Learn a b c d
+data Learn a c d
   = Lagrange {lagrange :: a}
-  | Knapsack {knapsack :: b}
   | Random {random :: c}
   | Contextual {contextual :: d}
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
@@ -257,20 +254,6 @@ deriving via (GenericJSON LearnState) instance A.ToJSON LearnState
 
 deriving via (GenericJSON LearnState) instance A.FromJSON LearnState
 
-deriving via (GenericJSON (BwCR.Weight [V.Action])) instance JSONSchema (BwCR.Weight [V.Action])
-
-deriving via (GenericJSON (BwCR.Weight [V.Action])) instance A.ToJSON (BwCR.Weight [V.Action])
-
-deriving via (GenericJSON (BwCR.Weight [V.Action])) instance A.FromJSON (BwCR.Weight [V.Action])
-
-deriving instance Show (BwCR.Weight [V.Action])
-
-deriving instance MessagePack (BwCR.Weight [V.Action])
-
-deriving instance Interpret (BwCR.Weight [V.Action])
-
-deriving instance Inject (BwCR.Weight [V.Action])
-
 deriving via (GenericJSON (Exp3.Weight [V.Action])) instance JSONSchema (Exp3.Weight [V.Action])
 
 deriving via (GenericJSON (Exp3.Weight [V.Action])) instance A.ToJSON (Exp3.Weight [V.Action])
@@ -298,34 +281,6 @@ deriving instance MessagePack (Exp3 [V.Action])
 deriving instance Interpret (Exp3 [V.Action])
 
 deriving instance Inject (Exp3 [V.Action])
-
-deriving via (GenericJSON (BwCR [V.Action] [ZeroOne Double])) instance JSONSchema (BwCR [V.Action] [ZeroOne Double])
-
-deriving via (GenericJSON (BwCR [V.Action] [ZeroOne Double])) instance A.ToJSON (BwCR [V.Action] [ZeroOne Double])
-
-deriving via (GenericJSON (BwCR [V.Action] [ZeroOne Double])) instance A.FromJSON (BwCR [V.Action] [ZeroOne Double])
-
-deriving instance Show (BwCR [V.Action] [ZeroOne Double])
-
-deriving instance MessagePack (BwCR [V.Action] [ZeroOne Double])
-
-deriving instance Interpret (BwCR [V.Action] [ZeroOne Double])
-
-deriving instance Inject (BwCR [V.Action] [ZeroOne Double])
-
-deriving via (GenericJSON (BwCRHyper [V.Action] [ZeroOne Double])) instance JSONSchema (BwCRHyper [V.Action] [ZeroOne Double])
-
-deriving via (GenericJSON (BwCRHyper [V.Action] [ZeroOne Double])) instance A.ToJSON (BwCRHyper [V.Action] [ZeroOne Double])
-
-deriving via (GenericJSON (BwCRHyper [V.Action] [ZeroOne Double])) instance A.FromJSON (BwCRHyper [V.Action] [ZeroOne Double])
-
-deriving instance Show (BwCRHyper [V.Action] [ZeroOne Double])
-
-deriving instance MessagePack (BwCRHyper [V.Action] [ZeroOne Double])
-
-deriving instance Interpret (BwCRHyper [V.Action] [ZeroOne Double])
-
-deriving instance Inject (BwCRHyper [V.Action] [ZeroOne Double])
 
 deriving via (GenericJSON Probability) instance JSONSchema Probability
 
@@ -355,20 +310,6 @@ deriving instance Interpret CumulativeLoss
 
 deriving instance Inject CumulativeLoss
 
-deriving via (GenericJSON BwCR.T) instance JSONSchema BwCR.T
-
-deriving via (GenericJSON BwCR.T) instance A.ToJSON BwCR.T
-
-deriving via (GenericJSON BwCR.T) instance A.FromJSON BwCR.T
-
-deriving instance Show BwCR.T
-
-deriving instance MessagePack BwCR.T
-
-deriving via Double instance Interpret BwCR.T
-
-deriving via Double instance Inject BwCR.T
-
 deriving via (GenericJSON Integrator) instance JSONSchema Integrator
 
 deriving via (GenericJSON Integrator) instance A.ToJSON Integrator
@@ -382,34 +323,6 @@ deriving instance MessagePack Integrator
 deriving instance Interpret Integrator
 
 deriving instance Inject Integrator
-
-deriving via (GenericJSON (ScreeningBwCR [Action] [ZeroOne Double])) instance JSONSchema (ScreeningBwCR [Action] [ZeroOne Double])
-
-deriving via (GenericJSON (ScreeningBwCR [Action] [ZeroOne Double])) instance A.ToJSON (ScreeningBwCR [Action] [ZeroOne Double])
-
-deriving via (GenericJSON (ScreeningBwCR [Action] [ZeroOne Double])) instance A.FromJSON (ScreeningBwCR [Action] [ZeroOne Double])
-
-deriving instance Show (ScreeningBwCR [Action] [ZeroOne Double])
-
-deriving instance MessagePack (ScreeningBwCR [Action] [ZeroOne Double])
-
-deriving instance Interpret (ScreeningBwCR [Action] [ZeroOne Double])
-
-deriving instance Inject (ScreeningBwCR [Action] [ZeroOne Double])
-
-deriving via (GenericJSON (UCBBwCR [Action] [ZeroOne Double])) instance JSONSchema (UCBBwCR [Action] [ZeroOne Double])
-
-deriving via (GenericJSON (UCBBwCR [Action] [ZeroOne Double])) instance A.ToJSON (UCBBwCR [Action] [ZeroOne Double])
-
-deriving via (GenericJSON (UCBBwCR [Action] [ZeroOne Double])) instance A.FromJSON (UCBBwCR [Action] [ZeroOne Double])
-
-deriving instance Show (UCBBwCR [Action] [ZeroOne Double])
-
-deriving instance MessagePack (UCBBwCR [Action] [ZeroOne Double])
-
-deriving instance Interpret (UCBBwCR [Action] [ZeroOne Double])
-
-deriving instance Inject (UCBBwCR [Action] [ZeroOne Double])
 
 deriving via (GenericJSON (Arms [Action])) instance JSONSchema (Arms [Action])
 

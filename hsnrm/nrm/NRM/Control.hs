@@ -13,6 +13,10 @@ module NRM.Control
   )
 where
 
+import Bandit.Class
+import Bandit.Exp4R as Exp4R
+import Bandit.Types as BT
+import Bandit.Util
 import CPD.Core
 import CPD.Integrated
 import CPD.Utils
@@ -21,11 +25,6 @@ import Control.Lens hiding ((...))
 import Data.Generics.Labels ()
 import Data.List.NonEmpty as NE
 import Data.Map.Merge.Lazy
-import HBandit.BwCR as BwCR
-import HBandit.Class
-import HBandit.Exp4R as Exp4R
-import HBandit.Types as BT
-import HBandit.Util
 import LMap.Map as LM
 import NRM.Types.Configuration as Cfg
 import NRM.Types.Controller
@@ -101,10 +100,6 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
               return (Contextual s', a)
             Lagrange _ -> do
               let (b, a, g') = initPFMAB g (Arms availableActions) & _1 %~ Lagrange
-              liftIO $ setStdGen g'
-              return (b, a)
-            Knapsack (BwCR.T gamma) -> do
-              let (b, a, g') = initBwCR g (BwCRHyper gamma (Arms availableActions) ([BT.zero] ... [BT.one]) []) & _1 %~ Knapsack
               liftIO $ setStdGen g'
               return (b, a)
             Random (UniformCfg seed) -> do
@@ -309,10 +304,6 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
               Random b -> do
                 let ((a, g'), s') = runState (stepUniform g) b
                 #bandit ?= Random s'
-                return (a, g', hco)
-              Knapsack b -> do
-                let ((a, g'), s') = runState (stepBwCR g ((snd <$> robjs) <> [])) b
-                #bandit ?= Knapsack s'
                 return (a, g', hco)
               Lagrange b -> do
                 logInfo $ "computed Hard Constrained Objective of :" <> show hco

@@ -41,3 +41,29 @@ hsnrm.nix: hsnrm.cabal
 	@nix-shell --pure -p cabal2nix --run bash <<< '
 		cabal2nix . > hsnrm.nix
 	'
+
+.PHONY: ghcid
+ghcid: ghcid-hsnrm
+
+ghcid-hsnrm: hsnrm.cabal .hlint.yaml hsnrm.nix
+	@nix-shell -E '
+		with import <nixpkgs> {};
+		with haskellPackages;
+		shellFor {
+			packages = p: [p.hsnrm];
+			buildInputs = [ghcid cabal-install hlint];
+		}
+	' --pure --run bash <<< '
+		ghcid --command "cabal v2-repl nrmlib " \
+			--restart=hsnrm.cabal \
+			--restart=default.nix \
+			-l
+	'
+
+ghcid-test: hsnrm.cabal .hlint.yaml hsnrm.nix
+	@nix-shell --pure --run bash <<< '
+		ghcid --command "cabal v2-repl test " \
+			--restart=hsnrm.cabal \
+			--restart=default.nix \
+			-l
+	'

@@ -17,7 +17,7 @@ where
 import CPD.Core
 import Control.Lens hiding ((...))
 import Data.Coerce
-import HBandit.Types
+import Bandit.Types
 import LMap.Map as LM
 import LensMap.Core
 import NRM.Actuators
@@ -54,7 +54,7 @@ throughputConstrained cfg st =
         let powerTerm =
               coerce (foldMap (OExprSum . sID) ids)
                 \+ scalar (fromWatts $ staticPower cfg)
-         in [(HBandit.Types.one, maybe powerTerm (powerTerm \/) normalizedSumSlowdown)],
+         in [(Bandit.Types.one, maybe powerTerm (powerTerm \/) normalizedSumSlowdown)],
     normalizedSumSlowdown & \case
       Nothing -> []
       Just expr -> [(speedThreshold cfg, expr)]

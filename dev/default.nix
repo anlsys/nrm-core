@@ -30,50 +30,6 @@ pkgs // rec {
     installPhase = "cp -r dhall $out";
   };
 
-  #this needs to be seriously cleaned.
-  cabalFile = dhallDir: dhallFileName:
-    pkgs.runCommand "cabalFile" { } ''
-      export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
-      export LANG=en_US.UTF-8
-      cp ${dhallDir}/* .
-      substituteInPlace common.dhall --replace "= ./dhall-to-cabal" "= ${dhall-to-cabal-resources}"
-      substituteInPlace ${dhallFileName} --replace "= ./dhall-to-cabal" "= ${dhall-to-cabal-resources}"
-      GHCVERSION=$(${haskellPackages.ghc}/bin/ghc --numeric-version)
-      ${haskellPackages.dhall-to-cabal}/bin/dhall-to-cabal <<< "./${dhallFileName} \"${haskellPackages.ghc}\" \"$GHCVERSION\"" --output-stdout > $out
-    '';
-
-  nrmstatic = let
-    staticCabal = cabalFile ./cabal "static.dhall";
-    staticNix = (haskellPackages.haskellSrc2nix {
-      name = "hsnrm";
-      src = patchedSrc (src + "/hsnrm") staticCabal;
-      extraCabal2nixOptions = "--extra-arguments src";
-    });
-  in (pkgs.pkgsMusl.haskellPackages.callPackage staticNix ({ })).overrideAttrs
-  (o: {
-    doHoogle = false;
-    isLibrary = false;
-    isExecutable = true;
-    enableSharedExecutables = false;
-    enableSharedLibraries = false;
-    configureFlags = o.configureFlags ++ [
-      "--ghc-option=-optl=-static"
-      "--extra-lib-dirs=${pkgs.gmp6.override { withStatic = true; }}/lib"
-      "--extra-lib-dirs=${pkgs.zlib.static}/lib"
-      "--extra-lib-dirs=${
-        pkgs.libffi.overrideAttrs (old: { dontDisableStatic = true; })
-      }/lib"
-    ];
-  });
-
-  patchedSrc = source: cabalFile:
-      pkgs.runCommand "patchedSrc" { } ''
-      mkdir -p $out
-      cp -r ${src}/* $out
-      chmod -R +rw $out
-      cp ${cabalFile} $out/hsnrm.cabal
-    '';
-
   ormolu = let
     source = pkgs.fetchFromGitHub {
       owner = "tweag";
@@ -83,7 +39,7 @@ pkgs // rec {
     };
   in (import source { }).ormolu;
 
-  nrmso-nodoc = pkgs.haskell.lib.dontHaddock haskellPackages.nrmlib;
+  nrmso-nodoc = pkgs.haskell.lib.dontHaddock haskellPackages.hsnrm;
 
   static = pkgs.haskell.lib.overrideCabal
     (pkgs.haskell.lib.dontHaddock haskellPackages.nrmbin) (drv: {
@@ -116,13 +72,13 @@ pkgs // rec {
     inherit resources;
     pythonPackages = python37Packages;
     src = src + "/pynrm";
-    hsnrm = haskellPackages.nrmbin;
+    hsnrm = haskellPackages.hsnrm;
   };
 
   nrm = pkgs.symlinkJoin {
     name = "nrmFull";
     paths = [
-      haskellPackages.nrmbin
+      haskellPackages.hsnrm
       pynrm
       resources
       pkgs.linuxPackages.perf
@@ -132,7 +88,7 @@ pkgs // rec {
 
   hsnrm-hack = pkgs.haskellPackages.shellFor {
     packages = p: [
-      haskellPackages.nrmlib
+      haskellPackages.hsnrm
       (haskellPackages.callPackage ./pkgs/hs-tools { inherit useGhcide; })
     ];
     withHoogle = true;
@@ -141,9 +97,9 @@ pkgs // rec {
 
   pynrm-hack = pynrm.overrideAttrs (o: {
     propagatedBuildInputs =
-      (pkgs.lib.lists.remove haskellPackages.nrmbin o.propagatedBuildInputs);
+      (pkgs.lib.lists.remove haskellPackages.hsnrm o.propagatedBuildInputs);
     buildInputs = with python37Packages;
-      (pkgs.lib.lists.remove haskellPackages.nrmbin o.buildInputs) ++ [
+      (pkgs.lib.lists.remove haskellPackages.hsnrm o.buildInputs) ++ [
         flake8
         autopep8
         black
@@ -222,24 +178,7 @@ pkgs // rec {
     };
   }).overrideAttrs (_: { doCheck = false; });
 
-  hack = let
-    src' = src;
-    cabalFileLib = cabalFile ./cabal "lib.dhall";
-    cabalFileBin = cabalFile ./cabal "bin.dhall";
-  in pkgs.mkShell {
-    CABALFILE = cabalFile ./cabal "dev.dhall";
-    CABALFILE_LIB = cabalFileLib;
-    CABALFILE_BIN = cabalFileBin;
-    NIXFILE_LIB = (haskellPackages.haskellSrc2nix {
-      name = "hsnrm";
-      src = patchedSrc (src + "/hsnrm") cabalFileLib;
-      extraCabal2nixOptions = "--extra-arguments src";
-    });
-    NIXFILE_BIN = (haskellPackages.haskellSrc2nix {
-      name = "hsnrm";
-      src = patchedSrc (src + "/hsnrm") cabalFileBin;
-      extraCabal2nixOptions = "--extra-arguments src";
-    });
+  hack = pkgs.mkShell {
     inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
     buildInputs =
       [ pkgs.hwloc haskellPackages.dhrun pkgs.which pkgs.jq pkgs.yq ];
@@ -268,10 +207,10 @@ pkgs // rec {
       # (`nrm.<module>`)
       export PYTHONPATH=${builtins.toPath ../.}/pynrm/:$PYTHONPATH
       # exports for `ghcide` use:
-      export NIX_GHC="${haskellPackages.nrmlib.env.NIX_GHC}"
-      export NIX_GHCPKG="${haskellPackages.nrmlib.env.NIX_GHCPKG}"
-      export NIX_GHC_DOCDIR="${haskellPackages.nrmlib.env.NIX_GHC_DOCDIR}"
-      export NIX_GHC_LIBDIR="${haskellPackages.nrmlib.env.NIX_GHC_LIBDIR}"
+      export NIX_GHC="${haskellPackages.hsnrm.env.NIX_GHC}"
+      export NIX_GHCPKG="${haskellPackages.hsnrm.env.NIX_GHCPKG}"
+      export NIX_GHC_DOCDIR="${haskellPackages.hsnrm.env.NIX_GHC_DOCDIR}"
+      export NIX_GHC_LIBDIR="${haskellPackages.hsnrm.env.NIX_GHC_LIBDIR}"
     '';
     LC_ALL = "en_US.UTF-8";
     LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";

@@ -17,7 +17,7 @@ import Data.Aeson
 import Data.JSON.Schema
 import Data.MessagePack
 import Dhall
-import HBandit.Types
+import Bandit.Types
 import NRM.Classes.Messaging
 import NRM.Orphans.Refined ()
 import Numeric.Interval

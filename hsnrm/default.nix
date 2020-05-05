@@ -1,1 +1,2 @@
-import ../. {}
+{ pkgs ? import (../.) { } }:
+pkgs

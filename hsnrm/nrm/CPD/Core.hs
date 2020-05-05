@@ -61,7 +61,7 @@ import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.MessagePack
 import qualified Dhall as D
-import HBandit.Types
+import Bandit.Types
 import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
