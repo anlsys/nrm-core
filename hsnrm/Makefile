@@ -9,7 +9,7 @@ SHELL := $(shell which bash)
 # "nix-shell -p" constructs an expression that relies on <nixpkgs> for
 # selecting attributes, so we override it.
 # https://github.com/NixOS/nix/issues/726#issuecomment-161215255
-NIX_PATH := nixpkgs=../.
+NIX_PATH := nixpkgs=./.
 
 all: hsnrm.nix dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
 

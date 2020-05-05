@@ -162,21 +162,9 @@ make:resources:
     - cd hsnrm
     - nix-shell -p gnumake --run "make resources"
 
-nix:package:
+nix:hsnrm:
   stage: build
   tags:
     - kvm
     - nix
-  script:
-    - cd hsnrm
-    - nix-build -A hsnrm --no-build-output
-
-make:doc:
-  stage: build
-  tags:
-    - kvm
-    - nix
-  script:
-    - cd hsnrm
-    - nix-shell -p gnumake --run "make doc"
-
+  script: nix-build -A haskellPackages.hsnrm
