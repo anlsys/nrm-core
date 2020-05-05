@@ -8,25 +8,25 @@ stages:
   - vendoring
   - deploy
 
-#autotools:libnrm:
-  #stage: build
-  #tags:
-    #- kvm
-    #- nix
-  #script:
-    #- |
-      #nix-shell -E '
-        #let pkgs = (import ./default.nix {});
-        #in pkgs.libnrm.overrideAttrs (o:{
-          #preBuild="";
-        #})
-      #' --run bash <<< '
-        #set -e
-        #cd libnrm
-        #./autogen.sh
-        #./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp
-        #make
-      #'
+autotools:libnrm:
+  stage: build
+  tags:
+    - kvm
+    - nix
+  script:
+    - |
+      nix-shell -E '
+        let pkgs = (import ./default.nix {});
+        in pkgs.libnrm.overrideAttrs (o:{
+          preBuild="";
+        })
+      ' --run bash <<< '
+        set -e
+        cd libnrm
+        ./autogen.sh
+        ./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp
+        make
+      '
 
 #nix-build:libnrm:
   #stage: build
@@ -96,7 +96,7 @@ make:black:
     - kvm
     - nix
   script:
-    - cd libnrm
+    - cd pynrm
     - nix-shell -p gnumake --run "make black"
 
 make:hsnrm.nix:
