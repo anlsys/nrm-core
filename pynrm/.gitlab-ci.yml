@@ -1,0 +1,13 @@
+black:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script:
+    - |
+      nix-shell --pure -p 'python37Packages.black' --run bash <<< '
+        set -e
+        black bin/* --check
+        black nrm/*.py --check
+      '
+

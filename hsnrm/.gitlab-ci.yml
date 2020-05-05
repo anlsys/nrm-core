@@ -1,10 +1,16 @@
-stages:
-  - source
-  - build
-  - docs
+make:hsnrm.nix:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script: nix-shell -p gnumake --run "make hsnrm.nix"
 
-variables:
-  NIX_PATH: "nixpkgs=./."
+make:hsnrm.cabal:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script: nix-shell -p gnumake --run "make hsnrm.cabal"
 
 make:ormolu:
   stage: source
@@ -34,20 +40,19 @@ make:dhall-format:
     - nix
   script: nix-shell -p gnumake --run "make dhall-format"
 
+make:resources:
+  stage: build
+  tags:
+    - kvm
+    - nix
+  script: nix-shell -p gnumake --run "make resources"
+
 nix:package:
   stage: build
   tags:
     - kvm
     - nix
-  script: nix-build -A hbandit --no-build-output
-
-
-make:readme:
-  stage: build
-  tags:
-    - kvm
-    - nix
-  script: nix-shell -p gnumake --run "make README.md"
+  script: nix-build -A hsnrm --no-build-output
 
 make:doc:
   stage: build

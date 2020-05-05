@@ -67,7 +67,7 @@ ghcid-hsnrm: hsnrm.cabal .hlint.yaml hsnrm.nix
 	'
 
 .PHONY: pre-commit
-pre-commit: dhall-format ormolu shellcheck hlint
+pre-commit: hsnrm.nix hsnrm.cabal resources dhall-format ormolu shellcheck hlint
 
 .PHONY: dhall-format
 dhall-format:
@@ -105,19 +105,6 @@ ormolu:
 			fi
 		done
 		if [ $$RETURN -ne 0 ]; then exit 1; fi
-	'
-
-.PHONY: doc
-doc: src/Bandit/Tutorial.hs hbandit.cabal hbandit.nix
-	@nix-shell -E '
-		with import <nixpkgs> {};
-		with haskellPackages;
-		shellFor {
-			packages = p: [p.hbandit];
-			buildInputs = [cabal-install];
-		}
-	' --run <<< bash '
-		cabal v2-haddock hbandit --haddock-internal --builddir=.build
 	'
 
 .PHONY: shellcheck

@@ -14,7 +14,7 @@ let
   fetched = s: (hostPkgs.nix-update-source.fetch s).src;
   defaultOverlays = [
     (import ./python-overlay.nix { inherit src; })
-    (import ./haskell-overlay.nix { inherit src; })
+    (import ./haskell-overlay.nix { })
   ];
   overlaysAll = defaultOverlays ++ overlays;
 
