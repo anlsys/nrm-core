@@ -8,13 +8,6 @@ stages:
   - vendoring
   - deploy
 
-variables:
-  NIX_PATH: "nixpkgs=./."
-
-include:
-  - '/pynrm/.gitlab-ci.yml'
-  - '/libnrm/.gitlab-ci.yml'
-
 #autotools:libnrm:
   #stage: build
   #tags:
@@ -97,6 +90,14 @@ nix-build:app-stream:
     #- echo "token=$RTD_TOKEN"
     #- nix run nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hnrm/104604/
 
+make:black:
+  stage: source
+  tags:
+    - kvm
+    - nix
+  script:
+    - cd libnrm
+    - nix-shell -p gnumake --run "make black"
 
 make:hsnrm.nix:
   stage: source
