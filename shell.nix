@@ -26,7 +26,6 @@ let
     webshot
     pracma
     knitr
-    JuniperKernel
   ];
 
 in mkShell {
@@ -37,8 +36,7 @@ in mkShell {
         o.propagatedBuildInputs);
       buildInputs = with pythonPackages;
         (pkgs.lib.lists.remove haskellPackages.hsnrm-bin o.buildInputs)
-        ++ [ flake8 autopep8 black ];
-
+        ++ [ flake8 autopep8 black nbformat nbconvert ];
       shellHook = ''
         export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
         export LANG=en_US.UTF-8
@@ -84,54 +82,28 @@ in mkShell {
     ] ++
 
     lib.optional jupyter ((pkgs.jupyter.override rec {
-      python = (pythonPackages.python.withPackages
-        (ps: with ps; [ nb_black msgpack warlock pyzmq pandas seaborn ]));
+      python3 = (pythonPackages.python.withPackages (ps:
+        with ps; [
+          msgpack
+          warlock
+          pyzmq
+          pandas
+          seaborn
+          nbformat
+        ]));
       definitions = {
         python = {
           displayName = "Python";
           argv = [
-            "${python.interpreter}"
+            "${python3.interpreter}"
             "-m"
             "ipykernel_launcher"
             "-f"
             "{connection_file}"
           ];
           language = "python";
-          logo32 = "${python.sitePackages}/ipykernel/resources/logo-32x32.png";
-          logo64 = "${python.sitePackages}/ipykernel/resources/logo-64x64.png";
-        };
-        Rdf = {
-          displayName = "R";
-          argv = [
-            "${
-              pkgs.rWrapper.override {
-                packages = with pkgs.rPackages; [
-                  tidyr
-                  purrr
-                  ggthemes
-                  ggplot2
-                  huxtable
-                  formatR
-                  RcppRoll
-                  latex2exp
-                  plotly
-                  phantomjs
-                  webshot
-                  pracma
-                  knitr
-                  JuniperKernel
-                ];
-              }
-            }/bin/R"
-            "--slave"
-            "-e"
-            "JuniperKernel::bootKernel()"
-            "--args"
-            "{connection_file}"
-          ];
-          language = "Rlang";
-          logo32 = "${python.sitePackages}/ipykernel/resources/logo-32x32.png";
-          logo64 = "${python.sitePackages}/ipykernel/resources/logo-64x64.png";
+          logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
+          logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
         };
       };
     }).overrideAttrs (_: { doCheck = false; }));

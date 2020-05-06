@@ -38,7 +38,7 @@ pre-commit: hsnrm/pre-commit\
 
 .PHONY: notebooks
 notebooks:
-	@nix-shell default.nix --pure -A hack --run <<< bash '
+	@nix-shell --pure --run <<< bash '
 		notebooks/batchnb.py notebooks/configuration.ipynb
 		jupyter nbconvert doc/notebooks/notebooks/configuration.ipynb --output-dir=doc/notebooks/notebooks
 		rm doc/notebooks/notebooks/configuration.ipynb
@@ -159,7 +159,7 @@ ci:
 	'
 
 ci-%:
-	@nix-shell default.nix -A hack --run bash <<< '
+	@nix-shell --run bash <<< '
 		gitlab-runner exec shell "$*"
 	'
 

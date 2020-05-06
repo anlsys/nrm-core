@@ -33,6 +33,8 @@ in  { stages =
         mkNixB "libnrm"
     , nix/stream =
         mkNixB "stream"
+    , notebooks =
+        mkT "notebooks"
     , dhrun/hello =
         mkT "dhrun/hello"
     , dhrun/exitcode =
