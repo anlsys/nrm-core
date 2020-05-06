@@ -6,6 +6,11 @@ SHELL := $(shell which bash)
 # this allows omitting newlines.
 .ONESHELL:
 
+# "nix-shell -p" constructs an expression that relies on <nixpkgs> for
+# selecting attributes, so we override it.
+# https://github.com/NixOS/nix/issues/726#issuecomment-161215255
+NIX_PATH := nixpkgs=./.
+
 ############################# SECTION: defining recursive targets
 
 .PHONY: hsnrm/%
