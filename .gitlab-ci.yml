@@ -17,12 +17,6 @@ nix-lib:
   tags:
   - nix
   - kvm
-dhrun-exitcode:
-  stage: build
-  script: nix-build -A dhrun-exitcode --no-build-output
-  tags:
-  - nix
-  - kvm
 shellcheck:
   stage: source
   script: nix-shell -p gnumake --run 'make shellcheck'
@@ -45,9 +39,15 @@ readthedocs:
   tags:
   - nix
   - kvm
+dhrun/hello:
+  stage: build
+  script: nix-build -A dhrun/hello --no-build-output
+  tags:
+  - nix
+  - kvm
 libnrm/clang-format:
   stage: source
-  script: nix-shell -p gnumake --run 'make libnrm-clang-format'
+  script: nix-shell -p gnumake --run 'make libnrm/clang-format'
   tags:
   - nix
   - kvm
@@ -63,15 +63,15 @@ nix-stream:
   tags:
   - nix
   - kvm
-dhrun-listen:
-  stage: build
-  script: nix-build -A dhrun-listen --no-build-output
-  tags:
-  - nix
-  - kvm
 hsnrm/all:
   stage: build
   script: nix-shell -p gnumake --run 'make hsnrm/all'
+  tags:
+  - nix
+  - kvm
+dhrun/exitcode:
+  stage: build
+  script: nix-build -A dhrun/exitcode --no-build-output
   tags:
   - nix
   - kvm
@@ -92,12 +92,6 @@ hsnrm/hlint:
   tags:
   - nix
   - kvm
-dhrun-hello:
-  stage: build
-  script: nix-build -A dhrun-hello --no-build-output
-  tags:
-  - nix
-  - kvm
 pynrm/black:
   stage: source
   script: nix-shell -p gnumake --run 'make pynrm/black'
@@ -107,6 +101,12 @@ pynrm/black:
 dhall-format:
   stage: source
   script: nix-shell -p gnumake --run 'make dhall-format'
+  tags:
+  - nix
+  - kvm
+dhrun/listen:
+  stage: build
+  script: nix-build -A dhrun/listen --no-build-output
   tags:
   - nix
   - kvm

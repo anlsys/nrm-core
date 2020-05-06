@@ -47,7 +47,7 @@ in  { stages =
     , dhall-format =
         mkS "dhall-format"
     , libnrm/clang-format =
-        mkS "libnrm-clang-format"
+        mkS "libnrm/clang-format"
     , pynrm/black =
         mkS "pynrm/black"
     , hsnrm/ormolu =
