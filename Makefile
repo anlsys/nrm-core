@@ -101,10 +101,8 @@ dhall-format:
 .PHONY: libnrm/autotools
 libnrm/autotools: libnrm/src/nrm_messaging.h
 	nix-shell -E '
-		let pkgs = import <nixpkgs> {});
-		in pkgs.libnrm.overrideAttrs (o:{
-			preBuild="";
-		})
+		with import <nixpkgs> {};
+		libnrm.overrideAttrs (o:{ preBuild=""; })
 	' --run bash <<< '
 		set -e
 		cd libnrm
