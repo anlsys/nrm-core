@@ -41,9 +41,9 @@ in  { stages =
         mkB "libnrm/autotools"
     , hsnrm/all =
         mkB "hsnrm/all"
-    , hsnrm/hsnrm.cabal =
+    , hsnrm/hsnrm-cabalfile =
         mkS "hsnrm/hsnrm.cabal"
-    , hsnrm/hsnrm.nix =
+    , hsnrm/hsnrm-cabal2nix =
         mkS "hsnrm/hsnrm.nix"
     , hsnrm/resources =
         mkS "hsnrm/resources"
