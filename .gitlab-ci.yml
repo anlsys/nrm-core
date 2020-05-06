@@ -57,6 +57,12 @@ hsnrm/ormolu:
   tags:
   - nix
   - kvm
+hsnrm-/dhall-format:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/dhall-format'
+  tags:
+  - nix
+  - kvm
 nix-stream:
   stage: build
   script: nix-build -A stream --no-build-output
@@ -84,12 +90,6 @@ hsnrm/resources:
 dhrun/exitcode:
   stage: test
   script: nix-shell -p gnumake --run 'make dhrun/exitcode'
-  tags:
-  - nix
-  - kvm
-hsnrm-/hall-format:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm/dhall-format'
   tags:
   - nix
   - kvm

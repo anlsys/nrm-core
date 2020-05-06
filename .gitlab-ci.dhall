@@ -63,7 +63,7 @@ in  { stages =
         mkS "hsnrm/hlint"
     , hsnrm/shellcheck =
         mkS "hsnrm/shellcheck"
-    , hsnrm-/hall-format =
+    , hsnrm-/dhall-format =
         mkS "hsnrm/dhall-format"
     , readthedocs =
         { stage =
