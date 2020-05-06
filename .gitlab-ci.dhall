@@ -24,7 +24,7 @@ let mkNixT = mkNix "test"
 let mkNixB = mkNix "build"
 
 in  { stages =
-        [ "source", "build", "tests" ]
+        [ "source", "build", "tests", "deploy" ]
     , nix-hsnrm =
         mkNixB "haskellPackages.hsnrm"
     , nix-lib =

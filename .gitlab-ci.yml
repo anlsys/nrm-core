@@ -73,6 +73,7 @@ stages:
 - source
 - build
 - tests
+- deploy
 libnrm-clang-format:
   stage: source
   script: nix-shell -p gnumake --run clang-format
