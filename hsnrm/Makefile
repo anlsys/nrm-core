@@ -11,7 +11,7 @@ SHELL := $(shell which bash)
 # https://github.com/NixOS/nix/issues/726#issuecomment-161215255
 NIX_PATH := nixpkgs=./.
 
-all: hsnrm.nix dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
+all: hsnrm.nix dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so resources
 
 dhall-to-cabal: ../default.nix
 	rm -rf ./dhall-to-cabal
@@ -40,13 +40,17 @@ hsnrm.nix: hsnrm.cabal
 		cabal2nix . > hsnrm.nix
 	'
 
-dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so: hsnrm.cabal src bin
-	cabal new-build
+dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so: hsnrm.cabal nrm bin
+	@nix-shell --pure --run bash <<< '
+		cabal new-build
+	'
 
 resources: hsnrm.cabal
-	rm -rf resources
-	mkdir resources
-	cabal v2-run bin/Codegen.hs resources/
+	@nix-shell --pure --run bash <<< '
+		rm -rf resources
+		mkdir resources
+		cabal v2-run bin/Codegen.hs resources/
+	'
 
 .PHONY: ghcid
 ghcid: ghcid-hsnrm

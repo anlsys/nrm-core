@@ -51,7 +51,7 @@ pkgs // rec {
 
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     inherit resources;
-    pythonPackages = python37Packages;
+    pythonPackages = python3Packages;
     src = src + "/pynrm";
     hsnrm = haskellPackages.hsnrm;
   };
@@ -79,18 +79,18 @@ pkgs // rec {
   pynrm-hack = pynrm.overrideAttrs (o: {
     propagatedBuildInputs =
       (pkgs.lib.lists.remove haskellPackages.hsnrm o.propagatedBuildInputs);
-    buildInputs = with python37Packages;
+    buildInputs = with python3Packages;
       (pkgs.lib.lists.remove haskellPackages.hsnrm o.buildInputs) ++ [
         flake8
         autopep8
         black
-        mypy
-        pytype
+        #mypy
+        #pytype
         nbformat
         nbconvert
         pandas
         matplotlib
-        nb_black
+        #nb_black
         msgpack
         pyzmq
         warlock
@@ -107,7 +107,7 @@ pkgs // rec {
     (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
 
   jupyterWithBatteries = (pkgs.jupyter.override rec {
-    python3 = (python37Packages.python.withPackages
+    python3 = (python3Packages.python.withPackages
       (ps: with ps; [ nb_black msgpack warlock pyzmq pandas seaborn ]));
     definitions = {
       python3 = {

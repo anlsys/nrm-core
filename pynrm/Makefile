@@ -13,6 +13,9 @@ NIX_PATH := nixpkgs=./.
 
 all: black
 
+.PHONY: pre-commit
+pre-commit: black
+
 .PHONY: black
 black:
 	@nix-shell --pure -p python37Packages.black --run bash <<< '

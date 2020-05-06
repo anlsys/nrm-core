@@ -6,98 +6,16 @@ SHELL := $(shell which bash)
 # this allows omitting newlines.
 .ONESHELL:
 
-all: build client pyclient
-
-.PHONY: ci
-ci:
-	@nix-shell default.nix -p yq -p jq --run bash <<< '
-		for jobname in $$(yq -r "keys| .[]" .gitlab-ci.yml); do
-			if [ "$$jobname" != "stages" ]; then
-				gitlab-runner exec shell "$$jobname"
-			fi
-		done
-	'
-
-ci-%:
-	@nix-shell default.nix -A hack --run bash <<< '
-		gitlab-runner exec shell "$*"
-	'
-
-.PHONY: ghcid
-ghcid: ghcid-nrmlib
-
-ghcid-%: hsnrm/hsnrm.cabal hsnrm/.hlint.yaml
-	@nix-shell default.nix -A hack --pure --run bash <<< '
-		ghcid -C hsnrm --command "cabal v2-repl $* " --restart=holt.cabal  -l
-	'
+all: hsnrm libnrm
 
 .PHONY: pre-commit
-pre-commit: ormolu dhall-format shellcheck black codegen doc build pyclient notebooks
-
-.PHONY: shellcheck
-shellcheck:
-	@nix-shell default.nix --pure -p '(import ./. {}).fd' '(import ./. {}).shellcheck' --run bash <<< '
-		for F in $$(fd -E hsnrm/dhall-haskell -e sh); do
-			shellcheck -s bash $$F
-		done
-	'
-
-.PHONY: dhall-format
-dhall-format:
-	@nix-shell default.nix --pure -p '(import ./. {}).fd' '(import ./. {}).haskellPackages.dhall' --run bash <<< '
-		for F in $$(fd -E hsnrm/dhall-haskell -e dhall); do
-			dhall format --inplace $$F
-		done
-	'
-
-.PHONY: ormolu
-ormolu:
-	@nix-shell default.nix --pure -E '
-		let pkgs = (import ./. {});
-		in pkgs.mkShell {
-			buildInputs = [pkgs.fd pkgs.ormolu];
-			shellHook =
-				"export LOCALE_ARCHIVE=$${pkgs.glibcLocales}/lib/locale/locale-archive \n" +
-				"export LANG=en_US.UTF-8";
-		}
-	' --run bash <<< '
-		for F in $$(fd -E hsnrm/dhall-haskell -e hs); do
-			ormolu -o -XTypeApplications -o -XPatternSynonyms -m inplace $$F
-		done
-	'
-
-.PHONY: black
-black:
-	@nix-shell default.nix --pure -p '(import ./. {}).python37Packages.black' --run bash <<< '
-		black pynrm/bin/*
-		black pynrm/nrm/*.py
-	'
-
-.PHONY: codegen
-codegen:
-	@nix-shell default.nix --pure -A hack --run <<< bash '
-		cd hsnrm
-		cabal v2-run --builddir=../.build_codegen codegen ../resources/
-	'
-
-.PHONY: doc
-doc:
-	@nix-shell default.nix --pure -A hack --run <<< bash '
-		cd hsnrm
-		cabal v2-haddock nrm.so --haddock-internal --builddir=../.build
-	'
-
-.PHONY: vendor
-vendor:
-	@nix-shell default.nix --pure -A hack --run <<< bash '
-		cp $$CABALFILE hsnrm/hsnrm.cabal
-		cp $$CABALFILE_LIB dev/pkgs/hnrm/lib.cabal
-		cp $$CABALFILE_BIN dev/pkgs/hnrm/bin.cabal
-		cp $$NIXFILE_LIB/default.nix dev/pkgs/hnrm/lib.nix
-		cp $$NIXFILE_BIN/default.nix dev/pkgs/hnrm/bin.nix
-		chmod +rw hsnrm/hsnrm.cabal dev/pkgs/hnrm/bin.nix dev/pkgs/hnrm/lib.nix dev/pkgs/hnrm/bin.cabal dev/pkgs/hnrm/lib.cabal
-	'
-
+pre-commit: hsnrm-pre-commit\
+	pynrm-pre-commit\
+	libnrm-pre-commit\
+	dhall-format\
+	shellcheck\
+	libnrm/src/nrm_messaging.h\
+	.gitlab-ci.yml
 
 .PHONY: notebooks
 notebooks:
@@ -111,7 +29,7 @@ notebooks:
 
 dhrun-%:
 	rm -f hsnrm/.ghc*
-	@nix-shell default.nix --pure -p '(import ./. {}).nrm' -p '(import ./. {}).dhrun' -p bash --run "dhrun -i" <<< '
+	@nix-shell --pure -p nrm -p dhrun -p bash --run "dhrun -i" <<< '
 		let all = ./dev/dhrun/all-tests.dh
 			"../dev/dhrun/assets/"
 			"../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
@@ -119,67 +37,102 @@ dhrun-%:
 		in all.exitcode
 	'
 
-.PHONY:client
-client:
-	@nix-shell default.nix --pure -A hack --run bash <<< '
-		cd hsnrm
-		cabal v2-build nrm --builddir=../.build
+.PHONY:hsnrm
+hsnrm:
+	$(MAKE) -C hsnrm
+
+.PHONY: libnrm
+libnrm: libnrm/src/nrm_messaging.h
+	nix-shell -E '
+		let pkgs = import <nixpkgs> {});
+		in pkgs.libnrm.overrideAttrs (o:{
+			preBuild="";
+		})
+	' --run bash <<< '
+		set -e
+		cd libnrm
+		./autogen.sh
+		./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp
+		make
 	'
 
-.PHONY: build
-build:
-	@nix-shell default.nix --pure -A hack --run runhaskell <<< '
-	{-# LANGUAGE NoImplicitPrelude #-}
-	{-# LANGUAGE OverloadedStrings #-}
+libnrm/src/nrm_messaging.h: hsnrm-pre-commit
+	cp hsnrm/resources/nrm_messaging.h libnrm/src/nrm_messaging.h
 
-	import Control.Monad
-	import Data.Text (dropEnd, lines, splitOn, strip)
-	import Development.Shake hiding (getEnv)
-	import Development.Shake.FilePath
-	import Options.Applicative as OA
-	import Protolude
-	import System.Directory
-	import System.Environment (getEnv, withArgs)
-	import System.FilePath.Glob
-	import qualified System.IO as SIO ( BufferMode (..), hSetBuffering, stdout,)
-	import System.Posix.Process
-	import System.Process.Typed
-	import qualified Prelude
+############################# SECTION: source tooling
 
-	main :: IO()
-	main = do
-	  version <- toS . strip . toS <$$> readProcessStdout_ "ghc --numeric-version"
-	  ghcPathRaw <-  strip . toS <$$> readProcessStdout_ "which ghc"
-	  let ghcPath = dropEnd 8 ghcPathRaw
-	  runProcess_ $$ setWorkingDir "hsnrm" $$ shell "cp -f $$CABALFILE hsnrm.cabal"
-	  runProcess_ . setWorkingDir "hsnrm" $$ proc "cabal" [ "v2-build", "nrm.so", "--ghc-option=-lHSrts_thr-ghc" <> version, "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/", "--builddir=../.build", "--jobs=4" ]
+.PHONY: shellcheck
+shellcheck:
+	@nix-shell --pure -p fd shellcheck --run bash <<< '
+		for F in $$(fd -E -e sh); do
+			shellcheck -s bash $$F
+		done
 	'
 
-.PHONY: pyclient
-pyclient:
-	@nix-shell default.nix --pure -A hack --run runhaskell <<< '
-	{-# LANGUAGE NoImplicitPrelude #-}
-	{-# LANGUAGE OverloadedStrings #-}
 
-	import Control.Monad
-	import Data.Text (dropEnd, lines, splitOn, strip)
-	import Development.Shake hiding (getEnv)
-	import Development.Shake.FilePath
-	import Options.Applicative as OA
-	import Protolude
-	import System.Directory
-	import System.Environment (getEnv, withArgs)
-	import System.FilePath.Glob
-	import qualified System.IO as SIO ( BufferMode (..), hSetBuffering, stdout,)
-	import System.Posix.Process
-	import System.Process.Typed
-	import qualified Prelude
+.PHONY: dhall-format
+dhall-format:
+	@nix-shell --pure -p fd haskellPackages.dhall --run bash <<< '
+		RETURN=0
+		for F in $$(fd -e dhall); do
+			dhall format < $$F | cmp -s $$F -
+			if [ $$? -ne 0 ]; then
+				echo "[!] $$F does not pass dhall-format format check. Formatting.." >&2
+				dhall format --inplace $$F
+				RETURN=1
+			fi
+		done
+		if [ $$RETURN -ne 0 ]; then exit 1; fi
+	'
 
-	main :: IO()
-	main = do
-	  version <- toS . strip . toS <$$> readProcessStdout_ "ghc --numeric-version"
-	  ghcPathRaw <-  strip . toS <$$> readProcessStdout_ "which ghc"
-	  let ghcPath = dropEnd 8 ghcPathRaw
-	  runProcess_ . setWorkingDir "hsnrm" $$ proc "cabal" [ "v2-build", "pynrm.so", "--ghc-option=-lHSrts_thr-ghc" <> version, "--ghc-option=-L" <> toS ghcPath <> "/lib/ghc-" <> version <> "/rts/", "--builddir=../.build", "--jobs=4" ]
+############################# SECTION: source tooling recursive targets
+
+.PHONY: hsnrm-%
+hsnrm-%:
+	$(MAKE) -C hsnrm $*
+
+.PHONY: pynrm-%
+pynrm-%:
+	$(MAKE) -C pynrm $*
+
+############################# SECTION: source tooling libnrm pseudo-recursive targets
+
+.PHONY:libnrm-pre-commit
+libnrm-pre-commit: libnrm-clang-format
+
+.PHONY: libnrmclang-format
+libnrm-clang-format:
+	@nix-shell --pure -p fd clang-tools --run bash <<< '
+		cd libnrm
+		RETURN=0
+		for F in $$(fd -e c); do
+			clang-format < $$F | cmp -s $$F -
+			if [ $$? -ne 0 ]; then
+				echo "[!] $$F does not pass clang-format format check." >&2
+				RETURN=1
+			fi
+		done
+		if [ $$RETURN -ne 0 ]; then exit 1; fi
+	'
+
+############################ SECTION: gitlab-ci helpers
+
+.gitlab-ci.yml: .gitlab-ci.dhall
+	echo "#This file is automatically generated. Your changes will be erased." > .gitlab-ci.yml
+	@nix-shell -p haskellPackages.dhall-json --run dhall-to-yaml <<< ' ./.gitlab-ci.dhall ' >> .gitlab-ci.yml
+
+.PHONY: ci
+ci:
+	@nix-shell -p yq -p jq --run bash <<< '
+		for jobname in $$(yq -r "keys| .[]" .gitlab-ci.yml); do
+			if [ "$$jobname" != "stages" ]; then
+				gitlab-runner exec shell "$$jobname"
+			fi
+		done
+	'
+
+ci-%:
+	@nix-shell default.nix -A hack --run bash <<< '
+		gitlab-runner exec shell "$*"
 	'
 
