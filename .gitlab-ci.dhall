@@ -8,7 +8,7 @@ let baseJob =
 let mkJob =
         λ(stage : Text)
       → λ(target : Text)
-      → baseJob stage ("nix-shell -p gnumake --run " ++ target)
+      → baseJob stage ("nix-shell -p gnumake --run 'make " ++ target ++"'")
 
 let mkS = mkJob "source"
 
