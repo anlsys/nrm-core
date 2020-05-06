@@ -82,15 +82,8 @@ in mkShell {
     ] ++
 
     lib.optional jupyter ((pkgs.jupyter.override rec {
-      python3 = (pythonPackages.python.withPackages (ps:
-        with ps; [
-          msgpack
-          warlock
-          pyzmq
-          pandas
-          seaborn
-          nbformat
-        ]));
+      python3 = (pythonPackages.python.withPackages
+        (ps: with ps; [ msgpack warlock pyzmq pandas seaborn nbformat ]));
       definitions = {
         python = {
           displayName = "Python";

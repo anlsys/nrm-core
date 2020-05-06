@@ -11,6 +11,12 @@ nix/hsnrm-bin:
   tags:
   - nix
   - kvm
+notebooks:
+  stage: test
+  script: nix-shell -p gnumake --run 'make notebooks'
+  tags:
+  - nix
+  - kvm
 libnrm/autotools:
   stage: build
   script: nix-shell -p gnumake --run 'make libnrm/autotools'
