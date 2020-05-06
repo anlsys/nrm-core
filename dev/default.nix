@@ -43,7 +43,6 @@ pkgs // rec {
   libnrm = pkgs.callPackage ./pkgs/libnrm { src = src + "/libnrm"; };
 
   pynrm = pkgs.callPackage ./pkgs/pynrm {
-    inherit resources;
     pythonPackages = python3Packages;
     src = src + "/pynrm";
     hsnrm = haskellPackages.hsnrm;
@@ -51,13 +50,7 @@ pkgs // rec {
 
   nrm = pkgs.symlinkJoin {
     name = "nrmFull";
-    paths = [
-      haskellPackages.hsnrm
-      pynrm
-      resources
-      pkgs.linuxPackages.perf
-      pkgs.hwloc
-    ];
+    paths = [ haskellPackages.hsnrm pynrm pkgs.linuxPackages.perf pkgs.hwloc ];
   };
 
   hsnrm-hack = pkgs.haskellPackages.shellFor {
@@ -256,18 +249,6 @@ pkgs // rec {
     unpackPhase = "true";
   };
 
-  doDhrun = dhallcall:
-    test.overrideAttrs (old: {
-      buildPhase = ''
-        dhrun run <<< 'let all = ${dhrunTestConfigLayer}/all-tests.dh
-                      "${dhrunTestConfigLayer}/" "${nrm}/share/examples/" in all.${dhallcall}'
-      '';
-      installPhase = ''
-        mkdir -p $out
-        cp _output/* $out/
-      '';
-    });
-
   stream = callPackage ./pkgs/stream {
     iterationCount = "400";
     inherit libnrm;
@@ -278,8 +259,4 @@ pkgs // rec {
     inherit libnrm;
     nrmSupport = false;
   };
-
-  testGeneric = doDhrun genericTestName;
-  doDhrunApp = app: doDhrun "${app} True < NoCap = {=} | Cap : Text >";
-  testSTREAM = addBI (doDhrunApp "stream") stream;
 }

@@ -40,13 +40,11 @@ in    λ ( ghcPath
                     λ(config : types.Config)
                   →   prelude.defaults.Executable
                     ⫽ { main-is =
-                          "Export.hs"
+                          "bin/Export.hs"
                       , build-depends =
-                          common.libdep
-                      , hs-source-dirs =
-                          [ "bin", "nrm" ]
-                      , other-modules =
-                          common.allmodules
+                          [ common.nobound "hsnrm" ,
+                          common.deps.protolude,
+                          common.deps.base]
                       }
                     ⫽ common.copts
                       [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]
@@ -57,13 +55,17 @@ in    λ ( ghcPath
                     λ(config : types.Config)
                   →   prelude.defaults.Executable
                     ⫽ { main-is =
-                          "PyExport.hs"
+                          "bin/PyExport.hs"
                       , build-depends =
-                          common.libdep
-                      , hs-source-dirs =
-                          [ "bin", "nrm" ]
-                      , other-modules =
-                          common.allmodules
+                          [ common.nobound "hsnrm" ,
+                          common.deps.bytestring,
+                          common.deps.aeson,
+                          common.deps.protolude,
+                          common.deps.base,
+                          common.deps.data-default,
+                          common.deps.zeromq4-haskell,
+                          common.deps.pretty-simple
+                          ]
                       }
                     ⫽ common.copts
                       [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]

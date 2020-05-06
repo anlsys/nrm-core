@@ -30,9 +30,10 @@ all: hsnrm/all libnrm/all
 pre-commit: hsnrm/pre-commit\
 	pynrm/pre-commit\
 	libnrm/pre-commit\
-	dhall/format\
+	dhall-format\
 	shellcheck\
 	nixfmt\
+	resource-propagation\
 	.gitlab-ci.yml
 
 .PHONY: notebooks
@@ -96,6 +97,18 @@ dhall-format:
 		if [ $$RETURN -ne 0 ]; then exit 1; fi
 	'
 
+############################# SECTION: resource propagation
+
+.PHONY: resource-propagation
+resource-propagation: pynrm/nrm/schemas/downstreamEvent.json\
+	libnrm/src/nrm_messaging.h
+
+pynrm/nrm/schemas/downstreamEvent.json: hsnrm/resources
+	cp hsnrm/resources/downstreamEvent.json $@
+
+libnrm/src/nrm_messaging.h: hsnrm/resources
+	cp hsnrm/resources/nrm_messaging.h $@
+
 ############################# SECTION: libnrm pseudo-recursive targets (actual directory uses autotools)
 
 .PHONY: libnrm/autotools
@@ -110,9 +123,6 @@ libnrm/autotools: libnrm/src/nrm_messaging.h
 		./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp
 		make
 	'
-
-libnrm/src/nrm_messaging.h: hsnrm/pre-commit
-	cp hsnrm/resources/nrm_messaging.h libnrm/src/nrm_messaging.h
 
 .PHONY:libnrm/pre-commit
 libnrm/pre-commit: libnrm/clang-format libnrm/src/nrm_messaging.h
