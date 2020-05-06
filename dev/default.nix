@@ -183,9 +183,6 @@ pkgs // rec {
     LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
   };
 
-  hack-with-devtools =
-    hack.overrideAttrs (o: { buildInputs = o.buildInputs ++ [ ormolu ]; });
-
   myRPackages = with pkgs.rPackages; [
     tidyr
     purrr

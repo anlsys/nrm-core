@@ -1,1 +1,1 @@
-(import ./. { }).hack-with-devtools
+(import ./. { }).hack

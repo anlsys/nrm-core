@@ -46,9 +46,9 @@ notebooks:
 		jupyter nbconvert notebooks/internal-control.ipynb --output-dir=doc/notebooks/notebooks
 	'
 
-dhrun/%:
+dhrun/%: hsnrm/all
 	rm -f hsnrm/.ghc*
-	@nix-shell --pure -p nrm -p dhrun -p bash --run "dhrun -i" <<< '
+	@nix-shell --pure --run "dhrun -i" <<< '
 		let all = ./dev/dhrun/all-tests.dh
 			"../dev/dhrun/assets/"
 			"../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
