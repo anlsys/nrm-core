@@ -19,7 +19,7 @@ let mkNix =
       → λ(target : Text)
       → baseJob "build" ("nix-build -A " ++ target ++ " --no-build-output")
 
-let mkNixT = mkNix "test"
+let mkT = mkJob "test"
 
 let mkNixB = mkNix "build"
 
@@ -32,11 +32,11 @@ in  { stages =
     , nix-stream =
         mkNixB "stream"
     , dhrun/hello =
-        mkNixT "dhrun/hello"
+        mkT "dhrun/hello"
     , dhrun/exitcode =
-        mkNixT "dhrun/exitcode"
+        mkT "dhrun/exitcode"
     , dhrun/listen =
-        mkNixT "dhrun/listen"
+        mkT "dhrun/listen"
 
     , libnrm/autotools =
         mkB "libnrm/autotools"

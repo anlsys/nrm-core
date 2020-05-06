@@ -40,8 +40,8 @@ readthedocs:
   - nix
   - kvm
 dhrun/hello:
-  stage: build
-  script: nix-build -A dhrun/hello --no-build-output
+  stage: test
+  script: nix-shell -p gnumake --run 'make dhrun/hello'
   tags:
   - nix
   - kvm
@@ -70,8 +70,8 @@ hsnrm/all:
   - nix
   - kvm
 dhrun/exitcode:
-  stage: build
-  script: nix-build -A dhrun/exitcode --no-build-output
+  stage: test
+  script: nix-shell -p gnumake --run 'make dhrun/exitcode'
   tags:
   - nix
   - kvm
@@ -105,8 +105,8 @@ dhall-format:
   - nix
   - kvm
 dhrun/listen:
-  stage: build
-  script: nix-build -A dhrun/listen --no-build-output
+  stage: test
+  script: nix-shell -p gnumake --run 'make dhrun/listen'
   tags:
   - nix
   - kvm
