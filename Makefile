@@ -64,7 +64,7 @@ libnrm/src/nrm_messaging.h: hsnrm-pre-commit
 .PHONY: shellcheck
 shellcheck:
 	@nix-shell --pure -p fd shellcheck --run bash <<< '
-		for F in $$(fd -E -e sh); do
+		for F in $$(fd -e sh); do
 			shellcheck -s bash $$F
 		done
 	'

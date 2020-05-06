@@ -72,7 +72,7 @@ hsnrm-shellcheck:
 stages:
 - source
 - build
-- tests
+- test
 - deploy
 libnrm-clang-format:
   stage: source
