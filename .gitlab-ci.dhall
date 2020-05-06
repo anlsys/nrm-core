@@ -43,10 +43,10 @@ in  { stages =
         mkB "libnrm/autotools"
     , hsnrm/all =
         mkB "hsnrm/all"
-    , hsnrm/hsnrm-cabalfile =
-        mkS "hsnrm/hsnrm.cabal"
-    , hsnrm/hsnrm-cabal2nix =
-        mkS "hsnrm/hsnrm.nix"
+    , hsnrm/hsnrm-bin/hsnrm-bin_cabal =
+        mkS "hsnrm/hsnrm/hsnrm.cabal"
+    , hsnrm/hsnrm/hsnrm_cabal =
+        mkS "hsnrm/hsnrm-bin/hsnrm-bin.cabal"
     , hsnrm/resources =
         mkS "hsnrm/resources"
     , shellcheck =

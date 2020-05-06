@@ -5,12 +5,6 @@ nix/stream:
   tags:
   - nix
   - kvm
-hsnrm/hsnrm-cabal2nix:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm/hsnrm.nix'
-  tags:
-  - nix
-  - kvm
 nix/hsnrm-bin:
   stage: build
   script: nix-build -A hsnrm-bin --no-build-output
@@ -104,6 +98,12 @@ nix/hsnrm:
   tags:
   - nix
   - kvm
+hsnrm/hsnrm-bin/hsnrm-bin_cabal:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/hsnrm/hsnrm.cabal'
+  tags:
+  - nix
+  - kvm
 nixfmt:
   stage: source
   script: nix-shell -p gnumake --run 'make nixfmt'
@@ -113,6 +113,12 @@ nixfmt:
 pynrm/black:
   stage: source
   script: nix-shell -p gnumake --run 'make pynrm/black'
+  tags:
+  - nix
+  - kvm
+hsnrm/hsnrm/hsnrm_cabal:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/hsnrm-bin/hsnrm-bin.cabal'
   tags:
   - nix
   - kvm
@@ -131,12 +137,6 @@ dhrun/listen:
 nix/libnrm:
   stage: build
   script: nix-build -A libnrm --no-build-output
-  tags:
-  - nix
-  - kvm
-hsnrm/hsnrm-cabalfile:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm/hsnrm.cabal'
   tags:
   - nix
   - kvm
