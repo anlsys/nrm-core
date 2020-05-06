@@ -49,13 +49,7 @@ in    λ ( ghcPath
                           common.allmodules
                       }
                     ⫽ common.copts
-                      [ "-Wmissed-specialisations"
-                      , "-Wall-missed-specialisations"
-                      , "-fPIC"
-                      , "-shared"
-                      , "-no-hs-main"
-                      , "-dynamic"
-                      ]
+                      [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]
               , name =
                   "nrm.so"
               }
@@ -75,22 +69,6 @@ in    λ ( ghcPath
                       [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]
               , name =
                   "pynrm.so"
-              }
-            , { executable =
-                    λ(config : types.Config)
-                  →   prelude.defaults.Executable
-                    ⫽ { main-is =
-                          "Hnrm.hs"
-                      , build-depends =
-                          common.libdep
-                      , hs-source-dirs =
-                          [ "bin", "nrm" ]
-                      , other-modules =
-                          common.allmodules
-                      }
-                    ⫽ common.copts [ "-main-is", "Hnrm" ]
-              , name =
-                  "nrmstatic"
               }
             , { executable =
                     λ(config : types.Config)
