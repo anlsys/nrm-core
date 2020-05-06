@@ -18,8 +18,7 @@ let
   ];
   overlaysAll = defaultOverlays ++ overlays;
 
-in import (builtins.fetchTarball
-  "http://nixos.org/channels/nixos-20.03/nixexprs.tar.xz") {
+in import (fetched ./pkgs.json) {
     inherit config;
     overlays = overlaysAll;
   }

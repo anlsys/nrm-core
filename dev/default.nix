@@ -12,15 +12,7 @@
 
 }:
 
-let
-  hslib = rec {
-    filter = path:
-      builtins.filterSource (path: _:
-        (baseNameOf path != ".hdevtools.sock") && (baseNameOf path != ".ghc.*")
-        && (baseNameOf path != "result") && (baseNameOf path != "README")
-        && (baseNameOf path != "dist")) path;
-  };
-  callPackage = pkgs.lib.callPackageWith pkgs;
+let callPackage = pkgs.lib.callPackageWith pkgs;
 
 in with pkgs;
 pkgs // rec {
@@ -219,13 +211,6 @@ pkgs // rec {
     ];
     shellHook = o.shellHook + ''
       export JUPYTER_PATH=$JUPYTER_PATH:${builtins.toPath ../.}/pynrm/
-    '';
-  });
-
-  dhrun = haskellPackages.dhrun.overrideAttrs (old: {
-    installPhase = old.installPhase + ''
-      mkdir -p $out/share/
-      cp -r resources $out/share/
     '';
   });
 

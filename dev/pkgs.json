@@ -2,13 +2,13 @@
   "fetch": {
     "args": {
       "fetchSubmodules": false,
-      "rev": "239fffc90d792b5362a20ec1a009978de7b8f91a",
-      "sha256": "0z0c438b5q1066x6p9qfriym5cipw8f52a456f91qzg6q1r296f8",
+      "rev": "4d373182597cff60b3a820affb5a73dd274e205b",
+      "sha256": "1kvsnlsq1czgk085rllg1b427n6lv5w3a2z1igfc95n81jpvcf58",
       "url": "https://github.com/nixos/nixpkgs-channels.git"
     },
     "fn": "fetchgit"
   },
-  "rev": "refs/heads/nixos-unstable",
+  "rev": "refs/heads/nixos-20.03",
   "type": "fetchgit",
   "url": "https://github.com/nixos/nixpkgs-channels.git"
 }

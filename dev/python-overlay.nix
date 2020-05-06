@@ -28,12 +28,10 @@ let
     };
 
 in rec {
-  python37 = pkgs.python37.override (old: {
+  python3 = pkgs.python3.override (old: {
     packageOverrides =
       pkgs.lib.composeExtensions (old.packageOverrides or (_: _: { }))
       packageOverrides;
   });
-  python37Packages = python37.passthru.pkgs;
-  python3 = python37;
-  python3Packages = python37Packages;
+  python3Packages = python3.passthru.pkgs;
 }

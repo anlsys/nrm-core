@@ -1,6 +1,6 @@
 { }:
 _: pkgs: {
-  haskellPackages = pkgs.haskellPackages.override {
+  haskellPackages = pkgs.haskell.packages.ghc865.override {
     overrides = self: super:
       with pkgs.haskell.lib;
       let
@@ -21,9 +21,19 @@ _: pkgs: {
           };
         };
 
-        dhrun = ((self.callCabal2nix "dhrun" (builtins.fetchGit {
-          inherit (pkgs.stdenv.lib.importJSON ./pkgs/dhrun/pin.json) url rev;
-        })) { }).overrideAttrs (_: { doCheck = false; });
+        dhrun = (self.callPackage (./pkgs/dhrun) {
+          src = pkgs.fetchgit {
+            url = "https://github.com/freuk/dhrun.git";
+            rev = "929598cbc19b2aa922ede50a37d9045bc29e1adf";
+            sha256 = "2GfjN60NJrr1LlohXkps35QKhDJEV3wwWvAatfRmdS0=";
+          };
+        }).overrideAttrs (old: {
+          doCheck = false;
+          installPhase = old.installPhase + ''
+            mkdir -p $out/share/
+            cp -r resources $out/share/
+          '';
+        });
 
         regex = doJailbreak super.regex;
         json-schema = dontCheck (unmarkBroken (doJailbreak super.json-schema));
