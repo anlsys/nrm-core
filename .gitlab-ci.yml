@@ -51,6 +51,12 @@ readthedocs:
   tags:
   - nix
   - kvm
+libnrm/clang-format:
+  stage: source
+  script: nix-shell -p gnumake --run 'make libnrm-clang-format'
+  tags:
+  - nix
+  - kvm
 nix-stream:
   stage: build
   script: nix-build -A stream --no-build-output
@@ -74,12 +80,6 @@ stages:
 - build
 - test
 - deploy
-libnrm-clang-format:
-  stage: source
-  script: nix-shell -p gnumake --run 'make libnrm-clang-format'
-  tags:
-  - nix
-  - kvm
 dhrun-hello:
   stage: build
   script: nix-build -A dhrun-hello --no-build-output

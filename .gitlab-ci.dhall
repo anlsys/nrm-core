@@ -45,7 +45,7 @@ in  { stages =
         mkS "shellcheck"
     , dhall-format =
         mkS "dhall-format"
-    , libnrm-clang-format =
+    , libnrm/clang-format =
         mkS "libnrm-clang-format"
     , pynrm-black =
         mkS "pynrm-black"
