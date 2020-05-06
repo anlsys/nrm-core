@@ -31,32 +31,33 @@ in  { stages =
         mkNixB "libnrm"
     , nix-stream =
         mkNixB "stream"
-    , dhrun-hello =
-        mkNixT "dhrun-hello"
-    , dhrun-exitcode =
-        mkNixT "dhrun-exitcode"
-    , dhrun-listen =
-        mkNixT "dhrun-listen"
-    , make-libnrm =
-        mkB "libnrm"
-    , make-hsnrm =
-        mkB "hsnrm"
+    , dhrun/hello =
+        mkNixT "dhrun/hello"
+    , dhrun/exitcode =
+        mkNixT "dhrun/exitcode"
+    , dhrun/listen =
+        mkNixT "dhrun/listen"
+
+    , libnrm/autotools =
+        mkB "libnrm/autotools"
+    , hsnrm/all =
+        mkB "hsnrm/all"
     , shellcheck =
         mkS "shellcheck"
     , dhall-format =
         mkS "dhall-format"
     , libnrm/clang-format =
         mkS "libnrm-clang-format"
-    , pynrm-black =
-        mkS "pynrm-black"
-    , hsnrm-ormolu =
-        mkS "hsnrm-ormolu"
-    , hsnrm-hlint =
-        mkS "hsnrm-hlint"
-    , hsnrm-shellcheck =
-        mkS "hsnrm-shellcheck"
-    , hsnrm-dhall-format =
-        mkS "hsnrm-dhall-format"
+    , pynrm/black =
+        mkS "pynrm/black"
+    , hsnrm/ormolu =
+        mkS "hsnrm/ormolu"
+    , hsnrm/hlint =
+        mkS "hsnrm/hlint"
+    , hsnrm/shellcheck =
+        mkS "hsnrm/shellcheck"
+    , hsnrm-/hall-format =
+        mkS "hsnrm/dhall-format"
     , readthedocs =
         { stage =
             "deploy"

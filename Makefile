@@ -6,15 +6,27 @@ SHELL := $(shell which bash)
 # this allows omitting newlines.
 .ONESHELL:
 
-all: hsnrm libnrm
+############################# SECTION: defining recursive targets
 
+.PHONY: hsnrm/%
+hsnrm/%:
+	$(MAKE) -C hsnrm $*
+
+.PHONY: pynrm/%
+pynrm/%:
+	$(MAKE) -C pynrm $*
+
+
+############################# all: triggers all builds.
+all: hsnrm/all libnrm/all
+
+############################# pre-commit: triggers all pre-commit rules. root and recursive
 .PHONY: pre-commit
-pre-commit: hsnrm-pre-commit\
-	pynrm-pre-commit\
-	libnrm-pre-commit\
-	dhall-format\
+pre-commit: hsnrm/pre-commit\
+	pynrm/pre-commit\
+	libnrm/pre-commit\
+	dhall/format\
 	shellcheck\
-	libnrm/src/nrm_messaging.h\
 	.gitlab-ci.yml
 
 .PHONY: notebooks
@@ -27,7 +39,7 @@ notebooks:
 		jupyter nbconvert notebooks/internal-control.ipynb --output-dir=doc/notebooks/notebooks
 	'
 
-dhrun-%:
+dhrun/%:
 	rm -f hsnrm/.ghc*
 	@nix-shell --pure -p nrm -p dhrun -p bash --run "dhrun -i" <<< '
 		let all = ./dev/dhrun/all-tests.dh
@@ -36,28 +48,6 @@ dhrun-%:
 			"../resources/examples/"
 		in all.exitcode
 	'
-
-.PHONY:hsnrm
-hsnrm:
-	$(MAKE) -C hsnrm
-
-.PHONY: libnrm
-libnrm: libnrm/src/nrm_messaging.h
-	nix-shell -E '
-		let pkgs = import <nixpkgs> {});
-		in pkgs.libnrm.overrideAttrs (o:{
-			preBuild="";
-		})
-	' --run bash <<< '
-		set -e
-		cd libnrm
-		./autogen.sh
-		./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp
-		make
-	'
-
-libnrm/src/nrm_messaging.h: hsnrm-pre-commit
-	cp hsnrm/resources/nrm_messaging.h libnrm/src/nrm_messaging.h
 
 ############################# SECTION: source tooling
 
@@ -85,23 +75,31 @@ dhall-format:
 		if [ $$RETURN -ne 0 ]; then exit 1; fi
 	'
 
-############################# SECTION: source tooling recursive targets
+############################# SECTION: libnrm pseudo-recursive targets (actual directory uses autotools)
 
-.PHONY: hsnrm-%
-hsnrm-%:
-	$(MAKE) -C hsnrm $*
+.PHONY: libnrm/autotools
+libnrm/autotools: libnrm/src/nrm_messaging.h
+	nix-shell -E '
+		let pkgs = import <nixpkgs> {});
+		in pkgs.libnrm.overrideAttrs (o:{
+			preBuild="";
+		})
+	' --run bash <<< '
+		set -e
+		cd libnrm
+		./autogen.sh
+		./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp
+		make
+	'
 
-.PHONY: pynrm-%
-pynrm-%:
-	$(MAKE) -C pynrm $*
+libnrm/src/nrm_messaging.h: hsnrm/pre-commit
+	cp hsnrm/resources/nrm_messaging.h libnrm/src/nrm_messaging.h
 
-############################# SECTION: source tooling libnrm pseudo-recursive targets
+.PHONY:libnrm/pre-commit
+libnrm/pre-commit: libnrm/clang-format libnrm/src/nrm_messaging.h
 
-.PHONY:libnrm-pre-commit
-libnrm-pre-commit: libnrm-clang-format
-
-.PHONY: libnrmclang-format
-libnrm-clang-format:
+.PHONY: libnrm/clang-format
+libnrm/clang-format:
 	@nix-shell --pure -p fd clang-tools --run bash <<< '
 		cd libnrm
 		RETURN=0

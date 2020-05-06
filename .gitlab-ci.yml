@@ -1,13 +1,13 @@
 #automatically generated from .gitlab-ci.dhall, changes will be erased.
-hsnrm-dhall-format:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm-dhall-format'
+libnrm/autotools:
+  stage: build
+  script: nix-shell -p gnumake --run 'make libnrm/autotools'
   tags:
   - nix
   - kvm
-pynrm-black:
+hsnrm/shellcheck:
   stage: source
-  script: nix-shell -p gnumake --run 'make pynrm-black'
+  script: nix-shell -p gnumake --run 'make hsnrm/shellcheck'
   tags:
   - nix
   - kvm
@@ -20,12 +20,6 @@ nix-lib:
 dhrun-exitcode:
   stage: build
   script: nix-build -A dhrun-exitcode --no-build-output
-  tags:
-  - nix
-  - kvm
-hsnrm-hlint:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm-hlint'
   tags:
   - nix
   - kvm
@@ -57,6 +51,12 @@ libnrm/clang-format:
   tags:
   - nix
   - kvm
+hsnrm/ormolu:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/ormolu'
+  tags:
+  - nix
+  - kvm
 nix-stream:
   stage: build
   script: nix-build -A stream --no-build-output
@@ -69,9 +69,15 @@ dhrun-listen:
   tags:
   - nix
   - kvm
-hsnrm-shellcheck:
+hsnrm/all:
+  stage: build
+  script: nix-shell -p gnumake --run 'make hsnrm/all'
+  tags:
+  - nix
+  - kvm
+hsnrm-/hall-format:
   stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm-shellcheck'
+  script: nix-shell -p gnumake --run 'make hsnrm/dhall-format'
   tags:
   - nix
   - kvm
@@ -80,33 +86,27 @@ stages:
 - build
 - test
 - deploy
+hsnrm/hlint:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/hlint'
+  tags:
+  - nix
+  - kvm
 dhrun-hello:
   stage: build
   script: nix-build -A dhrun-hello --no-build-output
   tags:
   - nix
   - kvm
-make-hsnrm:
-  stage: build
-  script: nix-shell -p gnumake --run 'make hsnrm'
+pynrm/black:
+  stage: source
+  script: nix-shell -p gnumake --run 'make pynrm/black'
   tags:
   - nix
   - kvm
 dhall-format:
   stage: source
   script: nix-shell -p gnumake --run 'make dhall-format'
-  tags:
-  - nix
-  - kvm
-hsnrm-ormolu:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm-ormolu'
-  tags:
-  - nix
-  - kvm
-make-libnrm:
-  stage: build
-  script: nix-shell -p gnumake --run 'make libnrm'
   tags:
   - nix
   - kvm
