@@ -29,6 +29,8 @@ in  { stages =
         mkNixB "haskellPackages.hsnrm-bin"
     , nix/hsnrm =
         mkNixB "haskellPackages.hsnrm"
+    , nix/pynrm =
+        mkNixB "pythonPackages.pynrm"
     , nix/libnrm =
         mkNixB "libnrm"
     , nix/stream =

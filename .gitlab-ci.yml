@@ -35,6 +35,12 @@ shellcheck:
   tags:
   - nix
   - kvm
+nix/pynrm:
+  stage: build
+  script: nix-build -A pythonPackages.pynrm --no-build-output
+  tags:
+  - nix
+  - kvm
 readthedocs:
   stage: deploy
   only:
