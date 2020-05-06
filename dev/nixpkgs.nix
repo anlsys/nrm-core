@@ -11,14 +11,16 @@
 }:
 
 let
-  fetched = s: (hostPkgs.nix-update-source.fetch s).src;
+  #fetched = s: (hostPkgs.nix-update-source.fetch s).src;
   defaultOverlays = [
-    (import ./python-overlay.nix { inherit src; })
+    (import ./overlay.nix { })
     (import ./haskell-overlay.nix { })
+    (import ./python-overlay.nix { inherit src; })
   ];
   overlaysAll = defaultOverlays ++ overlays;
 
-in import (fetched ./pkgs.json) {
+in import (builtins.fetchTarball
+  "https://github.com/NixOS/nixpkgs/archive/20.03.tar.gz") {
     inherit config;
     overlays = overlaysAll;
   }

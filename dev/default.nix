@@ -1,7 +1,7 @@
 { src ? ../.
 
-, nixpkgs ?
-  builtins.fetchTarball "http://nixos.org/channels/nixos-20.03/nixexprs.tar.xz"
+, nixpkgs ? (builtins.fetchTarball
+  "https://github.com/NixOS/nixpkgs/archive/20.03.tar.gz")
 
 , pkgs ? import ./nixpkgs.nix {
   inherit nixpkgs;
@@ -35,7 +35,6 @@ pkgs // rec {
   libnrm = pkgs.callPackage ./pkgs/libnrm { src = src + "/libnrm"; };
 
   pynrm = pkgs.callPackage ./pkgs/pynrm {
-    pythonPackages = python3Packages;
     src = src + "/pynrm";
     hsnrm = haskellPackages.hsnrm-bin;
   };
@@ -50,169 +49,6 @@ pkgs // rec {
       pkgs.hwloc
     ];
   };
-
-  hsnrm-hack = pkgs.haskellPackages.shellFor {
-    packages = p: [
-      haskellPackages.hsnrm
-      (haskellPackages.callPackage ./pkgs/hs-tools { inherit useGhcide; })
-    ];
-    withHoogle = true;
-    buildInputs = [ pkgs.git pkgs.hwloc pkgs.htop pkgs.jq ];
-  };
-
-  pynrm-hack = pynrm.overrideAttrs (o: {
-    propagatedBuildInputs =
-      (pkgs.lib.lists.remove haskellPackages.hsnrm o.propagatedBuildInputs);
-    buildInputs = with python3Packages;
-      (pkgs.lib.lists.remove haskellPackages.hsnrm o.buildInputs) ++ [
-        flake8
-        autopep8
-        black
-        #mypy
-        #pytype
-        nbformat
-        nbconvert
-        pandas
-        matplotlib
-        #nb_black
-        msgpack
-        pyzmq
-        warlock
-        seaborn
-      ];
-
-    shellHook = ''
-      export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive
-      export LANG=en_US.UTF-8
-    '';
-  });
-
-  libnrm-hack = libnrm.overrideAttrs
-    (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; });
-
-  jupyterWithBatteries = (pkgs.jupyter.override rec {
-    python3 = (python3Packages.python.withPackages
-      (ps: with ps; [ nb_black msgpack warlock pyzmq pandas seaborn ]));
-    definitions = {
-      python3 = {
-        displayName = "Python 3";
-        argv = [
-          "${python3.interpreter}"
-          "-m"
-          "ipykernel_launcher"
-          "-f"
-          "{connection_file}"
-        ];
-        language = "python";
-        logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
-        logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
-      };
-      Rdf = {
-        displayName = "R";
-        argv = [
-          "${
-            pkgs.rWrapper.override {
-              packages = with pkgs.rPackages; [
-                tidyr
-                purrr
-                ggthemes
-                ggplot2
-                huxtable
-                formatR
-                RcppRoll
-                latex2exp
-                plotly
-                phantomjs
-                webshot
-                pracma
-                knitr
-                JuniperKernel
-              ];
-            }
-          }/bin/R"
-          "--slave"
-          "-e"
-          "JuniperKernel::bootKernel()"
-          "--args"
-          "{connection_file}"
-        ];
-        language = "Rlang";
-        logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
-        logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
-      };
-    };
-  }).overrideAttrs (_: { doCheck = false; });
-
-  hack = pkgs.mkShell {
-    inputsFrom = with pkgs; [ pynrm-hack hsnrm-hack libnrm-hack ];
-    buildInputs =
-      [ pkgs.hwloc haskellPackages.dhrun pkgs.which pkgs.jq pkgs.yq ];
-    shellHook = ''
-      # path for NRM dev experimentation
-      export PYNRMSO=${
-      # export for locating the client-side shared lib
-      # (used by python lib nrm.tooling)
-        builtins.toPath ../.
-      }/hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
-      export NRMSO=${
-      #export for locating the server-side shared lib
-      # (used by `nrmd`)
-        builtins.toPath ../.
-      }/hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
-      export PATH=${builtins.toPath ../.}/dev/:${
-      #export for locating the client and server binaries
-      # (`nrmd`, `nrm-perfwrapper`)
-        builtins.toPath ../.
-      }/pynrm/bin:${
-      #export for locating the client binary
-      # (`nrm`)
-        builtins.toPath ../.
-      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
-      # export for locating the nrm python libraries
-      # (`nrm.<module>`)
-      export PYTHONPATH=${builtins.toPath ../.}/pynrm/:$PYTHONPATH
-      # exports for `ghcide` use:
-      export NIX_GHC="${haskellPackages.hsnrm.env.NIX_GHC}"
-      export NIX_GHCPKG="${haskellPackages.hsnrm.env.NIX_GHCPKG}"
-      export NIX_GHC_DOCDIR="${haskellPackages.hsnrm.env.NIX_GHC_DOCDIR}"
-      export NIX_GHC_LIBDIR="${haskellPackages.hsnrm.env.NIX_GHC_LIBDIR}"
-    '';
-    LC_ALL = "en_US.UTF-8";
-    LOCALE_ARCHIVE = "${pkgs.glibcLocales}/lib/locale/locale-archive";
-  };
-
-  myRPackages = with pkgs.rPackages; [
-    tidyr
-    purrr
-    ggthemes
-    ggplot2
-    huxtable
-    plotly
-    formatR
-    RcppRoll
-    latex2exp
-    plotly
-    phantomjs
-    webshot
-    pracma
-    knitr
-    JuniperKernel
-  ];
-
-  expe = hack-with-devtools.overrideAttrs (o: {
-    buildInputs = o.buildInputs ++ [
-      pkgs.phantomjs
-      pkgs.pandoc
-      pkgs.daemonize
-      #jupyterWithBatteries
-      pkgs.texlive.combined.scheme-full
-      (pkgs.rstudioWrapper.override { packages = myRPackages; })
-      (pkgs.rWrapper.override { packages = myRPackages; })
-    ];
-    shellHook = o.shellHook + ''
-      export JUPYTER_PATH=$JUPYTER_PATH:${builtins.toPath ../.}/pynrm/
-    '';
-  });
 
   dhrunTestConfigLayer = let src' = src;
   in pkgs.stdenv.mkDerivation rec {

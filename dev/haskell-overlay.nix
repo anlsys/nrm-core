@@ -4,6 +4,8 @@ _: pkgs: {
     overrides = self: super:
       with pkgs.haskell.lib;
       let
+        unmarkBroken = drv: overrideCabal drv (drv: { broken = false; });
+
         dhall-haskell-src = pkgs.fetchurl {
           url = "https://github.com/freuk/dhall-haskell/archive/master.tar.gz";
           sha256 = "13gk3g7nivwgrsksjhvq0i0zq9ajsbrbqq2f5g95v74l6v5b7yvr";
@@ -39,6 +41,10 @@ _: pkgs: {
         json-schema = dontCheck (unmarkBroken (doJailbreak super.json-schema));
         zeromq4-conduit = unmarkBroken (dontCheck super.zeromq4-conduit);
         refined = unmarkBroken super.refined;
+        aeson-extra = unmarkBroken super.aeson-extra;
+        generic-aeson = unmarkBroken super.generic-aeson;
+        zeromq4-haskell = unmarkBroken super.zeromq4-haskell;
+        time-parsers = unmarkBroken super.time-parsers;
         dhall-to-cabal = unmarkBroken super.dhall-to-cabal;
       };
   };

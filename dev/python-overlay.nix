@@ -5,18 +5,21 @@ let
   noCheck = p: p.overridePythonAttrs (_: { doCheck = false; });
   noCheckAll = pkgs.lib.mapAttrs (name: p: noCheck p);
   packageOverrides = pself: psuper:
-    noCheckAll {
-      jupyter_client = psuper.jupyter_client;
-      nbformat = psuper.nbformat;
-      ipykernel = psuper.ipykernel;
-      jupyter_core = psuper.jupyter_core;
-      networkx = psuper.networkx;
-      nbconvert = psuper.nbconvert;
+    {
+      pynrm = pself.callPackage ./pkgs/pynrm {
+        src = src + "/pynrm";
+        hsnrm = pkgs.haskellPackages.hsnrm-bin;
+      };
+    } // noCheckAll {
+      #jupyter_client = psuper.jupyter_client;
+      #nbformat = psuper.nbformat;
+      #ipykernel = psuper.ipykernel;
+      #jupyter_core = psuper.jupyter_core;
+      #networkx = psuper.networkx;
+      #nbconvert = psuper.nbconvert;
+
       importlab = pself.callPackage (src + "/dev/pkgs/importlab") { };
       pyzmq = psuper.pyzmq.override { zeromq = pkgs.zeromq; };
-      pytype = pself.callPackage (src + "/dev/pkgs/pytype") {
-        src = fetched (src + "/dev/pkgs/pytype/pin.json");
-      };
       nb_black = pself.callPackage (src + "/dev/pkgs/nb_black") {
         src = pkgs.fetchFromGitHub {
           owner = "dnanhkhoa";
@@ -28,10 +31,10 @@ let
     };
 
 in rec {
-  python3 = pkgs.python3.override (old: {
+  python = pkgs.python3.override (old: {
     packageOverrides =
       pkgs.lib.composeExtensions (old.packageOverrides or (_: _: { }))
       packageOverrides;
   });
-  python3Packages = python3.passthru.pkgs;
+  pythonPackages = python.passthru.pkgs;
 }
