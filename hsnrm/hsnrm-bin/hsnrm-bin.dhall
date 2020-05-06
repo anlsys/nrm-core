@@ -1,8 +1,8 @@
-let prelude = ./dhall-to-cabal/prelude.dhall
+let prelude = ../dhall-to-cabal/prelude.dhall
 
-let types = ./dhall-to-cabal/types.dhall
+let types = ../dhall-to-cabal/types.dhall
 
-let common = ./common.dhall
+let common = ../common.dhall
 
 in    λ ( ghcPath
         : Text
@@ -10,7 +10,7 @@ in    λ ( ghcPath
     → λ(ghcNumericVersion : Text)
     →   prelude.defaults.Package
       ⫽ { name =
-            "hsnrm"
+            "hsnrm-bin"
         , version =
             prelude.v "1.0.0"
         , author =
@@ -23,41 +23,68 @@ in    λ ( ghcPath
             "tools"
         , description =
             "The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications."
-        , library =
-            prelude.unconditional.library
-            (   prelude.defaults.Library
-              ⫽ { build-depends =
-                    common.libdep
-                , hs-source-dirs =
-                    [ "nrm" ]
-                , exposed-modules =
-                    common.allmodules
-                }
-              ⫽ common.copts ([] : List Text)
-            )
         , executables =
             [ { executable =
                     λ(config : types.Config)
                   →   prelude.defaults.Executable
                     ⫽ { main-is =
-                          "bin/Export.hs"
+                          "PyExport.hs"
                       , build-depends =
                           [ common.nobound "hsnrm"
-                          , common.deps.protolude
                           , common.deps.base
+                          , common.deps.protolude
+                          , common.deps.aeson
+                          , common.deps.zeromq4-haskell
+                          , common.deps.pretty-simple
+                          , common.deps.data-default
+                          , common.deps.bytestring
+                          , common.deps.enclosed-exceptions
+                          ]
+                      , extra-lib-dirs =
+                          [     ghcPath
+                            ++  "/lib/ghc-"
+                            ++  ghcNumericVersion
+                            ++  "/rts/"
                           ]
                       }
                     ⫽ common.copts
-                      [ "-fPIC"
+                      [ "-Wmissed-specialisations"
+                      , "-Wall-missed-specialisations"
+                      , "-fPIC"
                       , "-shared"
                       , "-no-hs-main"
                       , "-dynamic"
                       , "-lHSrts-ghc" ++ ghcNumericVersion
-                      ,     "-L"
-                        ++  ghcPath
-                        ++  "/lib/ghc-"
-                        ++  ghcNumericVersion
-                        ++  "/rts/"
+                      ]
+              , name =
+                  "pynrm.so"
+              }
+            , { executable =
+                    λ(config : types.Config)
+                  →   prelude.defaults.Executable
+                    ⫽ { main-is =
+                          "Export.hs"
+                      , build-depends =
+                          [ common.nobound "hsnrm"
+                          , common.deps.base
+                          , common.deps.protolude
+                          , common.deps.enclosed-exceptions
+                          ]
+                      , extra-lib-dirs =
+                          [     ghcPath
+                            ++  "/lib/ghc-"
+                            ++  ghcNumericVersion
+                            ++  "/rts/"
+                          ]
+                      }
+                    ⫽ common.copts
+                      [ "-Wmissed-specialisations"
+                      , "-Wall-missed-specialisations"
+                      , "-fPIC"
+                      , "-shared"
+                      , "-no-hs-main"
+                      , "-dynamic"
+                      , "-lHSrts-ghc" ++ ghcNumericVersion
                       ]
               , name =
                   "nrm.so"
@@ -66,28 +93,7 @@ in    λ ( ghcPath
                     λ(config : types.Config)
                   →   prelude.defaults.Executable
                     ⫽ { main-is =
-                          "bin/PyExport.hs"
-                      , build-depends =
-                          [ common.nobound "hsnrm"
-                          , common.deps.bytestring
-                          , common.deps.aeson
-                          , common.deps.protolude
-                          , common.deps.base
-                          , common.deps.data-default
-                          , common.deps.zeromq4-haskell
-                          , common.deps.pretty-simple
-                          ]
-                      }
-                    ⫽ common.copts
-                      [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]
-              , name =
-                  "pynrm.so"
-              }
-            , { executable =
-                    λ(config : types.Config)
-                  →   prelude.defaults.Executable
-                    ⫽ { main-is =
-                          "bin/Hnrm.hs"
+                          "Hnrm.hs"
                       , build-depends =
                           [ common.nobound "hsnrm" ]
                       }

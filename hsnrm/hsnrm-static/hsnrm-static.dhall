@@ -1,8 +1,8 @@
-let prelude = ./dhall-to-cabal/prelude.dhall
+let prelude = ../dhall-to-cabal/prelude.dhall
 
-let types = ./dhall-to-cabal/types.dhall
+let types = ../dhall-to-cabal/types.dhall
 
-let common = ./common.dhall
+let common = ../common.dhall
 
 in    λ ( ghcPath
         : Text
@@ -23,24 +23,6 @@ in    λ ( ghcPath
             "tools"
         , description =
             "The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications."
-        , executables =
-            [ { executable =
-                    λ(config : types.Config)
-                  →   prelude.defaults.Executable
-                    ⫽ { main-is =
-                          "Hnrm.hs"
-                      , build-depends =
-                          common.libdep
-                      , hs-source-dirs =
-                          [ "bin", "nrm" ]
-                      , other-modules =
-                          common.allmodules
-                      }
-                    ⫽ common.copts [ "-main-is", "Hnrm" ]
-              , name =
-                  "nrm"
-              }
-            ]
         , extra-source-files =
             [ "ChangeLog.md" ]
         , license =

@@ -11,7 +11,7 @@ SHELL := $(shell which bash)
 # https://github.com/NixOS/nix/issues/726#issuecomment-161215255
 NIX_PATH := nixpkgs=./.
 
-all: hsnrm.nix dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so resources
+all: hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so resources
 
 dhall-to-cabal: ../default.nix
 	rm -rf ./dhall-to-cabal
@@ -19,8 +19,7 @@ dhall-to-cabal: ../default.nix
 	cp -r $$(nix-build -A dhall-to-cabal-resources --no-out-link) ./dhall-to-cabal
 	chmod -R +rw ./dhall-to-cabal
 
-.PRECIOUS: hsnrm.cabal
-hsnrm.cabal: hsnrm.dhall dhall-to-cabal
+%.cabal: %.dhall dhall-to-cabal
 	@nix-shell --pure -E '
 		with import <nixpkgs> {};
 		mkShell {
@@ -32,31 +31,25 @@ hsnrm.cabal: hsnrm.dhall dhall-to-cabal
 	' --run bash <<< '
 		GHCVERSION=$$(ghc --numeric-version)
 		echo injecting ghc version $$GHCVERSION and ghc directory $$GHCDIR in cabal file.
-		dhall-to-cabal <<< "./hsnrm.dhall \"$$GHCDIR\" \"$$GHCVERSION\""
+		dhall-to-cabal --output-stdout <<< "./$*.dhall \"$$GHCDIR\" \"$$GHCVERSION\"" > $@
 	'
 
-.PRECIOUS: hsnrm.nix
-hsnrm.nix: hsnrm.cabal
-	@nix-shell --pure -p cabal2nix --run bash <<< '
-		cabal2nix . > hsnrm.nix
-	'
-
-dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so: hsnrm.cabal nrm bin
+dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so: hsnrm/ hsnrm-bin/
 	@nix-shell --pure --run bash <<< '
-		cabal new-build
+		cabal v2-build hsnrm-bin
 	'
 
-resources: hsnrm.cabal
+resources: hsnrm hsnrm-bin
 	@nix-shell --pure --run bash <<< '
 		rm -rf resources
 		mkdir resources
-		cabal v2-run bin/Codegen.hs resources/
+		cabal v2-run hsnrm-bin/Codegen.hs resources/
 	'
 
 .PHONY: ghcid
 ghcid: ghcid-hsnrm
 
-ghcid-hsnrm: hsnrm.cabal .hlint.yaml hsnrm.nix
+ghcid-hsnrm: hsnrm.cabal .hlint.yaml
 	@nix-shell -E '
 		with import <nixpkgs> {};
 		with haskellPackages;
@@ -72,7 +65,7 @@ ghcid-hsnrm: hsnrm.cabal .hlint.yaml hsnrm.nix
 	'
 
 .PHONY: pre-commit
-pre-commit: hsnrm.nix hsnrm.cabal resources dhall-format ormolu shellcheck hlint
+pre-commit: hsnrm/hsnrm.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal resources dhall-format ormolu shellcheck hlint
 
 .PHONY: dhall-format
 dhall-format:
@@ -123,8 +116,8 @@ shellcheck:
 .PHONY: hlint
 hlint:
 	@nix-shell --pure -p hlint --run bash <<< '
-		hlint nrm/ --hint=./.hlint.yaml
-		hlint bin/ --hint=./.hlint.yaml
+		hlint hsnrm/ --hint=./.hlint.yaml
+		hlint hsnrm-bin/ --hint=./.hlint.yaml
 	'
 
 .PHONY:clean

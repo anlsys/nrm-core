@@ -163,3 +163,6 @@ ci-%:
 		gitlab-runner exec shell "$*"
 	'
 
+
+.PHONY:clean
+clean: hsnrm/clean

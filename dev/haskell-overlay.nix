@@ -9,7 +9,9 @@ _: pkgs: {
           sha256 = "13gk3g7nivwgrsksjhvq0i0zq9ajsbrbqq2f5g95v74l6v5b7yvr";
         };
       in rec {
-        hsnrm = self.callPackage (../hsnrm/hsnrm.nix) { };
+        hsnrm = super.callCabal2nix "hsnrm" ../hsnrm/hsnrm { };
+
+        hsnrm-bin = super.callCabal2nix "hsnrm-bin" ../hsnrm/hsnrm-bin { };
 
         hbandit = self.callPackage (./pkgs/hbandit) {
           src = pkgs.fetchurl {

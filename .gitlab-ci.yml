@@ -1,7 +1,19 @@
 #automatically generated from .gitlab-ci.dhall, changes will be erased.
+nix/stream:
+  stage: build
+  script: nix-build -A stream --no-build-output
+  tags:
+  - nix
+  - kvm
 hsnrm/hsnrm-cabal2nix:
   stage: source
   script: nix-shell -p gnumake --run 'make hsnrm/hsnrm.nix'
+  tags:
+  - nix
+  - kvm
+nix/hsnrm-bin:
+  stage: build
+  script: nix-build -A hsnrm-bin --no-build-output
   tags:
   - nix
   - kvm
@@ -57,18 +69,6 @@ hsnrm-/dhall-format:
   tags:
   - nix
   - kvm
-nix-stream:
-  stage: build
-  script: nix-build -A stream --no-build-output
-  tags:
-  - nix
-  - kvm
-nix-libnrm:
-  stage: build
-  script: nix-build -A libnrm --no-build-output
-  tags:
-  - nix
-  - kvm
 hsnrm/all:
   stage: build
   script: nix-shell -p gnumake --run 'make hsnrm/all'
@@ -98,6 +98,12 @@ hsnrm/hlint:
   tags:
   - nix
   - kvm
+nix/hsnrm:
+  stage: build
+  script: nix-build -A hsnrm --no-build-output
+  tags:
+  - nix
+  - kvm
 nixfmt:
   stage: source
   script: nix-shell -p gnumake --run 'make nixfmt'
@@ -119,6 +125,12 @@ dhall-format:
 dhrun/listen:
   stage: test
   script: nix-shell -p gnumake --run 'make dhrun/listen'
+  tags:
+  - nix
+  - kvm
+nix/libnrm:
+  stage: build
+  script: nix-build -A libnrm --no-build-output
   tags:
   - nix
   - kvm

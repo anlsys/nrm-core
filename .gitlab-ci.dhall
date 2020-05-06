@@ -25,9 +25,13 @@ let mkNixB = mkNix "build"
 
 in  { stages =
         [ "source", "build", "test", "deploy" ]
-    , nix-libnrm =
+    , nix/hsnrm-bin =
+        mkNixB "hsnrm-bin"
+    , nix/hsnrm =
+        mkNixB "hsnrm"
+    , nix/libnrm =
         mkNixB "libnrm"
-    , nix-stream =
+    , nix/stream =
         mkNixB "stream"
     , dhrun/hello =
         mkT "dhrun/hello"
