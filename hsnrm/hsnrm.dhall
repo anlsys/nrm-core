@@ -48,7 +48,17 @@ in    λ ( ghcPath
                           ]
                       }
                     ⫽ common.copts
-                      [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]
+                      [ "-fPIC"
+                      , "-shared"
+                      , "-no-hs-main"
+                      , "-dynamic"
+                      , "-lHSrts-ghc" ++ ghcNumericVersion
+                      ,     "-L"
+                        ++  ghcPath
+                        ++  "/lib/ghc-"
+                        ++  ghcNumericVersion
+                        ++  "/rts/"
+                      ]
               , name =
                   "nrm.so"
               }

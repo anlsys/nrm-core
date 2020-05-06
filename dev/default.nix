@@ -155,12 +155,12 @@ pkgs // rec {
       # export for locating the client-side shared lib
       # (used by python lib nrm.tooling)
         builtins.toPath ../.
-      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
+      }/hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
       export NRMSO=${
       #export for locating the server-side shared lib
       # (used by `nrmd`)
         builtins.toPath ../.
-      }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
+      }/hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so
       export PATH=${builtins.toPath ../.}/dev/:${
       #export for locating the client and server binaries
       # (`nrmd`, `nrm-perfwrapper`)

@@ -221,7 +221,8 @@ executable nrm.so
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wpartial-fields -fPIC -shared -no-hs-main
-                 -dynamic
+                 -dynamic -lHSrts-ghc8.6.5
+                 -L/nix/store/hz3nwwc0k32ygvjn63gw8gm0nf9gprd8-ghc-8.6.5/lib/ghc-8.6.5/rts/
     build-depends:
         hsnrm -any,
         protolude -any,

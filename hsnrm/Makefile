@@ -24,13 +24,14 @@ hsnrm.cabal: hsnrm.dhall dhall-to-cabal
 	@nix-shell --pure -E '
 		with import <nixpkgs> {};
 		mkShell {
-			buildInputs = [ haskellPackages.dhall-to-cabal ];
+			buildInputs = [ haskellPackages.dhall-to-cabal haskellPackages.ghc ];
 			LOCALE_ARCHIVE="$${pkgs.glibcLocales}/lib/locale/locale-archive";
 			LANG="en_US.UTF-8";
-			GHCVERSION="$${haskellPackages.ghc}/bin/ghc --numeric-version)";
-			GHCDIC="$${haskellPackages.ghc}";
+			GHCDIR="$${haskellPackages.ghc}";
 		}
 	' --run bash <<< '
+		GHCVERSION=$$(ghc --numeric-version)
+		echo injecting ghc version $$GHCVERSION and ghc directory $$GHCDIR in cabal file.
 		dhall-to-cabal <<< "./hsnrm.dhall \"$$GHCDIR\" \"$$GHCVERSION\""
 	'
 
@@ -130,5 +131,6 @@ hlint:
 clean:
 	rm -rf dist-newstyle
 	rm -rf resources
-	rm hsnrm.cabal
-	rm hsnrm.nix
+	rm -f hsnrm.cabal
+	rm -f hsnrm.nix
+	rm -f a.out
