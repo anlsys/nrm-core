@@ -7,7 +7,7 @@ nix/stream:
   - kvm
 nix/hsnrm-bin:
   stage: build
-  script: nix-build -A hsnrm-bin --no-build-output
+  script: nix-build -A haskellPackages.hsnrm-bin --no-build-output
   tags:
   - nix
   - kvm
@@ -94,7 +94,7 @@ hsnrm/hlint:
   - kvm
 nix/hsnrm:
   stage: build
-  script: nix-build -A hsnrm --no-build-output
+  script: nix-build -A haskellPackages.hsnrm --no-build-output
   tags:
   - nix
   - kvm

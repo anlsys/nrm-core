@@ -26,9 +26,9 @@ let mkNixB = mkNix "build"
 in  { stages =
         [ "source", "build", "test", "deploy" ]
     , nix/hsnrm-bin =
-        mkNixB "hsnrm-bin"
+        mkNixB "haskellPackages.hsnrm-bin"
     , nix/hsnrm =
-        mkNixB "hsnrm"
+        mkNixB "haskellPackages.hsnrm"
     , nix/libnrm =
         mkNixB "libnrm"
     , nix/stream =
