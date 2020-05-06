@@ -23,12 +23,6 @@ shellcheck:
   tags:
   - nix
   - kvm
-nix-hsnrm:
-  stage: build
-  script: nix-build -A haskellPackages.hsnrm --no-build-output
-  tags:
-  - nix
-  - kvm
 readthedocs:
   stage: deploy
   only:

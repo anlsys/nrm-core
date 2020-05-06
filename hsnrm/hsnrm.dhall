@@ -42,9 +42,10 @@ in    λ ( ghcPath
                     ⫽ { main-is =
                           "bin/Export.hs"
                       , build-depends =
-                          [ common.nobound "hsnrm" ,
-                          common.deps.protolude,
-                          common.deps.base]
+                          [ common.nobound "hsnrm"
+                          , common.deps.protolude
+                          , common.deps.base
+                          ]
                       }
                     ⫽ common.copts
                       [ "-fPIC", "-shared", "-no-hs-main", "-dynamic" ]
@@ -57,14 +58,14 @@ in    λ ( ghcPath
                     ⫽ { main-is =
                           "bin/PyExport.hs"
                       , build-depends =
-                          [ common.nobound "hsnrm" ,
-                          common.deps.bytestring,
-                          common.deps.aeson,
-                          common.deps.protolude,
-                          common.deps.base,
-                          common.deps.data-default,
-                          common.deps.zeromq4-haskell,
-                          common.deps.pretty-simple
+                          [ common.nobound "hsnrm"
+                          , common.deps.bytestring
+                          , common.deps.aeson
+                          , common.deps.protolude
+                          , common.deps.base
+                          , common.deps.data-default
+                          , common.deps.zeromq4-haskell
+                          , common.deps.pretty-simple
                           ]
                       }
                     ⫽ common.copts
