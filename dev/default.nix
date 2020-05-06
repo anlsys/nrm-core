@@ -1,6 +1,7 @@
 { src ? ../.
 
-, nixpkgs ? builtins.fetchTarball "http://nixos.org/channels/nixos-20.03/nixexprs.tar.xz"
+, nixpkgs ?
+  builtins.fetchTarball "http://nixos.org/channels/nixos-20.03/nixexprs.tar.xz"
 
 , pkgs ? import ./nixpkgs.nix {
   inherit nixpkgs;
@@ -39,15 +40,7 @@ pkgs // rec {
     };
   in (import source { }).ormolu;
 
-  resources = pkgs.runCommand "patchedSrc" { } ''
-    mkdir -p $out/share/nrm
-    ${haskellPackages.hsnrm}/bin/codegen $out/share/nrm/
-  '';
-
-  libnrm = pkgs.callPackage ./pkgs/libnrm {
-    inherit resources;
-    src = src + "/libnrm";
-  };
+  libnrm = pkgs.callPackage ./pkgs/libnrm { src = src + "/libnrm"; };
 
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     inherit resources;

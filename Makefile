@@ -51,6 +51,21 @@ dhrun/%:
 
 ############################# SECTION: source tooling
 
+.PHONY: nixfmt
+nixfmt:
+	@nix-shell --pure -p fd nixfmt --run bash <<< '
+		RETURN=0
+		for F in $$(fd -e nix); do
+			nixfmt -c $$F
+			if [ $$? -ne 0 ]; then
+				echo "[!] $$F does not pass nixfmt format check. Formatting.." >&2
+				nixfmt $$F
+				RETURN=1
+			fi
+		done
+		if [ $$RETURN -ne 0 ]; then exit 1; fi
+	'
+
 .PHONY: shellcheck
 shellcheck:
 	@nix-shell --pure -p fd shellcheck --run bash <<< '

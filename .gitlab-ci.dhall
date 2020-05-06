@@ -10,14 +10,14 @@ let mkJob =
       → λ(target : Text)
       → baseJob stage ("nix-shell -p gnumake --run 'make " ++ target ++"'")
 
-let mkS = mkJob "source"
-
-let mkB = mkJob "build"
-
 let mkNix =
         λ(stage : Text)
       → λ(target : Text)
       → baseJob "build" ("nix-build -A " ++ target ++ " --no-build-output")
+
+let mkS = mkJob "source"
+
+let mkB = mkJob "build"
 
 let mkT = mkJob "test"
 
@@ -27,7 +27,7 @@ in  { stages =
         [ "source", "build", "test", "deploy" ]
     , nix-hsnrm =
         mkNixB "haskellPackages.hsnrm"
-    , nix-lib =
+    , nix-libnrm =
         mkNixB "libnrm"
     , nix-stream =
         mkNixB "stream"
@@ -37,7 +37,6 @@ in  { stages =
         mkT "dhrun/exitcode"
     , dhrun/listen =
         mkT "dhrun/listen"
-
     , libnrm/autotools =
         mkB "libnrm/autotools"
     , hsnrm/all =

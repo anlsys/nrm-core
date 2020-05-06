@@ -1,4 +1,4 @@
-{ src, stdenv, pythonPackages, hwloc, linuxPackages, hsnrm, resources}:
+{ src, stdenv, pythonPackages, hwloc, linuxPackages, hsnrm, resources }:
 pythonPackages.buildPythonPackage {
   inherit src;
   name = "nrm";
