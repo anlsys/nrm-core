@@ -27,6 +27,7 @@ pre-commit: hsnrm/pre-commit\
 	libnrm/pre-commit\
 	dhall/format\
 	shellcheck\
+	nixfmt\
 	.gitlab-ci.yml
 
 .PHONY: notebooks
@@ -136,7 +137,7 @@ libnrm/clang-format:
 
 .PHONY: ci
 ci:
-	@nix-shell -p yq -p jq --run bash <<< '
+	@nix-shell -p yq jq --run bash <<< '
 		for jobname in $$(yq -r "keys| .[]" .gitlab-ci.yml); do
 			if [ "$$jobname" != "stages" ]; then
 				gitlab-runner exec shell "$$jobname"
