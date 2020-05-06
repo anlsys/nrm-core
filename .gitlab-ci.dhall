@@ -41,6 +41,12 @@ in  { stages =
         mkB "libnrm/autotools"
     , hsnrm/all =
         mkB "hsnrm/all"
+    , hsnrm/hsnrm.cabal =
+        mkS "hsnrm/hsnrm.cabal"
+    , hsnrm/hsnrm.nix =
+        mkS "hsnrm/hsnrm.nix"
+    , hsnrm/resources =
+        mkS "hsnrm/resources"
     , shellcheck =
         mkS "shellcheck"
     , nixfmt =
