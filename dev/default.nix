@@ -45,12 +45,18 @@ pkgs // rec {
   pynrm = pkgs.callPackage ./pkgs/pynrm {
     pythonPackages = python3Packages;
     src = src + "/pynrm";
-    hsnrm = haskellPackages.hsnrm;
+    hsnrm = haskellPackages.hsnrm-bin;
   };
 
   nrm = pkgs.symlinkJoin {
     name = "nrmFull";
-    paths = [ haskellPackages.hsnrm pynrm pkgs.linuxPackages.perf pkgs.hwloc ];
+    paths = [
+      haskellPackages.hsnrm
+      haskellPackages.hsnrm-bin
+      pynrm
+      pkgs.linuxPackages.perf
+      pkgs.hwloc
+    ];
   };
 
   hsnrm-hack = pkgs.haskellPackages.shellFor {

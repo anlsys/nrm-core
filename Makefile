@@ -46,13 +46,13 @@ notebooks:
 		jupyter nbconvert notebooks/internal-control.ipynb --output-dir=doc/notebooks/notebooks
 	'
 
-dhrun/%: hsnrm/all
+dhrun/%:
 	rm -f hsnrm/.ghc*
-	@nix-shell --pure --run "dhrun -i" <<< '
+	@nix-shell --pure -p nrm dhrun --run "dhrun -i" <<< '
 		let all = ./dev/dhrun/all-tests.dh
 			"../dev/dhrun/assets/"
-			"../resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
-			"../resources/examples/"
+			"../hsnrm/resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
+			"../hsnrm/resources/examples/"
 		in all.exitcode
 	'
 
