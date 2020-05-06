@@ -43,6 +43,8 @@ in  { stages =
         mkB "hsnrm/all"
     , shellcheck =
         mkS "shellcheck"
+    , nixfmt =
+        mkS "nixfmt"
     , dhall-format =
         mkS "dhall-format"
     , libnrm/clang-format =

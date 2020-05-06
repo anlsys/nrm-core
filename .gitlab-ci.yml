@@ -11,12 +11,6 @@ hsnrm/shellcheck:
   tags:
   - nix
   - kvm
-nix-lib:
-  stage: build
-  script: nix-build -A libnrm --no-build-output
-  tags:
-  - nix
-  - kvm
 shellcheck:
   stage: source
   script: nix-shell -p gnumake --run 'make shellcheck'
@@ -63,6 +57,12 @@ nix-stream:
   tags:
   - nix
   - kvm
+nix-libnrm:
+  stage: build
+  script: nix-build -A libnrm --no-build-output
+  tags:
+  - nix
+  - kvm
 hsnrm/all:
   stage: build
   script: nix-shell -p gnumake --run 'make hsnrm/all'
@@ -89,6 +89,12 @@ stages:
 hsnrm/hlint:
   stage: source
   script: nix-shell -p gnumake --run 'make hsnrm/hlint'
+  tags:
+  - nix
+  - kvm
+nixfmt:
+  stage: source
+  script: nix-shell -p gnumake --run 'make nixfmt'
   tags:
   - nix
   - kvm
