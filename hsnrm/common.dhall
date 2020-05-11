@@ -6,6 +6,7 @@ let defexts =
       [ types.Extension.LambdaCase True
       , types.Extension.QuasiQuotes True
       , types.Extension.DefaultSignatures True
+      , types.Extension.OverloadedLists True
       , types.Extension.ExistentialQuantification True
       , types.Extension.RecordWildCards True
       , types.Extension.RankNTypes True
@@ -269,7 +270,6 @@ let modules =
       , "NRM.Classes.Sensors"
       , "NRM.Classes.Actuators"
       , "NRM.Classes.Topology"
-      , "NRM.Classes.Examples"
       , "NRM.Orphans.ExitCode"
       , "NRM.Orphans.UUID"
       , "NRM.Orphans.Dhall"
@@ -282,9 +282,7 @@ let modules =
       , "NRM.Types.Messaging.UpstreamRep"
       , "NRM.Types.Messaging.Protocols"
       , "NRM.Types.Configuration"
-      , "NRM.Configuration.Examples"
       , "NRM.Types.Manifest"
-      , "NRM.Manifest.Examples"
       ]
 
 let extramodules =

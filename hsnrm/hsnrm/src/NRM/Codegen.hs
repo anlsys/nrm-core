@@ -7,21 +7,21 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.Codegen
-  ( main,
-    upstreamPubSchema,
-    upstreamReqSchema,
-    upstreamRepSchema,
-    downstreamEventSchema,
-    manifestSchema,
-    configurationSchema,
-    libnrmHeader,
-    licenseC,
-    licenseDhall,
-    licenseYaml,
+  ( main
+  , typeToFile
+  , upstreamPubSchema
+  , upstreamReqSchema
+  , upstreamRepSchema
+  , downstreamEventSchema
+  , manifestSchema
+  , configurationSchema
+  , libnrmHeader
+  , licenseC
+  , licenseDhall
+  , licenseYaml
   )
 where
 
-import qualified CPD.Values
 import Codegen.CHeader
 import Codegen.Dhall
 import Codegen.Schema (generatePretty)
@@ -38,8 +38,6 @@ import Dhall.JSON as DJ
 import qualified Dhall.Lint as Lint
 import qualified Dhall.Parser
 import qualified Dhall.TypeCheck as Dhall
-import qualified NRM.Classes.Examples as Examples
-import qualified NRM.Manifest.Examples ()
 import NRM.Messaging
 import qualified NRM.Types.Configuration as C
 import qualified NRM.Types.Manifest as MI
@@ -176,22 +174,26 @@ getDefault x =
 generateResources :: Text -> IO ()
 generateResources prefix = do
   putText "Codegen: Dhall types."
-  typeToFile (Proxy :: Proxy [CPD.Values.Measurement]) $ prefix <> "/types/CPDMeasurements.dhall"
-  typeToFile (Proxy :: Proxy [CPD.Values.Action]) $ prefix <> "/types/CPDActions.dhall"
+  --typeToFile (Proxy :: Proxy [CPD.Values.Measurement]) $ prefix <> "/types/CPDMeasurements.dhall"
+  --typeToFile (Proxy :: Proxy [CPD.Values.Action]) $ prefix <> "/types/CPDActions.dhall"
   --typeToFile (Proxy :: Proxy CPD.Core.Problem) $ toS prefix <> "/types/CPDProblem.dhall"
-  for_ [minBound .. maxBound] $ \t -> do
+  for_ ([minBound .. maxBound] :: [KnownType]) $ \t -> do
     let dest = toS prefix <> typeFile t
     putText $ "  Writing type for " <> show t <> " to " <> toS dest
     createDirectoryIfMissing True (takeDirectory dest)
     writeOutput licenseDhall dest (dhallType t)
   putText "Codegen: defaults."
-  for_ [minBound .. maxBound] $ \defaultType ->
-    Dhall.load (Lint.lint (getDefault defaultType))
-      >>= exprToDir "defaults/" (show defaultType)
-  putText "Codegen: examples."
-  for_ (M.toList (Examples.examples :: Map Text MI.Manifest)) $ \(defName, defValue) ->
-    Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
-      >>= exprToDir "examples/" defName
+  for_ ([minBound .. maxBound] :: [KnownType]) $ \defaultType ->
+    Dhall.load (Lint.lint (getDefault defaultType)) >>=
+      exprToDir "defaults/" (show defaultType)
+  putText "Codegen: example manifests."
+  for_ (M.toList MI.examples) $ \(defName, defValue) ->
+    Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue) >>=
+      exprToDir "example-manifests/" defName
+  putText "Codegen: example configurations."
+  for_ (M.toList C.examples) $ \(defName, defValue) ->
+    Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue) >>=
+      exprToDir "example-configurations/" defName
   where
     exprToDir dir defName expr = do
       let (dest, destJ, destY) = mkPaths dir defName
@@ -208,9 +210,9 @@ generateResources prefix = do
           writeFile (toS destY) $ licenseYaml <> toS (Y.encode jsonValue)
     resourcePath dir defName x = toS prefix <> dir <> defName <> x
     mkPaths dir defName =
-      ( resourcePath dir defName ".dhall",
-        resourcePath dir defName ".json",
-        resourcePath dir defName ".yaml"
+      ( resourcePath dir defName ".dhall"
+      , resourcePath dir defName ".json"
+      , resourcePath dir defName ".yaml"
       )
 
 typeToFile :: (Interpret x) => Proxy x -> Text -> IO ()

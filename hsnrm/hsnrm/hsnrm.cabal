@@ -81,7 +81,6 @@ library
         NRM.Classes.Sensors
         NRM.Classes.Actuators
         NRM.Classes.Topology
-        NRM.Classes.Examples
         NRM.Orphans.ExitCode
         NRM.Orphans.UUID
         NRM.Orphans.Dhall
@@ -94,9 +93,7 @@ library
         NRM.Types.Messaging.UpstreamRep
         NRM.Types.Messaging.Protocols
         NRM.Types.Configuration
-        NRM.Configuration.Examples
         NRM.Types.Manifest
-        NRM.Manifest.Examples
         FFI.TypeUncurry
         FFI.TypeUncurry.Msgpack
         FFI.TypeUncurry.DataKinds
@@ -114,12 +111,12 @@ library
     hs-source-dirs: src
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        ExistentialQuantification RecordWildCards RankNTypes
-                        TypeSynonymInstances StandaloneDeriving FlexibleInstances
-                        TupleSections MultiParamTypeClasses NoImplicitPrelude
-                        OverloadedStrings ViewPatterns PatternSynonyms DeriveFunctor
-                        DeriveTraversable TypeFamilies DeriveAnyClass DeriveGeneric
-                        DeriveDataTypeable OverloadedLabels DeriveFoldable
+                        OverloadedLists ExistentialQuantification RecordWildCards
+                        RankNTypes TypeSynonymInstances StandaloneDeriving
+                        FlexibleInstances TupleSections MultiParamTypeClasses
+                        NoImplicitPrelude OverloadedStrings ViewPatterns PatternSynonyms
+                        DeriveFunctor DeriveTraversable TypeFamilies DeriveAnyClass
+                        DeriveGeneric DeriveDataTypeable OverloadedLabels DeriveFoldable
                         DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
                         BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
                         PolyKinds AllowAmbiguousTypes FunctionalDependencies

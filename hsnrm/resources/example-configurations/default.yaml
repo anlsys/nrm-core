@@ -1,0 +1,42 @@
+# ******************************************************************************
+#  Copyright 2019 UChicago Argonne, LLC.
+#  (c.f. AUTHORS, LICENSE)
+#
+#  SPDX-License-Identifier: BSD-3-Clause
+# ******************************************************************************
+#
+#     this file is generated, modifications will be erased.
+#
+pmpi_lib: pmpi_lib
+verbose: Error
+logfile: /tmp/nrm.log
+singularity: false
+argo_nodeos_config: argo_nodeos_config
+controlCfg:
+  fixedPower:
+    fromuW: 2.5e8
+upstreamCfg:
+  upstreamBindAddress: '*'
+  rpcPort: 3456
+  pubPort: 2345
+libnrmPath: null
+activeSensorFrequency:
+  fromHz: 1
+perf: perf
+argo_perf_wrapper: nrm-perfwrapper
+downstreamCfg:
+  downstreamBindAddress: ipc:///tmp/nrm-downstream-event
+nodeos: false
+hwloc: hwloc
+raplCfg:
+  referencePower:
+    fromuW: 2.5e8
+  raplActions:
+  - fromuW: 1.0e8
+  - fromuW: 2.0e8
+  raplPath: /sys/devices/virtual/powercap/intel-rapl
+dummy: true
+slice_runtime: Dummy
+hwmonCfg:
+  hwmonPath: /sys/class/hwmon
+  hwmonEnabled: true

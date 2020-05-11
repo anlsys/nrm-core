@@ -19,7 +19,7 @@ dhall-to-cabal: ../default.nix
 	cp -r $$(nix-build -A dhall-to-cabal-resources --no-out-link) ./dhall-to-cabal
 	chmod -R +rw ./dhall-to-cabal
 
-%.cabal: %.dhall dhall-to-cabal
+%.cabal: %.dhall common.dhall dhall-to-cabal
 	@nix-shell --pure -E '
 		with import <nixpkgs> {};
 		mkShell {
@@ -39,7 +39,7 @@ dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm
 		cabal v2-build hsnrm-bin
 	'
 
-resources: hsnrm hsnrm-bin
+resources: hsnrm/* hsnrm-bin/*
 	@nix-shell --pure --run bash <<< '
 		rm -rf resources
 		mkdir resources
@@ -49,16 +49,16 @@ resources: hsnrm hsnrm-bin
 .PHONY: ghcid
 ghcid: ghcid-hsnrm
 
-ghcid-hsnrm: hsnrm.cabal .hlint.yaml
+ghcid-%: .hlint.yaml %/*.cabal
 	@nix-shell -E '
 		with import <nixpkgs> {};
 		with haskellPackages;
 		shellFor {
-			packages = p: [p.hsnrm];
+			packages = p: [p.$*];
 			buildInputs = [ghcid cabal-install hlint];
 		}
 	' --pure --run bash <<< '
-		ghcid --command "cabal v2-repl nrmlib " \
+		ghcid --command "cabal v2-repl $* " \
 			--restart=hsnrm.cabal \
 			--restart=default.nix \
 			-l
