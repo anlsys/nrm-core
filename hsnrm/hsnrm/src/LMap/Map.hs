@@ -1,5 +1,5 @@
-{-# LANGUAGE NoOverloadedLists #-}
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE NoOverloadedLists #-}
 
 -- |
 -- Module      : LMap.Map
@@ -7,26 +7,26 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module LMap.Map
-  ( Map
-  , pattern EmptyMap
-  , LMap.Map.fromList
-  , LMap.Map.toList
-  , LMap.Map.fromDataMap
-  , LMap.Map.toDataMap
-  , LMap.Map.map
-  , LMap.Map.empty
-  , LMap.Map.null
-  , singleton
-  , lookup
-  , insert
-  , alter
-  , delete
-  , update
-  , elems
-  , keys
-  , mapKV
-  , mapWithKey
-  , filterWithKey
+  ( Map,
+    pattern EmptyMap,
+    LMap.Map.fromList,
+    LMap.Map.toList,
+    LMap.Map.fromDataMap,
+    LMap.Map.toDataMap,
+    LMap.Map.map,
+    LMap.Map.empty,
+    LMap.Map.null,
+    singleton,
+    lookup,
+    insert,
+    alter,
+    delete,
+    update,
+    elems,
+    keys,
+    mapKV,
+    mapWithKey,
+    filterWithKey,
   )
 where
 
@@ -47,7 +47,6 @@ mapKV :: ((a, b) -> (c, d)) -> Map a b -> Map c d
 mapKV f m = m & LMap.Map.toList <&> f & fromList
 
 pattern EmptyMap :: Map a b
-
 pattern EmptyMap = Map []
 
 empty :: Map a b
@@ -107,13 +106,11 @@ type instance Index (Map k a) = k
 type instance IxValue (Map k a) = a
 
 instance Ord k => Ixed (Map k a) where
-
   ix k f m = case lookup k m of
     Just v -> f v <&> \v' -> insert k v' m
     Nothing -> pure m
 
 instance Ord k => At (Map k a) where
-
   at k f m =
     f mv <&> \case
       Nothing -> maybe m (const (delete k m)) mv
@@ -126,5 +123,4 @@ instance (Ord k) => FunctorWithIndex k (Map k)
 instance (Ord k) => FoldableWithIndex k (Map k)
 
 instance (Ord k) => TraversableWithIndex k (Map k) where
-
   itraverse f = sequenceA . mapWithKey f

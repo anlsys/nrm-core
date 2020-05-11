@@ -7,18 +7,18 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.Codegen
-  ( main
-  , typeToFile
-  , upstreamPubSchema
-  , upstreamReqSchema
-  , upstreamRepSchema
-  , downstreamEventSchema
-  , manifestSchema
-  , configurationSchema
-  , libnrmHeader
-  , licenseC
-  , licenseDhall
-  , licenseYaml
+  ( main,
+    typeToFile,
+    upstreamPubSchema,
+    upstreamReqSchema,
+    upstreamRepSchema,
+    downstreamEventSchema,
+    manifestSchema,
+    configurationSchema,
+    libnrmHeader,
+    licenseC,
+    licenseDhall,
+    licenseYaml,
   )
 where
 
@@ -184,16 +184,16 @@ generateResources prefix = do
     writeOutput licenseDhall dest (dhallType t)
   putText "Codegen: defaults."
   for_ ([minBound .. maxBound] :: [KnownType]) $ \defaultType ->
-    Dhall.load (Lint.lint (getDefault defaultType)) >>=
-      exprToDir "defaults/" (show defaultType)
+    Dhall.load (Lint.lint (getDefault defaultType))
+      >>= exprToDir "defaults/" (show defaultType)
   putText "Codegen: example manifests."
   for_ (M.toList MI.examples) $ \(defName, defValue) ->
-    Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue) >>=
-      exprToDir "example-manifests/" defName
+    Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
+      >>= exprToDir "example-manifests/" defName
   putText "Codegen: example configurations."
   for_ (M.toList C.examples) $ \(defName, defValue) ->
-    Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue) >>=
-      exprToDir "example-configurations/" defName
+    Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
+      >>= exprToDir "example-configurations/" defName
   where
     exprToDir dir defName expr = do
       let (dest, destJ, destY) = mkPaths dir defName
@@ -210,9 +210,9 @@ generateResources prefix = do
           writeFile (toS destY) $ licenseYaml <> toS (Y.encode jsonValue)
     resourcePath dir defName x = toS prefix <> dir <> defName <> x
     mkPaths dir defName =
-      ( resourcePath dir defName ".dhall"
-      , resourcePath dir defName ".json"
-      , resourcePath dir defName ".yaml"
+      ( resourcePath dir defName ".dhall",
+        resourcePath dir defName ".json",
+        resourcePath dir defName ".yaml"
       )
 
 typeToFile :: (Interpret x) => Proxy x -> Text -> IO ()

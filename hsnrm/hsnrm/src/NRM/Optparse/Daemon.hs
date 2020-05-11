@@ -6,11 +6,11 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.Optparse.Daemon
-  ( opts
-  , processType
-  , SourceType (..)
-  , FinallySource (..)
-  , ext
+  ( opts,
+    processType,
+    SourceType (..),
+    FinallySource (..),
+    ext,
   )
 where
 
@@ -34,31 +34,31 @@ import System.FilePath.Posix
 
 data MainCfg
   = MainCfg
-      { useStdin :: Bool
-      , argInput :: Maybe Text
-      , configType :: SourceType
+      { useStdin :: Bool,
+        argInput :: Maybe Text,
+        configType :: SourceType
       }
 
 commonParser :: Parser MainCfg
 commonParser =
-  MainCfg <$>
-    flag
+  MainCfg
+    <$> flag
       False
       True
-      (long "stdin" <> short 'i' <> help "Read configuration on stdin.") <*>
-    optional
+      (long "stdin" <> short 'i' <> help "Read configuration on stdin.")
+    <*> optional
       ( strArgument
-        ( metavar "CONFIG" <>
-          help
-            "Input configuration with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
-        )
-      ) <*>
-    flag
+          ( metavar "CONFIG"
+              <> help
+                "Input configuration with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
+          )
+      )
+    <*> flag
       Dhall
       Yaml
-      ( long "yaml" <> short 'y' <>
-        help
-          "Assume configuration to be yaml(json is valid yaml) instead of dhall."
+      ( long "yaml" <> short 'y'
+          <> help
+            "Assume configuration to be yaml(json is valid yaml) instead of dhall."
       )
 
 opts :: Parser (IO Cfg)
@@ -94,30 +94,30 @@ load MainCfg {..} =
   where
     process = processType (Proxy :: Proxy Cfg)
 
-processType
-  :: (Default x, Dhall.Interpret x, Dhall.Inject x)
-  => Proxy x
-  -> SourceType
-  -> ByteString
-  -> IO x
+processType ::
+  (Default x, Dhall.Interpret x, Dhall.Inject x) =>
+  Proxy x ->
+  SourceType ->
+  ByteString ->
+  IO x
 processType proxy@(Proxy :: Proxy x) sourceType bs =
   mergeAndExtract (def :: x) =<< toExpr proxy sourceType bs
 
-toExpr
-  :: (Dhall.Inject x, Dhall.Interpret x, Default x)
-  => Proxy x
-  -> SourceType
-  -> ByteString
-  -> IO (Dhall.Expr Dhall.Src Dhall.X)
+toExpr ::
+  (Dhall.Inject x, Dhall.Interpret x, Default x) =>
+  Proxy x ->
+  SourceType ->
+  ByteString ->
+  IO (Dhall.Expr Dhall.Src Dhall.X)
 toExpr _proxy Dhall s = Dhall.inputExpr $ toS s
 toExpr proxy Yaml s = sourceValueToExpr proxy $ Y.decodeEither' s
 toExpr proxy Json s = sourceValueToExpr proxy $ J.eitherDecode' (toS s)
 
-sourceValueToExpr
-  :: (Default x, Dhall.Interpret x, Dhall.Inject x)
-  => Proxy x
-  -> Either e Y.Value
-  -> IO (Dhall.Expr Dhall.Src Dhall.X)
+sourceValueToExpr ::
+  (Default x, Dhall.Interpret x, Dhall.Inject x) =>
+  Proxy x ->
+  Either e Y.Value ->
+  IO (Dhall.Expr Dhall.Src Dhall.X)
 sourceValueToExpr (Proxy :: Proxy x) = \case
   Left _ -> die "yaml parsing exception"
   Right v ->
@@ -127,27 +127,29 @@ sourceValueToExpr (Proxy :: Proxy x) = \case
         JSONToDhall.dhallFromJSON
           JSONToDhall.defaultConversion
           exprType
-          (lodashMerge jsonValue v) & \case
-          Left e -> die ("yaml -> dhall compilation error" <> show e)
-          Right expr -> return expr
+          (lodashMerge jsonValue v)
+          & \case
+            Left e -> die ("yaml -> dhall compilation error" <> show e)
+            Right expr -> return expr
   where
     exprType :: Dhall.Expr Dhall.Src Dhall.X
     exprType = typeToExpr (Proxy :: Proxy x)
     exprValue = valueToExpr (def :: x)
 
-mergeAndExtract
-  :: (Dhall.Interpret x, Dhall.Inject x)
-  => x
-  -> Dhall.Expr Dhall.Src Dhall.X
-  -> IO x
+mergeAndExtract ::
+  (Dhall.Interpret x, Dhall.Inject x) =>
+  x ->
+  Dhall.Expr Dhall.Src Dhall.X ->
+  IO x
 mergeAndExtract x expr =
   Dhall.extract
     Dhall.auto
     ( Dhall.normalize
-      ( Dhall.Prefer
-        (valueToExpr x)
-        expr
-      )
-    ) & \case
-    Nothing -> die "dhall extraction error"
-    Just a -> return a
+        ( Dhall.Prefer
+            (valueToExpr x)
+            expr
+        )
+    )
+    & \case
+      Nothing -> die "dhall extraction error"
+      Just a -> return a
