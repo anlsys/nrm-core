@@ -360,7 +360,6 @@ instance ToJSON (SimResult []) where
 
 ```
 
-
 >   ) where
 > import Bandit.Class
 > import Bandit.Types

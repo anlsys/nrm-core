@@ -318,29 +318,29 @@ import Bandit.EpsGreedy
 -- > Loss series:[10.0,44.0,40.0]
 -- $summaryProblem
 -- >        V1                V2               V3        
--- >  Min.   :0.00000   Min.   :0.1656   Min.   :0.3357  
--- >  1st Qu.:0.03417   1st Qu.:0.4373   1st Qu.:0.5369  
--- >  Median :0.09916   Median :0.4958   Median :0.5991  
--- >  Mean   :0.11223   Mean   :0.4973   Mean   :0.6067  
--- >  3rd Qu.:0.17645   3rd Qu.:0.5568   3rd Qu.:0.6765  
--- >  Max.   :0.36988   Max.   :0.7560   Max.   :0.9606  
+-- >  Min.   :0.00000   Min.   :0.2234   Min.   :0.3124  
+-- >  1st Qu.:0.02779   1st Qu.:0.4327   1st Qu.:0.5324  
+-- >  Median :0.09837   Median :0.4924   Median :0.6035  
+-- >  Mean   :0.10480   Mean   :0.4951   Mean   :0.5999  
+-- >  3rd Qu.:0.15828   3rd Qu.:0.5543   3rd Qu.:0.6707  
+-- >  Max.   :0.37662   Max.   :0.7331   Max.   :0.9077  
 -- $summaryPlot
 -- <<literate/summaryPlot.png>>
 -- $expe
 -- >        t           iteration     greedy05          greedy03      
 -- >  Min.   :  1.0   Min.   : 2   Min.   :0.00000   Min.   :0.00000  
--- >  1st Qu.:100.8   1st Qu.: 4   1st Qu.:0.04745   1st Qu.:0.04179  
--- >  Median :200.5   Median : 6   Median :0.13204   Median :0.11482  
--- >  Mean   :200.5   Mean   : 6   Mean   :0.19219   Mean   :0.15253  
--- >  3rd Qu.:300.2   3rd Qu.: 8   3rd Qu.:0.25912   3rd Qu.:0.19921  
--- >  Max.   :400.0   Max.   :10   Max.   :0.95692   Max.   :0.81970  
--- >   greedysqrt05          exp3        
--- >  Min.   :0.00000   Min.   :0.00000  
--- >  1st Qu.:0.03312   1st Qu.:0.03875  
--- >  Median :0.10179   Median :0.11060  
--- >  Mean   :0.11532   Mean   :0.14603  
--- >  3rd Qu.:0.16813   3rd Qu.:0.18853  
--- >  Max.   :0.76418   Max.   :0.95692  
+-- >  1st Qu.:100.8   1st Qu.: 4   1st Qu.:0.05422   1st Qu.:0.04456  
+-- >  Median :200.5   Median : 6   Median :0.13669   Median :0.11669  
+-- >  Mean   :200.5   Mean   : 6   Mean   :0.19376   Mean   :0.15407  
+-- >  3rd Qu.:300.2   3rd Qu.: 8   3rd Qu.:0.26790   3rd Qu.:0.20092  
+-- >  Max.   :400.0   Max.   :10   Max.   :0.80432   Max.   :0.80432  
+-- >   greedysqrt05          exp3       
+-- >  Min.   :0.00000   Min.   :0.0000  
+-- >  1st Qu.:0.03851   1st Qu.:0.0435  
+-- >  Median :0.10307   Median :0.1122  
+-- >  Mean   :0.11850   Mean   :0.1475  
+-- >  3rd Qu.:0.17220   3rd Qu.:0.1912  
+-- >  Max.   :0.80432   Max.   :0.8889  
 -- $regretPlot
 -- <<literate/regretPlot.png>>
 
