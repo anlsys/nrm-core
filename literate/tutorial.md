@@ -62,9 +62,13 @@ build-depends:
 {-# LANGUAGE OverloadedLists #-}
 {-# LANGUAGE OverloadedLabels #-}
 {-# LANGUAGE DataKinds #-}
+{-# LANGUAGE FlexibleInstances  #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE QuasiQuotes #-}
 import Protolude
 import Text.Pretty.Simple
@@ -182,15 +186,15 @@ onePass hyper g adversary = runGame initialGame
 
 ```
 
-> -- |  Specializing this to the 'EpsGreedy' datatype on a small toy dataset:
+> -- |  Specializing this to the 'EpsGreedy' datatype on a small toy dataset, using a fixed rate:
 
 
 ```{.haskell pipe="tee -a Tmodule.hs | awk '{print \"> -- >  \" $0}' | (echo '> -- | ' ;cat - )"}
-runOnePassEG :: StdGen -> GameState (EpsGreedy Bool) Bool Double
+runOnePassEG :: StdGen -> GameState (EpsGreedy Bool FixedRate) Bool Double
 runOnePassEG g = onePass hyper g (getZipList $ f <$> ZipList [40, 2, 10] <*> ZipList [4, 44 ,3] )
  where
   f a b = \case True -> a; False -> b
-  hyper = EpsGreedyHyper {epsilon = 0.5, arms = Bandit.Arms [True, False]}
+  hyper = EpsGreedyHyper {rateRep = (FixedRate 0.5), arms = Bandit.Arms [True, False]}
 
 printOnePassEG :: IO ()
 printOnePassEG = putText $
@@ -211,10 +215,9 @@ printOnePassEG = putText $
 > -- | Some other, more restrictive classes are available in [Bandit.Class](Bandit-Class.html) for convenience. See for
 > -- example 'Bandit.Class.ParameterFreeMAB', which exposes a hyperparameter-free interface for
 > -- algorithms that don't need any information besides the arm count. Those instances are not necessary
-> -- per se, and the 'Bandit' class is always sufficient. Note that some instances make agressive use
-> -- of type refinement (See e.g. Bandit.Exp3.Exp3) through the 'Refined' package.
-> -- In particular, we are about to make use of the \(\left[0,1\right]\) interval through the 'ZeroOne'
-> -- type alias.
+> -- per se, and the 'Bandit' class is always sufficient. Some instances make agressive use
+> -- of type refinement through the 'Refined' package. The \(\left[0,1\right]\) interval is particularly useful:
+
 > ,Bandit.Types.ZeroOne
 
 > -- ** Algorithm comparison
@@ -281,42 +284,62 @@ exp3 dataset g =
     g
     (toAdversary $ refineDataset dataset)
                  
-greedy :: [[Double]] -> StdGen -> Double -> GameState (EpsGreedy Int) Int (Double)
-greedy dataset g eps =  
+greedy :: (Rate r) => [[Double]] -> StdGen -> r -> GameState (EpsGreedy Int r) Int (Double)
+greedy dataset g r =  
   onePass
-    (EpsGreedyHyper {epsilon = eps, arms = Bandit.Arms [0..2]})
+    (EpsGreedyHyper {rateRep = r, arms = Bandit.Arms [0..2]})
     g
     (toAdversary dataset)
 
-simulation :: Int -> IO ([Int],[Int],[Double],[Double],[Double])
-simulation seed = do
+data SimResult t = SimResult {
+  t :: t Int,
+  seed :: t Int,
+  greedy05 :: t Double,
+  greedy03 :: t Double,
+  greedysqrt05 :: t Double,
+  exp3pf :: t Double
+} deriving (Generic)
+
+simulation :: Int -> Int -> IO (SimResult [])
+simulation tmax seed@(mkStdGen -> g) = do
   dataset <- generateGaussianData tmax (unsafeRefine <$> [0.1, 0.5, 0.6])
-  return ([1 .. tmax], Protolude.replicate tmax seed, greedy05 dataset, greedy03 dataset, exp3pf dataset)
- where tmax = 400 
-       g = mkStdGen seed
-       greedy05 :: [[Double]] -> [Double]
-       greedy05 dataset = extract $ greedy dataset g 0.5
-       greedy03 :: [[Double]] -> [Double]
-       greedy03 dataset = extract $ greedy dataset g 0.3
-       exp3pf :: [[Double]] -> [Double]
-       exp3pf dataset = fmap unrefine . extract $ exp3 dataset g
-       extract = Protolude.toList . Sequence.reverse . historyLosses
+  return $ SimResult {
+             t = [1 .. tmax],
+             seed = Protolude.replicate tmax seed,
+             greedy05 = extract $ greedy dataset g (FixedRate 0.5),
+             greedy03 = extract $ greedy dataset g (FixedRate 0.3),
+             greedysqrt05 = extract $ greedy dataset g (InverseSqrtRate 0.5),
+             exp3pf = fmap unrefine . extract $ exp3 dataset g
+           }
+ where 
+   extract = Protolude.toList . Sequence.reverse . historyLosses
 
-newtype Reducer = Reducer {getReducer :: ([Int],[Int],[Double],[Double],[Double])}
+instance Semigroup (SimResult []) where
+  x <> y = SimResult {
+             t = f Main.t,
+             seed = f seed, 
+             greedy05 = f greedy05, 
+             greedy03 = f greedy03, 
+             greedysqrt05 = f greedysqrt05,
+             exp3pf = f exp3pf
+           }
+           where f accessor = accessor x <> accessor y
 
-instance Semigroup Reducer where
-  (getReducer -> (a,b,c,d,e)) <> (getReducer -> (a',b',c',d',e')) = Reducer (a<>a',b<>b',c<>c',d<>d',e<>e')
+instance Monoid (SimResult []) where
+  mempty = SimResult mempty mempty mempty mempty mempty mempty
 
-instance Monoid Reducer where
-  mempty = Reducer ([],[],[],[],[])
+instance ToJSON (SimResult []) where
+  toJSON SimResult{..} = 
+    toJSON (t, seed, greedy05, greedy03, greedysqrt05, exp3pf)
 
 ```
 
 ```{.haskell pipe="bash execute.sh expe"}
-  results <- forM ([2..10] ::[Int]) simulation
-  let exported = T.unpack $ T.decodeUtf8 $ encode $ getReducer $ mconcat (Reducer <$> results)
+  results <- forM ([2..10] ::[Int]) (simulation 400)
+  let exported = T.unpack $ T.decodeUtf8 $ encode $ mconcat results
   [r|
     data.frame(t(jsonlite::fromJSON(exported_hs))) %>%
+      rename(t = X1, iteration = X2, greedy05= X3, greedy03=X4, greedysqrt05=X5,exp3=X6 ) %>%
       summary %>%
       print
   |]
@@ -325,14 +348,14 @@ instance Monoid Reducer where
 
 ```{.haskell pipe="bash ggplot.sh regretPlot 20 7 "}
   [r| data.frame(t(jsonlite::fromJSON(exported_hs))) %>%
-        rename(t = X1, iteration = X2, greedy05= X3, greedy03=X4, exp3=X5 ) %>%
+        rename(t = X1, iteration = X2, greedy05= X3, greedy03=X4, greedysqrt05=X5,exp3=X6 ) %>%
         gather("strategy", "loss", -t, -iteration) %>%
         mutate(strategy=factor(strategy)) %>% 
         group_by(strategy,iteration) %>%
         mutate(regret = cumsum(loss-0.1)) %>% 
         ungroup() %>%
         ggplot(., aes(t, regret, color=strategy, group=interaction(strategy, iteration))) +
-          geom_line() + ylab("External Regret")
+          geom_line(alpha=0.5) + ylab("External Regret")
   |]
 
 ```

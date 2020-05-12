@@ -144,7 +144,7 @@ doc: src/Bandit/Tutorial.hs hbandit.cabal hbandit.nix
 			buildInputs = [cabal-install];
 		}
 	' --run <<< bash '
-		cabal v2-haddock hbandit --haddock-internal --builddir=.build
+		cabal v2-haddock hbandit --haddock-internal
 	'
 
 .PRECIOUS: src/Bandit/Tutorial.hs
@@ -160,6 +160,7 @@ src/Bandit/Tutorial.hs: literate/tutorial.md hbandit.nix src
 			libraryHaskellDepends = [
 				aeson
 				inline-r
+				data-default
 				pretty-simple
 			];
 			description = "extra";
@@ -173,6 +174,7 @@ src/Bandit/Tutorial.hs: literate/tutorial.md hbandit.nix src
 			];
 			buildInputs = [
 			  inline-r
+				data-default
 				aeson
 				pretty-simple
 				panhandle
@@ -197,6 +199,7 @@ README.md: literate/readme.md
 			name="pandoc-tools";
 			buildInputs = [
 			  inline-r
+				data-default
 				aeson
 				pretty-simple
 				panhandle

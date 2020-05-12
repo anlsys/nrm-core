@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-partial-fields #-}
+
 -- |
 -- Module      : Bandit.EpsGreedy
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -13,49 +15,47 @@ module Bandit.EpsGreedy
   ( EpsGreedy (..),
     Weight (..),
     EpsGreedyHyper (..),
-    ScreeningGreedy (..),
-    ExploreExploitGreedy (..),
-    pickreturn,
     pickRandom,
     updateAvgLoss,
   )
 where
 
 import Bandit.Class
+import Bandit.Types
 import Bandit.Util
+import Control.Lens
 import Control.Monad.Random as MR (fromList, runRand)
+import Data.Generics.Labels ()
 import Protolude
 import System.Random
 
--- | The EpsGreedy state
-data EpsGreedy a
-  = -- | Still screening for initial estimates
-    Screening (ScreeningGreedy a)
-  | -- | The sampling procedure has started.
-    ExploreExploit (ExploreExploitGreedy a)
-  deriving (Show)
+data EpsGreedy a r
+  = EpsGreedy
+      { t :: Int,
+        rate :: r,
+        lastAction :: a,
+        params :: Params a
+      }
+  deriving (Show, Generic)
 
--- | A subcomponent of the EpsGreedy state.
-data ScreeningGreedy a
-  = ScreeningGreedy
-      { tScreening :: Int,
-        epsScreening :: Double,
-        screening :: a,
-        screened :: [(Double, a)],
+data Params a = InitialScreening (Screening a) | Started (ExploreExploit a)
+  deriving (Show, Generic)
+
+-- | Still screening for initial estimates
+data Screening a
+  = Screening
+      { screened :: [(Double, a)],
         screenQueue :: [a]
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
--- | A subcomponent of the EpsGreedy state.
-data ExploreExploitGreedy a
-  = ExploreExploitGreedy
-      { t :: Int,
-        eps :: Double,
-        lastAction :: a,
-        k :: Int,
+-- | The sampling procedure has started.
+data ExploreExploit a
+  = ExploreExploit
+      { k :: Int,
         weights :: NonEmpty (Weight a)
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
 -- | The information maintaining structure for one action.
 data Weight a
@@ -67,82 +67,84 @@ data Weight a
   deriving (Show)
   deriving (Generic)
 
+toW :: (Double, a) -> Weight a
+toW (loss, action) = Weight loss 1 action
+
 -- | The epsilon-greedy hyperparameter.
-data EpsGreedyHyper a
+data EpsGreedyHyper a r
   = EpsGreedyHyper
-      { epsilon :: Double,
+      { rateRep :: r,
         arms :: Arms a
       }
   deriving (Show)
 
--- | The fixed rate \(\epsilon\)-Greedy MAB algorithm.
+-- | The variable rate \(\epsilon\)-Greedy MAB algorithm.
 -- Offers no interesting guarantees, works well in practice.
-instance (Eq a) => Bandit (EpsGreedy a) (EpsGreedyHyper a) a Double where
+instance (Rate r, Eq a) => Bandit (EpsGreedy a r) (EpsGreedyHyper a r) a Double where
 
-  init g (EpsGreedyHyper e (Arms (a :| as))) =
-    ( Screening $ ScreeningGreedy
-        { tScreening = 1,
-          epsScreening = e,
-          screening = a,
-          screened = [],
-          screenQueue = as
+  init g (EpsGreedyHyper r (Arms (a :| as))) =
+    ( EpsGreedy
+        { t = 1,
+          rate = r,
+          lastAction = a,
+          params = InitialScreening $ Screening
+            { screened = [],
+              screenQueue = as
+            }
         },
       a,
       g
     )
 
-  step g l =
-    get >>= \case
-      Screening sg ->
+  step g l = do
+    oldAction <- use #lastAction
+    schedule <- use #rate <&> toRate
+    e <- use #t <&> schedule
+    #t += 1
+    (a, newGen) <- use #params >>= \case
+      InitialScreening sg ->
         case screenQueue sg of
           (a : as) -> do
-            put . Screening $
-              sg
-                { tScreening = tScreening sg + 1,
-                  screening = a,
-                  screened = (l, screening sg) : screened sg,
-                  screenQueue = as
-                }
+            #params . #_InitialScreening .= Screening
+              { screened = (l, oldAction) : screened sg,
+                screenQueue = as
+              }
             return (a, g)
           [] -> do
-            let eeg = ExploreExploitGreedy
-                  { t = tScreening sg + 1,
-                    eps = epsScreening sg,
-                    lastAction = screening sg,
-                    k = length (screened sg) + 1,
-                    weights = toW <$> ((l, screening sg) :| screened sg)
+            let ee = ExploreExploit
+                  { k = length (screened sg) + 1,
+                    weights = toW <$> ((l, oldAction) :| screened sg)
                   }
-            pickreturn eeg g
-            where
-              toW :: forall a. (Double, a) -> Weight a
-              toW (loss, action) = Weight loss 1 action
-      ExploreExploit s -> do
+            #params . #_Started .= ee
+            pickreturn e g ee
+      Started s -> do
         let eeg =
               s
-                { t = t s + 1,
-                  weights = weights s <&> \w ->
-                    if action w == lastAction s
+                { weights = weights s <&> \w ->
+                    if action w == oldAction
                       then updateAvgLoss l w
                       else w
                 }
-        pickreturn eeg g
+        pickreturn e g eeg
+    #lastAction .= a
+    return (a, newGen)
 
 -- | Action selection and  return
 pickreturn ::
-  (RandomGen g, MonadState (EpsGreedy b) m) =>
-  ExploreExploitGreedy b ->
+  (RandomGen g, MonadState (EpsGreedy b r) m) =>
+  Double ->
   g ->
+  ExploreExploit b ->
   m (b, g)
-pickreturn eeg g = do
-  let (a, g') = runRand (MR.fromList [(True, toRational $ eps eeg), (False, toRational $ 1 - eps eeg)]) g & \case
+pickreturn eps g eeg = do
+  let (a, g') = runRand (MR.fromList [(True, toRational eps), (False, toRational $ 1 - eps)]) g & \case
         (True, g'') -> pickRandom eeg g''
         (False, g'') -> (action $ minimumBy (\(averageLoss -> a1) (averageLoss -> a2) -> compare a1 a2) (weights eeg), g'')
-  put . ExploreExploit $ eeg {lastAction = a}
   return (a, g')
 
 -- | Random action selection primitive
-pickRandom :: (RandomGen g) => ExploreExploitGreedy a -> g -> (a, g)
-pickRandom ExploreExploitGreedy {..} =
+pickRandom :: (RandomGen g) => ExploreExploit a -> g -> (a, g)
+pickRandom ExploreExploit {..} =
   sampleWL $
     fromMaybe
       (panic "distribution normalization failure")
