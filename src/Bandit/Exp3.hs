@@ -119,9 +119,3 @@ recompute t k weights = updatep <$> weights
       exp (- sqrt (2.0 * log (fromIntegral k) / fromIntegral (t * k)) * cL)
     denom = getSum $ foldMap denomF weights
     denomF (getCumulativeLoss . cumulativeLoss -> cL) = Sum $ expw cL
-
--- | Regret bound for this \(\mathbb{L}=[0,1]\)-loss hyperparameter-free EXP3 version:
--- \[
--- R_T \leq \sqrt{2 T K \ln K}
--- \]
-instance (Eq a) => ParameterFreeMAB (Exp3 a) a (ZeroOne Double)
