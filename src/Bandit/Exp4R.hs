@@ -107,7 +107,7 @@ instance
       }
 
   stepCtx g feedback s = do
-    weightedAdvice <- use #experts <&> fmap (fmap (($ s) . represent))
+    weightedAdvice <- use #experts <&> fmap (fmap (($ s) . toExpert))
     lastAction <- use #lastAction
     fromMaybe
       pass
@@ -185,11 +185,3 @@ mkDelta Exp4R {..} = fromIntegral $ 3 * k
 -- | \( \lambda_1 = 0 \)
 lambdaInitial :: R.Refined R.NonNegative Double
 lambdaInitial = R.unsafeRefine 0
-
--- | Oblivious Categorical Expert Representation
-newtype ObliviousRep a
-  = ObliviousRep (NonEmpty (ZeroOne Double, a))
-  deriving (Generic)
-
-instance ExpertRepresentation (ObliviousRep a) () a where
-  represent (ObliviousRep l) () = l

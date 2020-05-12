@@ -57,14 +57,14 @@ normalizedSum l =
           / sum (unrefine . fst <$> l)
 
 -- | @normalize x xm@ normalizes @x@ using @xm@. Returns @Nothing@
--- in case the resulting value is not contained in $[0,1]$ .
+-- in case the resulting value is not contained in \([0,1]\) .
 normalize :: (Floating a, Ord a) => a -> a -> Maybe (ZeroOne a)
 normalize v m = refine (v / m) & \case
   Right n -> Just n
   Left _ -> Nothing
 
 -- | @normalize x xm@ normalizes @x@ using @xm@. Returns @Nothing@
--- in case the resulting value is not contained in $[0,1]$ .
+-- in case the resulting value is not contained in \([0,1]\) .
 unsafeNormalizePanic :: (Floating a, Ord a) => a -> a -> ZeroOne a
 unsafeNormalizePanic v m = refine (v / m) & \case
   Right n -> n

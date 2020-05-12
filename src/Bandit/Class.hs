@@ -11,16 +11,19 @@
 module Bandit.Class
   ( -- * Generalized Bandit
     Bandit (..),
-    ExpertRepresentation (..),
     ContextualBandit (..),
 
-    -- * Discrete Multi-Armed-Bandits
-    Arms (..),
-    ParameterFreeMAB (..),
+    -- * Hyperparameters
+
+    -- | These typeclass-based indirection layers help avoid unserializable
+    -- hyperparameters.
+    ExpertRepresentation (..),
+    Rate (..),
   )
 where
 
 import Bandit.Types
+import Data.Coerce
 import Protolude
 import System.Random
 
@@ -67,32 +70,25 @@ class (ExpertRepresentation er s a) => ContextualBandit b hyper s a l er | b -> 
   -- | @step loss@ iterates the bandit process one step forward.
   stepCtx :: (RandomGen g, MonadState b m, Ord a) => g -> l -> s -> m (a, g)
 
--- | ExpertRepresentation er s a is a distribution over
--- experts.
+-- | ExpertRepresentation er s a is a representation that can be casted
+-- into a distribution over actions.
 --
--- @represent er@ returns this distribution encoded as a conditional
+-- @toExpert er@ returns the expert encoded as a conditional
 -- distribution over actions.
 class ExpertRepresentation er s a | er -> s, er -> a where
-  represent :: er -> (s -> NonEmpty (ZeroOne Double, a))
+  toExpert :: er -> (s -> NonEmpty (ZeroOne Double, a))
 
--- | Arms a represents a set of possible actions.
-newtype Arms a = Arms (NonEmpty a)
-  deriving (Show, Generic)
+instance ExpertRepresentation (ObliviousRep a) () a where
+  toExpert (ObliviousRep l) () = l
 
--- | Hyper-Parameter-free MAB. In this context, \(\mathbb{L}\) is known
--- statically, and \(\mathbb{A}\) is specified by \(\mathbb{H}\)=@Arms a@,
--- which is the set of finite non-empty sets. We define the regret \(R_T\) as:
+-- | Rate r is a learning rate.
 --
--- \[ R_T = \sum_{t=1}^{T} \ell_{a^t}^t - \text{min}_{a=1}^{K} \sum_{t=1}^{T}
--- \ell_{a}^t \]
-class (Eq a, Bandit b (Arms a) a l) => ParameterFreeMAB b a l | b -> l where
+-- @toRate r@ returns the rate schedule.
+class Rate r where
+  toRate :: r -> Int -> Double
 
-  -- | @init as@ returns the initial state of the bandit algorithm, where @as@
-  -- is a set of available actions.
-  initPFMAB :: (RandomGen g) => g -> Arms a -> (b, a, g)
-  initPFMAB = init
+instance Rate FixedRate where
+  toRate = const . coerce
 
-  -- | @step l@ iterates the bandit process one step forward by feeding loss
-  -- value @l@.
-  stepPFMAB :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
-  stepPFMAB = step
+instance Rate InverseSqrtRate where
+  toRate x t = coerce x / sqrt (fromIntegral t)

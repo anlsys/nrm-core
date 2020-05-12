@@ -16,9 +16,13 @@ module Bandit.Tutorial (
 -- >  {-# LANGUAGE OverloadedLists #-}
 -- >  {-# LANGUAGE OverloadedLabels #-}
 -- >  {-# LANGUAGE DataKinds #-}
+-- >  {-# LANGUAGE FlexibleInstances  #-}
 -- >  {-# LANGUAGE ScopedTypeVariables #-}
+-- >  {-# LANGUAGE StandaloneDeriving #-}
 -- >  {-# LANGUAGE NoImplicitPrelude #-}
 -- >  {-# LANGUAGE TemplateHaskell #-}
+-- >  {-# LANGUAGE DeriveAnyClass #-}
+-- >  {-# LANGUAGE RecordWildCards #-}
 -- >  {-# LANGUAGE QuasiQuotes #-}
 -- >  import Protolude
 -- >  import Text.Pretty.Simple
@@ -70,18 +74,19 @@ module Bandit.Tutorial (
 --         legend.box.background = element_rect(fill = "transparent") 
 --       )) |]
 
--- * Non-contextual
--- | We'll first cover the case of simple MABs that do not use context information.
+-- | This tutorial only covers non-contextual bandit algorithms.
 
 -- ** Classes
 --
--- | The main algorithm class for non-contextual bandits is 'Bandit'. This class gives
+-- *** Non-contextual
+--
+-- | The algorithm class for non-contextual bandits is 'Bandit'. This class gives
 -- types for a basic bandit game between a learner and an environment, where the
 -- learner has access to a random generator and is defined via a stateful 'step'
--- function. All non-contetual bandit algorithms in this library are instances of this.
+-- function.
 Bandit.Class.Bandit(..)
 
--- *** Example instance: Epsilon-Greedy
+-- **** example instance: Epsilon-Greedy
 --
 -- | Let's take a look at the instance for the classic fixed-rate \(\epsilon\)-Greedy
 -- algorithm. The necessary hyperparameters are the number of arms and the rate value,
@@ -129,14 +134,14 @@ Bandit.Class.Bandit(..)
 -- >      #historyActions %= (action NonEmpty.<|)
 -- >      #historyLosses %= (loss Sequence.<|)
 
--- |  Specializing this to the 'EpsGreedy' datatype on a small toy dataset:
+-- |  Specializing this to the 'EpsGreedy' datatype on a small toy dataset, using a fixed rate:
 
 -- | 
--- >  runOnePassEG :: StdGen -> GameState (EpsGreedy Bool) Bool Double
+-- >  runOnePassEG :: StdGen -> GameState (EpsGreedy Bool FixedRate) Bool Double
 -- >  runOnePassEG g = onePass hyper g (getZipList $ f <$> ZipList [40, 2, 10] <*> ZipList [4, 44 ,3] )
 -- >   where
 -- >    f a b = \case True -> a; False -> b
--- >    hyper = EpsGreedyHyper {epsilon = 0.5, arms = Bandit.Arms [True, False]}
+-- >    hyper = EpsGreedyHyper {rateRep = (FixedRate 0.5), arms = Bandit.Arms [True, False]}
 -- >  
 -- >  printOnePassEG :: IO ()
 -- >  printOnePassEG = putText $
@@ -150,17 +155,20 @@ Bandit.Class.Bandit(..)
 -- >>>  printOnePassEG
 -- $eg
 
--- *** Other classes
--- | Some other, more restrictive classes are available in [Bandit.Class](Bandit-Class.html) for convenience. See for
--- example 'Bandit.Class.ParameterFreeMAB', which exposes a hyperparameter-free interface for
--- algorithms that don't need any information besides the arm count. Those instances are not necessary
--- per se, and the 'Bandit' class is always sufficient. Note that some instances make agressive use
--- of type refinement (See e.g. Bandit.Exp3.Exp3) through the 'Refined' package.
--- In particular, we are about to make use of the \(\left[0,1\right]\) interval through the 'ZeroOne'
--- type alias.
-,Bandit.Types.ZeroOne
+-- *** Contextual 
+--
+-- | The algorithm class for contextual bandits is 'ContextualBandit'. This class gives
+-- types for a bandit game between a learner and an environment with context, where the
+-- learner has access to a random generator and is defined via a stateful 'step'
+-- function.
 
--- ** Algorithm comparison
+, Bandit.Class.ContextualBandit(..)
+
+-- | The 'ExpertRepresentation' class is used to encode experts.
+
+, Bandit.Class.ExpertRepresentation(..)
+
+-- ** Non-contextual algorithm comparison
 -- | This subsection runs bandit experiments on an example dataset with some of the @Bandit@ instances.
 -- The data for this tutorial is generated in R using the [inline-r](https://hackagehaskell.org/package/inline-r) package.
 -- Let's define a simple problem with three gaussian arms. We will threshold all cost values to \(\left[0,1\right]\).
@@ -217,61 +225,71 @@ Bandit.Class.Bandit(..)
 -- >      g
 -- >      (toAdversary $ refineDataset dataset)
 -- >                   
--- >  greedy :: [[Double]] -> StdGen -> Double -> GameState (EpsGreedy Int) Int (Double)
--- >  greedy dataset g eps =  
+-- >  greedy :: (Rate r) => [[Double]] -> StdGen -> r -> GameState (EpsGreedy Int r) Int (Double)
+-- >  greedy dataset g r =  
 -- >    onePass
--- >      (EpsGreedyHyper {epsilon = eps, arms = Bandit.Arms [0..2]})
+-- >      (EpsGreedyHyper {rateRep = r, arms = Bandit.Arms [0..2]})
 -- >      g
 -- >      (toAdversary dataset)
 -- >  
--- >  simulation :: Int -> IO ([Int],[Int],[Double],[Double],[Double])
--- >  simulation seed = do
+-- >  data SimResult t = SimResult {
+-- >    t :: t Int,
+-- >    seed :: t Int,
+-- >    greedy05 :: t Double,
+-- >    greedy03 :: t Double,
+-- >    greedysqrt05 :: t Double,
+-- >    exp3pf :: t Double
+-- >  } deriving (Generic)
+-- >  
+-- >  simulation :: Int -> Int -> IO (SimResult [])
+-- >  simulation tmax seed@(mkStdGen -> g) = do
 -- >    dataset <- generateGaussianData tmax (unsafeRefine <$> [0.1, 0.5, 0.6])
--- >    return ([1 .. tmax], Protolude.replicate tmax seed, greedy05 dataset, greedy03 dataset, exp3pf dataset)
--- >   where tmax = 400 
--- >         g = mkStdGen seed
--- >         greedy05 :: [[Double]] -> [Double]
--- >         greedy05 dataset = extract $ greedy dataset g 0.5
--- >         greedy03 :: [[Double]] -> [Double]
--- >         greedy03 dataset = extract $ greedy dataset g 0.3
--- >         exp3pf :: [[Double]] -> [Double]
--- >         exp3pf dataset = fmap unrefine . extract $ exp3 dataset g
--- >         extract = Protolude.toList . Sequence.reverse . historyLosses
+-- >    return $ SimResult {
+-- >               t = [1 .. tmax],
+-- >               seed = Protolude.replicate tmax seed,
+-- >               greedy05 = extract $ greedy dataset g (FixedRate 0.5),
+-- >               greedy03 = extract $ greedy dataset g (FixedRate 0.3),
+-- >               greedysqrt05 = extract $ greedy dataset g (InverseSqrtRate 0.5),
+-- >               exp3pf = fmap unrefine . extract $ exp3 dataset g
+-- >             }
+-- >   where 
+-- >     extract = Protolude.toList . Sequence.reverse . historyLosses
 -- >  
--- >  newtype Reducer = Reducer {getReducer :: ([Int],[Int],[Double],[Double],[Double])}
+-- >  instance Semigroup (SimResult []) where
+-- >    x <> y = SimResult {
+-- >               t = f Main.t,
+-- >               seed = f seed, 
+-- >               greedy05 = f greedy05, 
+-- >               greedy03 = f greedy03, 
+-- >               greedysqrt05 = f greedysqrt05,
+-- >               exp3pf = f exp3pf
+-- >             }
+-- >             where f accessor = accessor x <> accessor y
 -- >  
--- >  instance Semigroup Reducer where
--- >    (getReducer -> (a,b,c,d,e)) <> (getReducer -> (a',b',c',d',e')) = Reducer (a<>a',b<>b',c<>c',d<>d',e<>e')
+-- >  instance Monoid (SimResult []) where
+-- >    mempty = SimResult mempty mempty mempty mempty mempty mempty
 -- >  
--- >  instance Monoid Reducer where
--- >    mempty = Reducer ([],[],[],[],[])
+-- >  instance ToJSON (SimResult []) where
+-- >    toJSON SimResult{..} = 
+-- >      toJSON (t, seed, greedy05, greedy03, greedysqrt05, exp3pf)
 
 -- |
--- >>>  results <- forM ([2..10] ::[Int]) simulation
--- >>>  let exported = T.unpack $ T.decodeUtf8 $ encode $ getReducer $ mconcat (Reducer <$> results)
--- >>>  [r|
--- >>>    data.frame(t(jsonlite::fromJSON(exported_hs))) %>%
--- >>>      summary %>%
--- >>>      print
--- >>>  |]
--- $expe
-
--- |
+-- >>>  results <- forM ([2..10] ::[Int]) (simulation 400)
+-- >>>  let exported = T.unpack $ T.decodeUtf8 $ encode $ mconcat results
 -- >>>  [r| data.frame(t(jsonlite::fromJSON(exported_hs))) %>%
--- >>>        rename(t = X1, iteration = X2, greedy05= X3, greedy03=X4, exp3=X5 ) %>%
+-- >>>        rename(t = X1, iteration = X2, greedy05= X3, greedy03=X4, greedysqrt05=X5,exp3=X6 ) %>%
 -- >>>        gather("strategy", "loss", -t, -iteration) %>%
 -- >>>        mutate(strategy=factor(strategy)) %>% 
 -- >>>        group_by(strategy,iteration) %>%
 -- >>>        mutate(regret = cumsum(loss-0.1)) %>% 
 -- >>>        ungroup() %>%
 -- >>>        ggplot(., aes(t, regret, color=strategy, group=interaction(strategy, iteration))) +
--- >>>          geom_line() + ylab("External Regret")
+-- >>>          geom_line(alpha=0.5) + ylab("External Regret")
 -- >>>  |]
 -- $regretPlot
 
   ) where
 import Bandit.Class
-import Bandit.Types
 import Bandit.EpsGreedy
 
 --   pass
@@ -284,6 +302,25 @@ import Bandit.EpsGreedy
 -- > Configuring library for hbandit-1.0.0..
 -- > Preprocessing library for hbandit-1.0.0..
 -- > Building library for hbandit-1.0.0..
--- > [3 of 8] Compiling Bandit.Tutorial  ( src/Bandit/Tutorial.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Tutorial.o )
--- > [4 of 8] Compiling Bandit.Class     ( src/Bandit/Class.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Class.o )
+-- > [8 of 8] Compiling Bandit.Tutorial  ( src/Bandit/Tutorial.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hbandit-1.0.0/build/Bandit/Tutorial.o )
+-- > Configuring executable 'script' for fake-package-0..
+-- > Preprocessing executable 'script' for fake-package-0..
+-- > Building executable 'script' for fake-package-0..
+-- > [1 of 1] Compiling Main             ( Main.hs, /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/fake-package-0/x/script/build/script/script-tmp/Main.o )
+-- > Linking /home/fre/workspace/hbandit/dist-newstyle/build/x86_64-linux/ghc-8.6.5/fake-package-0/x/script/build/script/script ...
+-- $eg
+-- > Action series:[True,True,False,True]
+-- > Loss series:[10.0,44.0,40.0]
+-- $summaryProblem
+-- >        V1                V2               V3        
+-- >  Min.   :0.00000   Min.   :0.2499   Min.   :0.2949  
+-- >  1st Qu.:0.02184   1st Qu.:0.4302   1st Qu.:0.5201  
+-- >  Median :0.10437   Median :0.5018   Median :0.5891  
+-- >  Mean   :0.10661   Mean   :0.5029   Mean   :0.5888  
+-- >  3rd Qu.:0.16927   3rd Qu.:0.5718   3rd Qu.:0.6598  
+-- >  Max.   :0.33667   Max.   :0.7510   Max.   :0.8877  
+-- $summaryPlot
+-- <<literate/summaryPlot.png>>
+-- $regretPlot
+-- <<literate/regretPlot.png>>
 

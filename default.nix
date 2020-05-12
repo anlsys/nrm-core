@@ -1,5 +1,5 @@
 { pkgs ? import (builtins.fetchTarball
-  "http://nixos.org/channels/nixos-20.03/nixexprs.tar.xz") { } }:
+  "https://github.com/NixOS/nixpkgs/archive/20.03.tar.gz") { } }:
 with pkgs.lib;
 
 let

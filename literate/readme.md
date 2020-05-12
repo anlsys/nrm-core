@@ -8,7 +8,7 @@ link-citations: true
 
 Safe multi-armed bandit implementations: 
 
-- Eps-Greedy (fixed rate)
+- Eps-Greedy (fixed rate, inverse squared rate)
 - Exp3 (hyperparameter-free rate from @bubeck2012regret)
 - Exp4.R @sun2017safety
 
