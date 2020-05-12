@@ -125,18 +125,19 @@ main = do
 
 ```
 
-> -- * Non-contextual
-> -- | We'll first cover the case of simple MABs that do not use context information.
+> -- | This tutorial only covers non-contextual bandit algorithms.
 >
 > -- ** Classes
 > --
-> -- | The main algorithm class for non-contextual bandits is 'Bandit'. This class gives
+> -- *** Non-contextual
+> --
+> -- | The algorithm class for non-contextual bandits is 'Bandit'. This class gives
 > -- types for a basic bandit game between a learner and an environment, where the
 > -- learner has access to a random generator and is defined via a stateful 'step'
-> -- function. All non-contetual bandit algorithms in this library are instances of this.
+> -- function.
 > Bandit.Class.Bandit(..)
 >
-> -- *** Example instance: Epsilon-Greedy
+> -- **** example instance: Epsilon-Greedy
 > --
 > -- | Let's take a look at the instance for the classic fixed-rate \(\epsilon\)-Greedy
 > -- algorithm. The necessary hyperparameters are the number of arms and the rate value,
@@ -211,16 +212,20 @@ printOnePassEG = putText $
 
 ```
 
-> -- *** Other classes
-> -- | Some other, more restrictive classes are available in [Bandit.Class](Bandit-Class.html) for convenience. See for
-> -- example 'Bandit.Class.ParameterFreeMAB', which exposes a hyperparameter-free interface for
-> -- algorithms that don't need any information besides the arm count. Those instances are not necessary
-> -- per se, and the 'Bandit' class is always sufficient. Some instances make agressive use
-> -- of type refinement through the 'Refined' package. The \(\left[0,1\right]\) interval is particularly useful:
+> -- *** Contextual 
+> --
+> -- | The algorithm class for contextual bandits is 'ContextualBandit'. This class gives
+> -- types for a bandit game between a learner and an environment with context, where the
+> -- learner has access to a random generator and is defined via a stateful 'step'
+> -- function.
 
-> ,Bandit.Types.ZeroOne
+> , Bandit.Class.ContextualBandit(..)
 
-> -- ** Algorithm comparison
+> -- | The 'ExpertRepresentation' class is used to encode experts.
+
+> , Bandit.Class.ExpertRepresentation(..)
+
+> -- ** Non-contextual algorithm comparison
 > -- | This subsection runs bandit experiments on an example dataset with some of the @Bandit@ instances.
 > -- The data for this tutorial is generated in R using the [inline-r](https://hackagehaskell.org/package/inline-r) package.
 > -- Let's define a simple problem with three gaussian arms. We will threshold all cost values to \(\left[0,1\right]\).
@@ -334,19 +339,9 @@ instance ToJSON (SimResult []) where
 
 ```
 
-```{.haskell pipe="bash execute.sh expe"}
+```{.haskell pipe="bash ggplot.sh regretPlot 20 7 "}
   results <- forM ([2..10] ::[Int]) (simulation 400)
   let exported = T.unpack $ T.decodeUtf8 $ encode $ mconcat results
-  [r|
-    data.frame(t(jsonlite::fromJSON(exported_hs))) %>%
-      rename(t = X1, iteration = X2, greedy05= X3, greedy03=X4, greedysqrt05=X5,exp3=X6 ) %>%
-      summary %>%
-      print
-  |]
-
-```
-
-```{.haskell pipe="bash ggplot.sh regretPlot 20 7 "}
   [r| data.frame(t(jsonlite::fromJSON(exported_hs))) %>%
         rename(t = X1, iteration = X2, greedy05= X3, greedy03=X4, greedysqrt05=X5,exp3=X6 ) %>%
         gather("strategy", "loss", -t, -iteration) %>%
@@ -362,7 +357,6 @@ instance ToJSON (SimResult []) where
 
 >   ) where
 > import Bandit.Class
-> import Bandit.Types
 > import Bandit.EpsGreedy
 
 ```{.haskell pipe="tee -a main.hs | awk '{print \"> -- \" $0}'"}

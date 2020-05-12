@@ -74,18 +74,19 @@ module Bandit.Tutorial (
 --         legend.box.background = element_rect(fill = "transparent") 
 --       )) |]
 
--- * Non-contextual
--- | We'll first cover the case of simple MABs that do not use context information.
+-- | This tutorial only covers non-contextual bandit algorithms.
 
 -- ** Classes
 --
--- | The main algorithm class for non-contextual bandits is 'Bandit'. This class gives
+-- *** Non-contextual
+--
+-- | The algorithm class for non-contextual bandits is 'Bandit'. This class gives
 -- types for a basic bandit game between a learner and an environment, where the
 -- learner has access to a random generator and is defined via a stateful 'step'
--- function. All non-contetual bandit algorithms in this library are instances of this.
+-- function.
 Bandit.Class.Bandit(..)
 
--- *** Example instance: Epsilon-Greedy
+-- **** example instance: Epsilon-Greedy
 --
 -- | Let's take a look at the instance for the classic fixed-rate \(\epsilon\)-Greedy
 -- algorithm. The necessary hyperparameters are the number of arms and the rate value,
@@ -154,16 +155,20 @@ Bandit.Class.Bandit(..)
 -- >>>  printOnePassEG
 -- $eg
 
--- *** Other classes
--- | Some other, more restrictive classes are available in [Bandit.Class](Bandit-Class.html) for convenience. See for
--- example 'Bandit.Class.ParameterFreeMAB', which exposes a hyperparameter-free interface for
--- algorithms that don't need any information besides the arm count. Those instances are not necessary
--- per se, and the 'Bandit' class is always sufficient. Some instances make agressive use
--- of type refinement through the 'Refined' package. The \(\left[0,1\right]\) interval is particularly useful:
+-- *** Contextual 
+--
+-- | The algorithm class for contextual bandits is 'ContextualBandit'. This class gives
+-- types for a bandit game between a learner and an environment with context, where the
+-- learner has access to a random generator and is defined via a stateful 'step'
+-- function.
 
-,Bandit.Types.ZeroOne
+, Bandit.Class.ContextualBandit(..)
 
--- ** Algorithm comparison
+-- | The 'ExpertRepresentation' class is used to encode experts.
+
+, Bandit.Class.ExpertRepresentation(..)
+
+-- ** Non-contextual algorithm comparison
 -- | This subsection runs bandit experiments on an example dataset with some of the @Bandit@ instances.
 -- The data for this tutorial is generated in R using the [inline-r](https://hackagehaskell.org/package/inline-r) package.
 -- Let's define a simple problem with three gaussian arms. We will threshold all cost values to \(\left[0,1\right]\).
@@ -271,15 +276,6 @@ Bandit.Class.Bandit(..)
 -- |
 -- >>>  results <- forM ([2..10] ::[Int]) (simulation 400)
 -- >>>  let exported = T.unpack $ T.decodeUtf8 $ encode $ mconcat results
--- >>>  [r|
--- >>>    data.frame(t(jsonlite::fromJSON(exported_hs))) %>%
--- >>>      rename(t = X1, iteration = X2, greedy05= X3, greedy03=X4, greedysqrt05=X5,exp3=X6 ) %>%
--- >>>      summary %>%
--- >>>      print
--- >>>  |]
--- $expe
-
--- |
 -- >>>  [r| data.frame(t(jsonlite::fromJSON(exported_hs))) %>%
 -- >>>        rename(t = X1, iteration = X2, greedy05= X3, greedy03=X4, greedysqrt05=X5,exp3=X6 ) %>%
 -- >>>        gather("strategy", "loss", -t, -iteration) %>%
@@ -294,7 +290,6 @@ Bandit.Class.Bandit(..)
 
   ) where
 import Bandit.Class
-import Bandit.Types
 import Bandit.EpsGreedy
 
 --   pass
@@ -318,29 +313,14 @@ import Bandit.EpsGreedy
 -- > Loss series:[10.0,44.0,40.0]
 -- $summaryProblem
 -- >        V1                V2               V3        
--- >  Min.   :0.00000   Min.   :0.2234   Min.   :0.3124  
--- >  1st Qu.:0.02779   1st Qu.:0.4327   1st Qu.:0.5324  
--- >  Median :0.09837   Median :0.4924   Median :0.6035  
--- >  Mean   :0.10480   Mean   :0.4951   Mean   :0.5999  
--- >  3rd Qu.:0.15828   3rd Qu.:0.5543   3rd Qu.:0.6707  
--- >  Max.   :0.37662   Max.   :0.7331   Max.   :0.9077  
+-- >  Min.   :0.00000   Min.   :0.2499   Min.   :0.2949  
+-- >  1st Qu.:0.02184   1st Qu.:0.4302   1st Qu.:0.5201  
+-- >  Median :0.10437   Median :0.5018   Median :0.5891  
+-- >  Mean   :0.10661   Mean   :0.5029   Mean   :0.5888  
+-- >  3rd Qu.:0.16927   3rd Qu.:0.5718   3rd Qu.:0.6598  
+-- >  Max.   :0.33667   Max.   :0.7510   Max.   :0.8877  
 -- $summaryPlot
 -- <<literate/summaryPlot.png>>
--- $expe
--- >        t           iteration     greedy05          greedy03      
--- >  Min.   :  1.0   Min.   : 2   Min.   :0.00000   Min.   :0.00000  
--- >  1st Qu.:100.8   1st Qu.: 4   1st Qu.:0.05422   1st Qu.:0.04456  
--- >  Median :200.5   Median : 6   Median :0.13669   Median :0.11669  
--- >  Mean   :200.5   Mean   : 6   Mean   :0.19376   Mean   :0.15407  
--- >  3rd Qu.:300.2   3rd Qu.: 8   3rd Qu.:0.26790   3rd Qu.:0.20092  
--- >  Max.   :400.0   Max.   :10   Max.   :0.80432   Max.   :0.80432  
--- >   greedysqrt05          exp3       
--- >  Min.   :0.00000   Min.   :0.0000  
--- >  1st Qu.:0.03851   1st Qu.:0.0435  
--- >  Median :0.10307   Median :0.1122  
--- >  Mean   :0.11850   Mean   :0.1475  
--- >  3rd Qu.:0.17220   3rd Qu.:0.1912  
--- >  Max.   :0.80432   Max.   :0.8889  
 -- $regretPlot
 -- <<literate/regretPlot.png>>
 
