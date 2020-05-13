@@ -5,6 +5,8 @@
 -- Maintainer  : fre@freux.fr
 module NRM.Types.State
   ( NRMState (..),
+    ExtraActuator (..),
+    ExtraActiveSensor (..),
 
     -- * Insertion
     insertSlice,
@@ -27,8 +29,9 @@ module NRM.Types.State
   )
 where
 
+import qualified CPD.Core as CPD
 import Control.Lens
-import Data.Aeson
+import Data.Aeson hiding ((.=))
 import Data.Data
 import Data.Generics.Labels ()
 import Data.JSON.Schema
@@ -38,7 +41,7 @@ import LensMap.Core
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
 import NRM.Slices.Singularity
-import NRM.Types.Actuator
+import qualified NRM.Types.Actuator as A
 import NRM.Types.Cmd
 import NRM.Types.CmdID as CmdID
 import NRM.Types.Controller
@@ -46,7 +49,9 @@ import NRM.Types.Process as P
 import NRM.Types.Sensor
 import NRM.Types.Slice as C
 import NRM.Types.Topology
+import Numeric.Interval
 import Protolude
+import System.Process.Typed
 
 data NRMState
   = NRMState
@@ -57,26 +62,71 @@ data NRMState
         dummyRuntime :: Maybe DummyRuntime,
         singularityRuntime :: Maybe SingularityRuntime,
         nodeosRuntime :: Maybe NodeosRuntime,
-        controller :: Maybe Controller
+        controller :: Maybe Controller,
+        extraStaticActuators :: LM.Map Text ExtraActuator,
+        extraStaticActiveSensors :: LM.Map Text ExtraActiveSensor
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
-instance HasLensMap NRMState ActuatorKey Actuator where
+data ExtraActuator
+  = ExtraActuator
+      { actuatorID :: Text,
+        actuatorBinary :: Text,
+        actuatorArguments :: [Text],
+        actions :: [CPD.Discrete],
+        referenceAction :: CPD.Discrete
+      }
+  deriving (Eq, Show, Generic, MessagePack, ToJSON, FromJSON)
+
+instance HasLensMap (Text, ExtraActuator) A.ActuatorKey A.Actuator where
+  lenses (actuatorID, _) =
+    LM.singleton
+      (A.ExtraActuatorKey actuatorID)
+      ( ScopedLens
+          (_2 . lens getter setter)
+      )
+    where
+      getter :: ExtraActuator -> A.Actuator
+      getter extraActuator = A.Actuator
+        { actions = actions extraActuator <&> CPD.getDiscrete,
+          referenceAction = CPD.getDiscrete $ referenceAction extraActuator,
+          go = \(value) -> runProcess_ $ System.Process.Typed.proc (toS $ actuatorBinary extraActuator) ((toS <$> actuatorArguments extraActuator) <> [show value])
+        }
+      setter :: ExtraActuator -> A.Actuator -> ExtraActuator
+      setter oldExtraActuator actuator = oldExtraActuator &~ do
+        #referenceAction . #_DiscreteDouble .= A.referenceAction actuator
+        #actions .= (A.actions actuator <&> CPD.DiscreteDouble)
+
+data ExtraActiveSensor
+  = ExtraActiveSensor
+      { sensorID :: Text,
+        sensorBinary :: Text,
+        arguments :: Text,
+        range :: Interval Double
+      }
+  deriving (Eq, Show, Generic, MessagePack, ToJSON, FromJSON)
+
+instance HasLensMap (Text, ExtraActiveSensor) ActiveSensorKey ActiveSensor where
+  lenses = undefined
+
+instance HasLensMap NRMState A.ActuatorKey A.Actuator where
   lenses s =
     mconcat
-      [ addPath #packages <$> lenses (view #packages s)
+      [ addPath #packages <$> lenses (packages s),
+        addPath #extraStaticActuators <$> lenses (extraStaticActuators s)
       ]
 
 instance HasLensMap NRMState ActiveSensorKey ActiveSensor where
   lenses s =
     mconcat
-      [ addPath #slices <$> lenses (view #slices s)
+      [ addPath #slices <$> lenses (slices s),
+        addPath #extraStaticActiveSensors <$> lenses (extraStaticActiveSensors s)
       ]
 
 instance HasLensMap NRMState PassiveSensorKey PassiveSensor where
   lenses s =
     mconcat
-      [ addPath #packages <$> lenses (view #packages s)
+      [ addPath #packages <$> lenses (packages s)
       ]
 
 instance JSONSchema NRMState where

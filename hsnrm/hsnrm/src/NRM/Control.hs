@@ -26,7 +26,7 @@ import Data.Generics.Labels ()
 import Data.List.NonEmpty as NE
 import Data.Map.Merge.Lazy
 import LMap.Map as LM
-import NRM.Types.Configuration as Cfg
+import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Controller
 import NRM.Types.MemBuffer as MemBuffer
 import NRM.Types.Messaging.UpstreamPub as UPub
@@ -45,7 +45,7 @@ type ControlM a = App Controller a
 -- |  basic control strategy - uses a bandit with a cartesian product
 -- of admissible actuator actions as the the decision space.
 banditCartesianProductControl ::
-  ControlCfg ->
+  Cfg.ControlCfg ->
   Problem ->
   Input ->
   Maybe [Action] ->
@@ -58,9 +58,9 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
     ([], _) -> reset
     (_, l) -> nonEmpty l & \case
       Nothing -> reset
-      Just actus -> mkActions actus (hint ccfg) & \case
+      Just actus -> mkActions actus (Cfg.hint ccfg) & \case
         Nothing ->
-          let h = show $ hint ccfg
+          let h = show $ Cfg.hint ccfg
               avail = show actus
               c = show $ allActions actus
            in logInfo
@@ -78,7 +78,7 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
         Just availableActions -> do
           logInfo "control: bandit initialization"
           g <- liftIO getStdGen
-          (b, aInitial) <- learnCfg ccfg & \case
+          (b, aInitial) <- Cfg.learnCfg ccfg & \case
             Contextual (CtxCfg hrizon) -> do
               -- per terminology of sun wen
               let riskThreshold :: ZeroOne Double
@@ -168,7 +168,7 @@ mkExperts arms = arms <&> \arm ->
     )
 
 tryControlStep ::
-  ControlCfg ->
+  Cfg.ControlCfg ->
   Problem ->
   Time ->
   Maybe [Action] ->
@@ -178,7 +178,7 @@ tryControlStep ccfg cpd t mRefActions = case CPD.Core.objectives cpd of
   os -> wrappedCStep ccfg os (CPD.Core.constraints cpd) (sensors cpd <&> range) t mRefActions
 
 wrappedCStep ::
-  ControlCfg ->
+  Cfg.ControlCfg ->
   [(ZeroOne Double, OExpr)] ->
   [(Double, OExpr)] ->
   Map SensorID (Interval Double) ->
@@ -197,7 +197,7 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
       counter <- use #referenceMeasurementCounter
       bufM <- use #bufferedMeasurements
       refM <- use #referenceMeasurements
-      let maxCounter = referenceMeasurementRoundInterval cc
+      let maxCounter = Cfg.referenceMeasurementRoundInterval cc
       -- helper bindings
       let controlStep = stepFromSqueezed stepObjectives stepConstraints sensorRanges
       let innerStep = controlStep measurements

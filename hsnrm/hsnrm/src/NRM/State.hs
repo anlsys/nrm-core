@@ -40,7 +40,7 @@ import NRM.Types.Controller
 import NRM.Types.MemBuffer as MemBuffer
 import NRM.Types.Process
 import NRM.Types.Slice
-import NRM.Types.State
+import NRM.Types.State as NRMState
 import NRM.Types.Topology
 import NRM.Types.Topology.Package
 import NRM.Types.Units
@@ -97,6 +97,8 @@ initialState c time = do
         if nodeos c
           then Just NodeosRuntime
           else Nothing,
+      extraStaticActuators = Cfg.extraStaticActuators c <&> concretizeExtraActuator,
+      extraStaticActiveSensors = Cfg.extraStaticActiveSensors c <&> concretizeExtraActiveSensor,
       ..
     }
   where
@@ -126,6 +128,12 @@ initialState c time = do
                 }
             )
             m
+
+concretizeExtraActiveSensor :: Cfg.ExtraActiveSensor -> NRMState.ExtraActiveSensor
+concretizeExtraActiveSensor = undefined
+
+concretizeExtraActuator :: Cfg.ExtraActuator -> NRMState.ExtraActuator
+concretizeExtraActuator = undefined
 
 -- | Removes a slice from the state
 removeSlice :: SliceID -> NRMState -> (Maybe Slice, NRMState)

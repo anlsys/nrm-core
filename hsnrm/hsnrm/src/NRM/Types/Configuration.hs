@@ -15,17 +15,21 @@ module NRM.Types.Configuration
     ControlCfg (..),
     RaplCfg (..),
     HwmonCfg (..),
+    ExtraActiveSensor (..),
+    ExtraActuator (..),
     jsonOptions,
     examples,
   )
 where
 
+import CPD.Core
 import Data.Aeson
 import Data.Default
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
 import Dhall
+import LMap.Map as LMap
 import NRM.Classes.Messaging
 import NRM.Orphans.Dhall ()
 import qualified NRM.Types.Cmd as Cmd
@@ -62,10 +66,31 @@ data Cfg
         raplCfg :: Maybe RaplCfg,
         hwmonCfg :: HwmonCfg,
         controlCfg :: ControlCfg,
-        activeSensorFrequency :: Frequency
+        activeSensorFrequency :: Frequency,
+        extraStaticActiveSensors :: LMap.Map Text ExtraActiveSensor,
+        extraStaticActuators :: LMap.Map Text ExtraActuator
+      }
+  deriving (Show, Generic, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
+
+data ExtraActuator
+  = ExtraActuator
+      { actuatorBinary :: Text,
+        actuatorArguments :: Text,
+        actions :: [Discrete],
+        referenceAction :: Discrete
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ExtraActuator
+
+data ExtraActiveSensor
+  = ExtraActiveSensor
+      { sensorBinary :: Text,
+        arguments :: Text,
+        range :: Interval Double
+      }
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ExtraActiveSensor
 
 data ControlCfg
   = ControlCfg
@@ -160,7 +185,9 @@ instance Default Cfg where
       hwmonCfg = def,
       verbose = NRM.Types.Configuration.Error,
       controlCfg = FixedCommand (watts 250),
-      activeSensorFrequency = 1 & hz
+      activeSensorFrequency = 1 & hz,
+      extraStaticActiveSensors = EmptyMap,
+      extraStaticActuators = EmptyMap
     }
 
 instance Default UpstreamCfg where
@@ -173,7 +200,7 @@ instance Default UpstreamCfg where
 jsonOptions :: Options
 jsonOptions = defaultOptions {omitNothingFields = True}
 
-examples :: Map Text Cfg
+examples :: Protolude.Map Text Cfg
 examples =
   [ ("default", def),
     ( "control",

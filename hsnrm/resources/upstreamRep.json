@@ -1142,7 +1142,9 @@
                                 "upstreamCfg",
                                 "hwmonCfg",
                                 "controlCfg",
-                                "activeSensorFrequency"
+                                "activeSensorFrequency",
+                                "extraStaticActiveSensors",
+                                "extraStaticActuators"
                             ],
                             "type": "object",
                             "properties": {
@@ -1394,6 +1396,65 @@
                                         }
                                     }
                                 },
+                                "extraStaticActiveSensors": {
+                                    "uniqueItems": false,
+                                    "items": {
+                                        "required": [
+                                            "sensorID",
+                                            "sensorBinary",
+                                            "arguments",
+                                            "range"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "arguments": {
+                                                "type": "string"
+                                            },
+                                            "range": {
+                                                "oneOf": [
+                                                    {
+                                                        "required": [
+                                                            "i"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "i": {
+                                                                "items": [
+                                                                    {
+                                                                        "type": "number"
+                                                                    },
+                                                                    {
+                                                                        "type": "number"
+                                                                    }
+                                                                ],
+                                                                "type": "array"
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "required": [
+                                                            "empty"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "empty": {
+                                                                "type": "object",
+                                                                "properties": {}
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "sensorID": {
+                                                "type": "string"
+                                            },
+                                            "sensorBinary": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "array"
+                                },
                                 "libnrmPath": {
                                     "type": "string"
                                 },
@@ -1422,6 +1483,33 @@
                                 },
                                 "hwloc": {
                                     "type": "string"
+                                },
+                                "extraStaticActuators": {
+                                    "uniqueItems": false,
+                                    "items": {
+                                        "required": [
+                                            "actuatorID",
+                                            "actuatorBinary",
+                                            "actions"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "actuatorBinary": {
+                                                "type": "string"
+                                            },
+                                            "actions": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "number"
+                                                },
+                                                "type": "array"
+                                            },
+                                            "actuatorID": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    },
+                                    "type": "array"
                                 },
                                 "raplCfg": {
                                     "required": [

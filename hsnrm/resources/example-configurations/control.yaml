@@ -27,6 +27,7 @@ upstreamCfg:
   upstreamBindAddress: '*'
   rpcPort: 3456
   pubPort: 2345
+extraStaticActiveSensors: []
 libnrmPath: null
 activeSensorFrequency:
   fromHz: 1
@@ -36,6 +37,7 @@ downstreamCfg:
   downstreamBindAddress: ipc:///tmp/nrm-downstream-event
 nodeos: false
 hwloc: hwloc
+extraStaticActuators: []
 raplCfg:
   referencePower:
     fromuW: 2.5e8

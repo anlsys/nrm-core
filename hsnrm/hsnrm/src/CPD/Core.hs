@@ -73,7 +73,7 @@ import Protolude hiding (Map)
 import Refined
 
 -- METADATA
-newtype Discrete = DiscreteDouble Double
+newtype Discrete = DiscreteDouble { getDiscrete :: Double }
   deriving
     ( Show,
       Eq,

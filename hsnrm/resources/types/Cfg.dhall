@@ -78,4 +78,17 @@
     >
 , activeSensorFrequency :
     { fromHz : Double }
+, extraStaticActiveSensors :
+    List
+    { sensorID :
+        Text
+    , sensorBinary :
+        Text
+    , arguments :
+        Text
+    , range :
+        < I : { _1 : Double, _2 : Double } | Empty >
+    }
+, extraStaticActuators :
+    List { actuatorID : Text, actuatorBinary : Text, actions : List Double }
 }

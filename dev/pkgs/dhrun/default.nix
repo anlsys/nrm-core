@@ -1,4 +1,4 @@
-{ mkDerivation, aeson, aeson-extra, aeson-pretty, ansi-terminal, base
+{ mkDerivation, fetchgit, aeson, aeson-extra, aeson-pretty, ansi-terminal, base
 , bytestring, conduit, conduit-extra, containers, data-default, dhall
 , dhall-json, directory, filepath, generic-lens, generic-random, Glob, hspec
 , lens, mtl, neat-interpolation, optparse-applicative, prettyprinter, process
@@ -8,7 +8,11 @@
 mkDerivation {
   pname = "dhrun";
   version = "1.0.1";
-  inherit src;
+  src = fetchgit {
+    url = "https://github.com/freuk/dhrun.git";
+    rev = "929598cbc19b2aa922ede50a37d9045bc29e1adf";
+    sha256 = "2GfjN60NJrr1LlohXkps35QKhDJEV3wwWvAatfRmdS0=";
+  };
   isLibrary = false;
   isExecutable = true;
   libraryHaskellDepends = [
@@ -66,6 +70,11 @@ mkDerivation {
     yaml
   ];
   doHaddock = false;
+  doCheck = false;
+  postInstall = ''
+    mkdir -p $out/share/
+    cp -r resources $out/share/
+  '';
   description = "Dhall/YAML configurable concurrent integration test executor";
   license = stdenv.lib.licenses.mit;
 }

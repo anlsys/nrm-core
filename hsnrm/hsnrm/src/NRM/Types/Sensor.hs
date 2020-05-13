@@ -82,7 +82,7 @@ instance HasMeta ActiveSensor where
 
 data Cumulative = Cumulative | IntervalBased | CumulativeWithCapacity Double
 
-data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | DownstreamThreadKey DownstreamThreadID
+data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | DownstreamThreadKey DownstreamThreadID | ExtraActiveSensorKey Text
   deriving (Ord, Eq, Show)
 
 data PassiveSensorKey = RaplKey PackageID | Misc'

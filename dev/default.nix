@@ -29,27 +29,9 @@ let
               hsnrm = super.callCabal2nix "hsnrm" ../hsnrm/hsnrm { };
               hsnrm-bin =
                 super.callCabal2nix "hsnrm-bin" ../hsnrm/hsnrm-bin { };
-              hbandit = self.callPackage (./pkgs/hbandit) {
-                src = pkgs.fetchurl {
-                  url =
-                    "https://xgitlab.cels.anl.gov/argo/hbandit/-/archive/master/hbandit-master.tar.gz";
-                  sha256 =
-                    "05dcwnfmn01q953rrrpadfx7ax3ppxkzvcx2y701wpyfjarsbqmv";
-                };
-              };
-              dhrun = (self.callPackage (./pkgs/dhrun) {
-                src = pkgs.fetchgit {
-                  url = "https://github.com/freuk/dhrun.git";
-                  rev = "929598cbc19b2aa922ede50a37d9045bc29e1adf";
-                  sha256 = "2GfjN60NJrr1LlohXkps35QKhDJEV3wwWvAatfRmdS0=";
-                };
-              }).overrideAttrs (old: {
-                doCheck = false;
-                installPhase = old.installPhase + ''
-                  mkdir -p $out/share/
-                  cp -r resources $out/share/
-                '';
-              });
+              hbandit = self.callPackage ./pkgs/hbandit { };
+              dhrun = self.callPackage ./pkgs/dhrun { };
+
               regex = doJailbreak super.regex;
               json-schema =
                 dontCheck (unmarkBroken (doJailbreak super.json-schema));

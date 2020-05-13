@@ -25,6 +25,7 @@
         "rpcPort": 3456,
         "pubPort": 2345
     },
+    "extraStaticActiveSensors": [],
     "libnrmPath": null,
     "activeSensorFrequency": {
         "fromHz": 1
@@ -36,6 +37,7 @@
     },
     "nodeos": false,
     "hwloc": "hwloc",
+    "extraStaticActuators": [],
     "raplCfg": {
         "referencePower": {
             "fromuW": 250000000

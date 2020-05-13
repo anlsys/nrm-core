@@ -1,7 +1,11 @@
-{ mkDerivation, base, generic-lens, intervals, lens, MonadRandom, protolude
-, random, refined, stdenv, src }:
+{ mkDerivation, fetchurl, base, generic-lens, intervals, lens, MonadRandom
+, protolude, random, refined, stdenv }:
 mkDerivation {
-  inherit src;
+  src = fetchurl {
+    url =
+      "https://xgitlab.cels.anl.gov/argo/hbandit/-/archive/master/hbandit-master.tar.gz";
+    sha256 = "05dcwnfmn01q953rrrpadfx7ax3ppxkzvcx2y701wpyfjarsbqmv";
+  };
   pname = "hbandit";
   version = "1.0.0";
   libraryHaskellDepends =
