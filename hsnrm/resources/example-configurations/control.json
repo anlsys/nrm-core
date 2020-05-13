@@ -1,4 +1,5 @@
 {
+    "extraStaticPassiveSensors": [],
     "pmpi_lib": "pmpi_lib",
     "verbose": "Error",
     "logfile": "/tmp/nrm.log",
@@ -25,7 +26,6 @@
         "rpcPort": 3456,
         "pubPort": 2345
     },
-    "extraStaticActiveSensors": [],
     "libnrmPath": null,
     "activeSensorFrequency": {
         "fromHz": 1

@@ -7,6 +7,7 @@
 #
 #     this file is generated, modifications will be erased.
 #
+extraStaticPassiveSensors: []
 pmpi_lib: pmpi_lib
 verbose: Error
 logfile: /tmp/nrm.log
@@ -27,7 +28,6 @@ upstreamCfg:
   upstreamBindAddress: '*'
   rpcPort: 3456
   pubPort: 2345
-extraStaticActiveSensors: []
 libnrmPath: null
 activeSensorFrequency:
   fromHz: 1

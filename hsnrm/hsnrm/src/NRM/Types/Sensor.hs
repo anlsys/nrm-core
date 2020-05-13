@@ -1,3 +1,5 @@
+{-# LANGUAGE DerivingVia #-}
+
 -- |
 --
 -- Module      : NRM.Types.Sensor
@@ -25,7 +27,12 @@ where
 
 import qualified CPD.Core as CPD
 import Control.Lens
+import Data.Aeson
 import Data.Generics.Labels ()
+import Data.JSON.Schema
+import Data.MessagePack
+import Dhall
+import NRM.Classes.Messaging
 import NRM.Classes.Sensors
 import NRM.Types.DownstreamCmdID
 import NRM.Types.DownstreamThreadID
@@ -43,7 +50,8 @@ data Tag
   | DownstreamCmdSignal
   | Minimize
   | Maximize
-  deriving (Eq, Show)
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Tag
 
 data SensorMeta
   = SensorMeta
@@ -82,10 +90,10 @@ instance HasMeta ActiveSensor where
 
 data Cumulative = Cumulative | IntervalBased | CumulativeWithCapacity Double
 
-data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | DownstreamThreadKey DownstreamThreadID | ExtraActiveSensorKey Text
+data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | DownstreamThreadKey DownstreamThreadID
   deriving (Ord, Eq, Show)
 
-data PassiveSensorKey = RaplKey PackageID | Misc'
+data PassiveSensorKey = RaplKey PackageID | ExtraPassiveSensorKey Text
   deriving (Ord, Eq, Show)
 
 data SensorKey = AKey ActiveSensorKey | PKey PassiveSensorKey

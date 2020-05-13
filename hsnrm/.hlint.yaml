@@ -6,6 +6,7 @@
 - extensions:
   - default: false
   - name: [DerivingVia]
+  - name: [NoOverloadedLists]
   - name: [QuasiQuotes]
   - name: [ScopedTypeVariables]
 

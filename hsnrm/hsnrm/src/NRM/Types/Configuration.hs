@@ -15,7 +15,7 @@ module NRM.Types.Configuration
     ControlCfg (..),
     RaplCfg (..),
     HwmonCfg (..),
-    ExtraActiveSensor (..),
+    ExtraPassiveSensor (..),
     ExtraActuator (..),
     jsonOptions,
     examples,
@@ -29,11 +29,12 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
 import Dhall
-import LMap.Map as LMap
+import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.Dhall ()
 import qualified NRM.Types.Cmd as Cmd
 import NRM.Types.Controller
+import NRM.Types.Sensor
 import NRM.Types.Units
 import Protolude
 import Refined
@@ -67,8 +68,8 @@ data Cfg
         hwmonCfg :: HwmonCfg,
         controlCfg :: ControlCfg,
         activeSensorFrequency :: Frequency,
-        extraStaticActiveSensors :: LMap.Map Text ExtraActiveSensor,
-        extraStaticActuators :: LMap.Map Text ExtraActuator
+        extraStaticPassiveSensors :: LM.Map Text ExtraPassiveSensor,
+        extraStaticActuators :: LM.Map Text ExtraActuator
       }
   deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
@@ -76,21 +77,22 @@ data Cfg
 data ExtraActuator
   = ExtraActuator
       { actuatorBinary :: Text,
-        actuatorArguments :: Text,
+        actuatorArguments :: [Text],
         actions :: [Discrete],
         referenceAction :: Discrete
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ExtraActuator
 
-data ExtraActiveSensor
-  = ExtraActiveSensor
+data ExtraPassiveSensor
+  = ExtraPassiveSensor
       { sensorBinary :: Text,
-        arguments :: Text,
-        range :: Interval Double
+        sensorArguments :: [Text],
+        range :: Interval Double,
+        tags :: [Tag]
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ExtraActiveSensor
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ExtraPassiveSensor
 
 data ControlCfg
   = ControlCfg
@@ -186,7 +188,7 @@ instance Default Cfg where
       verbose = NRM.Types.Configuration.Error,
       controlCfg = FixedCommand (watts 250),
       activeSensorFrequency = 1 & hz,
-      extraStaticActiveSensors = EmptyMap,
+      extraStaticPassiveSensors = EmptyMap,
       extraStaticActuators = EmptyMap
     }
 

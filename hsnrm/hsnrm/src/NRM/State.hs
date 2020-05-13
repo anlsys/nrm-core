@@ -1,10 +1,11 @@
 -- |
--- Module      : NRM.State
 -- Copyright   : (c) 2019, UChicago Argonne, LL
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.State
-  ( -- * Initial state
+  ( -- Module      : NRM.State
+
+    -- * Initial state
     initialState,
 
     -- * Creation/Registration
@@ -97,8 +98,8 @@ initialState c time = do
         if nodeos c
           then Just NodeosRuntime
           else Nothing,
-      extraStaticActuators = Cfg.extraStaticActuators c <&> concretizeExtraActuator,
-      extraStaticActiveSensors = Cfg.extraStaticActiveSensors c <&> concretizeExtraActiveSensor,
+      extraStaticActuators = Cfg.extraStaticActuators c <&> NRMState.ExtraActuator,
+      extraStaticPassiveSensors = Cfg.extraStaticPassiveSensors c <&> concretizeExtraPassiveSensor (activeSensorFrequency c),
       ..
     }
   where
@@ -129,11 +130,13 @@ initialState c time = do
             )
             m
 
-concretizeExtraActiveSensor :: Cfg.ExtraActiveSensor -> NRMState.ExtraActiveSensor
-concretizeExtraActiveSensor = undefined
-
-concretizeExtraActuator :: Cfg.ExtraActuator -> NRMState.ExtraActuator
-concretizeExtraActuator = undefined
+concretizeExtraPassiveSensor :: Frequency -> Cfg.ExtraPassiveSensor -> NRMState.ExtraPassiveSensor
+concretizeExtraPassiveSensor f x = NRMState.ExtraPassiveSensor
+  { NRMState.extraPassiveSensor = x,
+    NRMState.history = [],
+    NRMState.lastRead = Nothing,
+    NRMState.frequency = f
+  }
 
 -- | Removes a slice from the state
 removeSlice :: SliceID -> NRMState -> (Maybe Slice, NRMState)

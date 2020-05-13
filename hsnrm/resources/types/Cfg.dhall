@@ -78,17 +78,41 @@
     >
 , activeSensorFrequency :
     { fromHz : Double }
-, extraStaticActiveSensors :
+, extraStaticPassiveSensors :
     List
-    { sensorID :
+    { _1 :
         Text
-    , sensorBinary :
-        Text
-    , arguments :
-        Text
-    , range :
-        < I : { _1 : Double, _2 : Double } | Empty >
+    , _2 :
+        { sensorBinary :
+            Text
+        , sensorArguments :
+            List Text
+        , range :
+            < I : { _1 : Double, _2 : Double } | Empty >
+        , tags :
+            List
+            < Power
+            | Rapl
+            | DownstreamThreadSignal
+            | DownstreamCmdSignal
+            | Minimize
+            | Maximize
+            >
+        }
     }
 , extraStaticActuators :
-    List { actuatorID : Text, actuatorBinary : Text, actions : List Double }
+    List
+    { _1 :
+        Text
+    , _2 :
+        { actuatorBinary :
+            Text
+        , actuatorArguments :
+            List Text
+        , actions :
+            List Double
+        , referenceAction :
+            Double
+        }
+    }
 }

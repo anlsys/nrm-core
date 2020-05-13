@@ -136,6 +136,8 @@ library
         base -any,
         hbandit -any,
         protolude -any,
+        scientific -any,
+        megaparsec -any,
         enclosed-exceptions -any,
         MonadRandom -any,
         mtl-compat -any,

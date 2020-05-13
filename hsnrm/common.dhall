@@ -101,6 +101,8 @@ let deps =
           nobound "pretty-simple"
       , protolude =
           nobound "protolude"
+      , scientific =
+          nobound "scientific"
       , generic-deriving =
           nobound "generic-deriving"
       , typed-process =
@@ -211,8 +213,8 @@ let deps =
           nobound "vector"
       , json-schema =
           nobound "json-schema"
-      , ffi-nh2 =
-          nobound "ffi-nh2"
+      , megaparsec =
+          nobound "megaparsec"
       }
 
 let modules =
@@ -308,6 +310,8 @@ let libdep =
       [ deps.base
       , deps.hbandit
       , deps.protolude
+      , deps.scientific
+      , deps.megaparsec
       , deps.enclosed-exceptions
       , deps.monadRandom
       , deps.mtl-compat

@@ -67,9 +67,9 @@ throughputConstrained cfg st =
     idsToMinimize :: Maybe (NonEmpty SensorID)
     idsToMinimize = nonEmpty (fst <$> LM.toList toMinimize)
     toMinimize :: Map SensorID SensorMeta
-    toMinimize = LM.filterWithKey (\_ m -> Power `elem` tags m) allSensorMeta
+    toMinimize = LM.filterWithKey (\_ m -> Power `elem` S.tags m) allSensorMeta
     constrained :: Map SensorID SensorMeta
-    constrained = LM.filterWithKey (\_ m -> DownstreamCmdSignal `elem` tags m) allSensorMeta
+    constrained = LM.filterWithKey (\_ m -> DownstreamCmdSignal `elem` S.tags m) allSensorMeta
     allSensorMeta :: Map SensorID S.SensorMeta
     allSensorMeta =
       LM.fromList

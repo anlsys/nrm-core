@@ -6,7 +6,7 @@
 module NRM.Types.State
   ( NRMState (..),
     ExtraActuator (..),
-    ExtraActiveSensor (..),
+    ExtraPassiveSensor (..),
 
     -- * Insertion
     insertSlice,
@@ -32,10 +32,12 @@ where
 import qualified CPD.Core as CPD
 import Control.Lens
 import Data.Aeson hiding ((.=))
+import Data.Coerce
 import Data.Data
 import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.MessagePack
+import Data.Scientific
 import LMap.Map as LM
 import LensMap.Core
 import NRM.Slices.Dummy
@@ -44,14 +46,19 @@ import NRM.Slices.Singularity
 import qualified NRM.Types.Actuator as A
 import NRM.Types.Cmd
 import NRM.Types.CmdID as CmdID
+import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Controller
+import NRM.Types.MemBuffer
 import NRM.Types.Process as P
-import NRM.Types.Sensor
+import NRM.Types.Sensor as S
 import NRM.Types.Slice as C
 import NRM.Types.Topology
-import Numeric.Interval
+import NRM.Types.Units
 import Protolude
 import System.Process.Typed
+import Text.Megaparsec
+import Text.Megaparsec.Char
+import qualified Text.Megaparsec.Char.Lexer as L
 
 data NRMState
   = NRMState
@@ -64,19 +71,24 @@ data NRMState
         nodeosRuntime :: Maybe NodeosRuntime,
         controller :: Maybe Controller,
         extraStaticActuators :: LM.Map Text ExtraActuator,
-        extraStaticActiveSensors :: LM.Map Text ExtraActiveSensor
+        extraStaticPassiveSensors :: LM.Map Text ExtraPassiveSensor
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
-data ExtraActuator
-  = ExtraActuator
-      { actuatorID :: Text,
-        actuatorBinary :: Text,
-        actuatorArguments :: [Text],
-        actions :: [CPD.Discrete],
-        referenceAction :: CPD.Discrete
-      }
-  deriving (Eq, Show, Generic, MessagePack, ToJSON, FromJSON)
+newtype ExtraActuator = ExtraActuator {getExtraActuator :: Cfg.ExtraActuator}
+  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
+
+type Parser = Parsec Void Text
+
+sc :: Parser ()
+sc =
+  L.space
+    space1 -- (2)
+    (L.skipLineComment "//") -- (3)
+    (L.skipBlockComment "/*" "*/") -- (4)
+
+lexeme :: Parser a -> Parser a
+lexeme = L.lexeme sc
 
 instance HasLensMap (Text, ExtraActuator) A.ActuatorKey A.Actuator where
   lenses (actuatorID, _) =
@@ -87,27 +99,63 @@ instance HasLensMap (Text, ExtraActuator) A.ActuatorKey A.Actuator where
       )
     where
       getter :: ExtraActuator -> A.Actuator
-      getter extraActuator = A.Actuator
-        { actions = actions extraActuator <&> CPD.getDiscrete,
-          referenceAction = CPD.getDiscrete $ referenceAction extraActuator,
-          go = \(value) -> runProcess_ $ System.Process.Typed.proc (toS $ actuatorBinary extraActuator) ((toS <$> actuatorArguments extraActuator) <> [show value])
+      getter (coerce -> extraActuator) = A.Actuator
+        { actions = Cfg.actions extraActuator <&> CPD.getDiscrete,
+          referenceAction = CPD.getDiscrete $ Cfg.referenceAction extraActuator,
+          go = \value -> runProcess_ $ System.Process.Typed.proc (toS $ Cfg.actuatorBinary extraActuator) ((toS <$> Cfg.actuatorArguments extraActuator) <> [show value])
         }
       setter :: ExtraActuator -> A.Actuator -> ExtraActuator
-      setter oldExtraActuator actuator = oldExtraActuator &~ do
-        #referenceAction . #_DiscreteDouble .= A.referenceAction actuator
-        #actions .= (A.actions actuator <&> CPD.DiscreteDouble)
+      setter (getExtraActuator -> oldExtraActuator) actuator = coerce $
+        oldExtraActuator &~ do
+          #referenceAction . #_DiscreteDouble .= A.referenceAction actuator
+          #actions .= (A.actions actuator <&> CPD.DiscreteDouble)
 
-data ExtraActiveSensor
-  = ExtraActiveSensor
-      { sensorID :: Text,
-        sensorBinary :: Text,
-        arguments :: Text,
-        range :: Interval Double
+data ExtraPassiveSensor
+  = ExtraPassiveSensor
+      { extraPassiveSensor :: Cfg.ExtraPassiveSensor,
+        lastRead :: Maybe (Time, Double),
+        frequency :: Frequency,
+        history :: MemBuffer Double
       }
   deriving (Eq, Show, Generic, MessagePack, ToJSON, FromJSON)
 
-instance HasLensMap (Text, ExtraActiveSensor) ActiveSensorKey ActiveSensor where
-  lenses = undefined
+instance HasLensMap (Text, ExtraPassiveSensor) PassiveSensorKey PassiveSensor where
+  lenses (sensorID, _) =
+    LM.singleton
+      (S.ExtraPassiveSensorKey sensorID)
+      ( ScopedLens
+          (_2 . lens getter setter)
+      )
+    where
+      getter :: ExtraPassiveSensor -> S.PassiveSensor
+      getter ExtraPassiveSensor {..} =
+        S.PassiveSensor
+          { passiveMeta = S.SensorMeta
+              { tags = Cfg.tags extraPassiveSensor,
+                range = Cfg.range extraPassiveSensor,
+                lastReferenceMeasurements = history,
+                last = lastRead,
+                cumulative = S.IntervalBased
+              },
+            frequency = frequency,
+            perform =
+              -- this megaparsec-based code might be given a module and improved if/when the
+              -- need arises
+              fmap toRealFloat
+                . parseMaybe (lexeme L.scientific)
+                . toS
+                <$> readProcessStdout_
+                  ( System.Process.Typed.proc
+                      (toS $ Cfg.sensorBinary extraPassiveSensor)
+                      (toS <$> Cfg.sensorArguments extraPassiveSensor)
+                  )
+          }
+      setter :: ExtraPassiveSensor -> S.PassiveSensor -> ExtraPassiveSensor
+      setter p passiveSensor =
+        p &~ do
+          #extraPassiveSensor . #range .= passiveSensor ^. S._meta . #range
+          #history .= passiveSensor ^. S._meta . #lastReferenceMeasurements
+          #lastRead .= passiveSensor ^. S._meta . #last
 
 instance HasLensMap NRMState A.ActuatorKey A.Actuator where
   lenses s =
@@ -119,14 +167,14 @@ instance HasLensMap NRMState A.ActuatorKey A.Actuator where
 instance HasLensMap NRMState ActiveSensorKey ActiveSensor where
   lenses s =
     mconcat
-      [ addPath #slices <$> lenses (slices s),
-        addPath #extraStaticActiveSensors <$> lenses (extraStaticActiveSensors s)
+      [ addPath #slices <$> lenses (slices s)
       ]
 
 instance HasLensMap NRMState PassiveSensorKey PassiveSensor where
   lenses s =
     mconcat
-      [ addPath #packages <$> lenses (packages s)
+      [ addPath #packages <$> lenses (packages s),
+        addPath #extraStaticPassiveSensors <$> lenses (extraStaticPassiveSensors s)
       ]
 
 instance JSONSchema NRMState where

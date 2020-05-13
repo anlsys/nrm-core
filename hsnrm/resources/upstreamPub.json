@@ -908,11 +908,19 @@
                                                 "type": "string"
                                             },
                                             {
-                                                "uniqueItems": false,
-                                                "items": {
-                                                    "type": "number"
-                                                },
-                                                "type": "array"
+                                                "required": [
+                                                    "getMemBuffer"
+                                                ],
+                                                "type": "object",
+                                                "properties": {
+                                                    "getMemBuffer": {
+                                                        "uniqueItems": false,
+                                                        "items": {
+                                                            "type": "number"
+                                                        },
+                                                        "type": "array"
+                                                    }
+                                                }
                                             }
                                         ],
                                         "type": "array"
