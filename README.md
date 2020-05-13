@@ -1,10 +1,10 @@
-# NRM monorepo
+# NRM
 
 ## User Documentation
 
 - [User documentation](http://hnrm.readthedocs.io)
 
-## Installation/Quickstart
+## Installation
 
 All the following instructions suppose using a local clone:
 
@@ -15,7 +15,7 @@ git clone https://xgitlab.cels.anl.gov/argo/hnrm.git
 - local nix build: `nix-build -A nrm`
 - local nix profile install: `nix-env -f. -iA nrm`
 
-## Development/Local builds
+## Development
 
 - building: `make`
 - running CI jobs locally: `make ci-<jobname>` or all jobs using `make ci`
