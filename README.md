@@ -17,10 +17,8 @@ git clone https://xgitlab.cels.anl.gov/argo/hnrm.git
 
 ## Development/Local builds
 
-- building: make
+- building: `make`
 - running CI jobs locally: `make ci-<jobname>` or all jobs using `make ci`
   (requires gitlab-runner)
-- entering a development shell : `nix-shell`
-
-The appropriate Nix `shellHooks` are in place for the `nrm` and `nrmd` aliases
-to be used on the CLI. 
+- entering a development shell : `nix-shell`. The appropriate `shellHooks` are
+  in place for the `nrm` and `nrmd` aliases to be used on the CLI. 
