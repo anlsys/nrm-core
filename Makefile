@@ -111,6 +111,8 @@ libnrm/src/nrm_messaging.h: hsnrm/resources
 
 ############################# SECTION: libnrm pseudo-recursive targets (actual directory uses autotools)
 
+libnrm/all: libnrm/autotools
+
 .PHONY: libnrm/autotools
 libnrm/autotools: libnrm/src/nrm_messaging.h
 	nix-shell -E '
