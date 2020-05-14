@@ -1,9 +1,0 @@
-[submodule "hsnrm/hbandit"]
-	path = hsnrm/hbandit
-	url = https://xgitlab.cels.anl.gov/argo/hbandit.git
-[submodule "hsnrm/dhall-haskell"]
-	path = hsnrm/dhall-haskell
-	url = https://github.com/freuk/dhall-haskell.git
-[submodule "dev/hnrm-experiments"]
-	path = dev/hnrm-experiments
-	url = https://xgitlab.cels.anl.gov/argo/hnrm-experiments.git

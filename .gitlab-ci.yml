@@ -1,312 +1,154 @@
-variables:
-  GIT_SUBMODULE_STRATEGY: recursive
-
-stages:
-  - source
-  - build
-  - tests
-  - vendoring
-  - deploy
-
-ormolu:
-  stage: source
+#automatically generated from .gitlab-ci.dhall, changes will be erased.
+nix/stream:
+  stage: build
+  script: nix-build -A stream --no-build-output
   tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell --pure -E '
-        let pkgs = (import ./. {});
-        in pkgs.mkShell {
-          buildInputs = [pkgs.fd pkgs.ormolu];
-          shellHook =
-            "export LOCALE_ARCHIVE=${pkgs.glibcLocales}/lib/locale/locale-archive \n" +
-            "export LANG=en_US.UTF-8";
-        }
-      ' --run bash <<< '
-        RETURN=0
-        for F in $(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e hs); do
-          ormolu -o -XTypeApplications -o -XPatternSynonyms -m check $F
-          if [ $? -ne 0 ]; then
-            echo "[!] $F does not pass ormolu haskell format check." >&2
-            RETURN=1
-          fi
-        done
-        if [ $RETURN -ne 0 ]; then exit 1; fi
-      '
-
+  - nix
+  - kvm
+nix/hsnrm-bin:
+  stage: build
+  script: nix-build -A haskellPackages.hsnrm-bin --no-build-output
+  tags:
+  - nix
+  - kvm
+notebooks:
+  stage: test
+  script: nix-shell -p gnumake --run 'make notebooks'
+  tags:
+  - nix
+  - kvm
+libnrm/autotools:
+  stage: build
+  script: nix-shell -p gnumake --run 'make libnrm/autotools'
+  tags:
+  - nix
+  - kvm
+hsnrm/shellcheck:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/shellcheck'
+  tags:
+  - nix
+  - kvm
 shellcheck:
   stage: source
+  script: nix-shell -p gnumake --run 'make shellcheck'
   tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell --pure -p '(import ./. {}).fd' -p '(import ./. {}).shellcheck' --run bash <<< '
-        RETURN=0
-        files=$(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e sh)
-        for F in $files; do
-          shellcheck -s bash $F
-          if [ $? -ne 0 ]; then
-            echo "[!] $F does not pass shellcheck." >&2
-            RETURN=1
-          fi
-        done
-        if [ $RETURN -ne 0 ]; then exit 1; fi
-      '
-
-hlint:
-  stage: source
-  tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell --pure -p '(import ./. {}).hlint' --run bash <<< '
-        hlint hsnrm/nrm/ --hint=hsnrm/.hlint.yaml
-        hlint hsnrm/bin/ --hint=hsnrm/.hlint.yaml
-      '
-
-black:
-  stage: source
-  tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell --pure -p '(import ./. {}).python37Packages.black' --run bash <<< '
-        set -e
-        black pynrm/bin/* --check
-        black pynrm/nrm/*.py --check
-      '
-
-clang-format:
-  stage: source
-  tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell --pure -p '(import ./. {}).fd' '(import ./. {}).clang-tools' --run bash <<< '
-        RETURN=0
-        for F in $(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e c); do
-          clang-format < $F | cmp -s $F -
-          if [ $? -ne 0 ]; then
-            echo "[!] $F does not pass clang-format format check." >&2
-            RETURN=1
-          fi
-        done
-        if [ $RETURN -ne 0 ]; then exit 1; fi
-      '
-
-dhall-format:
-  stage: source
-  tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell --pure -p '(import ./. {}).fd' '(import ./. {}).haskellPackages.dhall' --run bash <<< '
-        RETURN=0
-        for F in $(fd -E hsnrm/hbandit -E hsnrm/dhall-haskell -e dhall); do
-          dhall format < $F | cmp -s $F -
-          if [ $? -ne 0 ]; then
-            echo "[!] $F does not pass clang-format format check." >&2
-            RETURN=1
-          fi
-        done
-        if [ $RETURN -ne 0 ]; then exit 1; fi
-      '
-
-nix-build:nrm.so:
+  - nix
+  - kvm
+nix/pynrm:
   stage: build
+  script: nix-build -A pythonPackages.pynrm --no-build-output
   tags:
-    - kvm
-    - nix
-  script: nix-build -A haskellPackages.nrmlib --no-build-output
-
-nix-build:hs-nrmbin:
-  stage: build
-  tags:
-    - kvm
-    - nix
-  script: nix-build -A haskellPackages.nrmbin --no-build-output
-
-vendoring:copy:
-  stage: source
-  artifacts:
-    paths:
-      - tmpdoc
-      - tmpresources
-  tags:
-    - kvm
-    - nix
-  script:
-    - cp -r doc/ tmpdoc
-    - cp -r resources/ tmpresources
-
-make:codegen:
-  stage: build
-  artifacts:
-    paths:
-      - resources
-  tags:
-    - kvm
-    - nix
-  script:
-    - nix-shell -p 'gnumake' --run "make codegen"
-
-make:doc:
-  stage: build
-  artifacts:
-    paths:
-      - doc
-  tags:
-    - kvm
-    - nix
-  script:
-    - nix-shell -p 'gnumake' --run "make doc"
-
-make:pyclient:
-  stage: build
-  artifacts:
-    paths:
-      - .build
-  tags:
-    - kvm
-    - nix
-  script:
-    - nix-shell -p 'gnumake' --run "make pyclient"
-
-make:build:
-  stage: build
-  artifacts:
-    paths:
-      - .build
-  tags:
-    - kvm
-    - nix
-  script:
-    - nix-shell -p 'gnumake' --run "make build"
-
-notebooks:
-  stage: tests
-  artifacts:
-    paths:
-      - doc
-  tags:
-    - kvm
-    - nix
-  script:
-    - nix-shell -p 'gnumake' --run "make notebooks"
-
-vendoring:haddock:
-  stage: vendoring
-  dependencies:
-    - vendoring:copy
-    - notebooks
-  tags:
-    - kvm
-    - nix
-  script:
-    - diff -r doc/nrm.so tmpdoc/nrm.so
-
-vendoring:resources:
-  stage: vendoring
-  dependencies:
-    - vendoring:copy
-    - make:codegen
-  tags:
-    - kvm
-    - nix
-  script:
-    - diff -r resources tmpresources
-
-nix-build:resources:
-  stage: build
-  tags:
-    - kvm
-    - nix
-  script: nix-build -A resources --no-build-output
-
-autotools:libnrm:
-  stage: build
-  tags:
-    - kvm
-    - nix
-  script:
-    - |
-      nix-shell -E '
-        let pkgs = (import ./default.nix {});
-        in pkgs.libnrm.overrideAttrs (o:{
-          preBuild="";
-        })
-      ' --run bash <<< '
-        set -e
-        cd libnrm
-        ./autogen.sh
-        ./configure --enable-pmpi CC=mpicc FC=mpifort CFLAGS=-fopenmp
-        make
-      '
-
-nix-build:libnrm:
-  stage: build
-  tags:
-    - kvm
-    - nix
-  script: nix-build -A libnrm --no-build-output
-
-nix-build:pynrm:
-  stage: build
-  tags:
-    - kvm
-    - nix
-  script: nix-build -A pynrm --no-build-output
-
-nix-build:app-stream:
-  stage: build
-  tags:
-    - kvm
-    - nix
-  script: nix-build -A stream --no-build-output
-
-nix-build:nrmFull:
-  stage: build
-  tags:
-    - kvm
-    - nix
-  script: nix-build -A nrm --no-build-output
-
-dhrun:hello:
-  stage: tests
-  tags:
-    - kvm
-    - nix
-  script: nix-shell -p gnumake --run "make dhrun-hello"
-
-dhrun:exitcode:
-  stage: tests
-  tags:
-    - kvm
-    - nix
-  script: nix-shell -p gnumake --run "make dhrun-exitcode"
-
-dhrun:listen:
-  stage: tests
-  tags:
-    - kvm
-    - nix
-  script: nix-shell -p gnumake --run "make dhrun-listen"
-
+  - nix
+  - kvm
 readthedocs:
   stage: deploy
-  when: on_success
   only:
-    - master
-    - staging
-  tags:
-    - kvm
-    - nix
+  - master
   script:
-    - echo "token=$RTD_TOKEN"
-    - nix run nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hnrm/104604/
+  - echo "token=$RTD_TOKEN"
+  - nix run nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hnrm/104604/
+  tags:
+  - nix
+  - kvm
+dhrun/hello:
+  stage: test
+  script: nix-shell -p gnumake --run 'make dhrun/hello'
+  tags:
+  - nix
+  - kvm
+libnrm/clang-format:
+  stage: source
+  script: nix-shell -p gnumake --run 'make libnrm/clang-format'
+  tags:
+  - nix
+  - kvm
+hsnrm/ormolu:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/ormolu'
+  tags:
+  - nix
+  - kvm
+hsnrm-/dhall-format:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/dhall-format'
+  tags:
+  - nix
+  - kvm
+hsnrm/all:
+  stage: build
+  script: nix-shell -p gnumake --run 'make hsnrm/all'
+  tags:
+  - nix
+  - kvm
+hsnrm/resources:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/resources'
+  tags:
+  - nix
+  - kvm
+dhrun/exitcode:
+  stage: test
+  script: nix-shell -p gnumake --run 'make dhrun/exitcode'
+  tags:
+  - nix
+  - kvm
+stages:
+- source
+- build
+- test
+- deploy
+hsnrm/hlint:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/hlint'
+  tags:
+  - nix
+  - kvm
+nix/hsnrm:
+  stage: build
+  script: nix-build -A haskellPackages.hsnrm --no-build-output
+  tags:
+  - nix
+  - kvm
+hsnrm/hsnrm-bin/hsnrm-bin_cabal:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/hsnrm/hsnrm.cabal'
+  tags:
+  - nix
+  - kvm
+nixfmt:
+  stage: source
+  script: nix-shell -p gnumake --run 'make nixfmt'
+  tags:
+  - nix
+  - kvm
+pynrm/black:
+  stage: source
+  script: nix-shell -p gnumake --run 'make pynrm/black'
+  tags:
+  - nix
+  - kvm
+hsnrm/hsnrm/hsnrm_cabal:
+  stage: source
+  script: nix-shell -p gnumake --run 'make hsnrm/hsnrm-bin/hsnrm-bin.cabal'
+  tags:
+  - nix
+  - kvm
+dhall-format:
+  stage: source
+  script: nix-shell -p gnumake --run 'make dhall-format'
+  tags:
+  - nix
+  - kvm
+dhrun/listen:
+  stage: test
+  script: nix-shell -p gnumake --run 'make dhrun/listen'
+  tags:
+  - nix
+  - kvm
+nix/libnrm:
+  stage: build
+  script: nix-build -A libnrm --no-build-output
+  tags:
+  - nix
+  - kvm

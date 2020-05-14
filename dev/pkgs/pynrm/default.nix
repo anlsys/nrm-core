@@ -1,4 +1,4 @@
-{ src, stdenv, pythonPackages, hwloc, linuxPackages, hsnrm, resources}:
+{ src, stdenv, pythonPackages, hwloc, linuxPackages, hsnrm }:
 pythonPackages.buildPythonPackage {
   inherit src;
   name = "nrm";
@@ -15,8 +15,6 @@ pythonPackages.buildPythonPackage {
   ];
   checkPhase = "true";
   preBuild = ''
-    rm nrm/schemas/downstreamEvent.json
-    cp ${resources}/share/nrm/downstreamEvent.json nrm/schemas/
     substituteInPlace bin/nrmd \
       --replace "os.environ[\"NRMSO\"]" \"${hsnrm}/bin/nrm.so\"
   '';
