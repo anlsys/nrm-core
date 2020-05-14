@@ -74,7 +74,7 @@
     , mapValue =
         { actuatorBinary = "bash"
         , actuatorArguments =
-          [ "-c", "echo \$@ >> /tmp/test-nrm-example-extra-actuator" ]
+          [ "-c", "echo \$@ >> /tmp/test-nrm-example-extra-actuator", "-o" ]
         , actions = [ 1.0, 2.0 ]
         , referenceAction = 1.0
         }

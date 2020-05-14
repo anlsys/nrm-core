@@ -82,141 +82,76 @@ let defcopts =
 
 let copts =
         λ(addcopts : List Text)
-      → { compiler-options =
-            defcopts addcopts
-        , default-extensions =
-            defexts
-        , default-language =
-            deflang
+      → { compiler-options = defcopts addcopts
+        , default-extensions = defexts
+        , default-language = deflang
         }
 
 let nobound = λ(p : Text) → { bounds = prelude.anyVersion, package = p }
 
 let deps =
-      { base =
-          nobound "base"
-      , hbandit =
-          nobound "hbandit"
-      , pretty-simple =
-          nobound "pretty-simple"
-      , protolude =
-          nobound "protolude"
-      , scientific =
-          nobound "scientific"
-      , generic-deriving =
-          nobound "generic-deriving"
-      , typed-process =
-          nobound "typed-process"
-      , optparse-applicative =
-          nobound "optparse-applicative"
-      , aeson-pretty =
-          nobound "aeson-pretty"
-      , random =
-          nobound "random"
-      , either =
-          nobound "either"
-      , intervals =
-          nobound "intervals"
-      , hxt =
-          nobound "hxt"
-      , hxt-xpath =
-          nobound "hxt-xpath"
-      , recursion-schemes =
-          nobound "recursion-schemes"
-      , binary =
-          nobound "binary"
-      , refined =
-          nobound "refined"
-      , generic-data =
-          nobound "generic-data"
-      , filepath =
-          nobound "filepath"
-      , neat-interpolation =
-          nobound "neat-interpolation"
-      , generic-lens =
-          nobound "generic-lens"
-      , yaml =
-          nobound "yaml"
-      , aeson =
-          nobound "aeson"
-      , hsnrm-lib =
-          nobound "hsnrm-lib"
-      , monadRandom =
-          nobound "MonadRandom"
-      , directory =
-          nobound "directory"
-      , transformers =
-          nobound "transformers"
-      , regex =
-          nobound "regex"
-      , units-defs =
-          nobound "units-defs"
-      , mtl-compat =
-          nobound "mtl-compat"
-      , units =
-          nobound "units"
-      , data-default =
-          nobound "data-default"
-      , flat =
-          nobound "flat"
-      , unix =
-          nobound "unix"
-      , prettyprinter =
-          nobound "prettyprinter"
-      , containers =
-          nobound "containers"
-      , unordered-containers =
-          nobound "unordered-containers"
-      , zeromq4-conduit =
-          nobound "zeromq4-conduit"
-      , zeromq4-haskell =
-          nobound "zeromq4-haskell"
-      , uuid =
-          nobound "uuid"
-      , editor-open =
-          nobound "editor-open"
-      , text =
-          nobound "text"
-      , dhall =
-          nobound "dhall"
-      , bytestring =
-          nobound "bytestring"
-      , data-msgpack =
-          nobound "data-msgpack"
-      , enclosed-exceptions =
-          nobound "enclosed-exceptions"
-      , storable-endian =
-          nobound "storable-endian"
-      , template-haskell =
-          nobound "template-haskell"
-      , vcs-revision =
-          nobound "vcs-revision"
-      , resourcet =
-          nobound "resourcet"
-      , async =
-          nobound "async"
-      , dhall-json =
-          nobound "dhall-json"
-      , lens =
-          nobound "lens"
-      , mtl =
-          nobound "mtl"
-      , conduit =
-          nobound "conduit"
-      , brick =
-          nobound "brick"
-      , aeson-extra =
-          nobound "aeson-extra"
-      , conduit-extra =
-          nobound "conduit-extra"
-      , generic-aeson =
-          nobound "generic-aeson"
-      , vector =
-          nobound "vector"
-      , json-schema =
-          nobound "json-schema"
-      , megaparsec =
-          nobound "megaparsec"
+      { base = nobound "base"
+      , hbandit = nobound "hbandit"
+      , pretty-simple = nobound "pretty-simple"
+      , protolude = nobound "protolude"
+      , scientific = nobound "scientific"
+      , generic-deriving = nobound "generic-deriving"
+      , typed-process = nobound "typed-process"
+      , optparse-applicative = nobound "optparse-applicative"
+      , aeson-pretty = nobound "aeson-pretty"
+      , random = nobound "random"
+      , either = nobound "either"
+      , intervals = nobound "intervals"
+      , hxt = nobound "hxt"
+      , hxt-xpath = nobound "hxt-xpath"
+      , recursion-schemes = nobound "recursion-schemes"
+      , binary = nobound "binary"
+      , refined = nobound "refined"
+      , generic-data = nobound "generic-data"
+      , filepath = nobound "filepath"
+      , neat-interpolation = nobound "neat-interpolation"
+      , generic-lens = nobound "generic-lens"
+      , yaml = nobound "yaml"
+      , aeson = nobound "aeson"
+      , hsnrm-lib = nobound "hsnrm-lib"
+      , monadRandom = nobound "MonadRandom"
+      , directory = nobound "directory"
+      , transformers = nobound "transformers"
+      , regex = nobound "regex"
+      , units-defs = nobound "units-defs"
+      , mtl-compat = nobound "mtl-compat"
+      , units = nobound "units"
+      , data-default = nobound "data-default"
+      , flat = nobound "flat"
+      , unix = nobound "unix"
+      , prettyprinter = nobound "prettyprinter"
+      , containers = nobound "containers"
+      , unordered-containers = nobound "unordered-containers"
+      , zeromq4-conduit = nobound "zeromq4-conduit"
+      , zeromq4-haskell = nobound "zeromq4-haskell"
+      , uuid = nobound "uuid"
+      , editor-open = nobound "editor-open"
+      , text = nobound "text"
+      , dhall = nobound "dhall"
+      , bytestring = nobound "bytestring"
+      , data-msgpack = nobound "data-msgpack"
+      , enclosed-exceptions = nobound "enclosed-exceptions"
+      , storable-endian = nobound "storable-endian"
+      , template-haskell = nobound "template-haskell"
+      , vcs-revision = nobound "vcs-revision"
+      , resourcet = nobound "resourcet"
+      , async = nobound "async"
+      , dhall-json = nobound "dhall-json"
+      , lens = nobound "lens"
+      , mtl = nobound "mtl"
+      , conduit = nobound "conduit"
+      , brick = nobound "brick"
+      , aeson-extra = nobound "aeson-extra"
+      , conduit-extra = nobound "conduit-extra"
+      , generic-aeson = nobound "generic-aeson"
+      , vector = nobound "vector"
+      , json-schema = nobound "json-schema"
+      , megaparsec = nobound "megaparsec"
       }
 
 let modules =
@@ -373,16 +308,10 @@ let libdep =
       , deps.editor-open
       ]
 
-in  { defexts =
-        defexts
-    , deps =
-        deps
-    , libdep =
-        libdep
-    , allmodules =
-        allmodules
-    , copts =
-        copts
-    , nobound =
-        nobound
+in  { defexts = defexts
+    , deps = deps
+    , libdep = libdep
+    , allmodules = allmodules
+    , copts = copts
+    , nobound = nobound
     }

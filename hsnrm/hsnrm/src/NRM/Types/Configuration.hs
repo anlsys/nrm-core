@@ -230,7 +230,7 @@ examples =
             [ ( "example extra actuator",
                 ExtraActuator
                   { actuatorBinary = "bash",
-                    actuatorArguments = ["-c", "echo $@ >> /tmp/test-nrm-example-extra-actuator"],
+                    actuatorArguments = ["-c", "echo $@ >> /tmp/test-nrm-example-extra-actuator", "-o"],
                     actions = [DiscreteDouble 1, DiscreteDouble 2],
                     referenceAction = DiscreteDouble 1
                   }

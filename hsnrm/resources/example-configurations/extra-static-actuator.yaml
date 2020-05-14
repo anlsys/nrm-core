@@ -39,6 +39,7 @@ extraStaticActuators:
     actuatorArguments:
     - -c
     - echo $@ >> /tmp/test-nrm-example-extra-actuator
+    - -o
     referenceAction: 1
 raplCfg:
   referencePower:

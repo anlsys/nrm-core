@@ -70,16 +70,15 @@ in mkShell {
 
     ++ lib.optional libnrm-hack (libnrm.overrideAttrs
       (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; }));
-  buildInputs = [ hwloc dhrun which jq yq ]
-    ++ lib.optionals experiment [
-      phantomjs
-      pandoc
-      daemonize
-      jupyterWithBatteries
-      texlive.combined.scheme-full
-      (rstudioWrapper.override { packages = myRPackages; })
-      (rWrapper.override { packages = myRPackages; })
-    ] ++
+  buildInputs = [ hwloc dhrun which jq yq ] ++ lib.optionals experiment [
+    phantomjs
+    pandoc
+    daemonize
+    jupyterWithBatteries
+    texlive.combined.scheme-full
+    (rstudioWrapper.override { packages = myRPackages; })
+    (rWrapper.override { packages = myRPackages; })
+  ] ++
 
     lib.optional jupyter ((pkgs.jupyter.override rec {
       python3 = (pythonPackages.python.withPackages
