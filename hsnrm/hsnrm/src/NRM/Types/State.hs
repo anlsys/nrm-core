@@ -135,7 +135,7 @@ instance HasLensMap (Text, ExtraPassiveSensor) PassiveSensorKey PassiveSensor wh
                 range = Cfg.range extraPassiveSensor,
                 lastReferenceMeasurements = history,
                 last = lastRead,
-                cumulative = S.IntervalBased
+                cumulative = Cfg.sensorBehavior extraPassiveSensor
               },
             frequency = frequency,
             perform =

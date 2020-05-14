@@ -52,10 +52,14 @@
       { fixedPower = { fromuW = 2.5e8 } }
 , activeSensorFrequency = { fromHz = 1.0 }
 , extraStaticPassiveSensors =
-  [ { mapKey = "example extra static passive power sensor"
+  [ { mapKey =
+        "Sensor that gets package power limits for package 0 through variorum"
     , mapValue =
-        { sensorBinary = "echo"
-        , sensorArguments = [ "30" ]
+        { sensorBinary = "bash"
+        , sensorArguments =
+          [ "-c"
+          , "variorum-print-power-limits-example | awk '{ if (\$1 == \"_PACKAGE_ENERGY_STATUS\" && \$2 == \"0x610\" && \$4 == 0 ) { print \$6 } }'"
+          ]
         , range =
             < I : { _1 : Double, _2 : Double } | Empty >.I
               { _1 = 1.0, _2 = 40.0 }
@@ -72,7 +76,34 @@
             < Cumulative
             | IntervalBased
             | CumulativeWithCapacity : Double
-            >.IntervalBased
+            >.Cumulative
+        }
+    }
+  , { mapKey =
+        "Sensor that gets package power limits for package 1 through variorum"
+    , mapValue =
+        { sensorBinary = "bash"
+        , sensorArguments =
+          [ "-c"
+          , "variorum-print-power-limits-example | awk '{ if (\$1 == \"_PACKAGE_ENERGY_STATUS\" && \$2 == \"0x610\" && \$4 == 1 ) { print \$6 } }'"
+          ]
+        , range =
+            < I : { _1 : Double, _2 : Double } | Empty >.I
+              { _1 = 1.0, _2 = 40.0 }
+        , tags =
+          [ < Power
+            | Rapl
+            | DownstreamThreadSignal
+            | DownstreamCmdSignal
+            | Minimize
+            | Maximize
+            >.Power
+          ]
+        , sensorBehavior =
+            < Cumulative
+            | IntervalBased
+            | CumulativeWithCapacity : Double
+            >.Cumulative
         }
     }
   ]

@@ -67,6 +67,11 @@
                      | Minimize
                      | Maximize
                      >
+               , sensorBehavior :
+                   < Cumulative
+                   | IntervalBased
+                   | CumulativeWithCapacity : Double
+                   >
                }
            }
 , extraStaticActuators =
