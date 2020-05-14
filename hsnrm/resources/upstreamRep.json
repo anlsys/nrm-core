@@ -1165,98 +1165,89 @@
                             "type": "object",
                             "properties": {
                                 "extraStaticPassiveSensors": {
-                                    "uniqueItems": false,
-                                    "items": {
-                                        "items": [
-                                            {
-                                                "type": "string"
-                                            },
-                                            {
-                                                "required": [
-                                                    "sensorBinary",
-                                                    "sensorArguments",
-                                                    "range",
-                                                    "tags"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "range": {
-                                                        "oneOf": [
-                                                            {
-                                                                "required": [
-                                                                    "i"
-                                                                ],
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "i": {
-                                                                        "items": [
-                                                                            {
-                                                                                "type": "number"
-                                                                            },
-                                                                            {
-                                                                                "type": "number"
-                                                                            }
-                                                                        ],
-                                                                        "type": "array"
-                                                                    }
-                                                                }
-                                                            },
-                                                            {
-                                                                "required": [
-                                                                    "empty"
-                                                                ],
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "empty": {
-                                                                        "type": "object",
-                                                                        "properties": {}
-                                                                    }
-                                                                }
-                                                            }
-                                                        ]
-                                                    },
-                                                    "sensorArguments": {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "type": "string"
-                                                        },
-                                                        "type": "array"
-                                                    },
-                                                    "tags": {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "oneOf": [
-                                                                {
-                                                                    "const": "\"power\""
-                                                                },
-                                                                {
-                                                                    "const": "\"rapl\""
-                                                                },
-                                                                {
-                                                                    "const": "\"downstreamThreadSignal\""
-                                                                },
-                                                                {
-                                                                    "const": "\"downstreamCmdSignal\""
-                                                                },
-                                                                {
-                                                                    "const": "\"minimize\""
-                                                                },
-                                                                {
-                                                                    "const": "\"maximize\""
-                                                                }
-                                                            ]
-                                                        },
-                                                        "type": "array"
-                                                    },
-                                                    "sensorBinary": {
-                                                        "type": "string"
-                                                    }
-                                                }
-                                            }
+                                    "additionalProperties": {
+                                        "required": [
+                                            "sensorBinary",
+                                            "sensorArguments",
+                                            "range",
+                                            "tags"
                                         ],
-                                        "type": "array"
+                                        "type": "object",
+                                        "properties": {
+                                            "range": {
+                                                "oneOf": [
+                                                    {
+                                                        "required": [
+                                                            "i"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "i": {
+                                                                "items": [
+                                                                    {
+                                                                        "type": "number"
+                                                                    },
+                                                                    {
+                                                                        "type": "number"
+                                                                    }
+                                                                ],
+                                                                "type": "array"
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "required": [
+                                                            "empty"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "empty": {
+                                                                "type": "object",
+                                                                "properties": {}
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "sensorArguments": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "type": "array"
+                                            },
+                                            "tags": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "oneOf": [
+                                                        {
+                                                            "const": "\"power\""
+                                                        },
+                                                        {
+                                                            "const": "\"rapl\""
+                                                        },
+                                                        {
+                                                            "const": "\"downstreamThreadSignal\""
+                                                        },
+                                                        {
+                                                            "const": "\"downstreamCmdSignal\""
+                                                        },
+                                                        {
+                                                            "const": "\"minimize\""
+                                                        },
+                                                        {
+                                                            "const": "\"maximize\""
+                                                        }
+                                                    ]
+                                                },
+                                                "type": "array"
+                                            },
+                                            "sensorBinary": {
+                                                "type": "string"
+                                            }
+                                        }
                                     },
-                                    "type": "array"
+                                    "type": "object"
                                 },
                                 "pmpi_lib": {
                                     "type": "string"
@@ -1536,47 +1527,38 @@
                                     "type": "string"
                                 },
                                 "extraStaticActuators": {
-                                    "uniqueItems": false,
-                                    "items": {
-                                        "items": [
-                                            {
+                                    "additionalProperties": {
+                                        "required": [
+                                            "actuatorBinary",
+                                            "actuatorArguments",
+                                            "actions",
+                                            "referenceAction"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "actuatorBinary": {
                                                 "type": "string"
                                             },
-                                            {
-                                                "required": [
-                                                    "actuatorBinary",
-                                                    "actuatorArguments",
-                                                    "actions",
-                                                    "referenceAction"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "actuatorBinary": {
-                                                        "type": "string"
-                                                    },
-                                                    "actions": {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "type": "number"
-                                                        },
-                                                        "type": "array"
-                                                    },
-                                                    "actuatorArguments": {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "type": "string"
-                                                        },
-                                                        "type": "array"
-                                                    },
-                                                    "referenceAction": {
-                                                        "type": "number"
-                                                    }
-                                                }
+                                            "actions": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "number"
+                                                },
+                                                "type": "array"
+                                            },
+                                            "actuatorArguments": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "string"
+                                                },
+                                                "type": "array"
+                                            },
+                                            "referenceAction": {
+                                                "type": "number"
                                             }
-                                        ],
-                                        "type": "array"
+                                        }
                                     },
-                                    "type": "array"
+                                    "type": "object"
                                 },
                                 "raplCfg": {
                                     "required": [

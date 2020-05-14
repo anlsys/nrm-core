@@ -34,8 +34,8 @@ instance (Predicate p a, MessagePack a) => MessagePack (Refined p a) where
         Left e -> panic $ show e
         Right t -> return t
 
-instance (Predicate p a, Interpret a) => Interpret (Refined p a) where
+instance (Predicate p a, FromDhall a) => FromDhall (Refined p a) where
   autoWith = fmap unsafeRefine . autoWith
 
-instance (Inject a) => Inject (Refined p a) where
+instance (Inject a) => ToDhall (Refined p a) where
   injectWith = fmap (contramap unrefine) Dhall.injectWith

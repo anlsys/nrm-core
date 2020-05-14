@@ -61,7 +61,7 @@ import Data.Data
 import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.MessagePack
-import qualified Dhall as D
+import Dhall
 import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
@@ -81,7 +81,7 @@ newtype Discrete = DiscreteDouble {getDiscrete :: Double}
       Generic,
       MessagePack
     )
-  deriving (JSONSchema, A.ToJSON, A.FromJSON, D.Interpret, D.Inject) via Double
+  deriving (JSONSchema, A.ToJSON, A.FromJSON, FromDhall, ToDhall) via Double
 
 data Problem
   = Problem
@@ -90,7 +90,7 @@ data Problem
         objectives :: [(ZeroOne Double, OExpr)],
         constraints :: [(Double, OExpr)]
       }
-  deriving (Show, Generic, MessagePack, D.Interpret, D.Inject)
+  deriving (Show, Generic, MessagePack, FromDhall, ToDhall)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
 
 emptyProblem :: Problem
@@ -98,14 +98,14 @@ emptyProblem = Problem LM.empty LM.empty [] []
 
 -- | A sensor's metadata.
 data Sensor = Sensor {range :: Interval Double, maxFrequency :: Units.Frequency}
-  deriving (Show, Generic, MessagePack, D.Interpret, D.Inject)
+  deriving (Show, Generic, MessagePack, FromDhall, ToDhall)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Sensor
 
 deriving instance MessagePack (Interval Double)
 
-deriving instance D.Interpret (Interval Double)
+deriving instance FromDhall (Interval Double)
 
-deriving instance D.Inject (Interval Double)
+deriving instance ToDhall (Interval Double)
 
 deriving via GenericJSON (Interval Double) instance JSONSchema (Interval Double)
 
@@ -114,7 +114,7 @@ deriving via GenericJSON (Interval Double) instance A.ToJSON (Interval Double)
 deriving via GenericJSON (Interval Double) instance A.FromJSON (Interval Double)
 
 newtype Admissible = Admissible {admissibleValues :: [Discrete]}
-  deriving (Show, Generic, MessagePack, D.Interpret, D.Inject)
+  deriving (Show, Generic, MessagePack, FromDhall, ToDhall)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Admissible
 
 -------- SENSORS
@@ -129,8 +129,8 @@ newtype SensorID = SensorID {sensorID :: Text}
       MessagePack,
       A.ToJSONKey,
       A.FromJSONKey,
-      D.Interpret,
-      D.Inject,
+      FromDhall,
+      ToDhall,
       Data
     )
   deriving (IsString, JSONSchema, A.ToJSON, A.FromJSON) via Text
@@ -155,8 +155,8 @@ newtype ActuatorID = ActuatorID {actuatorID :: Text}
     ( JSONSchema,
       A.ToJSON,
       A.FromJSON,
-      D.Interpret,
-      D.Inject
+      FromDhall,
+      ToDhall
     )
     via Text
 
@@ -164,7 +164,7 @@ newtype ActuatorID = ActuatorID {actuatorID :: Text}
 newtype Actuator = Actuator {actions :: [Discrete]}
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Actuator
   deriving (Show, Generic, MessagePack)
-  deriving (D.Interpret, D.Inject) via [Discrete]
+  deriving (FromDhall, ToDhall) via [Discrete]
 
 ------- OBJECTIVE
 sID :: SensorID -> OExpr
@@ -203,7 +203,7 @@ data OExpr
   | OMax OExpr OExpr
   deriving (A.ToJSON, A.FromJSON) via GenericJSON OExpr
   deriving (JSONSchema) via AnyJSON OExpr
-  deriving (Show, Eq, Generic, MessagePack, D.Interpret, D.Inject, Data)
+  deriving (Show, Eq, Generic, MessagePack, FromDhall, ToDhall, Data)
 
 deriving instance Plated OExpr
 

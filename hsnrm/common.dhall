@@ -113,6 +113,8 @@ let deps =
           nobound "aeson-pretty"
       , random =
           nobound "random"
+      , either =
+          nobound "either"
       , intervals =
           nobound "intervals"
       , hxt =
@@ -309,6 +311,7 @@ let allmodules = modules # extramodules
 let libdep =
       [ deps.base
       , deps.hbandit
+      , deps.either
       , deps.protolude
       , deps.scientific
       , deps.megaparsec

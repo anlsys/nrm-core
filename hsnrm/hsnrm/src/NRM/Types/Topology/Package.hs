@@ -36,7 +36,7 @@ data Rapl
         discreteChoices :: [Power],
         defaultPower :: Power,
         lastRead :: Maybe (Time, Energy),
-        history :: MemBuffer Double
+        history :: MemBuffer
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 

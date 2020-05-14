@@ -6,7 +6,7 @@ haskellPackages.shellFor {
   buildInputs = [
     haskellPackages.ghcid
     dhall
-    haskellPackages.dhall-to-cabal
+    dhall-to-cabal
     cabal2nix
     ormolu
     hlint

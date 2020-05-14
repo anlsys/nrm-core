@@ -38,7 +38,7 @@ import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.Scientific
-import LMap.Map as LM
+import qualified LMap.Map as LM
 import LensMap.Core
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
@@ -70,8 +70,8 @@ data NRMState
         singularityRuntime :: Maybe SingularityRuntime,
         nodeosRuntime :: Maybe NodeosRuntime,
         controller :: Maybe Controller,
-        extraStaticActuators :: LM.Map Text ExtraActuator,
-        extraStaticPassiveSensors :: LM.Map Text ExtraPassiveSensor
+        extraStaticActuators :: Map Text ExtraActuator,
+        extraStaticPassiveSensors :: Map Text ExtraPassiveSensor
       }
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
@@ -115,7 +115,7 @@ data ExtraPassiveSensor
       { extraPassiveSensor :: Cfg.ExtraPassiveSensor,
         lastRead :: Maybe (Time, Double),
         frequency :: Frequency,
-        history :: MemBuffer Double
+        history :: MemBuffer
       }
   deriving (Eq, Show, Generic, MessagePack, ToJSON, FromJSON)
 

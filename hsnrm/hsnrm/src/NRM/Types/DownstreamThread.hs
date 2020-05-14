@@ -29,7 +29,7 @@ data DownstreamThread
   = DownstreamThread
       { maxValue :: Progress,
         ratelimit :: Frequency,
-        dtLastReferenceMeasurements :: MemBuffer Double,
+        dtLastReferenceMeasurements :: MemBuffer,
         lastRead :: Maybe (Time, Progress)
       }
   deriving (Eq, Ord, Show, Generic, MessagePack)

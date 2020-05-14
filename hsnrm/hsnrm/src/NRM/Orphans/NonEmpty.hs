@@ -31,8 +31,8 @@ instance (MessagePack a) => MessagePack (NonEmpty a) where
         Nothing -> panic "NonEmpty error in msgpack message"
         Just t -> return t
 
-instance (Interpret a) => Interpret (NonEmpty a) where
+instance (Interpret a) => FromDhall (NonEmpty a) where
   autoWith = fmap (fromJust . nonEmpty) . autoWith
 
-instance (Inject a) => Inject (NonEmpty a) where
+instance (Inject a) => ToDhall (NonEmpty a) where
   injectWith = fmap (contramap toList) Dhall.injectWith

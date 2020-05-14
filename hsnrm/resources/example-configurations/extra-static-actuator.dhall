@@ -48,24 +48,8 @@
             >
         }
     | FixedCommand : { fixedPower : { fromuW : Double } }
-    >.ControlCfg
-      { minimumControlInterval = { fromuS = 100000.0 }
-      , staticPower = { fromuW = 2.0e8 }
-      , learnCfg =
-          < Lagrange : { lagrange : Double }
-          | Random : { random : Optional Integer }
-          | Contextual : { contextual : { horizon : Integer } }
-          >.Contextual
-            { contextual = { horizon = +4000 } }
-      , speedThreshold = 1.1
-      , referenceMeasurementRoundInterval = +6
-      , hint =
-          < Full
-          | Only :
-              { only : List (List { actuatorID : Text, actuatorValue : Double })
-              }
-          >.Full
-      }
+    >.FixedCommand
+      { fixedPower = { fromuW = 2.5e8 } }
 , activeSensorFrequency = { fromHz = 1.0 }
 , extraStaticPassiveSensors =
     [] : List
@@ -86,13 +70,14 @@
                }
            }
 , extraStaticActuators =
-    [] : List
-           { mapKey : Text
-           , mapValue :
-               { actuatorBinary : Text
-               , actuatorArguments : List Text
-               , actions : List Double
-               , referenceAction : Double
-               }
-           }
+  [ { mapKey = "example extra actuator"
+    , mapValue =
+        { actuatorBinary = "bash"
+        , actuatorArguments =
+          [ "-c", "echo \$@ >> /tmp/test-nrm-example-extra-actuator" ]
+        , actions = [ 1.0, 2.0 ]
+        , referenceAction = 1.0
+        }
+    }
+  ]
 }

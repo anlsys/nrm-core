@@ -75,9 +75,9 @@ relativeTo =
     go [] bs = bs
     go as [] = ".." <$ as
 
-typeToExpr :: Interpret x => Proxy x -> Expr Src b
+typeToExpr :: FromDhall x => Proxy x -> Expr Src b
 typeToExpr (Proxy :: Proxy x) =
-  Dhall.absurd <$> Dhall.expected (Dhall.auto :: Dhall.Type x)
+  Dhall.absurd <$> Dhall.expected (Dhall.auto :: Dhall.Decoder x)
 
 defaultToExpr :: (Inject x, Default x) => Proxy x -> Expr Src b
 defaultToExpr (Proxy :: Proxy x) =
@@ -86,7 +86,7 @@ defaultToExpr (Proxy :: Proxy x) =
       (injectWith defaultInterpretOptions)
       (def :: x)
 
-valueToExpr :: (Inject x) => x -> Expr Src X
+valueToExpr :: (Inject x) => x -> Expr Src Void
 valueToExpr x =
   Dhall.absurd
     <$> embed

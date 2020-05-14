@@ -29,13 +29,13 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
 import Dhall
-import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.Dhall ()
 import qualified NRM.Types.Cmd as Cmd
 import NRM.Types.Controller
 import NRM.Types.Sensor
 import NRM.Types.Units
+import Numeric.Interval
 import Protolude
 import Refined
 import Refined.Unsafe
@@ -68,8 +68,8 @@ data Cfg
         hwmonCfg :: HwmonCfg,
         controlCfg :: ControlCfg,
         activeSensorFrequency :: Frequency,
-        extraStaticPassiveSensors :: LM.Map Text ExtraPassiveSensor,
-        extraStaticActuators :: LM.Map Text ExtraActuator
+        extraStaticPassiveSensors :: Map Text ExtraPassiveSensor,
+        extraStaticActuators :: Map Text ExtraActuator
       }
   deriving (Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cfg
@@ -188,8 +188,8 @@ instance Default Cfg where
       verbose = NRM.Types.Configuration.Error,
       controlCfg = FixedCommand (watts 250),
       activeSensorFrequency = 1 & hz,
-      extraStaticPassiveSensors = EmptyMap,
-      extraStaticActuators = EmptyMap
+      extraStaticPassiveSensors = [],
+      extraStaticActuators = []
     }
 
 instance Default UpstreamCfg where
@@ -202,12 +202,40 @@ instance Default UpstreamCfg where
 jsonOptions :: Options
 jsonOptions = defaultOptions {omitNothingFields = True}
 
-examples :: Protolude.Map Text Cfg
+examples :: Map Text Cfg
 examples =
   [ ("default", def),
     ( "control",
       def
         { controlCfg = def
+        }
+    ),
+    ( "extra-static-sensor",
+      def
+        { extraStaticPassiveSensors =
+            [ ( "example extra static passive power sensor",
+                ExtraPassiveSensor
+                  { sensorBinary = "echo",
+                    sensorArguments = ["30"],
+                    range = 1 ... 40,
+                    tags = [Power]
+                  }
+              )
+            ]
+        }
+    ),
+    ( "extra-static-actuator",
+      def
+        { extraStaticActuators =
+            [ ( "example extra actuator",
+                ExtraActuator
+                  { actuatorBinary = "bash",
+                    actuatorArguments = ["-c", "echo $@ >> /tmp/test-nrm-example-extra-actuator"],
+                    actions = [DiscreteDouble 1, DiscreteDouble 2],
+                    referenceAction = DiscreteDouble 1
+                  }
+              )
+            ]
         }
     )
   ]

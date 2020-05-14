@@ -58,7 +58,7 @@ data SensorMeta
       { tags :: [Tag],
         range :: Interval Double,
         last :: Maybe (U.Time, Double),
-        lastReferenceMeasurements :: MemBuffer Double,
+        lastReferenceMeasurements :: MemBuffer,
         cumulative :: Cumulative
       }
   deriving (Generic)

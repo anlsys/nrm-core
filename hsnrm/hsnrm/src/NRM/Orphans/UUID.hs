@@ -32,8 +32,8 @@ instance MessagePack UUID where
         Nothing -> panic "Couldn't parse CmdID"
         Just t -> return t
 
-instance Interpret UUID where
+instance FromDhall UUID where
   autoWith = fmap (fromJust . U.fromText) . autoWith
 
-instance Dhall.Inject UUID where
+instance ToDhall UUID where
   injectWith = fmap (contramap U.toText) Dhall.injectWith

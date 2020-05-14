@@ -8,36 +8,29 @@
 --     this file is generated, modifications will be erased.
 --
 
-{ name :
-    Text
+{ name : Text
 , app :
-    { slice :
-        { cpus : Integer, mems : Integer }
-    , scheduler :
-        < FIFO | HPC | Other : { _1 : Integer } >
+    { slice : { cpus : Integer, mems : Integer }
+    , scheduler : < FIFO | HPC | Other : Integer >
     , perfwrapper :
         < PerfwrapperDisabled
         | Perfwrapper :
-            { perfFreq :
-                { fromHz : Double }
-            , perfLimit :
-                { fromOps : Integer }
+            { perfFreq : { fromHz : Double }
+            , perfLimit : { fromOps : Integer }
             }
         >
     , power :
-        { policy :
-            < NoPowerPolicy | DDCM | DVFS | Combined >
-        , profile :
-            Bool
-        , slowdown :
-            Integer
+        { policy : < NoPowerPolicy | DDCM | DVFS | Combined >
+        , profile : Bool
+        , slowdown : Integer
         }
-    , instrumentation :
-        Optional { ratelimit : { fromHz : Double } }
+    , instrumentation : Optional { ratelimit : { fromHz : Double } }
     }
-, hwbind :
-    Bool
+, hwbind : Bool
 , image :
     Optional
-    { path : Text, imagetype : < Sif | Docker >, binds : Optional (List Text) }
+      { path : Text
+      , imagetype : < Sif | Docker >
+      , binds : Optional (List Text)
+      }
 }

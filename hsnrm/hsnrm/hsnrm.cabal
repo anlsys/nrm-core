@@ -135,6 +135,7 @@ library
     build-depends:
         base -any,
         hbandit -any,
+        either -any,
         protolude -any,
         scientific -any,
         megaparsec -any,

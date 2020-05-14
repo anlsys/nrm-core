@@ -25,33 +25,30 @@ import Refined
 import Refined.Unsafe
 
 -- | Memory buffer with 5 points.
-newtype MemBuffer a = MemBuffer {getMemBuffer :: Refined (SizeLessThan 6) [a]}
-  deriving (Show, Eq, Ord, Generic, MessagePack, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON (MemBuffer a)
-
-instance Interpret a => Interpret (MemBuffer a) where
-  autoWith opts = fromList <$> Dhall.list (autoWith opts)
+newtype MemBuffer = MemBuffer {getMemBuffer :: Refined (SizeLessThan 6) [Double]}
+  deriving (Show, Eq, Ord, Generic, MessagePack, ToDhall, FromDhall)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON MemBuffer
 
 -- | MemBuffer with one element
-singleton :: a -> MemBuffer a
+singleton :: Double -> MemBuffer
 singleton a = [a]
 
 -- | empty MemBuffer
-empty :: MemBuffer a
+empty :: MemBuffer
 empty = []
 
 -- | adding a data point to a MemBuffer, discarding the oldest point if there
 -- are more than 5 points.
-enqueue :: a -> MemBuffer a -> MemBuffer a
+enqueue :: Double -> MemBuffer -> MemBuffer
 enqueue x xs = fromList (x : toList xs)
 
 -- | MemBuffer average
-avgBuffer :: (Floating a) => MemBuffer a -> a
+avgBuffer :: MemBuffer -> Double
 avgBuffer (toList -> xs) = sum xs / fromIntegral (length xs)
 
-instance IsList (MemBuffer a) where
+instance IsList MemBuffer where
 
-  type Item (MemBuffer a) = a
+  type Item MemBuffer = Double
 
   fromList xs = MemBuffer . unsafeRefine $ take 5 xs
 

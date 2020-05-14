@@ -14,34 +14,29 @@ let
 
       })
       (_: pkgs: {
+        dhall-to-cabal =
+          pkgs.haskell.lib.unmarkBroken pkgs.haskellPackages.dhall-to-cabal;
+        dhrun = pkgs.haskellPackages.callPackage ./pkgs/dhrun { };
         haskellPackages = pkgs.haskell.packages.ghc865.override {
           overrides = self: super:
-            with pkgs.haskell.lib;
-            let
-              unmarkBroken = drv: overrideCabal drv (drv: { broken = false; });
-
-              dhall-haskell-src = pkgs.fetchurl {
-                url =
-                  "https://github.com/freuk/dhall-haskell/archive/master.tar.gz";
-                sha256 = "13gk3g7nivwgrsksjhvq0i0zq9ajsbrbqq2f5g95v74l6v5b7yvr";
-              };
-            in rec {
+            with pkgs.haskell.lib; rec {
               hsnrm = super.callCabal2nix "hsnrm" ../hsnrm/hsnrm { };
               hsnrm-bin =
                 super.callCabal2nix "hsnrm-bin" ../hsnrm/hsnrm-bin { };
               hbandit = self.callPackage ./pkgs/hbandit { };
-              dhrun = self.callPackage ./pkgs/dhrun { };
 
               regex = doJailbreak super.regex;
               json-schema =
                 dontCheck (unmarkBroken (doJailbreak super.json-schema));
               zeromq4-conduit = unmarkBroken (dontCheck super.zeromq4-conduit);
-              refined = unmarkBroken super.refined;
+              prettyprinter = super.prettyprinter_1_6_0;
+              refined = doJailbreak (unmarkBroken super.refined);
               aeson-extra = unmarkBroken super.aeson-extra;
               generic-aeson = unmarkBroken super.generic-aeson;
               zeromq4-haskell = unmarkBroken super.zeromq4-haskell;
               time-parsers = unmarkBroken super.time-parsers;
-              dhall-to-cabal = unmarkBroken super.dhall-to-cabal;
+              dhall = super.dhall_1_29_0;
+              dhall-json = doJailbreak super.dhall-json_1_6_1;
             };
         };
       })

@@ -48,43 +48,29 @@
             >
         }
     | FixedCommand : { fixedPower : { fromuW : Double } }
-    >.ControlCfg
-      { minimumControlInterval = { fromuS = 100000.0 }
-      , staticPower = { fromuW = 2.0e8 }
-      , learnCfg =
-          < Lagrange : { lagrange : Double }
-          | Random : { random : Optional Integer }
-          | Contextual : { contextual : { horizon : Integer } }
-          >.Contextual
-            { contextual = { horizon = +4000 } }
-      , speedThreshold = 1.1
-      , referenceMeasurementRoundInterval = +6
-      , hint =
-          < Full
-          | Only :
-              { only : List (List { actuatorID : Text, actuatorValue : Double })
-              }
-          >.Full
-      }
+    >.FixedCommand
+      { fixedPower = { fromuW = 2.5e8 } }
 , activeSensorFrequency = { fromHz = 1.0 }
 , extraStaticPassiveSensors =
-    [] : List
-           { mapKey : Text
-           , mapValue :
-               { sensorBinary : Text
-               , sensorArguments : List Text
-               , range : < I : { _1 : Double, _2 : Double } | Empty >
-               , tags :
-                   List
-                     < Power
-                     | Rapl
-                     | DownstreamThreadSignal
-                     | DownstreamCmdSignal
-                     | Minimize
-                     | Maximize
-                     >
-               }
-           }
+  [ { mapKey = "example extra static passive power sensor"
+    , mapValue =
+        { sensorBinary = "echo"
+        , sensorArguments = [ "30" ]
+        , range =
+            < I : { _1 : Double, _2 : Double } | Empty >.I
+              { _1 = 1.0, _2 = 40.0 }
+        , tags =
+          [ < Power
+            | Rapl
+            | DownstreamThreadSignal
+            | DownstreamCmdSignal
+            | Minimize
+            | Maximize
+            >.Power
+          ]
+        }
+    }
+  ]
 , extraStaticActuators =
     [] : List
            { mapKey : Text

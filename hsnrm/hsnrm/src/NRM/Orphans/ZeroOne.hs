@@ -26,9 +26,9 @@ import Refined.Orphan.Aeson ()
 
 deriving instance (MessagePack a, Ord a, Num a) => MessagePack (Interval (ZeroOne a))
 
-deriving instance (Interpret a, Ord a, Num a) => Interpret (Interval (ZeroOne a))
+instance (FromDhall a, Ord a, Num a) => FromDhall (Interval (ZeroOne a))
 
-deriving instance (Inject a, Ord a, Num a) => Inject (Interval (ZeroOne a))
+instance (ToDhall a) => ToDhall (Interval (ZeroOne a))
 
 deriving via GenericJSON (Interval (ZeroOne a)) instance (JSONSchema a) => JSONSchema (Interval (ZeroOne a))
 

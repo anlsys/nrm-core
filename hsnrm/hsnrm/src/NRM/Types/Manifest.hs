@@ -29,7 +29,7 @@ import Data.Default
 import Data.JSON.Schema
 import Data.MessagePack
 import Data.Yaml.Internal ()
-import Dhall hiding (Type)
+import Dhall
 import Generics.Generic.Aeson ()
 import NRM.Classes.Messaging
 import qualified NRM.Types.Units as U

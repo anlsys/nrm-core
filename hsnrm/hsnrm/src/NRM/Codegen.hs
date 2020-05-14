@@ -156,8 +156,8 @@ data KnownType
 dhallType :: KnownType -> Dhall.Expr Dhall.Parser.Src Dhall.Import
 dhallType =
   fmap Dhall.absurd <$> \case
-    Cfg -> Dhall.expected (Dhall.auto :: Dhall.Type C.Cfg)
-    Manifest -> Dhall.expected (Dhall.auto :: Dhall.Type MI.Manifest)
+    Cfg -> Dhall.expected (Dhall.auto :: Dhall.Decoder C.Cfg)
+    Manifest -> Dhall.expected (Dhall.auto :: Dhall.Decoder MI.Manifest)
 
 sandwich :: Semigroup a => a -> a -> a -> a
 sandwich a b x = a <> x <> b
@@ -223,4 +223,4 @@ typeToFile (Proxy :: Proxy x) fp = do
   writeOutput
     licenseDhall
     (toS destCPD)
-    (Dhall.expected (Dhall.auto :: Dhall.Type x))
+    (Dhall.expected (Dhall.auto :: Dhall.Decoder x))

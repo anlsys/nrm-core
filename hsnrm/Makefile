@@ -23,7 +23,7 @@ dhall-to-cabal: ../default.nix
 	@nix-shell --pure -E '
 		with import <nixpkgs> {};
 		mkShell {
-			buildInputs = [ haskellPackages.dhall-to-cabal haskellPackages.ghc ];
+			buildInputs = [ dhall-to-cabal haskellPackages.ghc ];
 			LOCALE_ARCHIVE="$${pkgs.glibcLocales}/lib/locale/locale-archive";
 			LANG="en_US.UTF-8";
 			GHCDIR="$${haskellPackages.ghc}";

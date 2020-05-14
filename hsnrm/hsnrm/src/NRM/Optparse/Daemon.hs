@@ -19,13 +19,13 @@ import qualified Data.Aeson as J
 import Data.Aeson.Extra.Merge
 import qualified Data.ByteString as B (getContents)
 import Data.Default
+import Data.Either.Validation as V
 import qualified Data.Yaml as Y
 import qualified Dhall
 import qualified Dhall.Core as Dhall
 import Dhall.JSON as DJ
 import Dhall.JSONToDhall as JSONToDhall
 import qualified Dhall.Src as Dhall
-import qualified Dhall.TypeCheck as Dhall
 import NRM.Types.Configuration
 import Options.Applicative
 import Protolude
@@ -108,7 +108,7 @@ toExpr ::
   Proxy x ->
   SourceType ->
   ByteString ->
-  IO (Dhall.Expr Dhall.Src Dhall.X)
+  IO (Dhall.Expr Dhall.Src Void)
 toExpr _proxy Dhall s = Dhall.inputExpr $ toS s
 toExpr proxy Yaml s = sourceValueToExpr proxy $ Y.decodeEither' s
 toExpr proxy Json s = sourceValueToExpr proxy $ J.eitherDecode' (toS s)
@@ -117,7 +117,7 @@ sourceValueToExpr ::
   (Default x, Dhall.Interpret x, Dhall.Inject x) =>
   Proxy x ->
   Either e Y.Value ->
-  IO (Dhall.Expr Dhall.Src Dhall.X)
+  IO (Dhall.Expr Dhall.Src Void)
 sourceValueToExpr (Proxy :: Proxy x) = \case
   Left _ -> die "yaml parsing exception"
   Right v ->
@@ -132,14 +132,14 @@ sourceValueToExpr (Proxy :: Proxy x) = \case
             Left e -> die ("yaml -> dhall compilation error" <> show e)
             Right expr -> return expr
   where
-    exprType :: Dhall.Expr Dhall.Src Dhall.X
+    exprType :: Dhall.Expr Dhall.Src Void
     exprType = typeToExpr (Proxy :: Proxy x)
     exprValue = valueToExpr (def :: x)
 
 mergeAndExtract ::
   (Dhall.Interpret x, Dhall.Inject x) =>
   x ->
-  Dhall.Expr Dhall.Src Dhall.X ->
+  Dhall.Expr Dhall.Src Void ->
   IO x
 mergeAndExtract x expr =
   Dhall.extract
@@ -151,5 +151,5 @@ mergeAndExtract x expr =
         )
     )
     & \case
-      Nothing -> die "dhall extraction error"
-      Just a -> return a
+      V.Failure _ -> die "dhall extraction error"
+      V.Success a -> return a

@@ -29,7 +29,7 @@ data DownstreamCmd
   = DownstreamCmd
       { maxValue :: Units.Operations,
         ratelimit :: Units.Frequency,
-        dtLastReferenceMeasurements :: MemBuffer Double,
+        dtLastReferenceMeasurements :: MemBuffer ,
         lastRead :: Maybe (Time, Progress)
       }
   deriving (Show, Generic, MessagePack)

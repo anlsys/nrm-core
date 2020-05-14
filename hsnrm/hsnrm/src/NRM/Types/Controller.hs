@@ -121,7 +121,7 @@ data Controller
         lastA :: Maybe [V.Action],
         armstats :: Map [V.Action] Armstat,
         bufferedMeasurements :: Maybe (Map SensorID Double),
-        referenceMeasurements :: Map SensorID (MemBuffer Double),
+        referenceMeasurements :: Map SensorID MemBuffer,
         referenceMeasurementCounter :: Refined NonNegative Int
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
@@ -138,7 +138,7 @@ data Armstat
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Armstat
   deriving (Show, Generic, MessagePack, Interpret, Inject)
 
-enqueueAll :: (Ord k) => Map k a -> Map k (MemBuffer a) -> Map k (MemBuffer a)
+enqueueAll :: (Ord k) => Map k Double -> Map k MemBuffer -> Map k MemBuffer
 enqueueAll
   (toDataMap -> m)
   (toDataMap -> mapBuffers) =
@@ -175,9 +175,9 @@ newtype Uniform a = Uniform [a]
 
 deriving instance MessagePack UniformCfg
 
-deriving via (Maybe Seed) instance Interpret UniformCfg
+deriving via (Maybe Seed) instance FromDhall UniformCfg
 
-deriving via (Maybe Seed) instance Inject UniformCfg
+deriving via (Maybe Seed) instance ToDhall UniformCfg
 
 deriving via (GenericJSON UniformCfg) instance JSONSchema UniformCfg
 
@@ -187,9 +187,9 @@ deriving via (GenericJSON UniformCfg) instance A.FromJSON UniformCfg
 
 deriving instance MessagePack (Uniform [V.Action])
 
-deriving instance Interpret (Uniform [V.Action])
+deriving instance FromDhall (Uniform [V.Action])
 
-deriving instance Inject (Uniform [V.Action])
+deriving instance ToDhall (Uniform [V.Action])
 
 deriving via (GenericJSON (Uniform [V.Action])) instance JSONSchema (Uniform [V.Action])
 
@@ -206,13 +206,13 @@ deriving instance MessagePack (LastAction [V.Action])
 
 deriving instance MessagePack (ObliviousRep [V.Action])
 
-deriving instance Interpret (LastAction [V.Action])
+deriving instance FromDhall (LastAction [V.Action])
 
-deriving instance Interpret (ObliviousRep [V.Action])
+deriving instance FromDhall (ObliviousRep [V.Action])
 
-deriving instance Inject (LastAction [V.Action])
+deriving instance ToDhall (LastAction [V.Action])
 
-deriving instance Inject (ObliviousRep [V.Action])
+deriving instance ToDhall (ObliviousRep [V.Action])
 
 deriving via (GenericJSON (LastAction [V.Action])) instance JSONSchema (LastAction [V.Action])
 
@@ -230,9 +230,9 @@ deriving instance Show (Exp4R () [V.Action] (ObliviousRep [V.Action]))
 
 deriving instance MessagePack (Exp4R () [V.Action] (ObliviousRep [V.Action]))
 
-deriving instance Interpret (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+deriving instance FromDhall (Exp4R () [V.Action] (ObliviousRep [V.Action]))
 
-deriving instance Inject (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+deriving instance ToDhall (Exp4R () [V.Action] (ObliviousRep [V.Action]))
 
 deriving via (GenericJSON (Exp4R () [V.Action] (ObliviousRep [V.Action]))) instance JSONSchema (Exp4R () [V.Action] (ObliviousRep [V.Action]))
 
@@ -264,9 +264,9 @@ deriving instance Show (Exp3.Weight [V.Action])
 
 deriving instance MessagePack (Exp3.Weight [V.Action])
 
-deriving instance Interpret (Exp3.Weight [V.Action])
+deriving instance FromDhall (Exp3.Weight [V.Action])
 
-deriving instance Inject (Exp3.Weight [V.Action])
+deriving instance ToDhall (Exp3.Weight [V.Action])
 
 deriving via (GenericJSON (Exp3 [V.Action])) instance JSONSchema (Exp3 [V.Action])
 
@@ -278,9 +278,9 @@ deriving instance Show (Exp3 [V.Action])
 
 deriving instance MessagePack (Exp3 [V.Action])
 
-deriving instance Interpret (Exp3 [V.Action])
+deriving instance FromDhall (Exp3 [V.Action])
 
-deriving instance Inject (Exp3 [V.Action])
+deriving instance ToDhall (Exp3 [V.Action])
 
 deriving via (GenericJSON Probability) instance JSONSchema Probability
 
@@ -292,9 +292,9 @@ deriving instance Show Probability
 
 deriving instance MessagePack Probability
 
-deriving instance Interpret Probability
+deriving instance FromDhall Probability
 
-deriving instance Inject Probability
+deriving instance ToDhall Probability
 
 deriving via (GenericJSON CumulativeLoss) instance JSONSchema CumulativeLoss
 
@@ -306,9 +306,9 @@ deriving instance Show CumulativeLoss
 
 deriving instance MessagePack CumulativeLoss
 
-deriving instance Interpret CumulativeLoss
+deriving instance FromDhall CumulativeLoss
 
-deriving instance Inject CumulativeLoss
+deriving instance ToDhall CumulativeLoss
 
 deriving via (GenericJSON Integrator) instance JSONSchema Integrator
 
@@ -320,9 +320,9 @@ deriving instance Show Integrator
 
 deriving instance MessagePack Integrator
 
-deriving instance Interpret Integrator
+deriving instance FromDhall Integrator
 
-deriving instance Inject Integrator
+deriving instance ToDhall Integrator
 
 deriving via (GenericJSON (Arms [Action])) instance JSONSchema (Arms [Action])
 
@@ -332,9 +332,9 @@ deriving via (GenericJSON (Arms [Action])) instance A.FromJSON (Arms [Action])
 
 deriving instance MessagePack (Arms [Action])
 
-deriving instance Interpret (Arms [Action])
+deriving instance FromDhall (Arms [Action])
 
-deriving instance Inject (Arms [Action])
+deriving instance ToDhall (Arms [Action])
 
 deriving via (GenericJSON (Interval [ZeroOne Double])) instance JSONSchema (Interval [ZeroOne Double])
 
@@ -344,6 +344,6 @@ deriving via (GenericJSON (Interval [ZeroOne Double])) instance A.FromJSON (Inte
 
 deriving instance MessagePack (Interval [ZeroOne Double])
 
-deriving instance Interpret (Interval [ZeroOne Double])
+deriving instance FromDhall (Interval [ZeroOne Double])
 
-deriving instance Inject (Interval [ZeroOne Double])
+deriving instance ToDhall (Interval [ZeroOne Double])

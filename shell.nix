@@ -54,7 +54,7 @@ in mkShell {
         haskellPackages.cabal-install
         haskellPackages.graphmod
         haskellPackages.hdevtools
-        haskellPackages.dhall-to-cabal
+        pkgs.dhall-to-cabal
         haskellPackages.wreq
         haskellPackages.hlint
         haskellPackages.fix-imports
@@ -70,7 +70,7 @@ in mkShell {
 
     ++ lib.optional libnrm-hack (libnrm.overrideAttrs
       (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; }));
-  buildInputs = [ hwloc haskellPackages.dhrun which jq yq ]
+  buildInputs = [ hwloc dhrun which jq yq ]
     ++ lib.optionals experiment [
       phantomjs
       pandoc

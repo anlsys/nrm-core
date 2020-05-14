@@ -48,7 +48,7 @@ notebooks:
 
 dhrun/%:
 	rm -f hsnrm/.ghc*
-	@nix-shell --pure -p nrm haskellPackages.dhrun --run "dhrun -i" <<< '
+	@nix-shell --pure -p nrm dhrun --run "dhrun -i" <<< '
 		let all = ./dev/dhrun/all-tests.dh
 			"../dev/dhrun/assets/"
 			"../hsnrm/resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"

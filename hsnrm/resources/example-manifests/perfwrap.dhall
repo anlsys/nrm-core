@@ -8,37 +8,30 @@
 --     this file is generated, modifications will be erased.
 --
 
-{ name =
-    "default"
+{ name = "default"
 , app =
-    { slice =
-        { cpus = +1, mems = +1 }
-    , scheduler =
-        < FIFO | HPC | Other : { _1 : Integer } >.FIFO
+    { slice = { cpus = +1, mems = +1 }
+    , scheduler = < FIFO | HPC | Other : Integer >.FIFO
     , perfwrapper =
         < PerfwrapperDisabled
         | Perfwrapper :
-            { perfFreq :
-                { fromHz : Double }
-            , perfLimit :
-                { fromOps : Integer }
+            { perfFreq : { fromHz : Double }
+            , perfLimit : { fromOps : Integer }
             }
         >.Perfwrapper
-        { perfFreq = { fromHz = 1.0 }, perfLimit = { fromOps = +100000 } }
+          { perfFreq = { fromHz = 1.0 }, perfLimit = { fromOps = +100000 } }
     , power =
-        { policy =
-            < NoPowerPolicy | DDCM | DVFS | Combined >.NoPowerPolicy
-        , profile =
-            False
-        , slowdown =
-            +1
+        { policy = < NoPowerPolicy | DDCM | DVFS | Combined >.NoPowerPolicy
+        , profile = False
+        , slowdown = +1
         }
-    , instrumentation =
-        None { ratelimit : { fromHz : Double } }
+    , instrumentation = None { ratelimit : { fromHz : Double } }
     }
-, hwbind =
-    False
+, hwbind = False
 , image =
     None
-    { path : Text, imagetype : < Sif | Docker >, binds : Optional (List Text) }
+      { path : Text
+      , imagetype : < Sif | Docker >
+      , binds : Optional (List Text)
+      }
 }

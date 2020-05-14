@@ -8,63 +8,37 @@
 --     this file is generated, modifications will be erased.
 --
 
-{ verbose =
-    < Error | Info | Debug >.Error
-, logfile =
-    "/tmp/nrm.log"
-, hwloc =
-    "hwloc"
-, perf =
-    "perf"
-, argo_perf_wrapper =
-    "nrm-perfwrapper"
-, argo_nodeos_config =
-    "argo_nodeos_config"
-, libnrmPath =
-    None Text
-, pmpi_lib =
-    "pmpi_lib"
-, singularity =
-    False
-, dummy =
-    True
-, nodeos =
-    False
-, slice_runtime =
-    < Singularity | Nodeos | Dummy >.Dummy
-, downstreamCfg =
-    { downstreamBindAddress = "ipc:///tmp/nrm-downstream-event" }
-, upstreamCfg =
-    { upstreamBindAddress = "*", pubPort = +2345, rpcPort = +3456 }
-, raplCfg =
-    Some
-    { raplPath =
-        "/sys/devices/virtual/powercap/intel-rapl"
-    , raplActions =
-        [ { fromuW = 1.0e8 }, { fromuW = 2.0e8 } ] : List { fromuW : Double }
-    , referencePower =
-        { fromuW = 2.5e8 }
+{ verbose = < Error | Info | Debug >.Error
+, logfile = "/tmp/nrm.log"
+, hwloc = "hwloc"
+, perf = "perf"
+, argo_perf_wrapper = "nrm-perfwrapper"
+, argo_nodeos_config = "argo_nodeos_config"
+, libnrmPath = None Text
+, pmpi_lib = "pmpi_lib"
+, singularity = False
+, dummy = True
+, nodeos = False
+, slice_runtime = < Singularity | Nodeos | Dummy >.Dummy
+, downstreamCfg = { downstreamBindAddress = "ipc:///tmp/nrm-downstream-event" }
+, upstreamCfg = { upstreamBindAddress = "*", pubPort = +2345, rpcPort = +3456 }
+, raplCfg = Some
+    { raplPath = "/sys/devices/virtual/powercap/intel-rapl"
+    , raplActions = [ { fromuW = 1.0e8 }, { fromuW = 2.0e8 } ]
+    , referencePower = { fromuW = 2.5e8 }
     }
-, hwmonCfg =
-    { hwmonEnabled = True, hwmonPath = "/sys/class/hwmon" }
+, hwmonCfg = { hwmonEnabled = True, hwmonPath = "/sys/class/hwmon" }
 , controlCfg =
     < ControlCfg :
-        { minimumControlInterval :
-            { fromuS : Double }
-        , staticPower :
-            { fromuW : Double }
+        { minimumControlInterval : { fromuS : Double }
+        , staticPower : { fromuW : Double }
         , learnCfg :
-            < Lagrange :
-                { lagrange : Double }
-            | Random :
-                { random : Optional Integer }
-            | Contextual :
-                { contextual : { horizon : Integer } }
+            < Lagrange : { lagrange : Double }
+            | Random : { random : Optional Integer }
+            | Contextual : { contextual : { horizon : Integer } }
             >
-        , speedThreshold :
-            Double
-        , referenceMeasurementRoundInterval :
-            Integer
+        , speedThreshold : Double
+        , referenceMeasurementRoundInterval : Integer
         , hint :
             < Full
             | Only :
@@ -73,47 +47,36 @@
                 }
             >
         }
-    | FixedCommand :
-        { fixedPower : { fromuW : Double } }
+    | FixedCommand : { fixedPower : { fromuW : Double } }
     >.FixedCommand
-    { fixedPower = { fromuW = 2.5e8 } }
-, activeSensorFrequency =
-    { fromHz = 1.0 }
+      { fixedPower = { fromuW = 2.5e8 } }
+, activeSensorFrequency = { fromHz = 1.0 }
 , extraStaticPassiveSensors =
     [] : List
-         { _1 :
-             Text
-         , _2 :
-             { sensorBinary :
-                 Text
-             , sensorArguments :
-                 List Text
-             , range :
-                 < I : { _1 : Double, _2 : Double } | Empty >
-             , tags :
-                 List
-                 < Power
-                 | Rapl
-                 | DownstreamThreadSignal
-                 | DownstreamCmdSignal
-                 | Minimize
-                 | Maximize
-                 >
-             }
-         }
+           { mapKey : Text
+           , mapValue :
+               { sensorBinary : Text
+               , sensorArguments : List Text
+               , range : < I : { _1 : Double, _2 : Double } | Empty >
+               , tags :
+                   List
+                     < Power
+                     | Rapl
+                     | DownstreamThreadSignal
+                     | DownstreamCmdSignal
+                     | Minimize
+                     | Maximize
+                     >
+               }
+           }
 , extraStaticActuators =
     [] : List
-         { _1 :
-             Text
-         , _2 :
-             { actuatorBinary :
-                 Text
-             , actuatorArguments :
-                 List Text
-             , actions :
-                 List Double
-             , referenceAction :
-                 Double
-             }
-         }
+           { mapKey : Text
+           , mapValue :
+               { actuatorBinary : Text
+               , actuatorArguments : List Text
+               , actions : List Double
+               , referenceAction : Double
+               }
+           }
 }
