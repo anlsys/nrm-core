@@ -8,17 +8,32 @@
 #     this file is generated, modifications will be erased.
 #
 extraStaticPassiveSensors:
-- mapKey: example extra static passive power sensor
+- mapKey: Sensor that gets package power limits for package 0 through variorum
   mapValue:
     range:
       _2: 40.0
       _1: 1
-    sensorBehavior: IntervalBased
+    sensorBehavior: Cumulative
     sensorArguments:
-    - '30'
+    - -c
+    - variorum-print-power-limits-example | awk '{ if ($1 == "_PACKAGE_ENERGY_STATUS"
+      && $2 == "0x610" && $4 == 0 ) { print $6 } }'
     tags:
     - Power
-    sensorBinary: echo
+    sensorBinary: bash
+- mapKey: Sensor that gets package power limits for package 1 through variorum
+  mapValue:
+    range:
+      _2: 40.0
+      _1: 1
+    sensorBehavior: Cumulative
+    sensorArguments:
+    - -c
+    - variorum-print-power-limits-example | awk '{ if ($1 == "_PACKAGE_ENERGY_STATUS"
+      && $2 == "0x610" && $4 == 1 ) { print $6 } }'
+    tags:
+    - Power
+    sensorBinary: bash
 pmpi_lib: pmpi_lib
 verbose: Error
 logfile: /tmp/nrm.log

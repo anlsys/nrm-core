@@ -89,7 +89,8 @@ data ExtraPassiveSensor
       { sensorBinary :: Text,
         sensorArguments :: [Text],
         range :: Interval Double,
-        tags :: [Tag]
+        tags :: [Tag],
+        sensorBehavior :: Cumulative
       }
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ExtraPassiveSensor
@@ -204,8 +205,7 @@ jsonOptions = defaultOptions {omitNothingFields = True}
 
 examples :: Map Text Cfg
 examples =
-  [ ("default", def),
-    ( "control",
+  [ ( "control",
       def
         { controlCfg = def
         }
@@ -217,6 +217,7 @@ examples =
                 ExtraPassiveSensor
                   { sensorBinary = "echo",
                     sensorArguments = ["30"],
+                    sensorBehavior = IntervalBased,
                     range = 1 ... 40,
                     tags = [Power]
                   }
@@ -237,5 +238,48 @@ examples =
               )
             ]
         }
+    ),
+    ( "variorum-two-package-power-limit-sensor",
+      def {extraStaticPassiveSensors = [mkVariorumPowerLimitSensor 0, mkVariorumPowerLimitSensor 1]}
+    ),
+    ( "variorum-two-package-power-value-sensor",
+      def {extraStaticPassiveSensors = [mkVariorumPowerSensor 0, mkVariorumPowerSensor 1]}
+    ),
+    ( "variorum-two-package-power-limits-actuator",
+      def
+        { extraStaticActuators =
+            [ ( "example extra actuator",
+                ExtraActuator
+                  { actuatorBinary = "variorum-set-socket-power-limits-example",
+                    actuatorArguments = [],
+                    actions = [DiscreteDouble 100, DiscreteDouble 150],
+                    referenceAction = DiscreteDouble 100
+                  }
+              )
+            ]
+        }
     )
   ]
+  where
+    mkVariorumPowerLimitSensor :: Int -> (Text, ExtraPassiveSensor)
+    mkVariorumPowerLimitSensor x =
+      ( "Sensor that gets package power limits for package " <> show x <> " through variorum",
+        ExtraPassiveSensor
+          { sensorBinary = "bash",
+            sensorArguments = ["-c", "variorum-print-power-limits-example | awk '{ if ($1 == \"_PACKAGE_POWER_LIMITS\" && $2 == \"0x610\" && $4 == " <> show x <> " ) { print $6 } }'"],
+            sensorBehavior = IntervalBased,
+            range = 1 ... 40,
+            tags = []
+          }
+      )
+    mkVariorumPowerSensor :: Int -> (Text, ExtraPassiveSensor)
+    mkVariorumPowerSensor x =
+      ( "Sensor that gets package power limits for package " <> show x <> " through variorum",
+        ExtraPassiveSensor
+          { sensorBinary = "bash",
+            sensorArguments = ["-c", "variorum-print-power-limits-example | awk '{ if ($1 == \"_PACKAGE_ENERGY_STATUS\" && $2 == \"0x610\" && $4 == " <> show x <> " ) { print $6 } }'"],
+            sensorBehavior = Cumulative,
+            range = 1 ... 40,
+            tags = [Power]
+          }
+      )

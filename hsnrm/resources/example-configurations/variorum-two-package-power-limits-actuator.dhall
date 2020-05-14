@@ -52,38 +52,36 @@
       { fixedPower = { fromuW = 2.5e8 } }
 , activeSensorFrequency = { fromHz = 1.0 }
 , extraStaticPassiveSensors =
-  [ { mapKey = "example extra static passive power sensor"
-    , mapValue =
-        { sensorBinary = "echo"
-        , sensorArguments = [ "30" ]
-        , range =
-            < I : { _1 : Double, _2 : Double } | Empty >.I
-              { _1 = 1.0, _2 = 40.0 }
-        , tags =
-          [ < Power
-            | Rapl
-            | DownstreamThreadSignal
-            | DownstreamCmdSignal
-            | Minimize
-            | Maximize
-            >.Power
-          ]
-        , sensorBehavior =
-            < Cumulative
-            | IntervalBased
-            | CumulativeWithCapacity : Double
-            >.IntervalBased
-        }
-    }
-  ]
-, extraStaticActuators =
     [] : List
            { mapKey : Text
            , mapValue :
-               { actuatorBinary : Text
-               , actuatorArguments : List Text
-               , actions : List Double
-               , referenceAction : Double
+               { sensorBinary : Text
+               , sensorArguments : List Text
+               , range : < I : { _1 : Double, _2 : Double } | Empty >
+               , tags :
+                   List
+                     < Power
+                     | Rapl
+                     | DownstreamThreadSignal
+                     | DownstreamCmdSignal
+                     | Minimize
+                     | Maximize
+                     >
+               , sensorBehavior :
+                   < Cumulative
+                   | IntervalBased
+                   | CumulativeWithCapacity : Double
+                   >
                }
            }
+, extraStaticActuators =
+  [ { mapKey = "example extra actuator"
+    , mapValue =
+        { actuatorBinary = "variorum-set-socket-power-limits-example"
+        , actuatorArguments = [] : List Text
+        , actions = [ 100.0, 150.0 ]
+        , referenceAction = 100.0
+        }
+    }
+  ]
 }

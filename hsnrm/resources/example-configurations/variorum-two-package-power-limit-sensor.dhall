@@ -52,23 +52,61 @@
       { fixedPower = { fromuW = 2.5e8 } }
 , activeSensorFrequency = { fromHz = 1.0 }
 , extraStaticPassiveSensors =
-    [] : List
-           { mapKey : Text
-           , mapValue :
-               { sensorBinary : Text
-               , sensorArguments : List Text
-               , range : < I : { _1 : Double, _2 : Double } | Empty >
-               , tags :
-                   List
-                     < Power
-                     | Rapl
-                     | DownstreamThreadSignal
-                     | DownstreamCmdSignal
-                     | Minimize
-                     | Maximize
-                     >
-               }
-           }
+  [ { mapKey =
+        "Sensor that gets package power limits for package 0 through variorum"
+    , mapValue =
+        { sensorBinary = "bash"
+        , sensorArguments =
+          [ "-c"
+          , "variorum-print-power-limits-example | awk '{ if (\$1 == \"_PACKAGE_POWER_LIMITS\" && \$2 == \"0x610\" && \$4 == 0 ) { print \$6 } }'"
+          ]
+        , range =
+            < I : { _1 : Double, _2 : Double } | Empty >.I
+              { _1 = 1.0, _2 = 40.0 }
+        , tags =
+            [] : List
+                   < Power
+                   | Rapl
+                   | DownstreamThreadSignal
+                   | DownstreamCmdSignal
+                   | Minimize
+                   | Maximize
+                   >
+        , sensorBehavior =
+            < Cumulative
+            | IntervalBased
+            | CumulativeWithCapacity : Double
+            >.IntervalBased
+        }
+    }
+  , { mapKey =
+        "Sensor that gets package power limits for package 1 through variorum"
+    , mapValue =
+        { sensorBinary = "bash"
+        , sensorArguments =
+          [ "-c"
+          , "variorum-print-power-limits-example | awk '{ if (\$1 == \"_PACKAGE_POWER_LIMITS\" && \$2 == \"0x610\" && \$4 == 1 ) { print \$6 } }'"
+          ]
+        , range =
+            < I : { _1 : Double, _2 : Double } | Empty >.I
+              { _1 = 1.0, _2 = 40.0 }
+        , tags =
+            [] : List
+                   < Power
+                   | Rapl
+                   | DownstreamThreadSignal
+                   | DownstreamCmdSignal
+                   | Minimize
+                   | Maximize
+                   >
+        , sensorBehavior =
+            < Cumulative
+            | IntervalBased
+            | CumulativeWithCapacity : Double
+            >.IntervalBased
+        }
+    }
+  ]
 , extraStaticActuators =
     [] : List
            { mapKey : Text

@@ -1170,7 +1170,8 @@
                                             "sensorBinary",
                                             "sensorArguments",
                                             "range",
-                                            "tags"
+                                            "tags",
+                                            "sensorBehavior"
                                         ],
                                         "type": "object",
                                         "properties": {
@@ -1204,6 +1205,45 @@
                                                             "empty": {
                                                                 "type": "object",
                                                                 "properties": {}
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            "sensorBehavior": {
+                                                "oneOf": [
+                                                    {
+                                                        "required": [
+                                                            "cumulative"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "cumulative": {
+                                                                "type": "object",
+                                                                "properties": {}
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "required": [
+                                                            "intervalBased"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "intervalBased": {
+                                                                "type": "object",
+                                                                "properties": {}
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "required": [
+                                                            "cumulativeWithCapacity"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "cumulativeWithCapacity": {
+                                                                "type": "number"
                                                             }
                                                         }
                                                     }

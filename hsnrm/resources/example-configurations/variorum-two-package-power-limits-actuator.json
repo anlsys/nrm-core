@@ -26,7 +26,20 @@
     },
     "nodeos": false,
     "hwloc": "hwloc",
-    "extraStaticActuators": [],
+    "extraStaticActuators": [
+        {
+            "mapKey": "example extra actuator",
+            "mapValue": {
+                "actuatorBinary": "variorum-set-socket-power-limits-example",
+                "actions": [
+                    100,
+                    150
+                ],
+                "actuatorArguments": [],
+                "referenceAction": 100
+            }
+        }
+    ],
     "raplCfg": {
         "referencePower": {
             "fromuW": 250000000

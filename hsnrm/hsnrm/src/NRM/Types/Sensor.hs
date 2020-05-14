@@ -89,6 +89,8 @@ instance HasMeta ActiveSensor where
   _meta = #activeMeta
 
 data Cumulative = Cumulative | IntervalBased | CumulativeWithCapacity Double
+  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cumulative
 
 data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | DownstreamThreadKey DownstreamThreadID
   deriving (Ord, Eq, Show)

@@ -29,7 +29,15 @@ downstreamCfg:
   downstreamBindAddress: ipc:///tmp/nrm-downstream-event
 nodeos: false
 hwloc: hwloc
-extraStaticActuators: []
+extraStaticActuators:
+- mapKey: example extra actuator
+  mapValue:
+    actuatorBinary: variorum-set-socket-power-limits-example
+    actions:
+    - 100.0
+    - 150.0
+    actuatorArguments: []
+    referenceAction: 100.0
 raplCfg:
   referencePower:
     fromuW: 2.5e8
