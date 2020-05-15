@@ -4,7 +4,7 @@ mkDerivation {
   src = fetchurl {
     url =
       "https://xgitlab.cels.anl.gov/argo/hbandit/-/archive/master/hbandit-master.tar.gz";
-    sha256 = "05dcwnfmn01q953rrrpadfx7ax3ppxkzvcx2y701wpyfjarsbqmv";
+    sha256 = "05060rg02nqcmvgwb3ywk4psc8xqqma4hwqd2d2bb3clmr0izdmf";
   };
   pname = "hbandit";
   version = "1.0.0";
