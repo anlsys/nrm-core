@@ -71,12 +71,12 @@ in mkShell {
     ++ lib.optional libnrm-hack (libnrm.overrideAttrs
       (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; }));
   buildInputs = [ hwloc dhrun which jq yq ] ++ lib.optionals experiment [
-    phantomjs
     pandoc
     daemonize
-    jupyterWithBatteries
+    pythonPackages.pandas
+    pythonPackages.matplotlib
+    pythonPackages.seaborn
     texlive.combined.scheme-full
-    (rstudioWrapper.override { packages = myRPackages; })
     (rWrapper.override { packages = myRPackages; })
   ] ++
 
