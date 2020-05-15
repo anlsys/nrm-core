@@ -2,7 +2,7 @@
 
 , libnrm-hack ? true, hsnrm-hack ? true, pynrm-hack ? true
 
-, experiment ? false
+, experiment ? false, analysis ? false
 
 , jupyter ? false
 
@@ -70,17 +70,16 @@ in mkShell {
 
     ++ lib.optional libnrm-hack (libnrm.overrideAttrs
       (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; }));
-  buildInputs = [ hwloc dhrun which jq yq ] ++ lib.optionals experiment [
-    pandoc
-    daemonize
-    pythonPackages.pandas
-    pythonPackages.matplotlib
-    pythonPackages.seaborn
-    texlive.combined.scheme-full
-    (rWrapper.override { packages = myRPackages; })
-  ] ++
-
-    lib.optional jupyter ((pkgs.jupyter.override rec {
+  buildInputs = [ hwloc dhrun which jq yq ]
+    ++ lib.optionals analysis [ texlive.combined.scheme-full]
+    ++ lib.optionals experiment [
+      pandoc
+      daemonize
+      pythonPackages.pandas
+      pythonPackages.matplotlib
+      pythonPackages.seaborn
+      (rWrapper.override { packages = myRPackages; })
+    ] ++ lib.optional jupyter ((pkgs.jupyter.override rec {
       python3 = (pythonPackages.python.withPackages
         (ps: with ps; [ msgpack warlock pyzmq pandas seaborn nbformat ]));
       definitions = {
