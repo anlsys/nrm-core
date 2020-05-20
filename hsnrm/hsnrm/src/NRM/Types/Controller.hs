@@ -29,7 +29,6 @@ module NRM.Types.Controller
   )
 where
 
-import Bandit.Class
 import Bandit.Exp3 as Exp3
 import Bandit.Exp4R as Exp4R
 import Bandit.Types

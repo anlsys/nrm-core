@@ -99,7 +99,7 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
               liftIO $ setStdGen g'
               return (Contextual s', a)
             Lagrange _ -> do
-              let (b, a, g') = initPFMAB g (Arms availableActions) & _1 %~ Lagrange
+              let (b, a, g') = Bandit.Class.init g (Arms availableActions) & _1 %~ Lagrange
               liftIO $ setStdGen g'
               return (b, a)
             Random (UniformCfg seed) -> do
@@ -308,7 +308,7 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
               Lagrange b -> do
                 logInfo $ "computed Hard Constrained Objective of :" <> show hco
                 --step :: (RandomGen g, MonadState b m) => g -> l -> m (a, g)
-                let ((a, g'), s') = runState (stepPFMAB g hco) b
+                let ((a, g'), s') = runState (step g hco) b
                 #bandit ?= Lagrange s'
                 return (a, g', hco)
           use #lastA >>= \case

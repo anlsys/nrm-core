@@ -26,14 +26,12 @@ where
 
 import Control.Lens
 import LMap.Map as LM
-import LensMap.Core
 import NRM.Node.Hwloc
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
 import NRM.Slices.Dummy as CD
 import NRM.Slices.Nodeos as CN
 import NRM.Slices.Singularity as CS
-import NRM.Types.Actuator
 import NRM.Types.Cmd
 import NRM.Types.CmdID
 import NRM.Types.Configuration as Cfg
@@ -68,17 +66,6 @@ initialState c time = do
                 packages'
                 (LM.toList rapldirs)
           Nothing -> return packages'
-  controlCfg c & \case
-    FixedCommand (fromWatts -> cap) ->
-      for_ (LM.toList packages) $ \(pkid, pk) ->
-        for_
-          ( LM.toList
-              ( lenses (pkid, pk) ::
-                  LensMap (PackageID, Package) ActuatorKey Actuator
-              )
-          )
-          $ \(_, ScopedLens l) -> go ((pkid, pk) ^. l) cap
-    _ -> pass
   return NRMState
     { controller = controlCfg c & \case
         FixedCommand _ -> Nothing
