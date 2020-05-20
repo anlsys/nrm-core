@@ -71,7 +71,7 @@ in mkShell {
     ++ lib.optional libnrm-hack (libnrm.overrideAttrs
       (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; }));
   buildInputs = [ hwloc dhrun which jq yq ]
-    ++ lib.optionals analysis [ texlive.combined.scheme-full]
+    ++ lib.optionals analysis [ texlive.combined.scheme-full ]
     ++ lib.optionals experiment [
       pandoc
       daemonize
