@@ -20,8 +20,8 @@ the string manipulating bash snippets used in this literate file are:
 ```
 
 We print a warning in the output:
-> -- Do not modify. This file has been automatically generated from file literate/tutorial.md,
-> -- your changes will be erased.
+> -- Do not modify. This file has been automatically generated from file 
+> -- `literate/tutorial.md`, your changes will be erased.
 
 cabal packaging for the executable file:
 
@@ -45,13 +45,14 @@ build-depends:
 
 ```
 
-> {-| This module serves as an introduction to the `hbandit` Multi-Armed Bandit library.
-> -}
+> {-| This module serves as an introduction to the `hbandit` Multi-Armed Bandit 
+> library. -}
 >
 > module Bandit.Tutorial (
 > -- *** Setup
 >
-> -- | The code snippets displayed in this tutorial require the following list of extensions and modules.
+> -- | The code snippets displayed in this tutorial require the following list 
+> -- of extensions and modules.
 
 ```{.haskell pipe="tee -a Tmodule.hs | awk '{print \"> -- >  \" $0}' | (echo '> -- |' ;cat - )"}
 {-# LANGUAGE LambdaCase #-}
@@ -214,10 +215,10 @@ printOnePassEG = putText $
 
 > -- *** Contextual 
 > --
-> -- | The algorithm class for contextual bandits is 'ContextualBandit'. This class gives
-> -- types for a bandit game between a learner and an environment with context, where the
-> -- learner has access to a random generator and is defined via a stateful 'step'
-> -- function.
+> -- | The algorithm class for contextual bandits is 'ContextualBandit'. This 
+> -- class gives  types for a bandit game between a learner and an environment
+> -- with context, where the learner has access to a random generator and is 
+> -- defined via a stateful 'step' function.
 
 > , Bandit.Class.ContextualBandit(..)
 
