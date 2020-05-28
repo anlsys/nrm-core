@@ -11,9 +11,9 @@ SHELL := $(shell which bash)
 # https://github.com/NixOS/nix/issues/726#issuecomment-161215255
 NIX_PATH := nixpkgs=./.
 
-.PHONY: vendor
-vendor: hbandit.nix
-
+.PHONY: all
+all: hbandit.nix ghcid pre-commit
+	
 dhall-to-cabal: default.nix
 	rm -rf ./dhall-to-cabal
 	cp -r $$(nix-build -A dhall-to-cabal-resources --no-out-link) ./dhall-to-cabal

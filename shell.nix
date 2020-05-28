@@ -28,3 +28,4 @@ haskellPackages.shellFor {
     export NIX_GHC_LIBDIR="${haskellPackages.hbandit.env.NIX_GHC_LIBDIR}"
   '';
 }
+
