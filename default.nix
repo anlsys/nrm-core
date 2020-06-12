@@ -1,8 +1,65 @@
-{ pkgs ? import (builtins.fetchTarball
-  "https://github.com/NixOS/nixpkgs/archive/20.03.tar.gz") { } }:
-with pkgs.lib;
-
+{ nixpkgs ? (builtins.fetchTarball
+  "https://github.com/NixOS/nixpkgs/archive/20.03.tar.gz") }:
 let
+
+  pkgs = import nixpkgs {
+
+    config = {
+      ihaskell = {
+        packages = ps:
+          with ps; [
+            ihaskell-charts
+            ihaskell-widgets
+            ad
+            Chart
+            hbandit
+            Chart-diagrams
+            lens
+            protolude
+            generic-lens
+            generic-data
+            refined
+            command-qq
+            probability
+            xls
+            intervals
+            neat-interpolation
+            statistics
+            random-fu
+            pretty-simple
+          ];
+      };
+    };
+
+    overlays = [
+      (_: pkgs: {
+        haskellPackages = pkgs.haskell.packages.ghc865.override {
+          overrides = self: super:
+            with pkgs.haskell.lib; rec {
+              ihaskell = unmarkBroken super.ihaskell;
+              vinyl = doJailbreak (unmarkBroken super.vinyl);
+              ihaskell-blaze = unmarkBroken super.ihaskell-blaze;
+              ihaskell-charts = unmarkBroken super.ihaskell-charts;
+              ihaskell-widgets = unmarkBroken super.ihaskell-widgets;
+              ihaskell-diagrams = unmarkBroken super.ihaskell-diagrams;
+              ihaskell-display = unmarkBroken super.ihaskell-display;
+              hbandit = self.callPackage ./hbandit.nix { };
+              panpipe = unmarkBroken (doJailbreak super.panpipe);
+              refined = unmarkBroken super.refined;
+              dhall-to-cabal = unmarkBroken super.dhall-to-cabal;
+              lazysmallcheck2012 = null;
+              panhandle = doJailbreak (dontCheck (self.callCabal2nix "panhandle"
+                (builtins.fetchTarball
+                  "https://github.com/freuk/panhandle/archive/master.tar.gz")
+                { }));
+            };
+        };
+      })
+
+    ];
+
+  };
+
   ormolu = let
     source = pkgs.fetchFromGitHub {
       owner = "tweag";
@@ -12,7 +69,8 @@ let
     };
   in (import source { }).ormolu;
 
-in pkgs // rec {
+in with pkgs;
+pkgs // rec {
 
   dhall-to-cabal-resources = pkgs.stdenv.mkDerivation {
     name = "dhall-to-cabal-resources";
@@ -20,23 +78,14 @@ in pkgs // rec {
     installPhase = "cp -r dhall $out";
   };
 
-  haskellPackages = pkgs.haskellPackages.override {
-    overrides = self: super:
-      with pkgs.haskell.lib; rec {
-        hbandit = self.callPackage ./hbandit.nix {};
-        panpipe = unmarkBroken (doJailbreak super.panpipe);
-        refined = unmarkBroken super.refined;
-        dhall-to-cabal = unmarkBroken super.dhall-to-cabal;
-        lazysmallcheck2012 = null;
-        panhandle = doJailbreak (dontCheck (self.callCabal2nix "panhandle"
-          (builtins.fetchTarball
-            "https://github.com/freuk/panhandle/archive/master.tar.gz") { }));
-      };
-  };
-  inherit ormolu;
-
   hlint = haskellPackages.hlint;
   hbandit = haskellPackages.hbandit;
+
+  ihaskell = pkgs.stdenv.mkDerivation {
+    name = "my-jupyter";
+    src = null;
+    buildInputs = [ pkgs.ihaskell ];
+  };
 
   r-libs-site = pkgs.runCommand "r-libs-site" {
     buildInputs = with pkgs; [

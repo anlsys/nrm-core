@@ -80,7 +80,7 @@ ghcid-test: hbandit.cabal .hlint.yaml hbandit.nix
 	'
 
 .PHONY: pre-commit
-pre-commit: ormolu dhall-format shellcheck src/Bandit/Tutorial.hs README.md
+pre-commit: ormolu dhall-format shellcheck README.md
 
 .PHONY: shellcheck
 shellcheck:
@@ -123,7 +123,7 @@ ormolu:
 		}
 	' --run bash <<< '
 		RETURN=0
-		for F in $$(fd -E src/Bandit/Tutorial.hs -e hs); do
+		for F in $$(fd -e hs); do
 			ormolu -o -XTypeApplications -o -XPatternSynonyms -m check $$F
 			if [ $$? -ne 0 ]; then
 				echo "[!] $$F does not pass ormolu format check. Formatting.." >&2
@@ -135,7 +135,7 @@ ormolu:
 	'
 
 .PHONY: doc
-doc: src/Bandit/Tutorial.hs hbandit.cabal hbandit.nix
+doc: hbandit.cabal hbandit.nix nbconvert
 	@nix-shell -E '
 		with import <nixpkgs> {};
 		with haskellPackages;
@@ -147,51 +147,11 @@ doc: src/Bandit/Tutorial.hs hbandit.cabal hbandit.nix
 		cabal v2-haddock hbandit --haddock-internal
 	'
 
-.PRECIOUS: src/Bandit/Tutorial.hs
-src/Bandit/Tutorial.hs: literate/tutorial.md hbandit.nix src
-	@nix-shell --pure -E '
-		with import <nixpkgs> {};
-		with haskellPackages;
-		let extra = { mkDerivation, inline-r, pretty-simple, aeson, stdenv }:
-		mkDerivation {
-			pname = "extra";
-			version = "1.0.0";
-			src = "";
-			libraryHaskellDepends = [
-				aeson
-				inline-r
-				data-default
-				pretty-simple
-			];
-			description = "extra";
-			license = stdenv.lib.licenses.bsd3;
-		};
-		in
-		shellFor {
-			packages = p: [
-				p.hbandit
-				(haskellPackages.callPackage extra {})
-			];
-			buildInputs = [
-			  inline-r
-				data-default
-				aeson
-				pretty-simple
-				panhandle
-				pandoc-citeproc
-				panpipe
-				unlit
-				pandoc
-				pkgs.which
-				cabal-install
-				R];
-			R_LIBS_SITE = "$${builtins.readFile r-libs-site}";
-		}
-	' --run bash <<< '
-		pandoc --filter $$(which panpipe) --filter $$(which panhandle) -f markdown+lhs -t markdown+lhs $< | unlit -f bird > $@
-	'
+.PHONY: nbconvert
+nbconvert:
+	nix-shell --run "jupyter-nbconvert docs/index.ipynb"
 
-README.md: literate/readme.md
+README.md: extras/readme.md
 	@nix-shell --pure -E '
 		with import <nixpkgs> {};
 		with haskellPackages;
@@ -215,12 +175,15 @@ README.md: literate/readme.md
 		pandoc -t markdown_strict  --filter $$(which pandoc-citeproc) -s  $< -o $@
 	'
 
+.PHONY:ihaskell
+ihaskell:
+	nix-shell default.nix -A ihaskell --run "ihaskell-notebook"
+
 .PHONY:clean
 clean:
 	rm -rf .build
 	rm -rf dist*
-	rm -f literate/main.hs
-	rm -f src/Bandit/Tutorial.hs
+	rm -f extras/main.hs
 	rm -f hbandit.nix
 	rm -f hbandit.cabal
 	rm -rf dhall-to-cabal

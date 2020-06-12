@@ -9,6 +9,7 @@ haskellPackages.shellFor {
     })
     ghcid
     dhall
+    pythonPackages.nbconvert
     haskellPackages.dhall-to-cabal
     haskellPackages.panpipe
     haskellPackages.panhandle

@@ -123,7 +123,6 @@ let allmodules =
       , "Bandit.Exp3"
       , "Bandit.Exp4R"
       , "Bandit.Types"
-      , "Bandit.Tutorial"
       , "Bandit.Util"
       ]
 
@@ -180,22 +179,7 @@ in    prelude.defaults.Package
               }
             ⫽ common.copts ([] : List Text)
           )
-      , test-suites =
-          [ prelude.unconditional.test-suite
-            "test"
-            (   prelude.defaults.TestSuite
-              ⫽ { build-depends =
-                    common.libdep # [ nobound "hbandit" ]
-                , hs-source-dirs =
-                    [ "test" ]
-                , type =
-                    types.TestType.exitcode-stdio { main-is = "ctx.hs" }
-                }
-              ⫽ common.copts ([] : List Text)
-            )
-          ]
-      , extra-doc-files =
-          [ "literate/*.png" ] : List Text
+
       , extra-source-files =
           [] : List Text
       , license =
