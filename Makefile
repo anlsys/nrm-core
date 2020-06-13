@@ -150,7 +150,6 @@ doc: hbandit.cabal hbandit.nix nbconvert
 .PHONY: nbconvert
 nbconvert:
 	nix-shell --run "jupyter-nbconvert docs/index.ipynb"
-
 README.md: extras/readme.md
 	@nix-shell --pure -E '
 		with import <nixpkgs> {};
