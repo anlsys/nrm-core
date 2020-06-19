@@ -102,6 +102,8 @@ let deps =
           nobound "primitive"
       , containers =
           nobound "containers"
+      , list-extras =
+          nobound "list-extras"
       , bytestring =
           nobound "bytestring"
       , storable-endian =
@@ -121,9 +123,9 @@ let allmodules =
       , "Bandit.Class"
       , "Bandit.EpsGreedy"
       , "Bandit.Exp3"
+      , "Bandit.UCB"
       , "Bandit.Exp4R"
       , "Bandit.Types"
-      , "Bandit.Tutorial"
       , "Bandit.Util"
       ]
 
@@ -134,6 +136,7 @@ let libdep =
       , deps.refined
       , deps.intervals
       , deps.monadRandom
+      , deps.list-extras
       , deps.lens
       , deps.generic-lens
       ]
@@ -180,22 +183,6 @@ in    prelude.defaults.Package
               }
             ⫽ common.copts ([] : List Text)
           )
-      , test-suites =
-          [ prelude.unconditional.test-suite
-            "test"
-            (   prelude.defaults.TestSuite
-              ⫽ { build-depends =
-                    common.libdep # [ nobound "hbandit" ]
-                , hs-source-dirs =
-                    [ "test" ]
-                , type =
-                    types.TestType.exitcode-stdio { main-is = "ctx.hs" }
-                }
-              ⫽ common.copts ([] : List Text)
-            )
-          ]
-      , extra-doc-files =
-          [ "literate/*.png" ] : List Text
       , extra-source-files =
           [] : List Text
       , license =

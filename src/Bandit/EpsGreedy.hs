@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-partial-fields #-}
-
 -- |
 -- Module      : Bandit.EpsGreedy
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
@@ -14,9 +12,13 @@
 module Bandit.EpsGreedy
   ( EpsGreedy (..),
     Weight (..),
+    Screening (..),
     EpsGreedyHyper (..),
+    Params (..),
+    ExploreExploit (..),
     pickRandom,
     updateAvgLoss,
+    updateWeight,
   )
 where
 
@@ -29,6 +31,7 @@ import Data.Generics.Labels ()
 import Protolude
 import System.Random
 
+-- | The state holder for the \(\epsilon\)-Greedy algorithm.
 data EpsGreedy a r
   = EpsGreedy
       { t :: Int,
@@ -38,7 +41,11 @@ data EpsGreedy a r
       }
   deriving (Show, Generic)
 
-data Params a = InitialScreening (Screening a) | Started (ExploreExploit a)
+-- | Params a is used to distinguish between initial screening for values
+-- and an ongoing exploration/exploitation process.
+data Params a
+  = InitialScreening (Screening a)
+  | Started (ExploreExploit a)
   deriving (Show, Generic)
 
 -- | Still screening for initial estimates
@@ -50,10 +57,9 @@ data Screening a
   deriving (Show, Generic)
 
 -- | The sampling procedure has started.
-data ExploreExploit a
+newtype ExploreExploit a
   = ExploreExploit
-      { k :: Int,
-        weights :: NonEmpty (Weight a)
+      { weights :: NonEmpty (Weight a)
       }
   deriving (Show, Generic)
 
@@ -81,16 +87,17 @@ data EpsGreedyHyper a r
 -- | The variable rate \(\epsilon\)-Greedy MAB algorithm.
 -- Offers no interesting guarantees, works well in practice.
 instance (Rate r, Eq a) => Bandit (EpsGreedy a r) (EpsGreedyHyper a r) a Double where
-
   init g (EpsGreedyHyper r (Arms (a :| as))) =
     ( EpsGreedy
         { t = 1,
           rate = r,
           lastAction = a,
-          params = InitialScreening $ Screening
-            { screened = [],
-              screenQueue = as
-            }
+          params =
+            InitialScreening $
+              Screening
+                { screened = [],
+                  screenQueue = as
+                }
         },
       a,
       g
@@ -100,33 +107,31 @@ instance (Rate r, Eq a) => Bandit (EpsGreedy a r) (EpsGreedyHyper a r) a Double 
     oldAction <- use #lastAction
     schedule <- use #rate <&> toRate
     e <- use #t <&> schedule
-    #t += 1
     (a, newGen) <- use #params >>= \case
       InitialScreening sg ->
         case screenQueue sg of
           (a : as) -> do
-            #params . #_InitialScreening .= Screening
-              { screened = (l, oldAction) : screened sg,
-                screenQueue = as
-              }
+            #params
+              .= InitialScreening
+                ( Screening
+                    { screened = (l, oldAction) : screened sg,
+                      screenQueue = as
+                    }
+                )
             return (a, g)
           [] -> do
-            let ee = ExploreExploit
-                  { k = length (screened sg) + 1,
-                    weights = toW <$> ((l, oldAction) :| screened sg)
-                  }
-            #params . #_Started .= ee
+            let ee =
+                  ExploreExploit
+                    { weights = toW <$> ((l, oldAction) :| screened sg)
+                    }
+            #params .= Started ee
             pickreturn e g ee
-      Started s -> do
-        let eeg =
-              s
-                { weights = weights s <&> \w ->
-                    if action w == oldAction
-                      then updateAvgLoss l w
-                      else w
-                }
-        pickreturn e g eeg
+      Started ee -> do
+        let ee' = ee & #weights %~ updateWeight oldAction l
+        #params . #_Started .= ee'
+        pickreturn e g ee
     #lastAction .= a
+    #t += 1
     return (a, newGen)
 
 -- | Action selection and  return
@@ -153,12 +158,21 @@ pickRandom ExploreExploit {..} =
     w2tuple :: Weight b -> (Double, b)
     w2tuple (Weight _avgloss _hits action) = (1, action)
 
--- | rudimentary online mean accumulator.
+-- | online mean accumulator.
 updateAvgLoss :: Double -> Weight a -> Weight a
-updateAvgLoss l (Weight avgloss hits action) =
-  Weight
-    ( (avgloss * fromIntegral hits + l)
-        / (fromIntegral hits + 1)
-    )
-    (hits + 1)
-    action
+updateAvgLoss x w = w &~ do
+  #hits += 1
+  n <- use #hits <&> fromIntegral
+  avg <- use #averageLoss
+  #averageLoss += (x - avg) / (n + 1)
+
+-- | updating the weights
+updateWeight ::
+  (Eq a) =>
+  a ->
+  Double ->
+  NonEmpty (Weight a) ->
+  NonEmpty (Weight a)
+updateWeight a l = fmap updateIf
+  where
+    updateIf w@Weight {..} = if action == a then updateAvgLoss l w else w

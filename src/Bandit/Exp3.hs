@@ -39,15 +39,15 @@ data Exp3 a
         k :: Int,
         weights :: NonEmpty (Weight a)
       }
-  deriving (Generic)
+  deriving (Show, Generic)
 
 -- | Probability of picking an action
 newtype Probability = Probability {getProbability :: Double}
-  deriving (Generic)
+  deriving (Show, Generic)
 
 -- | Cumulative loss counter for an action
 newtype CumulativeLoss = CumulativeLoss {getCumulativeLoss :: Double}
-  deriving (Generic)
+  deriving (Show, Generic)
 
 -- | Exp3 weight for one action
 data Weight a
@@ -56,14 +56,13 @@ data Weight a
         cumulativeLoss :: CumulativeLoss,
         action :: a
       }
-  deriving (Generic)
+  deriving (Show, Generic)
 
 -- | The Exponential-weight algorithm for Exploration and Exploitation (EXP3).
 instance
   (Eq a) =>
   Bandit (Exp3 a) (Arms a) a (ZeroOne Double)
   where
-
   init g (Arms as) =
     ( Exp3
         { t = 1,

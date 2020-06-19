@@ -10,9 +10,11 @@ module Bandit.Types
     ObliviousRep (..),
     FixedRate (..),
     InverseSqrtRate (..),
+    AlphaUCBInvLFPhi (..),
     ZeroOne,
     Bandit.Types.zero,
     Bandit.Types.one,
+    rewardCostBijection,
   )
 where
 
@@ -31,6 +33,10 @@ zero = unsafeRefine 0
 one :: (Ord a, Num a) => ZeroOne a
 one = unsafeRefine 1
 
+-- | Turns a loss into a reward and vice-versa.
+rewardCostBijection :: (Ord a, Num a) => ZeroOne a -> ZeroOne a
+rewardCostBijection x = unsafeRefine (1 - unrefine x)
+
 -- | Arms a represents a set of possible actions.
 newtype Arms a = Arms (Protolude.NonEmpty a)
   deriving (Show, Generic)
@@ -38,10 +44,18 @@ newtype Arms a = Arms (Protolude.NonEmpty a)
 -- | Oblivious Categorical Expert Representation
 newtype ObliviousRep a
   = ObliviousRep (Protolude.NonEmpty (ZeroOne Double, a))
-  deriving (Generic)
+  deriving (Show, Generic)
 
+-- | A fixed rate schedule.
 newtype FixedRate = FixedRate Double
-  deriving (Generic)
+  deriving (Show, Generic)
 
+-- | A rate schedule decreasing with \(1/\sqrt{t}\)
 newtype InverseSqrtRate = InverseSqrtRate Double
-  deriving (Generic)
+  deriving (Show, Generic)
+
+-- | The inverse of the Lagrange-Fenchel function of
+-- \(\phi(\Lambda) = \Lambda^2 / 8 \). Together with \(\Alpha=4\),
+-- this is the hyperparameter for UCB1.
+data AlphaUCBInvLFPhi = AlphaUCBInvLFPhi
+  deriving (Show, Generic)
