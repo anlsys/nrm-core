@@ -34,7 +34,7 @@ one :: (Ord a, Num a) => ZeroOne a
 one = unsafeRefine 1
 
 rewardCostBijection :: (Ord a, Num a) => ZeroOne a -> ZeroOne a
-rewardCostBijection x = unsafeRefine $ (1 - unrefine x)
+rewardCostBijection x = unsafeRefine (1 - unrefine x)
 
 -- | Arms a represents a set of possible actions.
 newtype Arms a = Arms (Protolude.NonEmpty a)
