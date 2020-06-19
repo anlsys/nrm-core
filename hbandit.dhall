@@ -102,9 +102,8 @@ let deps =
           nobound "primitive"
       , containers =
           nobound "containers"
-                , list-extras =
+      , list-extras =
           nobound "list-extras"
-
       , bytestring =
           nobound "bytestring"
       , storable-endian =
@@ -184,7 +183,6 @@ in    prelude.defaults.Package
               }
             ⫽ common.copts ([] : List Text)
           )
-
       , extra-source-files =
           [] : List Text
       , license =
