@@ -102,6 +102,9 @@ let deps =
           nobound "primitive"
       , containers =
           nobound "containers"
+                , list-extras =
+          nobound "list-extras"
+
       , bytestring =
           nobound "bytestring"
       , storable-endian =
@@ -121,6 +124,7 @@ let allmodules =
       , "Bandit.Class"
       , "Bandit.EpsGreedy"
       , "Bandit.Exp3"
+      , "Bandit.UCB"
       , "Bandit.Exp4R"
       , "Bandit.Types"
       , "Bandit.Util"
@@ -133,6 +137,7 @@ let libdep =
       , deps.refined
       , deps.intervals
       , deps.monadRandom
+      , deps.list-extras
       , deps.lens
       , deps.generic-lens
       ]

@@ -27,6 +27,7 @@ library
         Bandit.Class
         Bandit.EpsGreedy
         Bandit.Exp3
+        Bandit.UCB
         Bandit.Exp4R
         Bandit.Types
         Bandit.Util
@@ -59,5 +60,6 @@ library
         refined -any,
         intervals -any,
         MonadRandom -any,
+        list-extras -any,
         lens -any,
         generic-lens -any

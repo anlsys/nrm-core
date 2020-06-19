@@ -19,6 +19,7 @@ module Bandit.Class
     -- hyperparameters.
     ExpertRepresentation (..),
     Rate (..),
+    InvLFPhi (..),
   )
 where
 
@@ -50,7 +51,6 @@ import System.Random
 -- * @l@ is a superset of admissible losses \(\mathbb{L}\) (statically
 -- known).
 class Bandit b hyper a l | b -> l, b -> hyper, b -> a where
-
   -- | Init hyper returns the initial state of the algorithm and the
   -- first action.
   init :: (RandomGen g) => g -> hyper -> (b, a, g)
@@ -63,7 +63,6 @@ class Bandit b hyper a l | b -> l, b -> hyper, b -> a where
 --
 -- * @er@ is an expert representation (see 'ExpertRepresentation')
 class (ExpertRepresentation er s a) => ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b -> er where
-
   -- | Init hyper returns the initial state of the algorithm
   initCtx :: hyper -> b
 
@@ -92,3 +91,13 @@ instance Rate FixedRate where
 
 instance Rate InverseSqrtRate where
   toRate x t = coerce x / sqrt (fromIntegral t)
+
+-- | InvLFPhi r is the inverse of the legendre-fenchel transform
+-- of the convex function \(\Phi\) that parametrizes an UCB learner.
+--
+-- @toRate r@ returns the rate schedule.
+class InvLFPhi a where
+  toInvLFPhi :: a -> Double -> Double
+
+instance InvLFPhi AlphaUCBInvLFPhi where
+  toInvLFPhi _ x = sqrt (coerce x / 2)

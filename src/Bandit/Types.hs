@@ -10,9 +10,11 @@ module Bandit.Types
     ObliviousRep (..),
     FixedRate (..),
     InverseSqrtRate (..),
+    AlphaUCBInvLFPhi (..),
     ZeroOne,
     Bandit.Types.zero,
     Bandit.Types.one,
+    rewardCostBijection,
   )
 where
 
@@ -31,6 +33,9 @@ zero = unsafeRefine 0
 one :: (Ord a, Num a) => ZeroOne a
 one = unsafeRefine 1
 
+rewardCostBijection :: (Ord a, Num a) => ZeroOne a -> ZeroOne a
+rewardCostBijection x = unsafeRefine $ (1 - unrefine x)
+
 -- | Arms a represents a set of possible actions.
 newtype Arms a = Arms (Protolude.NonEmpty a)
   deriving (Show, Generic)
@@ -38,10 +43,13 @@ newtype Arms a = Arms (Protolude.NonEmpty a)
 -- | Oblivious Categorical Expert Representation
 newtype ObliviousRep a
   = ObliviousRep (Protolude.NonEmpty (ZeroOne Double, a))
-  deriving (Generic)
+  deriving (Show, Generic)
 
 newtype FixedRate = FixedRate Double
-  deriving (Generic)
+  deriving (Show, Generic)
 
 newtype InverseSqrtRate = InverseSqrtRate Double
-  deriving (Generic)
+  deriving (Show, Generic)
+
+data AlphaUCBInvLFPhi = AlphaUCBInvLFPhi
+  deriving (Show, Generic)
