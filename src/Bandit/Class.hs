@@ -92,10 +92,10 @@ instance Rate FixedRate where
 instance Rate InverseSqrtRate where
   toRate x t = coerce x / sqrt (fromIntegral t)
 
--- | InvLFPhi r is the inverse of the legendre-fenchel transform
--- of the convex function \(\Phi\) that parametrizes an UCB learner.
+-- | InvLFPhi r is the inverse of the Legendre-Fenchel transfor
+-- of the convex function \(\phi\) that parametrizes an UCB learner.
 --
--- @toRate r@ returns the rate schedule.
+-- @toInvLFPhi r@ returns the inverse of the LF transform of \(phi\).
 class InvLFPhi a where
   toInvLFPhi :: a -> Double -> Double
 

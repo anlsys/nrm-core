@@ -24,6 +24,7 @@ import Data.List.Extras.Argmax
 import Protolude
 import Refined
 
+-- | Hyperparameter for \((\alpha,\phi)\)-UCB
 data UCBHyper a r
   = UCBHyper
       { invLFPhiUCB :: r,

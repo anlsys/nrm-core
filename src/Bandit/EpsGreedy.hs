@@ -31,6 +31,7 @@ import Data.Generics.Labels ()
 import Protolude
 import System.Random
 
+-- | The state holder for the \(\epsilon\)-Greedy algorithm.
 data EpsGreedy a r
   = EpsGreedy
       { t :: Int,
@@ -40,7 +41,11 @@ data EpsGreedy a r
       }
   deriving (Show, Generic)
 
-data Params a = InitialScreening (Screening a) | Started (ExploreExploit a)
+-- | Params a is used to distinguish between initial screening for values
+-- and an ongoing exploration/exploitation process.
+data Params a
+  = InitialScreening (Screening a)
+  | Started (ExploreExploit a)
   deriving (Show, Generic)
 
 -- | Still screening for initial estimates

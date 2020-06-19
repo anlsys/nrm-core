@@ -135,7 +135,7 @@ ormolu:
 	'
 
 .PHONY: doc
-doc: hbandit.cabal hbandit.nix nbconvert
+doc: hbandit.cabal hbandit.nix 
 	@nix-shell -E '
 		with import <nixpkgs> {};
 		with haskellPackages;
@@ -146,37 +146,6 @@ doc: hbandit.cabal hbandit.nix nbconvert
 	' --run <<< bash '
 		cabal v2-haddock hbandit --haddock-internal
 	'
-
-.PHONY: nbconvert
-nbconvert:
-	nix-shell --run "jupyter-nbconvert docs/index.ipynb"
-README.md: extras/readme.md
-	@nix-shell --pure -E '
-		with import <nixpkgs> {};
-		with haskellPackages;
-		mkShell {
-			name="pandoc-tools";
-			buildInputs = [
-			  inline-r
-				data-default
-				aeson
-				pretty-simple
-				panhandle
-				pandoc-citeproc
-				panpipe
-				pandoc
-				pkgs.which
-				cabal-install
-				R];
-			R_LIBS_SITE = "$${builtins.readFile r-libs-site}";
-		}
-	' --run bash <<< '
-		pandoc -t markdown_strict  --filter $$(which pandoc-citeproc) -s  $< -o $@
-	'
-
-.PHONY:ihaskell
-ihaskell:
-	nix-shell default.nix -A ihaskell --run "ihaskell-notebook"
 
 .PHONY:clean
 clean:
