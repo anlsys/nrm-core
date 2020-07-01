@@ -7,23 +7,27 @@ let common = ../common.dhall
 in    λ(ghcPath : Text)
     → λ(ghcNumericVersion : Text)
     →   prelude.defaults.Package
-      ⫽ { name = "hsnrm-bin"
+      ⫽ { name = "hsnrm-extra"
         , version = prelude.v "1.0.0"
         , author = "Valentin Reis"
         , build-type = Some types.BuildType.Simple
         , cabal-version = prelude.v "2.0"
         , category = "tools"
-        , description =
-            "The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications."
+        , description = "hsnrm utilities"
         , executables =
           [ { executable =
                   λ(config : types.Config)
                 →   prelude.defaults.Executable
-                  ⫽ { main-is = "Export.hs"
+                  ⫽ { main-is = "PyExport.hs"
                     , build-depends =
                       [ common.nobound "hsnrm"
                       , common.deps.base
                       , common.deps.protolude
+                      , common.deps.aeson
+                      , common.deps.zeromq4-haskell
+                      , common.deps.pretty-simple
+                      , common.deps.data-default
+                      , common.deps.bytestring
                       , common.deps.enclosed-exceptions
                       ]
                     , extra-lib-dirs =
@@ -38,16 +42,7 @@ in    λ(ghcPath : Text)
                       , "-dynamic"
                       , "-lHSrts-ghc" ++ ghcNumericVersion
                       ]
-            , name = "nrm.so"
-            }
-          , { executable =
-                  λ(config : types.Config)
-                →   prelude.defaults.Executable
-                  ⫽ { main-is = "Hnrm.hs"
-                    , build-depends = [ common.nobound "hsnrm" ]
-                    }
-                  ⫽ common.copts [ "-main-is", "Hnrm" ]
-            , name = "nrm"
+            , name = "pynrm.so"
             }
           ]
         , extra-source-files = [ "ChangeLog.md" ]
@@ -60,5 +55,5 @@ in    λ(ghcPath : Text)
               , location = Some "https://xgitlab.cels.anl.gov/vreis/hsnrm.git"
               }
           ]
-        , synopsis = "hsnrm"
+        , synopsis = "hsnrm-extra"
         }

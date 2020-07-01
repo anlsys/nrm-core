@@ -1,7 +1,7 @@
 with import ./. { };
 
 haskellPackages.shellFor {
-  packages = p: [ haskellPackages.hsnrm ];
+  packages = p: [ haskellPackages.hsnrm haskellPackages.hsnrm-extra ];
   withHoogle = true;
   buildInputs = [
     haskellPackages.ghcid

@@ -11,7 +11,7 @@ SHELL := $(shell which bash)
 # https://github.com/NixOS/nix/issues/726#issuecomment-161215255
 NIX_PATH := nixpkgs=./.
 
-all: hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so resources
+all: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so resources
 
 dhall-to-cabal: ../default.nix
 	rm -rf ./dhall-to-cabal
@@ -43,26 +43,17 @@ resources: hsnrm/* hsnrm-bin/*
 	@nix-shell --pure --run bash <<< '
 		rm -rf resources
 		mkdir resources
-		cabal v2-run hsnrm-bin/Codegen.hs resources/
+		cabal v2-run hsnrm-extra/Codegen.hs resources/
+		cp resources/downstreamEvent.json ../pynrm/nrm/schemas/
 	'
 
 .PHONY: ghcid
 ghcid: ghcid-hsnrm
 
 ghcid-%: .hlint.yaml %/*.cabal
-	@nix-shell -E '
-		with import <nixpkgs> {};
-		with haskellPackages;
-		shellFor {
-			packages = p: [p.$*];
-			buildInputs = [ghcid cabal-install hlint];
-		}
-	' --pure --run bash <<< '
-		ghcid --command "cabal v2-repl $* " \
-			--restart=hsnrm.cabal \
-			--restart=default.nix \
-			-l
-	'
+	ghcid --command "cabal v2-repl $* " \
+		--restart=default.nix \
+		-l
 
 .PHONY: pre-commit
 pre-commit: hsnrm/hsnrm.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal resources dhall-format ormolu shellcheck hlint

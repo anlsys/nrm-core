@@ -53,7 +53,7 @@ dhrun/%:
 			"../dev/dhrun/assets/"
 			"../hsnrm/resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
 			"../hsnrm/resources/examples/"
-		in all.exitcode
+		in all.$*
 	'
 
 ############################# SECTION: source tooling

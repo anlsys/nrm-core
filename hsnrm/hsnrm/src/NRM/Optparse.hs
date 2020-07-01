@@ -23,7 +23,7 @@ customExecParserArgs args pprefs pinfo =
   handleParseResult $ execParserPure pprefs pinfo (toS <$> args)
 
 parseDaemonCli :: IO Cfg
-parseDaemonCli = fmap toS <$> getArgs >>= parseCli "nrm" "NRM Client" D.opts
+parseDaemonCli = fmap toS <$> getArgs >>= parseCli "nrmd" "NRM Daemon" D.opts
 
 parseArgDaemonCli :: [Text] -> IO Cfg
 parseArgDaemonCli = parseCli "nrmd" "NRM Daemon" D.opts
@@ -34,6 +34,7 @@ parseClientCli = fmap toS <$> getArgs >>= parseCli "nrm" "NRM Client" C.opts
 parseCli :: Text -> Text -> Parser (IO a) -> [Text] -> IO a
 parseCli h d x args =
   GHC.IO.Encoding.setLocaleEncoding SIO.utf8
+    >> SIO.hSetBuffering SIO.stdout SIO.NoBuffering
     >> ( join
            . customExecParserArgs args (prefs showHelpOnError)
            $ info

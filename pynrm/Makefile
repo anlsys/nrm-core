@@ -19,7 +19,12 @@ pre-commit: black
 .PHONY: black
 black:
 	@nix-shell --pure -p python37Packages.black --run bash <<< '
-	set -e
-	black bin/* --check
-	black nrm/*.py --check
+	RETURN=0
+	
+	black bin/* nrm/*.py extra/*.py --check
+	if [ $$? -ne 0 ]; then
+		echo "[!] Black format fail - Formatting.." >&2
+		black bin/* nrm/*.py extra/*.py
+		RETURN=1
+	fi
 	'

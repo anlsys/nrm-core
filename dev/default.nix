@@ -7,6 +7,29 @@
 
 let
   pkgs = import nixpkgs {
+
+    config = {
+      ihaskell = {
+        packages = ps:
+          with ps; [
+            ihaskell-charts
+            ihaskell-widgets
+            ad
+            Chart
+            Chart-diagrams
+            lens
+            protolude
+            generic-lens
+            generic-data
+            refined
+            command-qq
+            probability
+            intervals
+            pretty-simple
+          ];
+      };
+    };
+
     overlays = [
       (_: pkgs: {
 
@@ -21,10 +44,11 @@ let
           overrides = self: super:
             with pkgs.haskell.lib; rec {
               hsnrm = super.callCabal2nix "hsnrm" ../hsnrm/hsnrm { };
+              hsnrm-extra =
+                super.callCabal2nix "hsnrm-extra" ../hsnrm/hsnrm-extra { };
               hsnrm-bin =
                 super.callCabal2nix "hsnrm-bin" ../hsnrm/hsnrm-bin { };
               hbandit = self.callPackage ./pkgs/hbandit { };
-
               regex = doJailbreak super.regex;
               json-schema =
                 dontCheck (unmarkBroken (doJailbreak super.json-schema));
@@ -33,10 +57,20 @@ let
               refined = doJailbreak (unmarkBroken super.refined);
               aeson-extra = unmarkBroken super.aeson-extra;
               generic-aeson = unmarkBroken super.generic-aeson;
+              Plot-ho-matic = unmarkBroken super.Plot-ho-matic;
               zeromq4-haskell = unmarkBroken super.zeromq4-haskell;
               time-parsers = unmarkBroken super.time-parsers;
               dhall = super.dhall_1_29_0;
               dhall-json = doJailbreak super.dhall-json_1_6_1;
+              ihaskell = unmarkBroken super.ihaskell;
+              vinyl = doJailbreak (unmarkBroken super.vinyl);
+              ihaskell-blaze = unmarkBroken super.ihaskell-blaze;
+              ihaskell-charts = unmarkBroken super.ihaskell-charts;
+              ihaskell-widgets = unmarkBroken super.ihaskell-widgets;
+              ihaskell-inline-r = unmarkBroken super.ihaskell-inline-r;
+              ihaskell-diagrams = unmarkBroken super.ihaskell-diagrams;
+              ihaskell-display = unmarkBroken super.ihaskell-display;
+
             };
         };
       })
@@ -55,12 +89,9 @@ let
               nbconvert = psuper.nbconvert;
             };
         in rec {
-          python = pkgs.python3.override (old: {
-            packageOverrides =
-              pkgs.lib.composeExtensions (old.packageOverrides or (_: _: { }))
-              packageOverrides;
-          });
-          pythonPackages = python.passthru.pkgs;
+          python = pkgs.python3.override
+            (old: { packageOverrides = packageOverrides; });
+          pythonPackages = python.pkgs;
         })
     ];
   };

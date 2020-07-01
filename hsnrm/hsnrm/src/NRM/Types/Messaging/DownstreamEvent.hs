@@ -44,16 +44,16 @@ data Event
       }
   | -- | Pausing instrumented thread progress reports.
     ThreadPause
-      { downstreamThreadId :: DownstreamThreadID
+      { downstreamThreadID :: DownstreamThreadID
       }
   | -- | Preloaded MPI progress report.
     ThreadPhaseContext
-      { downstreamThreadId :: DownstreamThreadID,
+      { downstreamThreadID :: DownstreamThreadID,
         phaseContext :: PhaseContext
       }
   | -- | Pausing preloaded MPI progress report.
     ThreadPhasePause
-      { downstreamThreadId :: DownstreamThreadID
+      { downstreamThreadID :: DownstreamThreadID
       }
   deriving (Generic, MessagePack, NRMMessage)
 
