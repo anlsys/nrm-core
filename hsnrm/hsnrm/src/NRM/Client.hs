@@ -13,6 +13,7 @@ module NRM.Client
     connectWithOptions,
     pubAddress,
     rpcAddress,
+    mkPubAddr,
   )
 where
 
@@ -29,7 +30,7 @@ import qualified NRM.Types.Messaging.Protocols as Protocols
 import NRM.Types.Messaging.UpstreamPub as UPub
 import qualified NRM.Types.Messaging.UpstreamRep as URep
 import qualified NRM.Types.Messaging.UpstreamReq as UReq
-import qualified NRM.Types.Slice as C
+import qualified NRM.Types.Slice as S
 import NRM.Types.State
 import qualified NRM.Types.UpstreamClient as UC
 import NeatInterpolation
@@ -43,8 +44,11 @@ import qualified System.Posix.Signals as SPS
 import qualified System.ZMQ4.Monadic as ZMQ
 import Text.Pretty.Simple
 
+mkPubAddr :: Text -> Int -> Text
+mkPubAddr host port = "tcp://" <> host <> ":" <> show port
+
 pubAddress :: C.CommonOpts -> Text
-pubAddress c = "tcp://" <> C.upstreamBindAddress c <> ":" <> show (C.pubPort c)
+pubAddress c = mkPubAddr (C.upstreamBindAddress c) (C.pubPort c)
 
 rpcAddress :: C.CommonOpts -> Text
 rpcAddress c = "tcp://" <> C.upstreamBindAddress c <> ":" <> show (C.rpcPort c)
@@ -90,7 +94,10 @@ subClient l s common =
       Just message ->
         filterCPD l message & \case
           Nothing -> pass
-          Just filtered -> liftIO . putText . (if C.jsonPrint common then encodeT else toS . pShow) $ filtered
+          Just filtered ->
+            liftIO . putText
+              . (if C.jsonPrint common then encodeT else toS . pShow)
+              $ filtered
 
 filterCPD :: C.Listen -> UPub.Pub -> Maybe UPub.Pub
 filterCPD C.All p = Just p
@@ -130,7 +137,10 @@ dispatchProtocol s c = \case
       else reqstream s c Protocols.Run x
 
 pShowOpts :: (Show a, A.ToJSON a) => C.CommonOpts -> a -> Text
-pShowOpts opts = if C.jsonPrint opts then toS . AP.encodePretty else pShowColor (C.color opts)
+pShowOpts opts =
+  if C.jsonPrint opts
+    then toS . AP.encodePretty
+    else pShowColor (C.color opts)
   where
     pShowColor :: (Show a) => Bool -> a -> Text
     pShowColor True = toS . pShow
@@ -171,16 +181,17 @@ reqrep s opts proto =
         (Protocols.Actuate, URep.RepActuate URep.NotActuated) ->
           putText "couldn't actuate"
         (Protocols.KillSlice, URep.RepSliceKilled (URep.SliceKilled sliceID)) ->
-          putText $ "Killed slice ID: " <> C.toText sliceID
+          putText $ "Killed slice ID: " <> S.toText sliceID
         (Protocols.KillSlice, URep.RepNoSuchSlice URep.NoSuchSlice) ->
           putText "No such slice ID. "
         (Protocols.KillCmd, URep.RepCmdKilled (URep.CmdKilled cmdID)) ->
           putText $ "Killed cmd ID: " <> CmdID.toText cmdID
         (Protocols.KillCmd, URep.RepSliceKilled (URep.SliceKilled sliceID)) ->
-          putText $ "Killed slice ID: " <> C.toText sliceID
+          putText $ "Killed slice ID: " <> S.toText sliceID
         (Protocols.KillCmd, URep.RepNoSuchCmd URep.NoSuchCmd) ->
           putText "No such command ID. "
-        (_, URep.RepException e) -> putText $ "daemon throws internal exception: \n" <> e
+        (_, URep.RepException e) ->
+          putText $ "daemon throws internal exception: \n" <> e
         _ -> putText "reply wasn't in protocol"
 
 reqstream ::
@@ -194,9 +205,12 @@ reqstream s c Protocols.Run UReq.Run {..} = do
   msg <- ZMQ.receive s
   case ((decodeT $ toS msg) :: Maybe URep.Rep) of
     Nothing -> putText "error: received malformed message(1)."
-    Just (URep.RepStart (URep.Start _ cmdID)) -> zmqCCHandler (kill cmdID c) >> go
+    Just (URep.RepStart (URep.Start _ cmdID)) ->
+      zmqCCHandler (kill cmdID c) >> go
     Just (URep.RepStartFailure _) -> putText "Command start failure."
-    _ -> putText "NRM client error: received wrong type of message when starting job."
+    _ ->
+      putText
+        "NRM client error: received wrong type of message when starting job."
   where
     go = do
       msg <- ZMQ.receive s
@@ -209,12 +223,20 @@ reqstream s c Protocols.Run UReq.Run {..} = do
           ExitSuccess -> putText "Command ended successfully."
           ec@(ExitFailure exitcode) ->
             liftIO $
-              putText ("Command ended with exit code: " <> show (exitcode `mod` 256))
+              putText
+                ( "Command ended with exit code: "
+                    <> show (exitcode `mod` 256)
+                )
                 >> exitWith ec
         Nothing -> putText "error: NRM client received malformed message."
         _ -> putText "error: NRM client received wrong type of message."
     zmqCCHandler :: IO () -> ZMQ.ZMQ z ()
-    zmqCCHandler h = void . liftIO $ SPS.installHandler SPS.keyboardSignal (SPS.CatchOnce h) Nothing
+    zmqCCHandler h =
+      void . liftIO $
+        SPS.installHandler
+          SPS.keyboardSignal
+          (SPS.CatchOnce h)
+          Nothing
 
 kill :: CmdID -> C.CommonOpts -> IO ()
 kill cmdID c =
@@ -224,11 +246,19 @@ kill cmdID c =
       liftIO $
         UC.nextUpstreamClientID <&> \case
           Nothing -> panic "couldn't generate next client ID"
-          Just clientID -> (restrict (toS $ UC.toText clientID) :: Restricted (N1, N254) BS.ByteString)
+          Just clientID ->
+            ( restrict
+                (toS $ UC.toText clientID) ::
+                Restricted (N1, N254) BS.ByteString
+            )
     connectWithOptions uuid c s
     ZMQ.send s [] (toS . encode $ UReq.ReqKillCmd (UReq.KillCmd cmdID))
 
-connectWithOptions :: Restricted (N1, N254) ByteString -> C.CommonOpts -> ZMQ.Socket z t -> ZMQ.ZMQ z ()
+connectWithOptions ::
+  Restricted (N1, N254) ByteString ->
+  C.CommonOpts ->
+  ZMQ.Socket z t ->
+  ZMQ.ZMQ z ()
 connectWithOptions uuid c s = do
   ZMQ.setIdentity uuid s
   ZMQ.setSendHighWM (restrict (0 :: Int)) s

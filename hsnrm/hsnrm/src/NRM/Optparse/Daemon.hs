@@ -50,7 +50,9 @@ commonParser =
       ( strArgument
           ( metavar "CONFIG"
               <> help
-                "Input configuration with .yml/.yaml/.dh/.dhall extension. Leave void for stdin (dhall) input."
+                ( "Input configuration with .yml/.yaml/.dh/.dhall extension."
+                    <> " Leave void for stdin (dhall) input."
+                )
           )
       )
     <*> flag
@@ -58,7 +60,7 @@ commonParser =
       Yaml
       ( long "yaml" <> short 'y'
           <> help
-            "Assume configuration to be yaml(json is valid yaml) instead of dhall."
+            "Assume configuration to be yaml instead of dhall."
       )
 
 opts :: Parser (IO Cfg)

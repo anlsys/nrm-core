@@ -2,7 +2,7 @@
 
 , libnrm-hack ? true, hsnrm-hack ? true, pynrm-hack ? true
 
-, experiment ? false, analysis ? false
+, experiment ? false, analysis ? false, ihaskell ? false
 
 , jupyter ? false
 
@@ -19,6 +19,7 @@ let
     huxtable
     plotly
     formatR
+    repr
     RcppRoll
     latex2exp
     plotly
@@ -44,7 +45,7 @@ in mkShell {
     })) ++
 
     lib.optional hsnrm-hack (pkgs.haskellPackages.shellFor {
-      packages = p: [ haskellPackages.hsnrm ];
+      packages = p: [ haskellPackages.hsnrm haskellPackages.hsnrm-extra ];
       withHoogle = true;
       buildInputs = [
         pkgs.git
@@ -70,41 +71,42 @@ in mkShell {
 
     ++ lib.optional libnrm-hack (libnrm.overrideAttrs
       (o: { buildInputs = o.buildInputs ++ [ pkgs.clang-tools ]; }));
-  buildInputs = [ hwloc dhrun which jq yq ]
-    ++ lib.optionals analysis [ texlive.combined.scheme-full ]
-    ++ lib.optionals experiment [
-      pandoc
-      daemonize
-      pythonPackages.pandas
-      pythonPackages.matplotlib
-      pythonPackages.seaborn
-      (rWrapper.override { packages = myRPackages; })
-    ] ++ lib.optional jupyter ((pkgs.jupyter.override rec {
-      python3 = (pythonPackages.python.withPackages
-        (ps: with ps; [ msgpack warlock pyzmq pandas seaborn nbformat ]));
-      definitions = {
-        python = {
-          displayName = "Python";
-          argv = [
-            "${python3.interpreter}"
-            "-m"
-            "ipykernel_launcher"
-            "-f"
-            "{connection_file}"
-          ];
-          language = "python";
-          logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
-          logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
-        };
+  buildInputs = [ hwloc which jq yq ] ++ lib.optionals analysis [
+    texlive.combined.scheme-full
+    (rWrapper.override { packages = myRPackages; })
+
+  ] ++ lib.optional ihaskell [ pkgs.ihaskell ] ++ lib.optionals experiment [
+    pandoc
+    daemonize
+    pythonPackages.pandas
+    pythonPackages.matplotlib
+    pythonPackages.seaborn
+  ] ++ lib.optional jupyter ((pkgs.jupyter.override rec {
+    python3 = (pythonPackages.python.withPackages
+      (ps: with ps; [ msgpack warlock pyzmq pandas seaborn nbformat ]));
+    definitions = {
+      python = {
+        displayName = "Python";
+        argv = [
+          "${python3.interpreter}"
+          "-m"
+          "ipykernel_launcher"
+          "-f"
+          "{connection_file}"
+        ];
+        language = "python";
+        logo32 = "${python3.sitePackages}/ipykernel/resources/logo-32x32.png";
+        logo64 = "${python3.sitePackages}/ipykernel/resources/logo-64x64.png";
       };
-    }).overrideAttrs (_: { doCheck = false; }));
+    };
+  }).overrideAttrs (_: { doCheck = false; }));
   shellHook = ''
     # path for NRM dev experimentation
     export PYNRMSO=${
     # export for locating the client-side shared lib
     # (used by python lib nrm.tooling)
       builtins.toPath ./.
-    }/hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
+    }/hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-extra-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
     export NRMSO=${
     #export for locating the server-side shared lib
     # (used by `nrmd`)
@@ -118,7 +120,7 @@ in mkShell {
     #export for locating the client binary
     # (`nrm`)
       builtins.toPath ./.
-    }/.build/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm/build/nrm:$PATH
+    }/hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/x/nrm/build/nrm:$PATH
     # export for locating the nrm python libraries
     # (`nrm.<module>`)
     export PYTHONPATH=${builtins.toPath ./.}/pynrm/:$PYTHONPATH

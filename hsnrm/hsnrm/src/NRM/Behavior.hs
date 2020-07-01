@@ -12,7 +12,7 @@ module NRM.Behavior
     nrmDownstreamEvent,
     doControl,
     commonSP,
-    mayInjectLibnrmPreload,
+    injectDownstreamVars,
     mayRep,
     respondContent,
   )
@@ -23,7 +23,7 @@ import CPD.Utils as CPD
 import CPD.Values as CPD
 import Control.Applicative
 import qualified Control.Exception.Enclosed as EE
-import Control.Lens hiding (_Unwrapped, to)
+import Control.Lens hiding (_Unwrapped, _Wrapped, to)
 import Control.Monad.Trans.RWS.Lazy (RWST)
 import Data.Generics.Labels ()
 import Data.Generics.Wrapped
@@ -58,7 +58,12 @@ import NRM.Types.UpstreamClient
 import Protolude hiding (Map, log)
 
 -- | External interface for NRM behavior, without RWS monad
-behavior :: Cfg.Cfg -> NRMState -> U.Time -> NRMEvent -> IO (NRMState, [Behavior])
+behavior ::
+  Cfg.Cfg ->
+  NRMState ->
+  U.Time ->
+  NRMEvent ->
+  IO (NRMState, [Behavior])
 behavior cfg st time event = execNRM (nrm time event) cfg st
 
 -- | The nrm function contains the main logic of the NRM daemon. It changes
@@ -103,7 +108,8 @@ nrm _callTime (RegisterCmd cmdID cmdstatus) = do
         Right (st', sliceID, maybeClientID) -> do
           put st'
           maybeClientID & \case
-            Just clientID -> rep clientID $ URep.RepStart (URep.Start sliceID cmdID)
+            Just clientID ->
+              rep clientID . URep.RepStart $ URep.Start sliceID cmdID
             Nothing -> pass
 nrm _callTime (Req clientid msg) =
   sendExceptionsUp clientid $ do
@@ -112,13 +118,16 @@ nrm _callTime (Req clientid msg) =
     msg & \case
       UReq.ReqCPD _ ->
         rep clientid . URep.RepCPD $ NRMCPD.toCPD (controlCfg c) st
-      UReq.ReqSliceList _ -> rep clientid (URep.RepList . URep.SliceList . LM.toList $ slices st)
-      UReq.ReqGetState _ -> rep clientid (URep.RepGetState st)
-      UReq.ReqGetConfig _ -> rep clientid (URep.RepGetConfig $ URep.GetConfig c)
+      UReq.ReqSliceList _ ->
+        rep clientid . URep.RepList . URep.SliceList . LM.toList $ slices st
+      UReq.ReqGetState _ -> rep clientid $ URep.RepGetState st
+      UReq.ReqGetConfig _ -> rep clientid . URep.RepGetConfig $ URep.GetConfig c
       UReq.ReqRun UReq.Run {..} -> do
-        cmdID <- lift CmdID.nextCmdID <&> fromMaybe (panic "couldn't generate next cmd id")
-        let (runCmd, runArgs) =
-              (spec ^. #cmd, spec ^. #args) & case Manifest.perfwrapper (Manifest.app manifest) of
+        cmdID <-
+          lift CmdID.nextCmdID
+            <&> fromMaybe (panic "couldn't generate next cmd id")
+        let (runCmd, runArgs) = (spec ^. #cmd, spec ^. #args)
+              & case Manifest.perfwrapper (Manifest.app manifest) of
                 Manifest.PerfwrapperDisabled -> identity
                 p@Manifest.Perfwrapper {} ->
                   wrapCmd
@@ -131,9 +140,7 @@ nrm _callTime (Req clientid msg) =
             runSliceID
             . createSlice runSliceID
         behave . StartChild cmdID runCmd runArgs $
-          (spec ^. #env) &~ do
-            _Unwrapped . at cmdIDEnvVar ?= CmdID.toText cmdID
-            modify (mayInjectLibnrmPreload c manifest)
+          injectDownstreamVars c manifest cmdID (spec ^. #env)
       UReq.ReqKillSlice UReq.KillSlice {..} ->
         _sliceID killSliceID `modifyL` \case
           Nothing -> do
@@ -247,10 +254,14 @@ doControl input = do
             mRefActions =
               if not (Protolude.null (CPD.constraints cpd))
                 then Just $
-                  (LM.toList (lenses st) :: [(ActuatorKey, ScopedLens NRMState A.Actuator)]) <&> \(k, ScopedLens l) -> CPD.Action
-                    { actuatorID = toS k,
-                      actuatorValue = CPD.DiscreteDouble $ st ^. l . #referenceAction
-                    }
+                  ( LM.toList (lenses st) ::
+                      [(ActuatorKey, ScopedLens NRMState A.Actuator)]
+                  )
+                    <&> \(k, ScopedLens l) -> CPD.Action
+                      { actuatorID = toS k,
+                        actuatorValue =
+                          CPD.DiscreteDouble $ st ^. l . #referenceAction
+                      }
                 else Nothing
          in banditCartesianProductControl ccfg cpd input mRefActions >>= \case
               DoNothing -> pass
@@ -304,7 +315,9 @@ nrmDownstreamEvent callTime clientid = \case
                     log "downstream thread registered."
                     return OAdjustment
             OAdjustment -> return OAdjustment
-            OOk m -> pub (UPub.PubPerformance callTime cmdID perf) >> return (OOk m)
+            OOk m ->
+              pub (UPub.PubPerformance callTime cmdID perf)
+                >> return (OOk m)
   DEvent.ThreadProgress downstreamThreadID payload ->
     commonSP
       callTime
@@ -418,19 +431,21 @@ commonSP ::
   NRM (CommonOutcome Measurement)
 commonSP callTime key value = do
   st <- get
-  LM.lookup key (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor) & \case
-    Nothing -> return ONotFound
-    Just (ScopedLens sl) -> do
-      let (measurementOutput, newSensor) = postProcessSensor callTime key value (st ^. sl)
-      put (st & sl .~ newSensor)
-      measurementOutput & \case
-        Sensors.NoMeasurement -> return ONoValue
-        Sensors.Adjusted -> do
-          logInfo "Out-of-range value received, sensor adjusted."
-          return OAdjustment
-        Sensors.Ok measurement -> do
-          pub $ UPub.PubMeasurements callTime [measurement]
-          return $ OOk measurement
+  LM.lookup key (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor)
+    & \case
+      Nothing -> return ONotFound
+      Just (ScopedLens sl) -> do
+        let (measurementOutput, newSensor) =
+              postProcessSensor callTime key value (st ^. sl)
+        put (st & sl .~ newSensor)
+        measurementOutput & \case
+          Sensors.NoMeasurement -> return ONoValue
+          Sensors.Adjusted -> do
+            logInfo "Out-of-range value received, sensor adjusted."
+            return OAdjustment
+          Sensors.Ok measurement -> do
+            pub $ UPub.PubMeasurements callTime [measurement]
+            return $ OOk measurement
 
 mayRep :: Cmd -> URep.Rep -> Behavior
 mayRep c rp =
@@ -448,9 +463,9 @@ respondContent content cmd cmdID outputType =
   mayRep cmd $
     outputType & \case
       URep.StdoutOutput ->
-        URep.RepStdout $ URep.Stdout {URep.stdoutCmdID = cmdID, stdoutPayload = content}
+        URep.RepStdout $ URep.Stdout cmdID content
       URep.StderrOutput ->
-        URep.RepStderr $ URep.Stderr {URep.stderrCmdID = cmdID, stderrPayload = content}
+        URep.RepStderr $ URep.Stderr cmdID content
 
 processPassiveSensor ::
   U.Time ->
@@ -467,28 +482,29 @@ processPassiveSensor time (k, sensor) =
         LegalFailure -> (sensor, Nothing)
         IllegalFailureRemediation sensor' -> (sensor', Nothing)
 
-mayInjectLibnrmPreload :: Cfg -> Manifest -> Env -> Env
-mayInjectLibnrmPreload c manifest e =
-  fromMaybe e $
-    injector
-      <$> ((Manifest.instrumentation . Manifest.app) manifest <&> Manifest.ratelimit)
-      <*> Cfg.libnrmPath c
-      <*> Just e
+injectDownstreamVars :: Cfg -> Manifest -> CmdID -> Env -> Env
+injectDownstreamVars c manifest cmdID = execState $ do
+  _Unwrapped . at cmdIDEnvVar ?= CmdID.toText cmdID
+  for_
+    (manifest ^.. #app . #instrumentation . _Just . #ratelimit)
+    modifyRatelimitLens
+  for_ (c ^. #libnrmPath) modifyLDPreloadLens
   where
-    injector :: U.Frequency -> Text -> Env -> Env
-    injector ratelimit path (Env env) =
-      Env $
-        env
-          & LM.insert ratelimitEnvVar (show $ U.fromHz ratelimit)
-          & LM.alter
-            ( \case
-                Nothing -> Just path
-                Just x -> Just $ x <> " " <> path
-            )
-            "LD_PRELOAD"
+    modifyRatelimitLens :: U.Frequency -> State Env ()
+    modifyRatelimitLens ratelim =
+      _Unwrapped . at ratelimitEnvVar
+        ?= (show . (floor :: Double -> Int)) (U.fromHz ratelim)
+    modifyLDPreloadLens :: Text -> State Env ()
+    modifyLDPreloadLens path = _Unwrapped . at "LD_PRELOAD" %= \case
+      Nothing -> Just path
+      Just x -> Just $ x <> " " <> path
 
--- | modifyM is a very permissive way
-modifyL :: (MonadState s m) => LensLike (Control.Applicative.WrappedMonad m) s s a b -> (a -> m b) -> m ()
+-- | very permissive
+modifyL ::
+  (MonadState s m) =>
+  LensLike (Control.Applicative.WrappedMonad m) s s a b ->
+  (a -> m b) ->
+  m ()
 l `modifyL` f = get >>= mapMOf l f >>= put
 
 sendExceptionsUp :: UpstreamClientID -> NRM () -> NRM ()

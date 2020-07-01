@@ -8,14 +8,14 @@ cabal-version: 2.0
 -- '.dhall' extension) and re-run dhall-to-cabal, passing 
 -- the source file's name as its argument.
 -- * * * * * * * * * * * * WARNING * * * * * * * * * * * *
-name: hsnrm-bin
+name: hsnrm-extra
 version: 1.0.0
 license: BSD3
 maintainer: fre@freux.fr
 author: Valentin Reis
-synopsis: hsnrm
+synopsis: hsnrm-extra
 description:
-    The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications.
+    hsnrm utilities
 category: tools
 build-type: Simple
 extra-source-files:
@@ -25,8 +25,8 @@ source-repository head
     type: git
     location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
 
-executable nrm.so
-    main-is: Export.hs
+executable pynrm.so
+    main-is: PyExport.hs
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         OverloadedLists ExistentialQuantification RecordWildCards
@@ -57,33 +57,10 @@ executable nrm.so
         hsnrm -any,
         base -any,
         protolude -any,
+        aeson -any,
+        zeromq4-haskell -any,
+        pretty-simple -any,
+        data-default -any,
+        bytestring -any,
         enclosed-exceptions -any
-
-executable nrm
-    main-is: Hnrm.hs
-    default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        OverloadedLists ExistentialQuantification RecordWildCards
-                        RankNTypes TypeSynonymInstances StandaloneDeriving
-                        FlexibleInstances TupleSections MultiParamTypeClasses
-                        NoImplicitPrelude OverloadedStrings ViewPatterns PatternSynonyms
-                        DeriveFunctor DeriveTraversable TypeFamilies DeriveAnyClass
-                        DeriveGeneric DeriveDataTypeable OverloadedLabels DeriveFoldable
-                        DerivingStrategies TypeApplications MultiWayIf NoTemplateHaskell
-                        BlockArguments GADTs FlexibleContexts TypeOperators DataKinds
-                        PolyKinds AllowAmbiguousTypes FunctionalDependencies
-                        UndecidableInstances
-    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
-                 -Wmissing-home-modules -Widentities -Wredundant-constraints
-                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
-                 -fwarn-missing-signatures -fwarn-name-shadowing
-                 -fprint-potential-instances -Wmissing-export-lists
-                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -Wincomplete-record-updates
-                 -Wmonomorphism-restriction -Wimplicit-prelude
-                 -Wmissing-local-signatures -Wmissing-exported-signatures
-                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -main-is Hnrm
-    build-depends:
-        hsnrm -any
 

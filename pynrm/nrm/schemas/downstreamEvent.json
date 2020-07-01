@@ -97,11 +97,11 @@
             "properties": {
                 "threadPause": {
                     "required": [
-                        "downstreamThreadId"
+                        "downstreamThreadID"
                     ],
                     "type": "object",
                     "properties": {
-                        "downstreamThreadId": {
+                        "downstreamThreadID": {
                             "required": [
                                 "cmdID",
                                 "processID",
@@ -140,12 +140,12 @@
             "properties": {
                 "threadPhaseContext": {
                     "required": [
-                        "downstreamThreadId",
+                        "downstreamThreadID",
                         "phaseContext"
                     ],
                     "type": "object",
                     "properties": {
-                        "downstreamThreadId": {
+                        "downstreamThreadID": {
                             "required": [
                                 "cmdID",
                                 "processID",
@@ -207,11 +207,11 @@
             "properties": {
                 "threadPhasePause": {
                     "required": [
-                        "downstreamThreadId"
+                        "downstreamThreadID"
                     ],
                     "type": "object",
                     "properties": {
-                        "downstreamThreadId": {
+                        "downstreamThreadID": {
                             "required": [
                                 "cmdID",
                                 "processID",
