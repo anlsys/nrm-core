@@ -52,7 +52,7 @@ dhrun/%:
 		let all = ./dev/dhrun/all-tests.dh
 			"../dev/dhrun/assets/"
 			"../hsnrm/resources/defaults/Cfg.dhall // { verbose=<Normal|Verbose|Debug>.Debug }"
-			"../hsnrm/resources/examples/"
+			"../hsnrm/resources/examples-manifests/"
 		in all.$*
 	'
 
@@ -160,7 +160,7 @@ ci:
 		done
 	'
 
-ci-%:
+ci/%:
 	@nix-shell --run bash <<< '
 		gitlab-runner exec shell "$*"
 	'

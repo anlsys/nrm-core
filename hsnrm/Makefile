@@ -11,7 +11,7 @@ SHELL := $(shell which bash)
 # https://github.com/NixOS/nix/issues/726#issuecomment-161215255
 NIX_PATH := nixpkgs=./.
 
-all: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so resources
+all: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal build resources
 
 dhall-to-cabal: ../default.nix
 	rm -rf ./dhall-to-cabal
@@ -34,9 +34,10 @@ dhall-to-cabal: ../default.nix
 		dhall-to-cabal --output-stdout <<< "./$*.dhall \"$$GHCDIR\" \"$$GHCVERSION\"" > $@
 	'
 
-dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-1.0.0/x/nrm.so/build/nrm.so/nrm.so: hsnrm/ hsnrm-bin/
+.PHONY: build
+build: hsnrm/ hsnrm-bin/
 	@nix-shell --pure --run bash <<< '
-		cabal v2-build hsnrm-bin
+		cabal v2-build hsnrm-bin hsnrm-extra
 	'
 
 resources: hsnrm/* hsnrm-bin/*
