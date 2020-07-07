@@ -115,7 +115,7 @@ libnrm/all: libnrm/autotools
 
 .PHONY: libnrm/autotools
 libnrm/autotools: libnrm/src/nrm_messaging.h
-	nix-shell -E '
+	nix-shell --pure -E '
 		with import <nixpkgs> {};
 		libnrm.overrideAttrs (o:{ preBuild=""; })
 	' --run bash <<< '
@@ -148,11 +148,11 @@ libnrm/clang-format:
 
 .gitlab-ci.yml: .gitlab-ci.dhall
 	echo "#automatically generated from .gitlab-ci.dhall, changes will be erased." > .gitlab-ci.yml
-	@nix-shell -p haskellPackages.dhall-json --run dhall-to-yaml <<< ' ./.gitlab-ci.dhall ' >> .gitlab-ci.yml
+	@nix-shell --pure -p haskellPackages.dhall-json --run dhall-to-yaml <<< ' ./.gitlab-ci.dhall ' >> .gitlab-ci.yml
 
 .PHONY: ci
 ci:
-	@nix-shell -p yq jq --run bash <<< '
+	@nix-shell --pure -p yq jq --run bash <<< '
 		for jobname in $$(yq -r "keys| .[]" .gitlab-ci.yml); do
 			if [ "$$jobname" != "stages" ]; then
 				gitlab-runner exec shell "$$jobname"
@@ -161,7 +161,7 @@ ci:
 	'
 
 ci/%:
-	@nix-shell --run bash <<< '
+	@nix-shell --pure --run bash <<< '
 		gitlab-runner exec shell "$*"
 	'
 
