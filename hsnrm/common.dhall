@@ -142,7 +142,6 @@ let deps =
       , zeromq4-conduit = nobound "zeromq4-conduit"
       , zeromq4-haskell = nobound "zeromq4-haskell"
       , uuid = nobound "uuid"
-      , editor-open = nobound "editor-open"
       , text = nobound "text"
       , dhall = nobound "dhall"
       , bytestring = nobound "bytestring"
@@ -317,7 +316,6 @@ let libdep =
       , deps.brick
       , deps.filepath
       , deps.lens
-      , deps.editor-open
       ]
 
 in  { defexts = defexts

@@ -3,9 +3,7 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.State
-  ( -- Module      : NRM.State
-
-    -- * Initial state
+  ( -- * Initial state
     initialState,
 
     -- * Creation/Registration
@@ -13,9 +11,6 @@ module NRM.State
     registerAwaiting,
     registerFailed,
     registerLaunched,
-    --unRegisterDownstreamThreadClient,
-
-    -- * Removal
 
     -- ** Command removal
     CmdKey (..),
@@ -25,6 +20,8 @@ module NRM.State
 where
 
 import Control.Lens
+import Data.Map as M
+import Data.Map.Merge.Lazy
 import LMap.Map as LM
 import NRM.Node.Hwloc
 import NRM.Node.Sysfs
@@ -50,27 +47,49 @@ import Protolude
 initialState :: Cfg -> Time -> IO NRMState
 initialState c time = do
   hwl <- getHwlocData
-  let packages' =
-        LM.fromList $
-          (,Package {rapl = Nothing})
-            <$> selectPackageIDs hwl
-  packages <-
-    raplCfg c & \case
-      Nothing -> return packages'
-      Just raplc ->
-        getDefaultRAPLDirs (toS $ Cfg.raplPath raplc) >>= \case
-          Just (RAPLDirs rapldirs) ->
-            return $
-              Protolude.foldl
-                (goRAPL (referencePower raplc) (raplActions raplc))
-                packages'
-                (LM.toList rapldirs)
-          Nothing -> return packages'
+  let packages' = M.fromList $ selectPackageIDs hwl <&> (,Package {rapl = Nothing})
+  packages <- fmap fromDataMap $
+    Cfg.raplCfg c & \case
+      Nothing -> pure packages'
+      Just raplc -> do
+        defaultDirs <- getDefaultRAPLDirs (toS $ Cfg.raplPath raplc)
+        defaultDirs & \case
+          Nothing -> pure packages'
+          Just (RAPLDirs rapldirs) -> do
+            configs <- forM rapldirs (readRAPLConfiguration . path)
+            let fullMap =
+                  merge
+                    dropMissing
+                    dropMissing
+                    (zipWithMaybeMatched (\_ mrapl rapldir -> (,rapldir) <$> mrapl))
+                    (toDataMap configs)
+                    (toDataMap rapldirs)
+                updater _pkgid package (packageRaplConfig, packageRaplDir) =
+                  package
+                    { rapl = Just Rapl
+                        { frequency = hz 3,
+                          raplCfg = packageRaplConfig,
+                          maxEnergyCounterValue = packageRaplDir ^. #maxEnergy,
+                          max = watts 150,
+                          defaultPower = referencePower raplc,
+                          discreteChoices = raplActions raplc,
+                          lastRead = Nothing,
+                          history = MemBuffer.empty
+                        }
+                    }
+                newPkgs =
+                  merge
+                    preserveMissing
+                    dropMissing
+                    (zipWithMatched updater)
+                    packages'
+                    fullMap
+            return newPkgs
   return NRMState
     { controller = controlCfg c & \case
         FixedCommand _ -> Nothing
         ccfg -> Just $ initialController time (minimumControlInterval ccfg) [],
-      slices = LM.fromList [],
+      slices = M.fromList [],
       pus = LM.fromList $ (,PU) <$> selectPUIDs hwl,
       cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl,
       dummyRuntime =
@@ -85,39 +104,19 @@ initialState c time = do
         if nodeos c
           then Just NodeosRuntime
           else Nothing,
-      extraStaticActuators = Cfg.extraStaticActuators c <&> NRMState.ExtraActuator,
-      extraStaticPassiveSensors = Cfg.extraStaticPassiveSensors c <&> concretizeExtraPassiveSensor (activeSensorFrequency c),
+      extraStaticActuators =
+        Cfg.extraStaticActuators c
+          <&> NRMState.ExtraActuator,
+      extraStaticPassiveSensors =
+        Cfg.extraStaticPassiveSensors c
+          <&> concretizeExtraPassiveSensor (activeSensorFrequency c),
       ..
     }
-  where
-    goRAPL ::
-      Power ->
-      [Power] ->
-      LM.Map PackageID Package ->
-      (PackageID, RAPLDir) ->
-      LM.Map PackageID Package
-    goRAPL defP defA m (pkgid, RAPLDir {..}) =
-      LM.lookup pkgid m & \case
-        Nothing -> m
-        Just oldPackage ->
-          LM.insert
-            pkgid
-            ( oldPackage
-                { rapl = Just $ Rapl
-                    { frequency = hz 3,
-                      raplPath = path,
-                      maxEnergyCounterValue = maxEnergy,
-                      max = watts 150,
-                      defaultPower = defP,
-                      discreteChoices = defA,
-                      lastRead = Nothing,
-                      history = MemBuffer.empty
-                    }
-                }
-            )
-            m
 
-concretizeExtraPassiveSensor :: Frequency -> Cfg.ExtraPassiveSensor -> NRMState.ExtraPassiveSensor
+concretizeExtraPassiveSensor ::
+  Frequency ->
+  Cfg.ExtraPassiveSensor ->
+  NRMState.ExtraPassiveSensor
 concretizeExtraPassiveSensor f x = NRMState.ExtraPassiveSensor
   { NRMState.extraPassiveSensor = x,
     NRMState.history = [],
@@ -128,8 +127,8 @@ concretizeExtraPassiveSensor f x = NRMState.ExtraPassiveSensor
 -- | Removes a slice from the state
 removeSlice :: SliceID -> NRMState -> (Maybe Slice, NRMState)
 removeSlice sliceID st =
-  ( LM.lookup sliceID (slices st),
-    st {slices = LM.delete sliceID (slices st)}
+  ( M.lookup sliceID (slices st),
+    st {slices = M.delete sliceID (slices st)}
   )
 
 -- | Result annotation for command removal from the state.
@@ -166,10 +165,7 @@ removeCmd key st = case key of
             cmdID,
             cmd,
             sliceID,
-            insertSlice
-              sliceID
-              (slice {cmds = LM.delete cmdID (cmds slice)})
-              st
+            st & #slices . ix sliceID . #cmds %~ sans cmdID
           )
 
 -- | Registers a slice if not already tracked in the state, and returns the new state.
@@ -178,26 +174,14 @@ createSlice ::
   NRMState ->
   NRMState
 createSlice sliceID st =
-  case LM.lookup sliceID (slices st) of
-    Nothing -> st {slices = slices'}
-      where
-        slices' = LM.insert sliceID emptySlice (slices st)
+  st ^. #slices . at sliceID & \case
+    Nothing -> st & #slices . at sliceID ?~ emptySlice
     Just _ -> st
 
 -- | Registers an awaiting command in an existing slice
-registerAwaiting ::
-  CmdID ->
-  CmdCore ->
-  SliceID ->
-  NRMState ->
-  NRMState
-registerAwaiting cmdID cmdValue sliceID st =
-  st {slices = LM.update f sliceID (slices st)}
-  where
-    f c = Just $ c {awaiting = LM.insert cmdID cmdValue (awaiting c)}
-
-{-{ awaiting = LM.delete cmdID (awaiting slice)-}
-{-, cmds = LM.insert cmdID c (cmds slice)-}
+registerAwaiting :: CmdID -> CmdCore -> SliceID -> NRMState -> NRMState
+registerAwaiting cmdID cmdValue sliceID =
+  #slices . ix sliceID . #awaiting . at cmdID ?~ cmdValue
 
 -- | Turns an awaiting command to a launched one.
 registerLaunched ::
@@ -210,21 +194,11 @@ registerLaunched cmdID pid st =
     Nothing -> Left "No such awaiting command."
     Just (cmdCore, sliceID, slice) ->
       Right
-        ( st
-            { slices =
-                LM.insert
-                  sliceID
-                  ( slice
-                      { cmds =
-                          LM.insert
-                            cmdID
-                            (registerPID cmdCore pid)
-                            (cmds slice),
-                        awaiting = LM.delete cmdID (awaiting slice)
-                      }
-                  )
-                  (slices st)
-            },
+        ( st & #slices . at sliceID
+            ?~ ( slice &~ do
+                   #cmds . at cmdID ?= registerPID cmdCore pid
+                   #awaiting %= sans cmdID
+               ),
           sliceID,
           upstreamClientID cmdCore
         )
@@ -235,14 +209,15 @@ registerFailed ::
   NRMState ->
   Maybe (NRMState, SliceID, Slice, CmdCore)
 registerFailed cmdID st =
-  LM.lookup cmdID (awaitingCmdIDMap st) <&> \(cmdCore, sliceID, slice) ->
-    ( st {slices = LM.update f sliceID (slices st)},
+  awaitingCmdIDMap st ^. at cmdID <&> \(cmdCore, sliceID, slice) ->
+    ( st & #slices . at sliceID %~ (>>= f),
       sliceID,
       slice,
       cmdCore
     )
   where
+    f :: Slice -> Maybe Slice
     f c =
       if LM.null (cmds c)
         then Nothing
-        else Just $ c {awaiting = LM.delete cmdID (awaiting c)}
+        else Just $ c & #awaiting %~ sans cmdID

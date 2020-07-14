@@ -8,9 +8,6 @@ module NRM.Types.State
     ExtraActuator (..),
     ExtraPassiveSensor (..),
 
-    -- * Insertion
-    insertSlice,
-
     -- * Useful maps
     cmdIDMap,
     pidMap,
@@ -36,6 +33,7 @@ import Data.Coerce
 import Data.Data
 import Data.Generics.Labels ()
 import Data.JSON.Schema
+import Data.Map as M
 import Data.MessagePack
 import Data.Scientific
 import qualified LMap.Map as LM
@@ -65,7 +63,7 @@ data NRMState
       { pus :: LM.Map PUID PU,
         cores :: LM.Map CoreID Core,
         packages :: LM.Map PackageID Package,
-        slices :: LM.Map SliceID Slice,
+        slices :: Map SliceID Slice,
         dummyRuntime :: Maybe DummyRuntime,
         singularityRuntime :: Maybe SingularityRuntime,
         nodeosRuntime :: Maybe NodeosRuntime,
@@ -197,18 +195,14 @@ showSliceList l =
 -- | Renders a textual view of running slices
 showSlices :: NRMState -> Text
 showSlices NRMState {..} =
-  showSliceList $ LM.toList slices
-
--- | Insert a slice in the state (with replace)
-insertSlice :: SliceID -> Slice -> NRMState -> NRMState
-insertSlice sliceID slice s = s {slices = LM.insert sliceID slice (slices s)}
+  showSliceList $ M.toList slices
 
 lookupProcess :: ProcessID -> NRMState -> Maybe (CmdID, Cmd, SliceID, Slice)
 lookupProcess cmdID st = LM.lookup cmdID (pidMap st)
 
 -- | NRM state map view by ProcessID.
 pidMap :: NRMState -> LM.Map ProcessID (CmdID, Cmd, SliceID, Slice)
-pidMap s = mconcat $ LM.toList (slices s) <&> mkMap
+pidMap s = mconcat $ M.toList (slices s) <&> mkMap
   where
     mkMap :: forall c. (c, Slice) -> LM.Map ProcessID (CmdID, Cmd, c, Slice)
     mkMap x@(_, c) =
@@ -236,7 +230,7 @@ mkCmdIDMap ::
   (Slice -> LM.Map k a) ->
   NRMState ->
   LM.Map k (a, SliceID, Slice)
-mkCmdIDMap accessor s = mconcat $ LM.toList (slices s) <&> mkMap
+mkCmdIDMap accessor s = mconcat $ M.toList (slices s) <&> mkMap
   where
     mkMap x@(_, c) =
       LM.fromList $

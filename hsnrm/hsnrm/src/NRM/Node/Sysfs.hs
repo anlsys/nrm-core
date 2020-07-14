@@ -9,7 +9,8 @@ module NRM.Node.Sysfs
     RAPLDirs,
     getDefaultRAPLDirs,
     measureRAPLDirs,
-    setRAPLPowercap,
+    setRAPLPowercapAllWindows,
+    setRAPLPowercapByWindow,
 
     -- * Hwmon
     getDefaultHwmonDirs,
@@ -18,6 +19,7 @@ where
 
 import LMap.Map as LM
 import NRM.Node.Sysfs.Internal
+import NRM.Types.Units
 import Protolude
 
 -- | Retreives package RAPL directories at the default location.
@@ -29,8 +31,11 @@ measureRAPLDirs :: RAPLDirs -> IO [RAPLMeasurement]
 measureRAPLDirs (RAPLDirs rapldirpaths) = catMaybes <$> for (LM.elems rapldirpaths) (measureRAPLDir . path)
 
 -- | Setting powercap values.
-setRAPLPowercap :: FilePath -> RAPLCommand -> IO ()
-setRAPLPowercap = applyRAPLPcap
+setRAPLPowercapAllWindows :: RAPLConfig -> Power -> IO ()
+setRAPLPowercapAllWindows = setRAPLPowercapByWindow [ShortTerm, LongTerm]
+
+setRAPLPowercapByWindow :: Set Window -> RAPLConfig -> Power -> IO ()
+setRAPLPowercapByWindow ws cfg p = applyRAPLPcap cfg (RAPLCommand {powercap = p, windows = ws})
 
 -- | Retreives coretemp Hwmon directories at the default location.
 getDefaultHwmonDirs :: FilePath -> IO HwmonDirs

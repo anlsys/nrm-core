@@ -193,6 +193,5 @@ library
         mtl -any,
         brick -any,
         filepath -any,
-        lens -any,
-        editor-open -any
+        lens -any
 
