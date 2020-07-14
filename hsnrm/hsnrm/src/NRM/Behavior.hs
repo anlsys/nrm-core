@@ -27,6 +27,7 @@ import Control.Lens hiding (_Unwrapped, _Wrapped, to)
 import Control.Monad.Trans.RWS.Lazy (RWST)
 import Data.Generics.Labels ()
 import Data.Generics.Wrapped
+import Data.Map as M
 import LMap.Map as LM
 import LensMap.Core as LensMap
 import qualified NRM.CPD as NRMCPD
@@ -119,7 +120,7 @@ nrm _callTime (Req clientid msg) =
       UReq.ReqCPD _ ->
         rep clientid . URep.RepCPD $ NRMCPD.toCPD (controlCfg c) st
       UReq.ReqSliceList _ ->
-        rep clientid . URep.RepList . URep.SliceList . LM.toList $ slices st
+        rep clientid . URep.RepList . URep.SliceList . M.toList $ slices st
       UReq.ReqGetState _ -> rep clientid $ URep.RepGetState st
       UReq.ReqGetConfig _ -> rep clientid . URep.RepGetConfig $ URep.GetConfig c
       UReq.ReqRun UReq.Run {..} -> do
@@ -208,7 +209,10 @@ nrm _callTime (ChildDied pid exitcode) = do
                       )
                   pub $ UPub.PubEnd cmdID
                 Nothing -> log "Error during command removal from NRM state"
-            Nothing -> put $ insertSlice sliceID (Ct.insertCmd cmdID cmd {processState = newPstate} slice) st
+            Nothing ->
+              put $
+                st & #slices . at sliceID
+                  ?~ (slice & #cmds . at cmdID ?~ cmd {processState = newPstate})
 nrm callTime (DownstreamEvent clientid msg) =
   nrmDownstreamEvent callTime clientid msg
     <&> ( \case

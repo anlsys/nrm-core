@@ -15,6 +15,7 @@ module NRM.Node.Sysfs.Internal
     RAPLCommand (..),
     MaxPower (..),
     MaxEnergy (..),
+    Window (..),
     getRAPLDirs,
     measureRAPLDir,
     readRAPLConfiguration,
@@ -32,9 +33,11 @@ module NRM.Node.Sysfs.Internal
   )
 where
 
+import Control.Lens hiding (re)
 import Control.Monad.Trans.Maybe
 import Data.Aeson
 import Data.Data
+import Data.Generics.Labels ()
 import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
@@ -55,7 +58,7 @@ newtype HwmonDirs = HwmonDirs [HwmonDir]
 
 -- | Maximum RAPL power constraint.
 newtype MaxPower = MaxPower Power
-  deriving (Show)
+  deriving (Show, Generic)
 
 -- | Maximum RAPL energy measurement.
 newtype MaxEnergy = MaxEnergy Energy
@@ -63,17 +66,18 @@ newtype MaxEnergy = MaxEnergy Energy
 
 -- | RAPL energy measurement
 newtype MeasuredEnergy = MeasuredEnergy Energy
-  deriving (Show)
+  deriving (Show, Generic)
 
 -- | Hwmon directory
 newtype HwmonDir = HwmonDir FilePath
-  deriving (Show)
+  deriving (Show, Generic)
 
-newtype RAPLCommand
+data RAPLCommand
   = RAPLCommand
-      { powercap :: Power
+      { powercap :: Power,
+        windows :: Set Window
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
 -- | RAPL directory
 data RAPLDir
@@ -88,10 +92,12 @@ data RAPLConfig
   = RAPLConfig
       { configPath :: FilePath,
         enabled :: Bool,
-        constraintShortTerm :: RAPLConstraint,
-        constraintLongTerm :: RAPLConstraint
+        constraintShortTermMaxPowerUw :: RAPLConstraint,
+        constraintLongTermMaxPowerUw :: RAPLConstraint,
+        shortTermID :: Int,
+        longTermID :: Int
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
 -- | RAPL power constraint
 data RAPLConstraint
@@ -99,7 +105,7 @@ data RAPLConstraint
       { timeWindow :: Time,
         maxPower :: MaxPower
       }
-  deriving (Show)
+  deriving (Show, Generic)
 
 -- | RAPL power measurement
 data RAPLMeasurement
@@ -107,25 +113,31 @@ data RAPLMeasurement
       { measurementPath :: FilePath,
         energy :: Energy
       }
-  deriving (Show)
+  deriving (Show, Generic)
+
+data Window = ShortTerm | LongTerm deriving (Show, Generic, Ord, Eq)
 
 -- | Read configuration from a RAPL directory.
 readRAPLConfiguration :: FilePath -> IO (Maybe RAPLConfig)
 readRAPLConfiguration fp =
   runMaybeT $ do
     enabled <- (== ("1" :: Text)) <$> maybeTReadLine (fp <> "/enabled")
-    name0 <- maybeTReadLine (fp <> "/constraint_0_name")
-    name1 <- maybeTReadLine (fp <> "/constraint_1_name")
-    constraint0 <- parseConstraint 0
-    constraint1 <- parseConstraint 1
-    case (name0, name1) of
-      ("short_term", "long_term") ->
-        return $
-          RAPLConfig fp enabled constraint0 constraint1
-      ("long_term", "short_term") ->
-        return $
-          RAPLConfig fp enabled constraint1 constraint0
-      _ -> mzero
+    names <- forOf both (0 :: Int, 1 :: Int) $ \i ->
+      maybeTReadLine (fp <> "/constraint_" <> show i <> "_name")
+    maxConstraints <- forOf both (0, 1) parseConstraint
+    let flippedC = case names of
+          ("short_term", "long_term") -> False
+          ("long_term", "short_term") -> True
+          _ -> panic "rapl constraint name files contain unexpected values"
+        (shortTerm, longTerm) = (if flippedC then swap else identity) maxConstraints
+    return RAPLConfig
+      { configPath = fp,
+        enabled = enabled,
+        constraintShortTermMaxPowerUw = shortTerm,
+        constraintLongTermMaxPowerUw = longTerm,
+        shortTermID = fromEnum flippedC,
+        longTermID = fromEnum (not flippedC)
+      }
   where
     parseConstraint :: Int -> MaybeT IO RAPLConstraint
     parseConstraint i = do
@@ -166,11 +178,18 @@ processRAPLFolder fp =
     rx = [re|package-([0-9]+)(/\S+)?|]
 
 -- | Applies powercap commands.
-applyRAPLPcap :: FilePath -> RAPLCommand -> IO ()
-applyRAPLPcap filePath (RAPLCommand cap) =
+applyRAPLPcap :: RAPLConfig -> RAPLCommand -> IO ()
+applyRAPLPcap raplCfg (RAPLCommand cap windows) = for_ windows $ \w ->
   writeFile
-    (filePath <> "/constraint_1_power_limit_uw")
+    (configPath raplCfg <> toS (windowToPath w))
     (show . (floor :: Double -> Int) $ fromuW cap)
+  where
+    windowToPath :: Window -> Text
+    windowToPath w = "/constraint_" <> show (raplCfg ^. getID w) <> "_power_limit_uw"
+    getID :: Window -> Getting Int RAPLConfig Int
+    getID = \case
+      ShortTerm -> #shortTermID
+      LongTerm -> #longTermID
 
 -- | Lists available rapl directories.
 getRAPLDirs :: FilePath -> IO (Maybe RAPLDirs)

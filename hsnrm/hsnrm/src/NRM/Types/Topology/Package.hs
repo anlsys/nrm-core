@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 -- |
 -- Module      : NRM.Types.Topology.Package
 -- Copyright   : (c) UChicago Argonne, 2019
@@ -29,7 +31,7 @@ import Protolude hiding (max, to)
 -- | Record containing all information about a CPU Package.
 data Rapl
   = Rapl
-      { raplPath :: FilePath,
+      { raplCfg :: RAPLConfig,
         max :: Power,
         maxEnergyCounterValue :: Energy,
         frequency :: Frequency,
@@ -60,11 +62,11 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
               )
           )
     where
-      getter (NRM.Types.Topology.Package.Rapl path _maxPower _maxCounter _freq discreteChoices defaultPower _last _history) =
+      getter (NRM.Types.Topology.Package.Rapl raplCfg _maxPower _maxCounter _freq discreteChoices defaultPower _last _history) =
         Actuator
           { actions = discreteChoices <&> fromWatts,
             referenceAction = fromWatts defaultPower,
-            go = setRAPLPowercap path . RAPLCommand . watts
+            go = setRAPLPowercapAllWindows raplCfg . watts
           }
       setter :: Rapl -> Actuator -> Rapl
       setter rapl (Actuator actions referenceAction _go) =
@@ -86,7 +88,7 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
               )
           )
     where
-      getter (NRM.Types.Topology.Package.Rapl path maxPower maxCounter freq _discreteChoices _defaultPower lastRead history) =
+      getter (NRM.Types.Topology.Package.Rapl cfg maxPower maxCounter freq _discreteChoices _defaultPower lastRead history) =
         S.PassiveSensor
           { passiveMeta = S.SensorMeta
               { tags = [S.Minimize, S.Power, S.Rapl],
@@ -96,7 +98,7 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
                 cumulative = S.CumulativeWithCapacity (fromJoules maxCounter)
               },
             frequency = freq,
-            perform = measureRAPLDir path <&> fmap (fromJoules . energy)
+            perform = measureRAPLDir (configPath cfg) <&> fmap (fromJoules . energy)
           }
       setter :: Rapl -> S.PassiveSensor -> Rapl
       setter rapl passiveSensor =
@@ -104,3 +106,21 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
           #max .= passiveSensor ^. S._meta . #range . to (watts . sup)
           #history .= passiveSensor ^. S._meta . #lastReferenceMeasurements
           #lastRead .= (fmap joules <$> passiveSensor ^. S._meta . #last)
+
+deriving instance MessagePack RAPLConfig
+
+deriving instance ToJSON RAPLConfig
+
+deriving instance FromJSON RAPLConfig
+
+deriving instance MessagePack RAPLConstraint
+
+deriving instance ToJSON RAPLConstraint
+
+deriving instance FromJSON RAPLConstraint
+
+deriving instance MessagePack MaxPower
+
+deriving instance ToJSON MaxPower
+
+deriving instance FromJSON MaxPower

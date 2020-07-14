@@ -8,7 +8,6 @@
 module NRM.Types.Slice
   ( Slice (..),
     emptySlice,
-    insertCmd,
     SliceID (..),
     nextSliceID,
     parseSliceID,
@@ -48,10 +47,6 @@ emptySlice = Slice
   { cmds = LM.fromList [],
     awaiting = LM.fromList []
   }
-
--- | Insert a running command in a slice (with replace)
-insertCmd :: CmdID -> Cmd -> Slice -> Slice
-insertCmd cmdID cmd slice = slice {cmds = LM.insert cmdID cmd (cmds slice)}
 
 data SliceID = SliceID U.UUID | Name Text
   deriving (Show, Eq, Ord, Generic, FromJSONKey, ToJSONKey, MessagePack)
