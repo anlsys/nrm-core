@@ -1,0 +1,3 @@
+$ ./stream_progress.sh 2> /dev/null
+> /DownstreamThreadKey/
+>= 0

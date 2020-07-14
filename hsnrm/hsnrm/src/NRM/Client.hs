@@ -220,7 +220,7 @@ reqstream s c Protocols.Run UReq.Run {..} = do
         Just (URep.RepStderr (URep.stderrPayload -> x)) -> hPutStr stderr x >> go
         Just (URep.RepThisCmdKilled _) -> putText "Command killed."
         Just (URep.RepCmdEnded (URep.exitCode -> x)) -> case x of
-          ExitSuccess -> putText "Command ended successfully."
+          ExitSuccess -> pass
           ec@(ExitFailure exitcode) ->
             liftIO $
               putText

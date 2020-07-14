@@ -1,1 +1,1 @@
-import dev/default.nix
+import nix/default.nix

@@ -11,7 +11,7 @@ SHELL := $(shell which bash)
 # https://github.com/NixOS/nix/issues/726#issuecomment-161215255
 NIX_PATH := nixpkgs=./.
 
-all: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal build resources
+all: bin/nrm bin/nrm.so bin/pynrm.so resources
 
 dhall-to-cabal: ../default.nix
 	rm -rf ./dhall-to-cabal
@@ -34,10 +34,16 @@ dhall-to-cabal: ../default.nix
 		dhall-to-cabal --output-stdout <<< "./$*.dhall \"$$GHCDIR\" \"$$GHCVERSION\"" > $@
 	'
 
-.PHONY: build
-build: hsnrm/ hsnrm-bin/
+.PHONY: bin/nrm
+bin/nrm.so bin/nrm: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal 
 	@nix-shell --pure --run bash <<< '
-		cabal v2-build hsnrm-bin hsnrm-extra
+		cabal v2-install hsnrm-bin --installdir=./bin
+	'
+	
+.PHONY: bin/pynrm.so
+bin/pynrm.so: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal 
+	@nix-shell --pure --run bash <<< '
+		cabal v2-install hsnrm-extra --installdir=./bin
 	'
 
 resources: hsnrm/* hsnrm-bin/*

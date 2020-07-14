@@ -1,154 +1,158 @@
 #automatically generated from .gitlab-ci.dhall, changes will be erased.
-nix/stream:
-  stage: build
-  script: nix-build -A stream --no-build-output
-  tags:
-  - nix
-  - kvm
-nix/hsnrm-bin:
-  stage: build
-  script: nix-build -A haskellPackages.hsnrm-bin --no-build-output
-  tags:
-  - nix
-  - kvm
-notebooks:
-  stage: test
-  script: nix-shell -p gnumake --run 'make notebooks'
-  tags:
-  - nix
-  - kvm
-libnrm/autotools:
-  stage: build
-  script: nix-shell -p gnumake --run 'make libnrm/autotools'
-  tags:
-  - nix
-  - kvm
-hsnrm/shellcheck:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm/shellcheck'
-  tags:
-  - nix
-  - kvm
-shellcheck:
-  stage: source
-  script: nix-shell -p gnumake --run 'make shellcheck'
-  tags:
-  - nix
-  - kvm
-nix/pynrm:
-  stage: build
-  script: nix-build -A pythonPackages.pynrm --no-build-output
-  tags:
-  - nix
-  - kvm
-readthedocs:
-  stage: deploy
-  only:
-  - master
-  script:
-  - echo "token=$RTD_TOKEN"
-  - nix run nixpkgs.curl -c curl --fail -X POST -d "token=$RTD_TOKEN" readthedocs.org/api/v2/webhook/hnrm/104604/
-  tags:
-  - nix
-  - kvm
-dhrun/hello:
-  stage: test
-  script: nix-shell -p gnumake --run 'make dhrun/hello'
-  tags:
-  - nix
-  - kvm
-libnrm/clang-format:
-  stage: source
-  script: nix-shell -p gnumake --run 'make libnrm/clang-format'
-  tags:
-  - nix
-  - kvm
-hsnrm/ormolu:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm/ormolu'
-  tags:
-  - nix
-  - kvm
-hsnrm-/dhall-format:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm/dhall-format'
-  tags:
-  - nix
-  - kvm
-hsnrm/all:
-  stage: build
-  script: nix-shell -p gnumake --run 'make hsnrm/all'
-  tags:
-  - nix
-  - kvm
-hsnrm/resources:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm/resources'
-  tags:
-  - nix
-  - kvm
-dhrun/exitcode:
-  stage: test
-  script: nix-shell -p gnumake --run 'make dhrun/exitcode'
-  tags:
-  - nix
-  - kvm
-stages:
-- source
-- build
-- test
-- deploy
-hsnrm/hlint:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm/hlint'
-  tags:
-  - nix
-  - kvm
-nix/hsnrm:
-  stage: build
-  script: nix-build -A haskellPackages.hsnrm --no-build-output
-  tags:
-  - nix
-  - kvm
-hsnrm/hsnrm-bin/hsnrm-bin_cabal:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm/hsnrm/hsnrm.cabal'
-  tags:
-  - nix
-  - kvm
-nixfmt:
-  stage: source
-  script: nix-shell -p gnumake --run 'make nixfmt'
-  tags:
-  - nix
-  - kvm
-pynrm/black:
-  stage: source
-  script: nix-shell -p gnumake --run 'make pynrm/black'
-  tags:
-  - nix
-  - kvm
-hsnrm/hsnrm/hsnrm_cabal:
-  stage: source
-  script: nix-shell -p gnumake --run 'make hsnrm/hsnrm-bin/hsnrm-bin.cabal'
-  tags:
-  - nix
-  - kvm
 dhall-format:
+  script: "nix-shell -p gnumake --run 'make dhall-format'"
   stage: source
-  script: nix-shell -p gnumake --run 'make dhall-format'
   tags:
-  - nix
-  - kvm
-dhrun/listen:
-  stage: test
-  script: nix-shell -p gnumake --run 'make dhrun/listen'
+    - nix
+    - kvm
+hsnrm-/dhall-format:
+  script: "nix-shell -p gnumake --run 'make hsnrm/dhall-format'"
+  stage: source
   tags:
-  - nix
-  - kvm
-nix/libnrm:
+    - nix
+    - kvm
+hsnrm/all:
+  script: "nix-shell -p gnumake --run 'make hsnrm/all'"
   stage: build
-  script: nix-build -A libnrm --no-build-output
   tags:
-  - nix
-  - kvm
+    - nix
+    - kvm
+hsnrm/hlint:
+  script: "nix-shell -p gnumake --run 'make hsnrm/hlint'"
+  stage: source
+  tags:
+    - nix
+    - kvm
+hsnrm/hsnrm-bin/hsnrm-bin_cabal:
+  script: "nix-shell -p gnumake --run 'make hsnrm/hsnrm/hsnrm.cabal'"
+  stage: source
+  tags:
+    - nix
+    - kvm
+hsnrm/hsnrm/hsnrm_cabal:
+  script: "nix-shell -p gnumake --run 'make hsnrm/hsnrm-bin/hsnrm-bin.cabal'"
+  stage: source
+  tags:
+    - nix
+    - kvm
+hsnrm/ormolu:
+  script: "nix-shell -p gnumake --run 'make hsnrm/ormolu'"
+  stage: source
+  tags:
+    - nix
+    - kvm
+hsnrm/resources:
+  script: "nix-shell -p gnumake --run 'make hsnrm/resources'"
+  stage: source
+  tags:
+    - nix
+    - kvm
+hsnrm/shellcheck:
+  script: "nix-shell -p gnumake --run 'make hsnrm/shellcheck'"
+  stage: source
+  tags:
+    - nix
+    - kvm
+libnrm/autotools:
+  script: "nix-shell -p gnumake --run 'make libnrm/autotools'"
+  stage: build
+  tags:
+    - nix
+    - kvm
+libnrm/clang-format:
+  script: "nix-shell -p gnumake --run 'make libnrm/clang-format'"
+  stage: source
+  tags:
+    - nix
+    - kvm
+nix/hsnrm:
+  script: "nix-build -A haskellPackages.hsnrm --no-build-output"
+  stage: build
+  tags:
+    - nix
+    - kvm
+nix/hsnrm-bin:
+  script: "nix-build -A haskellPackages.hsnrm-bin --no-build-output"
+  stage: build
+  tags:
+    - nix
+    - kvm
+nix/libnrm:
+  script: "nix-build -A libnrm --no-build-output"
+  stage: build
+  tags:
+    - nix
+    - kvm
+nix/pynrm:
+  script: "nix-build -A pythonPackages.pynrm --no-build-output"
+  stage: build
+  tags:
+    - nix
+    - kvm
+nix/stream:
+  script: "nix-build -A stream --no-build-output"
+  stage: build
+  tags:
+    - nix
+    - kvm
+nixfmt:
+  script: "nix-shell -p gnumake --run 'make nixfmt'"
+  stage: source
+  tags:
+    - nix
+    - kvm
+notebooks:
+  script: "nix-shell -p gnumake --run 'make notebooks'"
+  stage: test
+  tags:
+    - nix
+    - kvm
+pynrm/black:
+  script: "nix-shell -p gnumake --run 'make pynrm/black'"
+  stage: source
+  tags:
+    - nix
+    - kvm
+readthedocs:
+  only:
+    - master
+  script:
+    - "echo \"token=$RTD_TOKEN\""
+    - "nix run nixpkgs.curl -c curl --fail -X POST -d \"token=$RTD_TOKEN\" readthedocs.org/api/v2/webhook/hnrm/104604/"
+  stage: deploy
+  tags:
+    - nix
+    - kvm
+shellcheck:
+  script: "nix-shell -p gnumake --run 'make shellcheck'"
+  stage: source
+  tags:
+    - nix
+    - kvm
+stages:
+  - source
+  - build
+  - test
+  - deploy
+tests/apps:
+  script: "nix-shell -p gnumake --run 'make app-tests'"
+  stage: test
+  tags:
+    - nix
+    - kvm
+tests/kvm:
+  script: "nix-shell -p gnumake --run 'make tests-kvm'"
+  stage: test
+  tags:
+    - nix
+    - kvm
+tests/perf:
+  script: "nix-shell -p gnumake --run 'make tests-perf'"
+  stage: test
+  tags:
+    - chimera
+tests/rapl:
+  script: "nix-shell -p gnumake --run 'make tests-rapl'"
+  stage: test
+  tags:
+    - chimera

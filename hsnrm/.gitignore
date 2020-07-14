@@ -1,3 +1,4 @@
 .ghc*
+bin
 dhall-to-cabal
 dist-*
