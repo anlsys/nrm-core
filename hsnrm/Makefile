@@ -41,7 +41,13 @@ build: hsnrm/ hsnrm-bin/
 	'
 
 resources: hsnrm/* hsnrm-bin/*
-	@nix-shell --pure --run bash <<< '
+	@nix-shell --pure -E '
+		let pkgs = import <nixpkgs> {};
+		in with pkgs; haskellPackages.shellFor {
+			packages = p: [ haskellPackages.hsnrm haskellPackages.hsnrm-extra ];
+			  buildInputs = [ cabal-install ];
+		}
+	' --run bash <<< '
 		rm -rf resources
 		mkdir resources
 		cabal v2-run hsnrm-extra/Codegen.hs resources/
