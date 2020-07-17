@@ -39,7 +39,6 @@ let
       (_: pkgs: {
         dhall-to-cabal =
           pkgs.haskell.lib.unmarkBroken pkgs.haskellPackages.dhall-to-cabal;
-        dhrun = pkgs.haskellPackages.callPackage ./pkgs/dhrun { };
         haskellPackages = pkgs.haskell.packages.ghc865.override {
           overrides = self: super:
             with pkgs.haskell.lib; rec {
@@ -130,29 +129,6 @@ pkgs // rec {
       pkgs.linuxPackages.perf
       pkgs.hwloc
     ];
-  };
-
-  dhrunTestConfigLayer = let src' = src;
-  in pkgs.stdenv.mkDerivation rec {
-    name = "dhrunSpecs";
-    src = src' + "./dhrun";
-    installPhase = ''
-      mkdir -p $out
-      cp -r $src/* $out
-      substituteInPlace $out/assets/simple-H2O.xml --replace \
-        H2O.HF.wfs.xml $out/assets/H2O.HF.wfs.xml
-      substituteInPlace $out/assets/simple-H2O.xml --replace \
-        O.BFD.xml $out/assets/O.BFD.xml
-      substituteInPlace $out/assets/simple-H2O.xml --replace \
-        H.BFD.xml $out/assets/H.BFD.xml
-      substituteInPlace $out/lib.dh --replace \
-        "dataDir = \"./\"" "dataDir = \"$out/\""
-      substituteInPlace $out/lib.dh --replace \
-        "https://xgitlab.cels.anl.gov/argo/dhrun/raw/master/" "./"
-      ln -s ${dhrun}/share/resources $out/resources
-      ln -s ${dhall-to-cabal-resources} dev/cabal/dhall-to-cabal
-    '';
-    unpackPhase = "true";
   };
 
   stream = callPackage ./pkgs/stream {

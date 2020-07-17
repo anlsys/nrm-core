@@ -18,8 +18,6 @@ description:
     hsnrm utilities
 category: tools
 build-type: Simple
-extra-source-files:
-    ChangeLog.md
 
 source-repository head
     type: git

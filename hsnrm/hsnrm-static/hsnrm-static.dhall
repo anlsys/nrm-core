@@ -15,7 +15,7 @@ in    λ(ghcPath : Text)
         , category = "tools"
         , description =
             "The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications."
-        , extra-source-files = [ "ChangeLog.md" ]
+        , extra-source-files = [] : List Text
         , license = types.License.BSD3
         , license-files = [] : List Text
         , maintainer = "fre@freux.fr"

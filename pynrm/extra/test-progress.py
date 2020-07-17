@@ -13,8 +13,8 @@ print(os.environ.get("NRM_RATELIMIT"))
 p = progress.Progress()
 p.setup()
 
-for t in range(0, 10):
+for t in range(0, 3):
     time.sleep(1)
-    p.progress_report(10)
+    p.progress_report(1)
 
 p.shutdown()

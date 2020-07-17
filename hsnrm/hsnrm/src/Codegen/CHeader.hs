@@ -16,13 +16,15 @@ import Data.Aeson as A
 import Data.Aeson.Types as AT
 import qualified Data.HashMap.Strict as H
 import qualified Data.JSON.Schema as S
-import Data.Text (toUpper)
+import Data.Text (replace, toUpper)
 import qualified Data.Vector as V (fromList)
 import qualified NRM.Classes.Messaging as M
 import Protolude hiding (Any)
 
 toCHeader :: (M.NRMMessage a) => Proxy a -> Text
-toCHeader = toHeader . goToplevel . M.messageSchema
+toCHeader = rep . toHeader . goToplevel . M.messageSchema
+  where
+    rep = Data.Text.replace "\\\"%d\\\"" "%d"
 
 toHeader :: [(Text, AT.Value)] -> Text
 toHeader h =

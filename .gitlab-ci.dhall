@@ -37,12 +37,14 @@ in  { stages =
         mkNixB "stream"
     , notebooks =
         mkT "notebooks"
-    , dhrun/hello =
-        mkT "dhrun/hello"
-    , dhrun/exitcode =
-        mkT "dhrun/exitcode"
-    , dhrun/listen =
-        mkT "dhrun/listen"
+    , tests/kvm =
+        mkT "tests-kvm"
+    , tests/apps =
+        mkT "app-tests"
+    , tests/rapl = 
+        mkT "tests-rapl" // {tags = ["chimera"]}
+    , tests/perf = 
+        mkT "tests-perf" // {tags = ["chimera"]}
     , libnrm/autotools =
         mkB "libnrm/autotools"
     , hsnrm/all =

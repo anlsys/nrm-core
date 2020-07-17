@@ -45,7 +45,7 @@ in    λ(ghcPath : Text)
             , name = "pynrm.so"
             }
           ]
-        , extra-source-files = [ "ChangeLog.md" ]
+        , extra-source-files = [] : List Text
         , license = types.License.BSD3
         , license-files = [] : List Text
         , maintainer = "fre@freux.fr"

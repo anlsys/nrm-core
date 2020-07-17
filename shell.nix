@@ -52,6 +52,7 @@ in mkShell {
         pkgs.hwloc
         pkgs.htop
         pkgs.jq
+        pkgs.procps
         haskellPackages.cabal-install
         haskellPackages.graphmod
         haskellPackages.hdevtools
@@ -64,6 +65,7 @@ in mkShell {
         haskellPackages.Cabal
         haskellPackages.Glob
         haskellPackages.ghcid
+        haskellPackages.shelltestrunner
         haskellPackages.dhall-json
         haskellPackages.cabal2nix
       ];
@@ -100,37 +102,18 @@ in mkShell {
       };
     };
   }).overrideAttrs (_: { doCheck = false; }));
-  shellHook = ''
-    # path for NRM dev experimentation
-    export PYNRMSO=${
-    # export for locating the client-side shared lib
-    # (used by python lib nrm.tooling)
-      builtins.toPath ./.
-    }/hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-extra-1.0.0/x/pynrm.so/build/pynrm.so/pynrm.so
-    export NRMSO=${
-    #export for locating the server-side shared lib
-    # (used by `nrmd`)
-      builtins.toPath ./.
-    }/hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/x/nrm.so/build/nrm.so/nrm.so
-    export PATH=${builtins.toPath ./.}/dev/:${
-    #export for locating the client and server binaries
-    # (`nrmd`, `nrm-perfwrapper`)
-      builtins.toPath ./.
-    }/pynrm/bin:${
-    #export for locating the client binary
-    # (`nrm`)
-      builtins.toPath ./.
-    }/hsnrm/dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/x/nrm/build/nrm:$PATH
-    # export for locating the nrm python libraries
-    # (`nrm.<module>`)
-    export PYTHONPATH=${builtins.toPath ./.}/pynrm/:$PYTHONPATH
-    # exports for `ghcide` use:
+  shellHook = let pwd = builtins.toPath ./.;
+  in ''
+    export PYNRMSO=${pwd}/hsnrm/bin/pynrm.so
+    export NRMSO=${pwd}/hsnrm/bin/nrm.so
+    export PATH=:${pwd}/pynrm/bin:${pwd}/hsnrm/bin/nrm:$PATH
+    export PYTHONPATH=${pwd}/pynrm/:$PYTHONPATH
     export NIX_GHC="${haskellPackages.hsnrm.env.NIX_GHC}"
     export NIX_GHCPKG="${haskellPackages.hsnrm.env.NIX_GHCPKG}"
     export NIX_GHC_DOCDIR="${haskellPackages.hsnrm.env.NIX_GHC_DOCDIR}"
     export NIX_GHC_LIBDIR="${haskellPackages.hsnrm.env.NIX_GHC_LIBDIR}"
   '' + lib.optionalString experiment ''
-    export JUPYTER_PATH=$JUPYTER_PATH:${builtins.toPath ./.}/pynrm/
+    export JUPYTER_PATH=$JUPYTER_PATH:${pwd}/pynrm/
   '';
   LC_ALL = "en_US.UTF-8";
   LOCALE_ARCHIVE = "${glibcLocales}/lib/locale/locale-archive";
