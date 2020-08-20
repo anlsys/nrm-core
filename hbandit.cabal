@@ -15,6 +15,7 @@ source-repository head
 library
     exposed-modules:
         Bandit
+        Bandit.Tutorial
         Bandit.Class
         Bandit.EpsGreedy
         Bandit.Exp3
