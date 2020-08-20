@@ -43,10 +43,9 @@ let
               ihaskell-widgets = unmarkBroken super.ihaskell-widgets;
               ihaskell-diagrams = unmarkBroken super.ihaskell-diagrams;
               ihaskell-display = unmarkBroken super.ihaskell-display;
-              hbandit = self.callPackage ./hbandit.nix { };
+              hbandit = self.callCabal2nix "hbandit" ./. { };
               panpipe = unmarkBroken (doJailbreak super.panpipe);
               refined = unmarkBroken super.refined;
-              dhall-to-cabal = unmarkBroken super.dhall-to-cabal;
               lazysmallcheck2012 = null;
               panhandle = doJailbreak (dontCheck (self.callCabal2nix "panhandle"
                 (builtins.fetchTarball
@@ -71,12 +70,6 @@ let
 
 in with pkgs;
 pkgs // rec {
-
-  dhall-to-cabal-resources = pkgs.stdenv.mkDerivation {
-    name = "dhall-to-cabal-resources";
-    src = pkgs.haskellPackages.dhall-to-cabal.src;
-    installPhase = "cp -r dhall $out";
-  };
 
   hlint = haskellPackages.hlint;
   hbandit = haskellPackages.hbandit;

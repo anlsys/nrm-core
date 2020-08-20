@@ -6,10 +6,10 @@ link-citations: true
 
 # hbandit
 
-Safe multi-armed bandit implementations: 
+Safe multi-armed bandit implementations.
 
 - Eps-Greedy (fixed rate, inverse squared rate)
-- UCB family (UCB1, $\alpha$-UCB, $(\alpha,\phi)$-UCB) @bubeck2012regret 
+- UCB family (UCB1, $\alpha$-UCB, $(\alpha,\phi)$-UCB) @bubeck2012regret
 - Exp3 (hyperparameter-free rate from @bubeck2012regret)
 - Exp4.R @sun2017safety
 

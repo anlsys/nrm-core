@@ -13,30 +13,9 @@ NIX_PATH := nixpkgs=./.
 
 .PHONY: all
 all: hbandit.nix ghcid pre-commit
-	
-dhall-to-cabal: default.nix
-	rm -rf ./dhall-to-cabal
-	cp -r $$(nix-build -A dhall-to-cabal-resources --no-out-link) ./dhall-to-cabal
-	chmod -R +rw ./dhall-to-cabal
+
 
 #generating the vendored cabal file.
-.PRECIOUS: hbandit.cabal
-hbandit.cabal: hbandit.dhall dhall-to-cabal
-	@nix-shell --pure -E '
-		with import <nixpkgs> {};
-		mkShell {
-			buildInputs = [ haskellPackages.dhall-to-cabal ];
-			LOCALE_ARCHIVE="$${pkgs.glibcLocales}/lib/locale/locale-archive";
-			LANG="en_US.UTF-8";
-		}
-	' --run bash <<< '
-		dhall-to-cabal hbandit.dhall
-	'
-.PRECIOUS: hbandit.nix
-hbandit.nix: hbandit.cabal
-	@nix-shell --pure -p cabal2nix --run bash <<< '
-		cabal2nix . > hbandit.nix
-	'
 
 .PHONY: ci
 ci:
@@ -80,7 +59,7 @@ ghcid-test: hbandit.cabal .hlint.yaml hbandit.nix
 	'
 
 .PHONY: pre-commit
-pre-commit: ormolu dhall-format shellcheck README.md
+pre-commit: ormolu shellcheck README.md
 
 .PHONY: shellcheck
 shellcheck:
@@ -94,21 +73,6 @@ shellcheck:
 hlint:
 	@nix-shell --pure -p hlint --run bash <<< '
 		hlint src/ --hint=./.hlint.yaml
-	'
-
-.PHONY: dhall-format
-dhall-format:
-	@nix-shell --pure -p fd haskellPackages.dhall --run bash <<< '
-		RETURN=0
-		for F in $$(fd -e dhall); do
-			dhall format < $$F | cmp -s $$F -
-			if [ $$? -ne 0 ]; then
-				echo "[!] $$F does not pass dhall-format format check. Formatting.." >&2
-				dhall format --inplace $$F
-				RETURN=1
-			fi
-		done
-		if [ $$RETURN -ne 0 ]; then exit 1; fi
 	'
 
 .PHONY: ormolu
@@ -154,4 +118,3 @@ clean:
 	rm -f extras/main.hs
 	rm -f hbandit.nix
 	rm -f hbandit.cabal
-	rm -rf dhall-to-cabal

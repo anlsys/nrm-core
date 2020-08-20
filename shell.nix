@@ -5,9 +5,7 @@ haskellPackages.shellFor {
   withHoogle = true;
   buildInputs = [
     ghcid
-    dhall
     pythonPackages.nbconvert
-    haskellPackages.dhall-to-cabal
     haskellPackages.panpipe
     haskellPackages.panhandle
     cabal2nix
