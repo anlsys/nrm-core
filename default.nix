@@ -4,33 +4,6 @@ let
 
   pkgs = import nixpkgs {
 
-    config = {
-      ihaskell = {
-        packages = ps:
-          with ps; [
-            ihaskell-charts
-            ihaskell-widgets
-            ad
-            Chart
-            hbandit
-            Chart-diagrams
-            lens
-            protolude
-            generic-lens
-            generic-data
-            refined
-            command-qq
-            probability
-            xls
-            intervals
-            neat-interpolation
-            statistics
-            random-fu
-            pretty-simple
-          ];
-      };
-    };
-
     overlays = [
       (_: pkgs: {
         haskellPackages = pkgs.haskell.packages.ghc865.override {
@@ -38,11 +11,6 @@ let
             with pkgs.haskell.lib; rec {
               ihaskell = unmarkBroken super.ihaskell;
               vinyl = doJailbreak (unmarkBroken super.vinyl);
-              ihaskell-blaze = unmarkBroken super.ihaskell-blaze;
-              ihaskell-charts = unmarkBroken super.ihaskell-charts;
-              ihaskell-widgets = unmarkBroken super.ihaskell-widgets;
-              ihaskell-diagrams = unmarkBroken super.ihaskell-diagrams;
-              ihaskell-display = unmarkBroken super.ihaskell-display;
               hbandit = self.callCabal2nix "hbandit" ./. { };
               panpipe = unmarkBroken (doJailbreak super.panpipe);
               refined = unmarkBroken super.refined;
@@ -70,23 +38,6 @@ let
 
 in with pkgs;
 pkgs // rec {
-
   hlint = haskellPackages.hlint;
   hbandit = haskellPackages.hbandit;
-
-  ihaskell = pkgs.stdenv.mkDerivation {
-    name = "my-jupyter";
-    src = null;
-    buildInputs = [ pkgs.ihaskell ];
-  };
-
-  r-libs-site = pkgs.runCommand "r-libs-site" {
-    buildInputs = with pkgs; [
-      R
-      rPackages.ggplot2
-      rPackages.svglite
-      rPackages.plotly
-      rPackages.latex2exp
-    ];
-  } "echo $R_LIBS_SITE > $out";
 }
