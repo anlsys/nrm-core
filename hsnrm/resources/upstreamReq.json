@@ -269,19 +269,10 @@
                                     "type": "object",
                                     "properties": {
                                         "fromEnv": {
-                                            "uniqueItems": false,
-                                            "items": {
-                                                "items": [
-                                                    {
-                                                        "type": "string"
-                                                    },
-                                                    {
-                                                        "type": "string"
-                                                    }
-                                                ],
-                                                "type": "array"
+                                            "additionalProperties": {
+                                                "type": "string"
                                             },
-                                            "type": "array"
+                                            "type": "object"
                                         }
                                     }
                                 },

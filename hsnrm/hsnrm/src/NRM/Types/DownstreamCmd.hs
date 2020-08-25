@@ -14,8 +14,8 @@ import Control.Lens hiding ((...))
 import Data.Aeson hiding ((.=))
 import Data.Generics.Labels ()
 import Data.JSON.Schema
+import Data.Map as M
 import Data.MessagePack
-import LMap.Map as LM
 import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Types.DownstreamCmdID
@@ -43,7 +43,7 @@ instance
     ActiveSensor
   where
   lenses (downstreamCmdID, downstreamCmd) =
-    LM.singleton
+    M.singleton
       (DownstreamCmdKey downstreamCmdID)
       (ScopedLens (_2 . lens getter setter))
     where

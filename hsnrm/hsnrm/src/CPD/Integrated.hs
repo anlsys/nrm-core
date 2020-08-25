@@ -18,17 +18,16 @@ where
 
 --calculate,
 --Calculate (..),
-
 import CPD.Core
 import qualified Data.Aeson as A
 import Data.Data
 import Data.JSON.Schema
+import qualified Data.Map as M
 import Data.MessagePack
 import Dhall (Inject, Interpret)
-import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Types.Units
-import Protolude hiding (Map)
+import Protolude
 
 data Integrator
   = Integrator
@@ -41,7 +40,8 @@ data Integrator
 trapezoidArea :: (Time, Double) -> (Time, Double) -> Double
 trapezoidArea (t1, v1) (t2, v2) =
   min v1 v2 * fromuS (t2 - t1)
-    + abs (v2 - v1) / (2 * fromuS (t2 - t1))
+    + abs (v2 - v1)
+    / (2 * fromuS (t2 - t1))
 
 measureValue :: Time -> (Time, Double) -> MeasurementState -> MeasurementState
 measureValue thresholdTime (newTime, newValue) Never
@@ -50,32 +50,36 @@ measureValue thresholdTime (newTime, newValue) Never
 measureValue _ (newTime, newValue) (Done totalAvg _lastTime _lastValue) =
   Done totalAvg newTime newValue
 measureValue thresholdTime (newTime, newValue) (Running firstT lastT lastV avg)
-  | newTime < thresholdTime = Running
-    { firstTime = firstT,
-      lastTime = newTime,
-      lastValue = newValue,
-      average =
-        ( trapezoidArea (lastT, lastV) (newTime, newValue)
-            + avg * fromuS (lastT - firstT)
-        )
-          / fromuS (newTime - firstT)
-    }
-  | otherwise = Done
-    { lastTimeDone = newTime,
-      lastValueDone = newValue,
-      totalAverageDone =
-        ( trapezoidArea (lastT, lastV) (newTime, newValue)
-            + avg * fromuS (lastT - firstT)
-        )
-          / fromuS (newTime - firstT)
-    }
+  | newTime < thresholdTime =
+    Running
+      { firstTime = firstT,
+        lastTime = newTime,
+        lastValue = newValue,
+        average =
+          ( trapezoidArea (lastT, lastV) (newTime, newValue)
+              + avg
+              * fromuS (lastT - firstT)
+          )
+            / fromuS (newTime - firstT)
+      }
+  | otherwise =
+    Done
+      { lastTimeDone = newTime,
+        lastValueDone = newValue,
+        totalAverageDone =
+          ( trapezoidArea (lastT, lastV) (newTime, newValue)
+              + avg
+              * fromuS (lastT - firstT)
+          )
+            / fromuS (newTime - firstT)
+      }
 
 squeeze ::
   Time ->
   Map SensorID MeasurementState ->
   Maybe (Map SensorID Double, Map SensorID MeasurementState)
 squeeze _t mstM =
-  if all isDone (LM.elems mstM)
+  if all isDone (M.elems mstM)
     then Just (mstM <&> totalAverageDone, newMeasurements)
     else Nothing
   where
@@ -114,5 +118,5 @@ initIntegrator ::
 initIntegrator t tmin sensorIDs = Integrator
   { tLast = t,
     minimumControlInterval = tmin,
-    measured = LM.fromList (sensorIDs <&> (,Never))
+    measured = M.fromList (sensorIDs <&> (,Never))
   }

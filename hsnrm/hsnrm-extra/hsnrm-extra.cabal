@@ -55,6 +55,7 @@ executable pynrm.so
         hsnrm -any,
         base -any,
         protolude -any,
+        containers -any,
         aeson -any,
         zeromq4-haskell -any,
         pretty-simple -any,

@@ -21,12 +21,11 @@ import qualified Data.Aeson.Types as AT (parseMaybe)
 import Data.JSON.Schema as S
 import qualified Data.JSON.Schema.Generic as SG
 import Data.JSON.Schema.Types (Schema)
+import Data.String
 import Generics.Deriving.ConNames (ConNames)
 import Generics.Generic.Aeson
 import qualified Generics.Generic.Aeson as AG
 import Generics.Generic.IsEnum (GIsEnum)
-import LMap.Map as LM
-import LMap.NonEmpty as NELM
 import Protolude
 
 class (Generic a, SG.GJSONSchema (Rep a), AG.GfromJson (Rep a), AG.GtoJson (Rep a), GIsEnum (Rep a), ConNames (Rep a)) => NRMMessage a where
@@ -81,17 +80,20 @@ instance
   where
   toJSON = AG.gtoJson . unGenericJSON
 
-deriving via GenericJSON (LM.Map a b) instance (JSONSchema a, JSONSchema b) => JSONSchema (LM.Map a b)
-
-deriving via GenericJSON (LM.Map a b) instance (A.FromJSON a, A.FromJSON b) => A.FromJSON (LM.Map a b)
-
-deriving via GenericJSON (LM.Map a b) instance (A.ToJSON a, A.ToJSON b) => A.ToJSON (LM.Map a b)
-
-deriving via GenericJSON (NELM.Map a b) instance (JSONSchema a, JSONSchema b) => JSONSchema (NELM.Map a b)
-
-deriving via GenericJSON (NELM.Map a b) instance (A.FromJSON a, A.FromJSON b) => A.FromJSON (NELM.Map a b)
-
-deriving via GenericJSON (NELM.Map a b) instance (A.ToJSON a, A.ToJSON b) => A.ToJSON (NELM.Map a b)
+instance
+  ( A.FromJSON a,
+    A.ToJSON a,
+    GIsEnum (Rep a),
+    ConNames (Rep a),
+    GfromJson (Rep a),
+    Generic a
+  ) =>
+  IsString (GenericJSON a)
+  where
+  fromString s =
+    A.decode (toS s) & \case
+      Nothing -> ""
+      Just x -> x
 
 newtype AnyJSON (a :: Type) = AnyJSON {unAnyJSON :: a}
 

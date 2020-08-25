@@ -36,7 +36,6 @@ import Data.JSON.Schema
 import Data.Map as M
 import Data.MessagePack
 import Data.Scientific
-import qualified LMap.Map as LM
 import LensMap.Core
 import NRM.Slices.Dummy
 import NRM.Slices.Nodeos
@@ -60,9 +59,9 @@ import qualified Text.Megaparsec.Char.Lexer as L
 
 data NRMState
   = NRMState
-      { pus :: LM.Map PUID PU,
-        cores :: LM.Map CoreID Core,
-        packages :: LM.Map PackageID Package,
+      { pus :: M.Map PUID PU,
+        cores :: M.Map CoreID Core,
+        packages :: M.Map PackageID Package,
         slices :: Map SliceID Slice,
         dummyRuntime :: Maybe DummyRuntime,
         singularityRuntime :: Maybe SingularityRuntime,
@@ -90,7 +89,7 @@ lexeme = L.lexeme sc
 
 instance HasLensMap (Text, ExtraActuator) A.ActuatorKey A.Actuator where
   lenses (actuatorID, _) =
-    LM.singleton
+    M.singleton
       (A.ExtraActuatorKey actuatorID)
       ( ScopedLens
           (_2 . lens getter setter)
@@ -119,7 +118,7 @@ data ExtraPassiveSensor
 
 instance HasLensMap (Text, ExtraPassiveSensor) PassiveSensorKey PassiveSensor where
   lenses (sensorID, _) =
-    LM.singleton
+    M.singleton
       (S.ExtraPassiveSensorKey sensorID)
       ( ScopedLens
           (_2 . lens getter setter)
@@ -182,7 +181,7 @@ showSliceList :: [(SliceID, Slice)] -> Text
 showSliceList l =
   mconcat $
     l <&> \(sliceID, Slice {..}) ->
-      "slice: ID " <> C.toText sliceID <> "\n" <> mconcat (descCmd <$> LM.toList cmds)
+      "slice: ID " <> C.toText sliceID <> "\n" <> mconcat (descCmd <$> M.toList cmds)
   where
     descCmd (cmdID, cmdCore -> CmdCore {..}) =
       " command: ID " <> CmdID.toText cmdID
@@ -198,45 +197,45 @@ showSlices NRMState {..} =
   showSliceList $ M.toList slices
 
 lookupProcess :: ProcessID -> NRMState -> Maybe (CmdID, Cmd, SliceID, Slice)
-lookupProcess cmdID st = LM.lookup cmdID (pidMap st)
+lookupProcess cmdID st = M.lookup cmdID (pidMap st)
 
 -- | NRM state map view by ProcessID.
-pidMap :: NRMState -> LM.Map ProcessID (CmdID, Cmd, SliceID, Slice)
+pidMap :: NRMState -> M.Map ProcessID (CmdID, Cmd, SliceID, Slice)
 pidMap s = mconcat $ M.toList (slices s) <&> mkMap
   where
-    mkMap :: forall c. (c, Slice) -> LM.Map ProcessID (CmdID, Cmd, c, Slice)
+    mkMap :: forall c. (c, Slice) -> M.Map ProcessID (CmdID, Cmd, c, Slice)
     mkMap x@(_, c) =
-      LM.fromList $
+      M.fromList $
         zip
-          (pid <$> LM.elems (cmds c))
-          (LM.toList (cmds c) <&> mkTriple x)
+          (pid <$> M.elems (cmds c))
+          (M.toList (cmds c) <&> mkTriple x)
 
 mkTriple :: (c, d) -> (a, b) -> (a, b, c, d)
 mkTriple (cid, c) (cmid, cm) = (cmid, cm, cid, c)
 
 lookupCmd :: CmdID -> NRMState -> Maybe (Cmd, SliceID, Slice)
-lookupCmd cmdID st = LM.lookup cmdID (cmdIDMap st)
+lookupCmd cmdID st = M.lookup cmdID (cmdIDMap st)
 
 -- | NRM state map view by cmdID of "running" commands.
-cmdIDMap :: NRMState -> LM.Map CmdID (Cmd, SliceID, Slice)
+cmdIDMap :: NRMState -> M.Map CmdID (Cmd, SliceID, Slice)
 cmdIDMap = mkCmdIDMap cmds
 
 -- | NRM state map view by cmdID of "awaiting" commands.
-awaitingCmdIDMap :: NRMState -> LM.Map CmdID (CmdCore, SliceID, Slice)
+awaitingCmdIDMap :: NRMState -> M.Map CmdID (CmdCore, SliceID, Slice)
 awaitingCmdIDMap = mkCmdIDMap awaiting
 
 mkCmdIDMap ::
   Ord k =>
-  (Slice -> LM.Map k a) ->
+  (Slice -> M.Map k a) ->
   NRMState ->
-  LM.Map k (a, SliceID, Slice)
+  M.Map k (a, SliceID, Slice)
 mkCmdIDMap accessor s = mconcat $ M.toList (slices s) <&> mkMap
   where
     mkMap x@(_, c) =
-      LM.fromList $
+      M.fromList $
         zip
-          (LM.keys $ accessor c)
-          (LM.elems (accessor c) <&> mk x)
+          (M.keys $ accessor c)
+          (M.elems (accessor c) <&> mk x)
     mk :: (b, c) -> a -> (a, b, c)
     mk (cid, c) cm = (cm, cid, c)
 

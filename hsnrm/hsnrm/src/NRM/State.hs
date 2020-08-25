@@ -22,7 +22,6 @@ where
 import Control.Lens
 import Data.Map as M
 import Data.Map.Merge.Lazy
-import LMap.Map as LM
 import NRM.Node.Hwloc
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
@@ -48,7 +47,7 @@ initialState :: Cfg -> Time -> IO NRMState
 initialState c time = do
   hwl <- getHwlocData
   let packages' = M.fromList $ selectPackageIDs hwl <&> (,Package {rapl = Nothing})
-  packages <- fmap fromDataMap $
+  packages <-
     Cfg.raplCfg c & \case
       Nothing -> pure packages'
       Just raplc -> do
@@ -62,8 +61,8 @@ initialState c time = do
                     dropMissing
                     dropMissing
                     (zipWithMaybeMatched (\_ mrapl rapldir -> (,rapldir) <$> mrapl))
-                    (toDataMap configs)
-                    (toDataMap rapldirs)
+                    configs
+                    rapldirs
                 updater _pkgid package (packageRaplConfig, packageRaplDir) =
                   package
                     { rapl = Just Rapl
@@ -90,8 +89,8 @@ initialState c time = do
         FixedCommand _ -> Nothing
         ccfg -> Just $ initialController time (minimumControlInterval ccfg) [],
       slices = M.fromList [],
-      pus = LM.fromList $ (,PU) <$> selectPUIDs hwl,
-      cores = LM.fromList $ (,Core) <$> selectCoreIDs hwl,
+      pus = M.fromList $ (,PU) <$> selectPUIDs hwl,
+      cores = M.fromList $ (,Core) <$> selectCoreIDs hwl,
       dummyRuntime =
         if dummy c
           then Just CD.emptyRuntime
@@ -151,10 +150,10 @@ removeCmd ::
   Maybe (DeletionInfo, CmdID, Cmd, SliceID, NRMState)
 removeCmd key st = case key of
   KCmdID cmdID ->
-    LM.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
+    M.lookup cmdID (cmdIDMap st) <&> \(cmd, sliceID, slice) ->
       go cmdID cmd sliceID slice
   KProcessID pid ->
-    LM.lookup pid (pidMap st) <&> \(cmdID, cmd, sliceID, slice) ->
+    M.lookup pid (pidMap st) <&> \(cmdID, cmd, sliceID, slice) ->
       go cmdID cmd sliceID slice
   where
     go cmdID cmd sliceID slice =
@@ -190,7 +189,7 @@ registerLaunched ::
   NRMState ->
   Either Text (NRMState, SliceID, Maybe UpstreamClientID)
 registerLaunched cmdID pid st =
-  case LM.lookup cmdID (awaitingCmdIDMap st) of
+  case M.lookup cmdID (awaitingCmdIDMap st) of
     Nothing -> Left "No such awaiting command."
     Just (cmdCore, sliceID, slice) ->
       Right
@@ -218,6 +217,6 @@ registerFailed cmdID st =
   where
     f :: Slice -> Maybe Slice
     f c =
-      if LM.null (cmds c)
+      if M.null (cmds c)
         then Nothing
         else Just $ c & #awaiting %~ sans cmdID

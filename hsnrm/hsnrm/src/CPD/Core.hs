@@ -60,9 +60,9 @@ import Data.Coerce
 import Data.Data
 import Data.Generics.Labels ()
 import Data.JSON.Schema
+import Data.Map as M
 import Data.MessagePack
 import Dhall
-import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import NRM.Orphans.ZeroOne ()
@@ -94,7 +94,7 @@ data Problem
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
 
 emptyProblem :: Problem
-emptyProblem = Problem LM.empty LM.empty [] []
+emptyProblem = Problem M.empty M.empty [] []
 
 -- | A sensor's metadata.
 data Sensor = Sensor {range :: Interval Double, maxFrequency :: Units.Frequency}
@@ -155,6 +155,7 @@ newtype ActuatorID = ActuatorID {actuatorID :: Text}
     ( JSONSchema,
       A.ToJSON,
       A.FromJSON,
+      IsString,
       FromDhall,
       ToDhall
     )

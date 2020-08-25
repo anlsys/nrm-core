@@ -21,7 +21,7 @@ import CPD.Utils as CPD
 import CPD.Values as CPD
 import Control.Lens hiding ((...))
 import Data.Generics.Labels ()
-import LMap.Map as LM
+import Data.Map as M
 import LensMap.Core
 import NRM.Classes.Sensors
 import NRM.Types.Sensor as S
@@ -31,12 +31,12 @@ import Protolude hiding (Map)
 
 cpdSensors :: NRMState -> Map SensorID CPD.Sensor
 cpdSensors st =
-  LM.fromList $
+  M.fromList $
     mconcat
-      [ LM.toList
+      [ M.toList
           (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor)
           <&> \(k, ScopedLens sl) -> toCPDSensor (k, view sl st),
-        LM.toList
+        M.toList
           (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor)
           <&> \(k, ScopedLens sl) -> toCPDSensor (k, view sl st)
       ]

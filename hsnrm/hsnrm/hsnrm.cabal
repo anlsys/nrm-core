@@ -99,8 +99,6 @@ library
         Codegen.Dhall
         Codegen.CHeader
         LensMap.Core
-        LMap.Map
-        LMap.NonEmpty
         CPD.Core
         CPD.Integrated
         CPD.Values
@@ -144,6 +142,7 @@ library
         transformers -any,
         generic-data -any,
         bytestring -any,
+        iso-deriving -any,
         random -any,
         prettyprinter -any,
         zeromq4-haskell -any,

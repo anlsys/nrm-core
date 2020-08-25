@@ -16,10 +16,10 @@ import CPD.Values (Action (..))
 import Data.Aeson as A
 import qualified Data.ByteString as BS
 import Data.Default
+import Data.Map as M
 import Data.Restricted
 import FFI.TypeUncurry.Msgpack
 import Foreign.C
-import LMap.Map as LM
 import NRM.Classes.Messaging as M
 import NRM.Client
 import NRM.Optparse.Client
@@ -77,7 +77,7 @@ mkSimpleRunExport = exportIO mkSimpleRun
           spec = CmdSpec
             { cmd = Command cmd,
               args = Arg <$> args,
-              env = Env $ LM.fromList env
+              env = Env $ M.fromList env
             },
           runSliceID = parseSliceID sliceID,
           detachCmd = True
@@ -105,10 +105,11 @@ actionExport :: Ex
 actionExport = exportIO actuate
   where
     actuate :: CommonOpts -> [(Text, Double)] -> IO Bool
-    actuate c actions = doReqRep c (ReqActuate (toAction <$> actions)) . Right $ \case
-      (Rep.RepActuate Rep.Actuated) -> True
-      (Rep.RepActuate Rep.NotActuated) -> False
-      _ -> panic "action protocol failed"
+    actuate c actions =
+      doReqRep c (ReqActuate (toAction <$> actions)) . Right $ \case
+        (Rep.RepActuate Rep.Actuated) -> True
+        (Rep.RepActuate Rep.NotActuated) -> False
+        _ -> panic "action protocol failed"
     toAction :: (Text, Double) -> Action
     toAction (textID, doubleAction) = Action (ActuatorID textID) (DiscreteDouble doubleAction)
 
@@ -116,21 +117,28 @@ runExport :: Ex
 runExport = exportIO $ \c runreq -> doReqRep c (ReqRun runreq) $ Left ()
 
 stateExport :: Ex
-stateExport = exportIO $ \c -> doReqRep c (ReqGetState Req.GetState) . Right $ \case
-  (RepGetState st) -> st
-  _ -> protoError
+stateExport =
+  exportIO $ \c ->
+    doReqRep c (ReqGetState Req.GetState) . Right $ \case
+      (RepGetState st) -> st
+      _ -> protoError
 
 finishedExport :: Ex
-finishedExport = exportIO $ \common -> doReqRep common (ReqSliceList Req.SliceList) . Right $ \case
-  (RepList (Rep.SliceList l)) -> l & \case
-    [] -> True
-    _ -> False
-  _ -> protoError
+finishedExport =
+  exportIO $ \common ->
+    doReqRep common (ReqSliceList Req.SliceList) . Right $ \case
+      (RepList (Rep.SliceList l)) ->
+        l & \case
+          [] -> True
+          _ -> False
+      _ -> protoError
 
 cpdExport :: Ex
-cpdExport = exportIO $ \c -> doReqRep c (ReqCPD Req.CPD) . Right $ \case
-  (RepCPD problem) -> problem
-  _ -> protoError
+cpdExport =
+  exportIO $ \c ->
+    doReqRep c (ReqCPD Req.CPD) . Right $ \case
+      (RepCPD problem) -> problem
+      _ -> protoError
 
 doReqRep :: CommonOpts -> Req -> Either a (Rep.Rep -> a) -> IO a
 doReqRep common req eitherF = do
@@ -146,10 +154,11 @@ doReqRep common req eitherF = do
     ZMQ.send s [] (toS $ M.encode req)
     eitherF & \case
       Left x' -> return x'
-      Right f -> ZMQ.receive s <&> decodeT . toS >>= \case
-        Nothing -> panic "Couldn't decode reply"
-        Just (RepException text) -> panic $ "daemon threw exception: " <> text
-        Just m -> return (f m)
+      Right f ->
+        ZMQ.receive s <&> decodeT . toS >>= \case
+          Nothing -> panic "Couldn't decode reply"
+          Just (RepException text) -> panic $ "daemon threw exception: " <> text
+          Just m -> return (f m)
 
 protoError :: a
 protoError = panic "protocol error"

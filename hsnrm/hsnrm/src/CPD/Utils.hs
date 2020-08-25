@@ -17,9 +17,9 @@ where
 
 import CPD.Core as CPD
 import CPD.Values
-import LMap.Map hiding (singleton)
+import qualified Data.Map as M
 import Numeric.Interval as I hiding (elem)
-import Protolude hiding (Map)
+import Protolude
 
 data MeasurementValidation = AdjustInterval (Interval Double) | MeasurementOk
 
@@ -33,12 +33,13 @@ validateMeasurement i x
   | otherwise = AdjustInterval $ inf i ... 2 * x - inf i
 
 validateAction :: Problem -> Action -> ActionValidation Text
-validateAction p action = lookup (CPD.Values.actuatorID action) (actuators p) & \case
-  Nothing -> UnknownActuator
-  Just actuator ->
-    if CPD.Values.actuatorValue action `elem` CPD.actions actuator
-      then ActionOk
-      else InvalidAction
+validateAction p action =
+  M.lookup (CPD.Values.actuatorID action) (actuators p) & \case
+    Nothing -> UnknownActuator
+    Just actuator ->
+      if CPD.Values.actuatorValue action `elem` CPD.actions actuator
+        then ActionOk
+        else InvalidAction
 
 -- | Standard object evaluation on Num instances.
 evalNum ::
@@ -47,8 +48,8 @@ evalNum ::
   OExpr ->
   Maybe Double
 evalNum m r = \case
-  OValue sensorID -> lookup sensorID m
-  OReference sensorID -> lookup sensorID r
+  OValue sensorID -> M.lookup sensorID m
+  OReference sensorID -> M.lookup sensorID r
   OScalar s -> Just s
   OAdd a b -> ev2 a b (+)
   OSub a b -> ev2 a b (-)
@@ -66,8 +67,8 @@ evalRange ::
   OExpr ->
   Maybe (Interval Double)
 evalRange m = \case
-  OValue sensorID -> lookup sensorID m
-  OReference sensorID -> lookup sensorID m
+  OValue sensorID -> M.lookup sensorID m
+  OReference sensorID -> M.lookup sensorID m
   OScalar s -> Just (singleton s)
   OAdd a b -> ev2 a b (+)
   OSub a b -> ev2 a b (-)

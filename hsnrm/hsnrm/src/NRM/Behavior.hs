@@ -27,8 +27,7 @@ import Control.Lens hiding (_Unwrapped, _Wrapped, to)
 import Control.Monad.Trans.RWS.Lazy (RWST)
 import Data.Generics.Labels ()
 import Data.Generics.Wrapped
-import Data.Map as M
-import LMap.Map as LM
+import qualified Data.Map as M
 import LensMap.Core as LensMap
 import qualified NRM.CPD as NRMCPD
 import NRM.Control
@@ -127,8 +126,8 @@ nrm _callTime (Req clientid msg) =
         cmdID <-
           lift CmdID.nextCmdID
             <&> fromMaybe (panic "couldn't generate next cmd id")
-        let (runCmd, runArgs) = (spec ^. #cmd, spec ^. #args)
-              & case Manifest.perfwrapper (Manifest.app manifest) of
+        let (runCmd, runArgs) =
+              (spec ^. #cmd, spec ^. #args) & case Manifest.perfwrapper (Manifest.app manifest) of
                 Manifest.PerfwrapperDisabled -> identity
                 p@Manifest.Perfwrapper {} ->
                   wrapCmd
@@ -148,10 +147,10 @@ nrm _callTime (Req clientid msg) =
             rep clientid $ URep.RepNoSuchSlice URep.NoSuchSlice
             return Nothing
           (Just slice) -> do
-            behave . KillChildren (LM.keys $ Ct.cmds slice) $
+            behave . KillChildren (M.keys $ Ct.cmds slice) $
               (clientid, URep.RepSliceKilled (URep.SliceKilled killSliceID))
                 : catMaybes
-                  ( (upstreamClientID . cmdCore <$> LM.elems (Ct.cmds slice))
+                  ( (upstreamClientID . cmdCore <$> M.elems (Ct.cmds slice))
                       <&> fmap (,URep.RepThisCmdKilled URep.ThisCmdKilled)
                   )
             return Nothing
@@ -169,7 +168,7 @@ nrm _callTime (Req clientid msg) =
               fromCPDKey actuatorID & \case
                 Nothing -> log "couldn't decode actuatorID"
                 Just aKey ->
-                  LM.lookup aKey (lenses st) & \case
+                  M.lookup aKey (lenses st) & \case
                     Nothing -> log "NRM internal error: actuator not found, after CPD validation."
                     Just (ScopedLens l) -> do
                       liftIO $ go (st ^. l) value
@@ -211,7 +210,9 @@ nrm _callTime (ChildDied pid exitcode) = do
                 Nothing -> log "Error during command removal from NRM state"
             Nothing ->
               put $
-                st & #slices . at sliceID
+                st
+                  & #slices
+                  . at sliceID
                   ?~ (slice & #cmds . at cmdID ?~ cmd {processState = newPstate})
 nrm callTime (DownstreamEvent clientid msg) =
   nrmDownstreamEvent callTime clientid msg
@@ -225,7 +226,7 @@ nrm callTime (DownstreamEvent clientid msg) =
 nrm callTime DoControl = doControl (NoEvent callTime)
 nrm callTime DoSensor = do
   st <- get
-  (st', measurements) <- lift (foldM runSensor (st, Just []) (LM.toList $ lenses st))
+  (st', measurements) <- lift (foldM runSensor (st, Just []) (M.toList $ lenses st))
   put st'
   measurements & \case
     Just [] ->
@@ -258,13 +259,12 @@ doControl input = do
             mRefActions =
               if not (Protolude.null (CPD.constraints cpd))
                 then Just $
-                  ( LM.toList (lenses st) ::
+                  ( M.toList (lenses st) ::
                       [(ActuatorKey, ScopedLens NRMState A.Actuator)]
                   )
                     <&> \(k, ScopedLens l) -> CPD.Action
                       { actuatorID = toS k,
-                        actuatorValue =
-                          CPD.DiscreteDouble $ st ^. l . #referenceAction
+                        actuatorValue = CPD.DiscreteDouble $ st ^. l . #referenceAction
                       }
                 else Nothing
          in banditCartesianProductControl ccfg cpd input mRefActions >>= \case
@@ -275,7 +275,7 @@ doControl input = do
                   fromCPDKey actuatorID & \case
                     Nothing -> log "couldn't decode actuatorID"
                     Just aKey ->
-                      LM.lookup aKey (lenses st) & \case
+                      M.lookup aKey (lenses st) & \case
                         Nothing -> log "NRM internal error: actuator not found."
                         Just (ScopedLens l) -> do
                           liftIO $ go (st ^. l) discreteValue
@@ -361,7 +361,7 @@ nrmDownstreamEvent callTime clientid = \case
         OAdjustment -> return OAdjustment
         OOk m -> do
           st <- get
-          LM.lookup (cmdID downstreamThreadID) (cmdIDMap st) & \case
+          M.lookup (cmdID downstreamThreadID) (cmdIDMap st) & \case
             Nothing ->
               log "internal NRM state warning: phasecontext pub lookup failed"
                 >> return (OOk m)
@@ -435,21 +435,20 @@ commonSP ::
   NRM (CommonOutcome Measurement)
 commonSP callTime key value = do
   st <- get
-  LM.lookup key (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor)
-    & \case
-      Nothing -> return ONotFound
-      Just (ScopedLens sl) -> do
-        let (measurementOutput, newSensor) =
-              postProcessSensor callTime key value (st ^. sl)
-        put (st & sl .~ newSensor)
-        measurementOutput & \case
-          Sensors.NoMeasurement -> return ONoValue
-          Sensors.Adjusted -> do
-            logInfo "Out-of-range value received, sensor adjusted."
-            return OAdjustment
-          Sensors.Ok measurement -> do
-            pub $ UPub.PubMeasurements callTime [measurement]
-            return $ OOk measurement
+  M.lookup key (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor) & \case
+    Nothing -> return ONotFound
+    Just (ScopedLens sl) -> do
+      let (measurementOutput, newSensor) =
+            postProcessSensor callTime key value (st ^. sl)
+      put (st & sl .~ newSensor)
+      measurementOutput & \case
+        Sensors.NoMeasurement -> return ONoValue
+        Sensors.Adjusted -> do
+          logInfo "Out-of-range value received, sensor adjusted."
+          return OAdjustment
+        Sensors.Ok measurement -> do
+          pub $ UPub.PubMeasurements callTime [measurement]
+          return $ OOk measurement
 
 mayRep :: Cmd -> URep.Rep -> Behavior
 mayRep c rp =
@@ -487,21 +486,23 @@ processPassiveSensor time (k, sensor) =
         IllegalFailureRemediation sensor' -> (sensor', Nothing)
 
 injectDownstreamVars :: Cfg -> Manifest -> CmdID -> Env -> Env
-injectDownstreamVars c manifest cmdID = execState $ do
-  _Unwrapped . at cmdIDEnvVar ?= CmdID.toText cmdID
-  for_
-    (manifest ^.. #app . #instrumentation . _Just . #ratelimit)
-    modifyRatelimitLens
-  for_ (c ^. #libnrmPath) modifyLDPreloadLens
+injectDownstreamVars c manifest cmdID =
+  execState $ do
+    _Unwrapped . at cmdIDEnvVar ?= CmdID.toText cmdID
+    for_
+      (manifest ^.. #app . #instrumentation . _Just . #ratelimit)
+      modifyRatelimitLens
+    for_ (c ^. #libnrmPath) modifyLDPreloadLens
   where
     modifyRatelimitLens :: U.Frequency -> State Env ()
     modifyRatelimitLens ratelim =
       _Unwrapped . at ratelimitEnvVar
         ?= (show . (floor :: Double -> Int)) (U.fromHz ratelim)
     modifyLDPreloadLens :: Text -> State Env ()
-    modifyLDPreloadLens path = _Unwrapped . at "LD_PRELOAD" %= \case
-      Nothing -> Just path
-      Just x -> Just $ x <> " " <> path
+    modifyLDPreloadLens path =
+      _Unwrapped . at "LD_PRELOAD" %= \case
+        Nothing -> Just path
+        Just x -> Just $ x <> " " <> path
 
 -- | very permissive
 modifyL ::

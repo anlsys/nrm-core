@@ -37,13 +37,13 @@ dhall-to-cabal: ../default.nix
 .PHONY: bin/nrm
 bin/nrm.so bin/nrm: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal 
 	@nix-shell --pure --run bash <<< '
-		cabal v2-install hsnrm-bin --installdir=./bin
+		cabal v2-install hsnrm-bin --installdir=./bin --overwrite-policy=always
 	'
 	
 .PHONY: bin/pynrm.so
 bin/pynrm.so: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal 
 	@nix-shell --pure --run bash <<< '
-		cabal v2-install hsnrm-extra --installdir=./bin
+		cabal v2-install hsnrm-extra --installdir=./bin --overwrite-policy=always
 	'
 
 resources: hsnrm/* hsnrm-bin/*

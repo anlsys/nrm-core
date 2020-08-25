@@ -24,8 +24,8 @@ import CPD.Values
 import Control.Lens hiding ((...))
 import Data.Generics.Labels ()
 import Data.List.NonEmpty as NE
+import Data.Map as M
 import Data.Map.Merge.Lazy
-import LMap.Map as LM
 import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Controller
 import NRM.Types.MemBuffer as MemBuffer
@@ -53,18 +53,20 @@ banditCartesianProductControl ::
 banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
   pub (UPub.PubCPD t cpd)
   minTime <- use $ #integrator . #minimumControlInterval
-  #integrator .= initIntegrator t minTime (LM.keys $ sensors cpd)
-  case (CPD.Core.objectives cpd, LM.toList (actuators cpd)) of
+  #integrator .= initIntegrator t minTime (M.keys $ sensors cpd)
+  case (CPD.Core.objectives cpd, M.toList (actuators cpd)) of
     ([], _) -> reset
-    (_, l) -> nonEmpty l & \case
-      Nothing -> reset
-      Just actus -> mkActions actus (Cfg.hint ccfg) & \case
-        Nothing ->
-          let h = show $ Cfg.hint ccfg
-              avail = show actus
-              c = show $ allActions actus
-           in logInfo
-                [text|
+    (_, l) ->
+      nonEmpty l & \case
+        Nothing -> reset
+        Just actus ->
+          mkActions actus (Cfg.hint ccfg) & \case
+            Nothing ->
+              let h = show $ Cfg.hint ccfg
+                  avail = show actus
+                  c = show $ allActions actus
+               in logInfo
+                    [text|
                Control reset: No actions resulted from appliyng hint.
                `hint` is:
                   $h
@@ -74,41 +76,43 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
                   $avail
               )
             |]
-                >> reset
-        Just availableActions -> do
-          logInfo "control: bandit initialization"
-          g <- liftIO getStdGen
-          (b, aInitial) <- Cfg.learnCfg ccfg & \case
-            Contextual (CtxCfg hrizon) -> do
-              -- per terminology of sun wen
-              let riskThreshold :: ZeroOne Double
-                  riskThreshold = fromMaybe BT.zero $ do
-                    (threshold, expression) <- cpd ^? (#constraints . folded)
-                    r <- evalRange (range <$> sensors cpd) expression
-                    hush . refine $ (threshold - inf r) / width r
-              let b =
-                    initCtx
-                      ( Exp4RCfg
-                          { expertsCfg = mkExperts availableActions,
-                            constraintCfg = riskThreshold,
-                            horizonCfg = unsafeRefine hrizon,
-                            as = availableActions
-                          }
-                      )
-              let ((a, g'), s') = runState (stepCtx g Nothing ()) b
-              liftIO $ setStdGen g'
-              return (Contextual s', a)
-            Lagrange _ -> do
-              let (b, a, g') = Bandit.Class.init g (Arms availableActions) & _1 %~ Lagrange
-              liftIO $ setStdGen g'
-              return (b, a)
-            Random (UniformCfg seed) -> do
-              let (b, a, g') = initUniform (maybe g (\(Seed s) -> mkStdGen s) seed) availableActions & _1 %~ Random
-              liftIO $ setStdGen g'
-              return (b, a)
-          #bandit .= Just b
-          #armstats .= LM.empty
-          return $ Decision aInitial InitialDecision
+                    >> reset
+            Just availableActions -> do
+              logInfo "control: bandit initialization"
+              g <- liftIO getStdGen
+              (b, aInitial) <-
+                Cfg.learnCfg ccfg & \case
+                  Contextual (CtxCfg hrizon) -> do
+                    -- per terminology of sun wen
+                    let riskThreshold :: ZeroOne Double
+                        riskThreshold =
+                          fromMaybe BT.zero $ do
+                            (threshold, expression) <- cpd ^? (#constraints . folded)
+                            r <- evalRange (range <$> sensors cpd) expression
+                            hush . refine $ (threshold - inf r) / width r
+                    let b =
+                          initCtx
+                            ( Exp4RCfg
+                                { expertsCfg = mkExperts availableActions,
+                                  constraintCfg = riskThreshold,
+                                  horizonCfg = unsafeRefine hrizon,
+                                  as = availableActions
+                                }
+                            )
+                    let ((a, g'), s') = runState (stepCtx g Nothing ()) b
+                    liftIO $ setStdGen g'
+                    return (Contextual s', a)
+                  Lagrange _ -> do
+                    let (b, a, g') = Bandit.Class.init g (Arms availableActions) & _1 %~ Lagrange
+                    liftIO $ setStdGen g'
+                    return (b, a)
+                  Random (UniformCfg seed) -> do
+                    let (b, a, g') = initUniform (maybe g (\(Seed s) -> mkStdGen s) seed) availableActions & _1 %~ Random
+                    liftIO $ setStdGen g'
+                    return (b, a)
+              #bandit .= Just b
+              #armstats .= M.empty
+              return $ Decision aInitial InitialDecision
   where
     reset = do
       logInfo "control: reset"
@@ -131,7 +135,7 @@ banditCartesianProductControl ccfg cpd (Event t ms) mRefActions = do
         delta
         ( measuredM
             & ix sensorID
-              %~ measureValue (tlast + delta) (sensorTime, sensorValue)
+            %~ measureValue (tlast + delta) (sensorTime, sensorValue)
         )
   tryControlStep ccfg cpd t mRefActions
 
@@ -158,14 +162,14 @@ actuatorToActions :: (ActuatorID, Actuator) -> [Action]
 actuatorToActions (actuatorID, a) = Action actuatorID <$> actions a
 
 mkExperts :: NonEmpty [Action] -> NonEmpty (ObliviousRep [Action])
-mkExperts arms = arms <&> \arm ->
-  ObliviousRep
-    ( arms
-        <&> \focusedArm ->
+mkExperts arms =
+  arms <&> \arm ->
+    ObliviousRep
+      ( arms <&> \focusedArm ->
           ( if arm == focusedArm then BT.one else BT.zero,
             focusedArm
           )
-    )
+      )
 
 tryControlStep ::
   Cfg.ControlCfg ->
@@ -221,7 +225,7 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
                   logInfo "control: inner control"
                   -- we perform the inner control step if no reference measurements
                   -- exist and otherwise run reference measurements.
-                  LM.toList refM & \case
+                  M.toList refM & \case
                     [] -> startBuffering
                     _ -> innerStep
                 Just buffered -> do
@@ -239,11 +243,12 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
   where
     refineLog ::
       Predicate p x => x -> (Refined p x -> ControlM Decision) -> ControlM Decision
-    refineLog v m = refine v & \case
-      Left _ -> do
-        logError "refinement failed in wrappedCStep"
-        doNothing
-      Right r -> m r
+    refineLog v m =
+      refine v & \case
+        Left _ -> do
+          logError "refinement failed in wrappedCStep"
+          doNothing
+        Right r -> m r
 
 stepFromSqueezed ::
   [(ZeroOne Double, OExpr)] ->
@@ -255,8 +260,9 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
   logInfo "in inner control"
   refMeasurements <- use #referenceMeasurements <&> fmap MemBuffer.avgBuffer
   let evaluatedObjectives :: [(ZeroOne Double, Maybe Double, Maybe (Interval Double))]
-      evaluatedObjectives = stepObjectives <&> \(w, v) ->
-        (w, evalNum measurements refMeasurements v, evalRange sensorRanges v)
+      evaluatedObjectives =
+        stepObjectives <&> \(w, v) ->
+          (w, evalNum measurements refMeasurements v, evalRange sensorRanges v)
       normalizedObjectives :: Maybe [(ZeroOne Double, ZeroOne Double)]
       normalizedObjectives =
         sequence $
@@ -264,8 +270,9 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
             (w, Just v, Just r) -> normalize (v - inf r) (width r) <&> (w,)
             _ -> Nothing
       evaluatedConstraints :: Maybe [(Double, Double, Interval Double)]
-      evaluatedConstraints = sequence $
-        stepConstraints <&> \(interv, c) -> (interv,,) <$> evalNum measurements refMeasurements c <*> evalRange sensorRanges c
+      evaluatedConstraints =
+        sequence $
+          stepConstraints <&> \(interv, c) -> (interv,,) <$> evalNum measurements refMeasurements c <*> evalRange sensorRanges c
   (normalizedObjectives, evaluatedConstraints) & \case
     (Just robjs, Just rconstr) -> do
       logInfo
@@ -317,9 +324,9 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
               #armstats
                 %= ( \stats ->
                        lookup a' stats & \case
-                         Nothing -> LM.insert a' (Armstat 1 (unrefine hco) (unrefine . snd <$> robjs) (rconstr <&> \(_, v, _) -> v) measurements refMeasurements) stats
+                         Nothing -> M.insert a' (Armstat 1 (unrefine hco) (unrefine . snd <$> robjs) (rconstr <&> \(_, v, _) -> v) measurements refMeasurements) stats
                          Just (Armstat visits previousReward previousObjs previousConstraints previousMeasurements previousRefs) ->
-                           LM.insert
+                           M.insert
                              a'
                              ( Armstat
                                  (visits + 1)
@@ -331,7 +338,7 @@ stepFromSqueezed stepObjectives stepConstraints sensorRanges measurements = do
                              )
                              stats
                    )
-          #lastA .= Just a
+          #lastA .= Just (Actions a)
           liftIO $ setStdGen g'
           return $
             Decision
@@ -370,14 +377,13 @@ updateOnlineStatLM ::
   Map SensorID Double ->
   Map SensorID Double ->
   Map SensorID Double
-updateOnlineStatLM i (LM.toDataMap -> m) (LM.toDataMap -> mNew) =
-  LM.fromDataMap $ merge dropMissing dropMissing (zipWithAMatched f) m mNew
+updateOnlineStatLM i = merge dropMissing dropMissing (zipWithAMatched f)
   where
     f _ old new = pure $ updateOnlineStat i old new
 
 updateOnlineStats :: Int -> [Double] -> [Double] -> [Double]
-updateOnlineStats i = Protolude.zipWith $
-  \xOld xNew -> ((xOld * fromIntegral i) + xNew) / fromIntegral (i + 1)
+updateOnlineStats i =
+  Protolude.zipWith $ \xOld xNew -> ((xOld * fromIntegral i) + xNew) / fromIntegral (i + 1)
 
 updateOnlineStat :: Int -> Double -> Double -> Double
 updateOnlineStat i xOld xNew = ((xOld * fromIntegral i) + xNew) / fromIntegral (i + 1)
@@ -405,9 +411,11 @@ initUniform g as = (Uniform (Protolude.toList as), a, g')
     (a, g') = sampleUniform g as
 
 stepUniform :: (MonadState (Uniform a) m) => StdGen -> m (a, StdGen)
-stepUniform g = get <&> \(Uniform (nonEmpty -> as)) -> as & \case
-  Nothing -> panic "Control.hs: trying to sample from empty action list."
-  Just nas -> sampleUniform g nas
+stepUniform g =
+  get <&> \(Uniform (nonEmpty -> as)) ->
+    as & \case
+      Nothing -> panic "Control.hs: trying to sample from empty action list."
+      Just nas -> sampleUniform g nas
 
 -- | Cartesian product of nonempty lists
 cartesianProduct :: NonEmpty [Action] -> NonEmpty [Action]

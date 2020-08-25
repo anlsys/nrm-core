@@ -17,7 +17,7 @@ module NRM.Node.Sysfs
   )
 where
 
-import LMap.Map as LM
+import Data.Map as LM
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Units
 import Protolude

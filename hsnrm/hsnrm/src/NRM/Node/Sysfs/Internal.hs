@@ -38,10 +38,10 @@ import Control.Monad.Trans.Maybe
 import Data.Aeson
 import Data.Data
 import Data.Generics.Labels ()
+import qualified Data.Map as M
 import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
-import LMap.Map as LM
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
 import Protolude
@@ -49,7 +49,7 @@ import System.Directory
 import Text.RE.TDFA.Text
 
 -- | RAPL directory locations
-newtype RAPLDirs = RAPLDirs (LM.Map PackageID RAPLDir)
+newtype RAPLDirs = RAPLDirs (M.Map PackageID RAPLDir)
   deriving (Show, Generic, MessagePack)
 
 -- | Hwmon directory locations
@@ -194,7 +194,7 @@ applyRAPLPcap raplCfg (RAPLCommand cap windows) = for_ windows $ \w ->
 -- | Lists available rapl directories.
 getRAPLDirs :: FilePath -> IO (Maybe RAPLDirs)
 getRAPLDirs d =
-  try (RAPLDirs . LM.fromList <$> listDirFilter processRAPLFolder d) <&> \case
+  try (RAPLDirs . M.fromList <$> listDirFilter processRAPLFolder d) <&> \case
     Left (SomeException _) -> Nothing
     Right dirs -> Just dirs
 

@@ -23,6 +23,7 @@ in    λ(ghcPath : Text)
                       [ common.nobound "hsnrm"
                       , common.deps.base
                       , common.deps.protolude
+                      , common.deps.containers
                       , common.deps.aeson
                       , common.deps.zeromq4-haskell
                       , common.deps.pretty-simple

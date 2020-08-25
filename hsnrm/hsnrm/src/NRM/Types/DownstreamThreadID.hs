@@ -40,6 +40,7 @@ data DownstreamThreadID
   deriving
     ( JSONSchema,
       ToJSON,
+      IsString,
       FromJSON
     )
     via GenericJSON DownstreamThreadID
