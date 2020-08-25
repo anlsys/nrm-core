@@ -48,6 +48,10 @@ let
               hsnrm-bin =
                 super.callCabal2nix "hsnrm-bin" ../hsnrm/hsnrm-bin { };
               hbandit = self.callPackage ./pkgs/hbandit { };
+              iso-deriving = self.callCabal2nix "iso-deriving"
+                (builtins.fetchTarball
+                  "https://github.com/hanshoglund/iso-deriving/archive/master.tar.gz")
+                { };
               regex = doJailbreak super.regex;
               json-schema =
                 dontCheck (unmarkBroken (doJailbreak super.json-schema));

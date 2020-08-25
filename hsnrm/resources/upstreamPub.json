@@ -86,90 +86,72 @@
                                     "type": "array"
                                 },
                                 "sensors": {
-                                    "uniqueItems": false,
-                                    "items": {
-                                        "items": [
-                                            {
-                                                "type": "string"
-                                            },
-                                            {
-                                                "required": [
-                                                    "range",
-                                                    "maxFrequency"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "maxFrequency": {
-                                                        "type": "number"
-                                                    },
-                                                    "range": {
-                                                        "oneOf": [
-                                                            {
-                                                                "required": [
-                                                                    "i"
-                                                                ],
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "i": {
-                                                                        "items": [
-                                                                            {
-                                                                                "type": "number"
-                                                                            },
-                                                                            {
-                                                                                "type": "number"
-                                                                            }
-                                                                        ],
-                                                                        "type": "array"
-                                                                    }
-                                                                }
-                                                            },
-                                                            {
-                                                                "required": [
-                                                                    "empty"
-                                                                ],
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "empty": {
-                                                                        "type": "object",
-                                                                        "properties": {}
-                                                                    }
-                                                                }
-                                                            }
-                                                        ]
-                                                    }
-                                                }
-                                            }
+                                    "additionalProperties": {
+                                        "required": [
+                                            "range",
+                                            "maxFrequency"
                                         ],
-                                        "type": "array"
+                                        "type": "object",
+                                        "properties": {
+                                            "maxFrequency": {
+                                                "type": "number"
+                                            },
+                                            "range": {
+                                                "oneOf": [
+                                                    {
+                                                        "required": [
+                                                            "i"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "i": {
+                                                                "items": [
+                                                                    {
+                                                                        "type": "number"
+                                                                    },
+                                                                    {
+                                                                        "type": "number"
+                                                                    }
+                                                                ],
+                                                                "type": "array"
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "required": [
+                                                            "empty"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "empty": {
+                                                                "type": "object",
+                                                                "properties": {}
+                                                            }
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
                                     },
-                                    "type": "array"
+                                    "type": "object"
                                 },
                                 "actuators": {
-                                    "uniqueItems": false,
-                                    "items": {
-                                        "items": [
-                                            {
-                                                "type": "string"
-                                            },
-                                            {
-                                                "required": [
-                                                    "actions"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "actions": {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "type": "number"
-                                                        },
-                                                        "type": "array"
-                                                    }
-                                                }
-                                            }
+                                    "additionalProperties": {
+                                        "required": [
+                                            "actions"
                                         ],
-                                        "type": "array"
+                                        "type": "object",
+                                        "properties": {
+                                            "actions": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "number"
+                                                },
+                                                "type": "array"
+                                            }
+                                        }
                                     },
-                                    "type": "array"
+                                    "type": "object"
                                 }
                             }
                         }
@@ -901,49 +883,31 @@
                                     ]
                                 },
                                 "referenceMeasurements": {
-                                    "uniqueItems": false,
-                                    "items": {
-                                        "items": [
-                                            {
-                                                "type": "string"
-                                            },
-                                            {
-                                                "required": [
-                                                    "getMemBuffer"
-                                                ],
-                                                "type": "object",
-                                                "properties": {
-                                                    "getMemBuffer": {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "type": "number"
-                                                        },
-                                                        "type": "array"
-                                                    }
-                                                }
-                                            }
+                                    "additionalProperties": {
+                                        "required": [
+                                            "getMemBuffer"
                                         ],
-                                        "type": "array"
+                                        "type": "object",
+                                        "properties": {
+                                            "getMemBuffer": {
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "number"
+                                                },
+                                                "type": "array"
+                                            }
+                                        }
                                     },
-                                    "type": "array"
+                                    "type": "object"
                                 },
                                 "referenceMeasurementCounter": {
                                     "type": "number"
                                 },
                                 "bufferedMeasurements": {
-                                    "uniqueItems": false,
-                                    "items": {
-                                        "items": [
-                                            {
-                                                "type": "string"
-                                            },
-                                            {
-                                                "type": "number"
-                                            }
-                                        ],
-                                        "type": "array"
+                                    "additionalProperties": {
+                                        "type": "number"
                                     },
-                                    "type": "array"
+                                    "type": "object"
                                 },
                                 "integrator": {
                                     "required": [
@@ -954,90 +918,81 @@
                                     "type": "object",
                                     "properties": {
                                         "measured": {
-                                            "uniqueItems": false,
-                                            "items": {
-                                                "items": [
+                                            "additionalProperties": {
+                                                "oneOf": [
                                                     {
-                                                        "type": "string"
+                                                        "required": [
+                                                            "never"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "never": {
+                                                                "type": "object",
+                                                                "properties": {}
+                                                            }
+                                                        }
                                                     },
                                                     {
-                                                        "oneOf": [
-                                                            {
+                                                        "required": [
+                                                            "running"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "running": {
                                                                 "required": [
-                                                                    "never"
+                                                                    "firstTime",
+                                                                    "lastTime",
+                                                                    "lastValue",
+                                                                    "average"
                                                                 ],
                                                                 "type": "object",
                                                                 "properties": {
-                                                                    "never": {
-                                                                        "type": "object",
-                                                                        "properties": {}
-                                                                    }
-                                                                }
-                                                            },
-                                                            {
-                                                                "required": [
-                                                                    "running"
-                                                                ],
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "running": {
-                                                                        "required": [
-                                                                            "firstTime",
-                                                                            "lastTime",
-                                                                            "lastValue",
-                                                                            "average"
-                                                                        ],
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "firstTime": {
-                                                                                "type": "number"
-                                                                            },
-                                                                            "average": {
-                                                                                "type": "number"
-                                                                            },
-                                                                            "lastTime": {
-                                                                                "type": "number"
-                                                                            },
-                                                                            "lastValue": {
-                                                                                "type": "number"
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            },
-                                                            {
-                                                                "required": [
-                                                                    "done"
-                                                                ],
-                                                                "type": "object",
-                                                                "properties": {
-                                                                    "done": {
-                                                                        "required": [
-                                                                            "totalAverageDone",
-                                                                            "lastTimeDone",
-                                                                            "lastValueDone"
-                                                                        ],
-                                                                        "type": "object",
-                                                                        "properties": {
-                                                                            "lastTimeDone": {
-                                                                                "type": "number"
-                                                                            },
-                                                                            "totalAverageDone": {
-                                                                                "type": "number"
-                                                                            },
-                                                                            "lastValueDone": {
-                                                                                "type": "number"
-                                                                            }
-                                                                        }
+                                                                    "firstTime": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "average": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "lastTime": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "lastValue": {
+                                                                        "type": "number"
                                                                     }
                                                                 }
                                                             }
-                                                        ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "required": [
+                                                            "done"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "done": {
+                                                                "required": [
+                                                                    "totalAverageDone",
+                                                                    "lastTimeDone",
+                                                                    "lastValueDone"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "lastTimeDone": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "totalAverageDone": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "lastValueDone": {
+                                                                        "type": "number"
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
                                                     }
-                                                ],
-                                                "type": "array"
+                                                ]
                                             },
-                                            "type": "array"
+                                            "type": "object"
                                         },
                                         "minimumControlInterval": {
                                             "type": "number"
@@ -1048,87 +1003,44 @@
                                     }
                                 },
                                 "armstats": {
-                                    "uniqueItems": false,
-                                    "items": {
+                                    "additionalProperties": {
                                         "items": [
+                                            {
+                                                "type": "number"
+                                            },
+                                            {
+                                                "type": "number"
+                                            },
                                             {
                                                 "uniqueItems": false,
                                                 "items": {
-                                                    "required": [
-                                                        "actuatorID",
-                                                        "actuatorValue"
-                                                    ],
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "actuatorValue": {
-                                                            "type": "number"
-                                                        },
-                                                        "actuatorID": {
-                                                            "type": "string"
-                                                        }
-                                                    }
+                                                    "type": "number"
                                                 },
                                                 "type": "array"
                                             },
                                             {
-                                                "items": [
-                                                    {
-                                                        "type": "number"
-                                                    },
-                                                    {
-                                                        "type": "number"
-                                                    },
-                                                    {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "type": "number"
-                                                        },
-                                                        "type": "array"
-                                                    },
-                                                    {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "type": "number"
-                                                        },
-                                                        "type": "array"
-                                                    },
-                                                    {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "items": [
-                                                                {
-                                                                    "type": "string"
-                                                                },
-                                                                {
-                                                                    "type": "number"
-                                                                }
-                                                            ],
-                                                            "type": "array"
-                                                        },
-                                                        "type": "array"
-                                                    },
-                                                    {
-                                                        "uniqueItems": false,
-                                                        "items": {
-                                                            "items": [
-                                                                {
-                                                                    "type": "string"
-                                                                },
-                                                                {
-                                                                    "type": "number"
-                                                                }
-                                                            ],
-                                                            "type": "array"
-                                                        },
-                                                        "type": "array"
-                                                    }
-                                                ],
+                                                "uniqueItems": false,
+                                                "items": {
+                                                    "type": "number"
+                                                },
                                                 "type": "array"
+                                            },
+                                            {
+                                                "additionalProperties": {
+                                                    "type": "number"
+                                                },
+                                                "type": "object"
+                                            },
+                                            {
+                                                "additionalProperties": {
+                                                    "type": "number"
+                                                },
+                                                "type": "object"
                                             }
                                         ],
                                         "type": "array"
                                     },
-                                    "type": "array"
+                                    "type": "object"
                                 },
                                 "lastA": {
                                     "uniqueItems": false,

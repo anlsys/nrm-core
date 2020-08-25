@@ -22,7 +22,7 @@ import Data.JSON.Schema
 import Data.MessagePack
 import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
-import LMap.Map as LM
+import Data.Map as M
 import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Types.Cmd (Cmd (..), CmdCore (..))
@@ -34,9 +34,9 @@ import Protolude
 data Slice
   = Slice
       { -- | map of running commands
-        cmds :: LM.Map CmdID Cmd,
+        cmds :: M.Map CmdID Cmd,
         -- | map of commands awaiting to be registered as running by the runtime
-        awaiting :: LM.Map CmdID CmdCore
+        awaiting :: M.Map CmdID CmdCore
       }
   deriving (Show, Generic, MessagePack)
   deriving (ToJSON, FromJSON, JSONSchema) via GenericJSON Slice
@@ -44,8 +44,8 @@ data Slice
 -- | Constructor for an empty slice.
 emptySlice :: Slice
 emptySlice = Slice
-  { cmds = LM.fromList [],
-    awaiting = LM.fromList []
+  { cmds = M.fromList [],
+    awaiting = M.fromList []
   }
 
 data SliceID = SliceID U.UUID | Name Text

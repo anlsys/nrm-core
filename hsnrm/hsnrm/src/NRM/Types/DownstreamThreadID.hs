@@ -40,9 +40,11 @@ data DownstreamThreadID
   deriving
     ( JSONSchema,
       ToJSON,
+      IsString,
       FromJSON
     )
     via GenericJSON DownstreamThreadID
+
 
 newtype RankID = RankID {fromRankID :: Int}
   deriving (Eq, Ord, Show, Read, Generic, MessagePack)

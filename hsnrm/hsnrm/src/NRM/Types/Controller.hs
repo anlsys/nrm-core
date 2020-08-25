@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
+
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# OPTIONS_GHC -fno-warn-partial-fields #-}
 
@@ -8,24 +9,25 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.Types.Controller
-  ( Controller (..),
-    Input (..),
-    Decision (..),
-    ObjectiveValue (..),
-    ConstraintValue (..),
-    DecisionMetadata (..),
-    Learn (..),
-    LearnState,
-    LearnConfig,
-    LagrangeMultiplier (..),
-    CtxCfg (..),
-    Hint (..),
-    Seed (..),
-    Uniform (..),
-    UniformCfg (..),
-    Armstat (..),
-    initialController,
-    enqueueAll,
+  ( Controller (..)
+  , Input (..)
+  , Decision (..)
+  , Actions (..)
+  , ObjectiveValue (..)
+  , ConstraintValue (..)
+  , DecisionMetadata (..)
+  , Learn (..)
+  , LearnState
+  , LearnConfig
+  , LagrangeMultiplier (..)
+  , CtxCfg (..)
+  , Hint (..)
+  , Seed (..)
+  , Uniform (..)
+  , UniformCfg (..)
+  , Armstat (..)
+  , initialController
+  , enqueueAll
   )
 where
 
@@ -37,24 +39,24 @@ import CPD.Integrated as C
 import CPD.Values as V
 import Data.Aeson as A hiding ((.=))
 import Data.JSON.Schema
+import qualified Data.Map as M
 import Data.Map.Merge.Lazy
 import Data.MessagePack
 import Dhall hiding (field)
-import LMap.Map as LM
 import NRM.Classes.Messaging
 import NRM.Orphans.NonEmpty ()
 import NRM.Orphans.ZeroOne ()
 import NRM.Types.MemBuffer as MemBuffer
 import NRM.Types.Units
-import Protolude hiding (Map)
+import Protolude
 import Refined hiding (NonEmpty)
 import Refined.Unsafe
 
-type LearnState =
-  Learn
-    (Exp3 [V.Action])
-    (Uniform [V.Action])
-    (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+type LearnState
+  = Learn
+      (Exp3 [V.Action])
+      (Uniform [V.Action])
+      (Exp4R () [V.Action] (ObliviousRep [V.Action]))
 
 type LearnConfig = Learn LagrangeMultiplier UniformCfg CtxCfg
 
@@ -79,17 +81,18 @@ data DecisionMetadata
   = InitialDecision
   | ReferenceMeasurementDecision
   | InnerDecision
-      { constraints :: [ConstraintValue],
-        objectives :: [ObjectiveValue],
-        loss :: ZeroOne Double,
-        reportEvaluatedObjectives :: [(ZeroOne Double, Maybe Double, Maybe (Interval Double))],
-        reportNormalizedObjectives :: [(ZeroOne Double, ZeroOne Double)],
-        reportEvaluatedConstraints :: [(Double, Double, Interval Double)]
+      { constraints :: [ConstraintValue]
+      , objectives :: [ObjectiveValue]
+      , loss :: ZeroOne Double
+      , reportEvaluatedObjectives :: [(ZeroOne Double, Maybe Double, Maybe (Interval Double))]
+      , reportNormalizedObjectives :: [(ZeroOne Double, ZeroOne Double)]
+      , reportEvaluatedConstraints :: [(Double, Double, Interval Double)]
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DecisionMetadata
 
-data Decision = DoNothing | Decision [V.Action] DecisionMetadata deriving (Show)
+data Decision = DoNothing | Decision [V.Action] DecisionMetadata
+  deriving (Show)
 
 data Learn a c d
   = Lagrange {lagrange :: a}
@@ -113,15 +116,29 @@ data Hint = Full | Only {only :: NonEmpty [Action]}
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Hint
 
+newtype Actions = Actions [V.Action]
+  deriving
+    ( MessagePack
+    , Show
+    , Eq
+    , Ord
+    , Generic
+    , ToJSONKey
+    , FromJSONKey
+    , FromDhall
+    , ToDhall
+    )
+  deriving (JSONSchema, IsString,ToJSON, FromJSON) via GenericJSON Actions
+
 data Controller
   = Controller
-      { integrator :: C.Integrator,
-        bandit :: Maybe LearnState,
-        lastA :: Maybe [V.Action],
-        armstats :: Map [V.Action] Armstat,
-        bufferedMeasurements :: Maybe (Map SensorID Double),
-        referenceMeasurements :: Map SensorID MemBuffer,
-        referenceMeasurementCounter :: Refined NonNegative Int
+      { integrator :: C.Integrator
+      , bandit :: Maybe LearnState
+      , lastA :: Maybe Actions
+      , armstats :: Map Actions Armstat
+      , bufferedMeasurements :: Maybe (Map SensorID Double)
+      , referenceMeasurements :: Map SensorID MemBuffer
+      , referenceMeasurementCounter :: Refined NonNegative Int
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
   deriving (Show, Generic, MessagePack, Interpret, Inject)
@@ -138,37 +155,33 @@ data Armstat
   deriving (Show, Generic, MessagePack, Interpret, Inject)
 
 enqueueAll :: (Ord k) => Map k Double -> Map k MemBuffer -> Map k MemBuffer
-enqueueAll
-  (toDataMap -> m)
-  (toDataMap -> mapBuffers) =
-    fromDataMap $
-      merge
-        (mapMissing $ \_ a -> MemBuffer.singleton a)
-        preserveMissing
-        (zipWithMatched $ \_ a abuffer -> enqueue a abuffer)
-        m
-        mapBuffers
+enqueueAll m mapBuffers =
+  merge
+    (mapMissing $ \_ a -> MemBuffer.singleton a)
+    preserveMissing
+    (zipWithMatched $ \_ a abuffer -> enqueue a abuffer)
+    m
+    mapBuffers
 
-initialController ::
-  Time ->
-  Time ->
-  [SensorID] ->
-  Controller
+initialController
+  :: Time
+  -> Time
+  -> [SensorID]
+  -> Controller
 initialController time minTime sensorIDs = Controller
-  { integrator = initIntegrator time minTime sensorIDs,
-    lastA = Nothing,
-    bandit = Nothing,
-    armstats = LM.empty,
-    bufferedMeasurements = Nothing,
-    referenceMeasurements = LM.fromList $ sensorIDs <&> (,MemBuffer.empty),
-    referenceMeasurementCounter = unsafeRefine 0
+  { integrator = initIntegrator time minTime sensorIDs
+  , lastA = Nothing
+  , bandit = Nothing
+  , armstats = M.empty
+  , bufferedMeasurements = Nothing
+  , referenceMeasurements = M.fromList $ sensorIDs <&> (,MemBuffer.empty)
+  , referenceMeasurementCounter = unsafeRefine 0
   }
 
 newtype UniformCfg = UniformCfg {seed :: Maybe Seed}
   deriving (Show, Eq, Generic) via (Maybe Seed)
 
 -- Uniform controller
-
 newtype Uniform a = Uniform [a]
   deriving (Show, Generic)
 
@@ -240,7 +253,6 @@ deriving via (GenericJSON (Exp4R () [V.Action] (ObliviousRep [V.Action]))) insta
 deriving via (GenericJSON (Exp4R () [V.Action] (ObliviousRep [V.Action]))) instance A.FromJSON (Exp4R () [V.Action] (ObliviousRep [V.Action]))
 
 -- Instances to serialize the bandit state.
-
 deriving via (GenericJSON LearnConfig) instance JSONSchema LearnConfig
 
 deriving via (GenericJSON LearnConfig) instance A.ToJSON LearnConfig

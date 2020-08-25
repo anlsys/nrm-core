@@ -16,7 +16,7 @@ import Data.Aeson hiding ((.=))
 import Data.Generics.Labels ()
 import Data.Maybe (fromJust)
 import Data.MessagePack
-import LMap.Map as LM
+import Data.Map as M
 import LensMap.Core
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
@@ -51,9 +51,9 @@ unsafeJAA _ = Just
 instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
   lenses (packageID, package) =
     rapl package & \case
-      Nothing -> LM.empty
+      Nothing -> M.empty
       Just _ ->
-        LM.singleton
+        M.singleton
           (A.RaplKey packageID)
           ( ScopedLens
               ( _2 . #rapl
@@ -77,9 +77,9 @@ instance HasLensMap (PackageID, Package) ActuatorKey Actuator where
 instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor where
   lenses (packageID, package) =
     rapl package & \case
-      Nothing -> LM.empty
+      Nothing -> M.empty
       Just _ ->
-        LM.singleton
+        M.singleton
           (S.RaplKey packageID)
           ( ScopedLens
               ( _2 . #rapl

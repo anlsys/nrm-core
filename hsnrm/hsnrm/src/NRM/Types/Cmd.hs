@@ -29,7 +29,7 @@ import Data.JSON.Schema
 import Data.MessagePack
 import Data.String (IsString (..))
 import Dhall hiding (field)
-import LMap.Map as LM
+import Data.Map as M
 import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Orphans.ExitCode ()
@@ -60,7 +60,7 @@ mkCmdSpec :: Text -> [Text] -> [(Text, Text)] -> CmdSpec
 mkCmdSpec command arguments environment = CmdSpec
   { cmd = Command command,
     args = Arg <$> arguments,
-    env = Env $ LM.fromList environment
+    env = Env $ M.fromList environment
   }
 
 data CmdCore
@@ -78,8 +78,8 @@ data Cmd
       { cmdCore :: CmdCore,
         pid :: ProcessID,
         processState :: ProcessState,
-        downstreamCmds :: LM.Map DownstreamCmdID DownstreamCmd,
-        downstreamThreads :: LM.Map DownstreamThreadID DownstreamThread
+        downstreamCmds :: M.Map DownstreamCmdID DownstreamCmd,
+        downstreamThreads :: M.Map DownstreamThreadID DownstreamThread
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cmd
@@ -96,8 +96,8 @@ registerPID :: CmdCore -> ProcessID -> Cmd
 registerPID c pid = Cmd
   { cmdCore = c,
     processState = blankState,
-    downstreamCmds = LM.empty,
-    downstreamThreads = LM.empty,
+    downstreamCmds = M.empty,
+    downstreamThreads = M.empty,
     pid = pid
   }
 
@@ -143,10 +143,10 @@ newtype Command = Command Text
   deriving (JSONSchema, ToJSON, FromJSON, IsString, Interpret, Inject) via Text
 
 -- | newtype wrapper for environment variables.
-newtype Env = Env {fromEnv :: LM.Map Text Text}
+newtype Env = Env {fromEnv :: M.Map Text Text}
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Env
-  deriving (Semigroup, Monoid) via LM.Map Text Text
+  deriving (Semigroup, Monoid) via M.Map Text Text
 
 -- | @wrapCmd command args (command',args')@ builds the wrapped command
 -- @command@ @args@ @command'@ @args'@.

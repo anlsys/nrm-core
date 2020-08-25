@@ -7,10 +7,10 @@
 -- This module is responsible for runtime generation of the CPD
 -- description to be optimized by the control loop.
 module NRM.CPD
-  ( toCPD,
-    throughputConstrained,
-    addAll,
-    maybeMinus,
+  ( toCPD
+  , throughputConstrained
+  , addAll
+  , maybeMinus
   )
 where
 
@@ -18,7 +18,7 @@ import Bandit.Types
 import CPD.Core
 import Control.Lens hiding ((...))
 import Data.Coerce
-import LMap.Map as LM
+import Data.Map as M
 import LensMap.Core
 import NRM.Actuators
 import NRM.Sensors
@@ -39,45 +39,45 @@ toCPD cfg st = Problem {..}
 
 -- | This problem generator produces a global energy minimization problem under a
 -- throughput constraint.
-throughputConstrained ::
-  -- | Control configuration
-  ControlCfg ->
-  -- | State
-  NRMState ->
-  ( [(ZeroOne Double, OExpr)],
-    [(Double, OExpr)]
-  )
+throughputConstrained
+  :: -- | Control configuration
+  ControlCfg
+  -> -- | State
+  NRMState
+  -> ( [(ZeroOne Double, OExpr)]
+     , [(Double, OExpr)]
+     )
 throughputConstrained cfg st =
   ( idsToMinimize & \case
       Nothing -> []
       Just ids ->
         let powerTerm =
-              coerce (foldMap (OExprSum . sID) ids)
-                \+ scalar (fromWatts $ staticPower cfg)
-         in [(Bandit.Types.one, maybe powerTerm (powerTerm \/) normalizedSumSlowdown)],
-    normalizedSumSlowdown & \case
-      Nothing -> []
-      Just expr -> [(speedThreshold cfg, expr)]
+              coerce (foldMap (OExprSum . sID) ids) \+
+                scalar (fromWatts $ staticPower cfg)
+         in [(Bandit.Types.one, maybe powerTerm (powerTerm \/) normalizedSumSlowdown)]
+  , normalizedSumSlowdown & \case
+    Nothing -> []
+    Just expr -> [(speedThreshold cfg, expr)]
   )
   where
     normalizedSumSlowdown :: Maybe OExpr
     normalizedSumSlowdown =
-      nonEmpty (LM.toList constrained) <&> \(fmap fst -> ids) ->
+      nonEmpty (M.toList constrained) <&> \(fmap fst -> ids) ->
         thresholded 0.5 1.5 (coerce (foldMap (OExprSum . sID) ids) \/ (coerce (foldMap (OExprSum . sRef) ids) \+ scalar 1))
     idsToMinimize :: Maybe (NonEmpty SensorID)
-    idsToMinimize = nonEmpty (fst <$> LM.toList toMinimize)
+    idsToMinimize = nonEmpty (fst <$> M.toList toMinimize)
     toMinimize :: Map SensorID SensorMeta
-    toMinimize = LM.filterWithKey (\_ m -> Power `elem` S.tags m) allSensorMeta
+    toMinimize = M.filterWithKey (\_ m -> Power `elem` S.tags m) allSensorMeta
     constrained :: Map SensorID SensorMeta
-    constrained = LM.filterWithKey (\_ m -> DownstreamCmdSignal `elem` S.tags m) allSensorMeta
+    constrained = M.filterWithKey (\_ m -> DownstreamCmdSignal `elem` S.tags m) allSensorMeta
     allSensorMeta :: Map SensorID S.SensorMeta
     allSensorMeta =
-      LM.fromList
-        ( (bimap toS (\(ScopedLens l) -> st ^. l . _meta) <$> lA)
-            <> (bimap toS (\(ScopedLens l) -> st ^. l . _meta) <$> lP)
+      M.fromList
+        ( (bimap toS (\(ScopedLens l) -> st ^. l . _meta) <$> lA) <>
+          (bimap toS (\(ScopedLens l) -> st ^. l . _meta) <$> lP)
         )
-    lA = LM.toList (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor)
-    lP = LM.toList (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor)
+    lA = M.toList (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor)
+    lP = M.toList (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor)
 
 -- | produces a sum objective normalized by #sensors
 addAll :: NonEmpty SensorID -> OExpr

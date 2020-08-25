@@ -92,6 +92,7 @@ let nobound = λ(p : Text) → { bounds = prelude.anyVersion, package = p }
 let deps =
       { base = nobound "base"
       , hbandit = nobound "hbandit"
+      , iso-deriving = nobound "iso-deriving"
       , pretty-simple = nobound "pretty-simple"
       , protolude = nobound "protolude"
       , Chart = nobound "Chart"
@@ -243,8 +244,6 @@ let extramodules =
       , "Codegen.Dhall"
       , "Codegen.CHeader"
       , "LensMap.Core"
-      , "LMap.Map"
-      , "LMap.NonEmpty"
       , "CPD.Core"
       , "CPD.Integrated"
       , "CPD.Values"
@@ -268,6 +267,7 @@ let libdep =
       , deps.transformers
       , deps.generic-data
       , deps.bytestring
+      , deps.iso-deriving
       , deps.random
       , deps.prettyprinter
       , deps.zeromq4-haskell
