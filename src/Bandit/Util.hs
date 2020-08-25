@@ -22,8 +22,19 @@ import Refined.Unsafe
 
 -- | Samples from a weighted probability distribution.
 -- The sum of weights must not be zero.
-sampleWL :: RandomGen g => NonEmpty (ZeroOne Double, a) -> g -> (a, g)
-sampleWL weights = runRand (MR.fromList $ toList (weights <&> \(r, x) -> (x, toRational (unrefine r))))
+sampleWL ::
+  RandomGen g =>
+  NonEmpty (ZeroOne Double, a) ->
+  g ->
+  (a, g)
+sampleWL weights =
+  runRand
+    ( MR.fromList $
+        toList
+          ( weights <&> \(r, x) ->
+              (x, toRational (unrefine r))
+          )
+    )
 
 -- | normalizeDistribution normalizes a distribution, for consumption
 -- by sampleWL for instance.
@@ -57,15 +68,15 @@ normalizedSum l =
           / sum (unrefine . fst <$> l)
 
 -- | @normalize x xm@ normalizes @x@ using @xm@. Returns @Nothing@
--- in case the resulting value is not contained in \([0,1]\) .
+-- in case the resulting value is not contained in \([0,1]\).
 normalize :: (Floating a, Ord a) => a -> a -> Maybe (ZeroOne a)
 normalize v m = refine (v / m) & \case
   Right n -> Just n
   Left _ -> Nothing
 
--- | @normalize x xm@ normalizes @x@ using @xm@. Returns @Nothing@
--- in case the resulting value is not contained in \([0,1]\) .
+-- | unsafe version of 'normalize'
 unsafeNormalizePanic :: (Floating a, Ord a) => a -> a -> ZeroOne a
-unsafeNormalizePanic v m = refine (v / m) & \case
-  Right n -> n
-  Left _ -> panic "normalizePanic error."
+unsafeNormalizePanic v m =
+  fromMaybe
+    (panic "normalizePanic error.")
+    (normalize v m)

@@ -16,7 +16,7 @@ Safe multi-armed bandit implementations.
 ## documentation
 
 ```
-  nix-build /path/to/hbandit/or/url/to/tarball -A hbandit.doc
+  nix-build /path/to/hbandit/or/url/to/tarball -A haskellPackages.hbandit.doc
 ```
 
 <!-- vim: set ft=markdown.pandoc cole=0: -->

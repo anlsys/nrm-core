@@ -9,7 +9,6 @@ let
         haskellPackages = pkgs.haskell.packages.ghc865.override {
           overrides = self: super:
             with pkgs.haskell.lib; rec {
-              ihaskell = unmarkBroken super.ihaskell;
               vinyl = doJailbreak (unmarkBroken super.vinyl);
               hbandit = self.callCabal2nix "hbandit" ./. { };
               panpipe = unmarkBroken (doJailbreak super.panpipe);
@@ -36,8 +35,4 @@ let
     };
   in (import source { }).ormolu;
 
-in with pkgs;
-pkgs // rec {
-  hlint = haskellPackages.hlint;
-  hbandit = haskellPackages.hbandit;
-}
+in with pkgs; pkgs // rec { inherit ormolu; }

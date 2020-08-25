@@ -5,12 +5,10 @@ haskellPackages.shellFor {
   withHoogle = true;
   buildInputs = [
     ghcid
-    pythonPackages.nbconvert
     haskellPackages.panpipe
     haskellPackages.panhandle
-    cabal2nix
     ormolu
-    hlint
+    haskellPackages.hlint
     pandoc
     cabal-install
   ];
