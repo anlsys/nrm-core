@@ -1,5 +1,4 @@
 {-# LANGUAGE DerivingVia #-}
-
 {-# OPTIONS_GHC -fno-warn-partial-fields #-}
 
 -- |
@@ -8,12 +7,12 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module CPD.Integrated
-  ( Integrator (..)
-  , IntegratorAction (..)
-  , MeasurementState (..)
-  , initIntegrator
-  , measureValue
-  , squeeze
+  ( Integrator (..),
+    IntegratorAction (..),
+    MeasurementState (..),
+    initIntegrator,
+    measureValue,
+    squeeze,
   )
 where
 
@@ -32,17 +31,17 @@ import Protolude
 
 data Integrator
   = Integrator
-      { tLast :: Time
-      , minimumControlInterval :: Time
-      , measured :: Map SensorID MeasurementState
+      { tLast :: Time,
+        minimumControlInterval :: Time,
+        measured :: Map SensorID MeasurementState
       }
   deriving (Generic)
 
 trapezoidArea :: (Time, Double) -> (Time, Double) -> Double
 trapezoidArea (t1, v1) (t2, v2) =
-  min v1 v2 * fromuS (t2 - t1) +
-    abs (v2 - v1) /
-    (2 * fromuS (t2 - t1))
+  min v1 v2 * fromuS (t2 - t1)
+    + abs (v2 - v1)
+    / (2 * fromuS (t2 - t1))
 
 measureValue :: Time -> (Time, Double) -> MeasurementState -> MeasurementState
 measureValue thresholdTime (newTime, newValue) Never
@@ -53,34 +52,36 @@ measureValue _ (newTime, newValue) (Done totalAvg _lastTime _lastValue) =
 measureValue thresholdTime (newTime, newValue) (Running firstT lastT lastV avg)
   | newTime < thresholdTime =
     Running
-      { firstTime = firstT
-      , lastTime = newTime
-      , lastValue = newValue
-      , average = ( trapezoidArea (lastT, lastV) (newTime, newValue) +
-                    avg *
-                    fromuS (lastT - firstT)
-                  ) /
-        fromuS (newTime - firstT)
+      { firstTime = firstT,
+        lastTime = newTime,
+        lastValue = newValue,
+        average =
+          ( trapezoidArea (lastT, lastV) (newTime, newValue)
+              + avg
+              * fromuS (lastT - firstT)
+          )
+            / fromuS (newTime - firstT)
       }
   | otherwise =
     Done
-      { lastTimeDone = newTime
-      , lastValueDone = newValue
-      , totalAverageDone = ( trapezoidArea (lastT, lastV) (newTime, newValue) +
-                             avg *
-                             fromuS (lastT - firstT)
-                           ) /
-        fromuS (newTime - firstT)
+      { lastTimeDone = newTime,
+        lastValueDone = newValue,
+        totalAverageDone =
+          ( trapezoidArea (lastT, lastV) (newTime, newValue)
+              + avg
+              * fromuS (lastT - firstT)
+          )
+            / fromuS (newTime - firstT)
       }
 
-squeeze
-  :: Time
-  -> Map SensorID MeasurementState
-  -> Maybe (Map SensorID Double, Map SensorID MeasurementState)
+squeeze ::
+  Time ->
+  Map SensorID MeasurementState ->
+  Maybe (Map SensorID Double, Map SensorID MeasurementState)
 squeeze _t mstM =
   if all isDone (M.elems mstM)
-  then Just (mstM <&> totalAverageDone, newMeasurements)
-  else Nothing
+    then Just (mstM <&> totalAverageDone, newMeasurements)
+    else Nothing
   where
     newMeasurements = mstM <&> newround
     newround (Done _totalAverageDone lastTimeDone lastValueDone) =
@@ -92,15 +93,15 @@ squeeze _t mstM =
 data MeasurementState
   = Never
   | Running
-      { firstTime :: Time
-      , lastTime :: Time
-      , lastValue :: Double
-      , average :: Double
+      { firstTime :: Time,
+        lastTime :: Time,
+        lastValue :: Double,
+        average :: Double
       }
   | Done
-      { totalAverageDone :: Double
-      , lastTimeDone :: Time
-      , lastValueDone :: Double
+      { totalAverageDone :: Double,
+        lastTimeDone :: Time,
+        lastValueDone :: Double
       }
   deriving (Show, Data, MessagePack, Generic, Inject, Interpret)
   deriving
@@ -109,13 +110,13 @@ data MeasurementState
 
 data IntegratorAction = IntegratorPasses | TriggerStep Integrator
 
-initIntegrator
-  :: Time
-  -> Time
-  -> [SensorID]
-  -> Integrator
+initIntegrator ::
+  Time ->
+  Time ->
+  [SensorID] ->
+  Integrator
 initIntegrator t tmin sensorIDs = Integrator
-  { tLast = t
-  , minimumControlInterval = tmin
-  , measured = M.fromList (sensorIDs <&> (,Never))
+  { tLast = t,
+    minimumControlInterval = tmin,
+    measured = M.fromList (sensorIDs <&> (,Never))
   }

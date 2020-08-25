@@ -6,12 +6,12 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module CPD.Utils
-  ( validateAction
-  , validateMeasurement
-  , MeasurementValidation (..)
-  , ActionValidation (..)
-  , evalNum
-  , evalRange
+  ( validateAction,
+    validateMeasurement,
+    MeasurementValidation (..),
+    ActionValidation (..),
+    evalNum,
+    evalRange,
   )
 where
 
@@ -38,15 +38,15 @@ validateAction p action =
     Nothing -> UnknownActuator
     Just actuator ->
       if CPD.Values.actuatorValue action `elem` CPD.actions actuator
-      then ActionOk
-      else InvalidAction
+        then ActionOk
+        else InvalidAction
 
 -- | Standard object evaluation on Num instances.
-evalNum
-  :: Map SensorID Double
-  -> Map SensorID Double
-  -> OExpr
-  -> Maybe Double
+evalNum ::
+  Map SensorID Double ->
+  Map SensorID Double ->
+  OExpr ->
+  Maybe Double
 evalNum m r = \case
   OValue sensorID -> M.lookup sensorID m
   OReference sensorID -> M.lookup sensorID r
@@ -62,10 +62,10 @@ evalNum m r = \case
     ev2 a b f = f <$> ev a <*> ev b
 
 -- | Range evaluation
-evalRange
-  :: Map SensorID (Interval Double)
-  -> OExpr
-  -> Maybe (Interval Double)
+evalRange ::
+  Map SensorID (Interval Double) ->
+  OExpr ->
+  Maybe (Interval Double)
 evalRange m = \case
   OValue sensorID -> M.lookup sensorID m
   OReference sensorID -> M.lookup sensorID m

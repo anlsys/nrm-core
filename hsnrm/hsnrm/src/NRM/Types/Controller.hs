@@ -1,5 +1,4 @@
 {-# LANGUAGE DerivingVia #-}
-
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 {-# OPTIONS_GHC -fno-warn-partial-fields #-}
 
@@ -9,25 +8,25 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.Types.Controller
-  ( Controller (..)
-  , Input (..)
-  , Decision (..)
-  , Actions (..)
-  , ObjectiveValue (..)
-  , ConstraintValue (..)
-  , DecisionMetadata (..)
-  , Learn (..)
-  , LearnState
-  , LearnConfig
-  , LagrangeMultiplier (..)
-  , CtxCfg (..)
-  , Hint (..)
-  , Seed (..)
-  , Uniform (..)
-  , UniformCfg (..)
-  , Armstat (..)
-  , initialController
-  , enqueueAll
+  ( Controller (..),
+    Input (..),
+    Decision (..),
+    Actions (..),
+    ObjectiveValue (..),
+    ConstraintValue (..),
+    DecisionMetadata (..),
+    Learn (..),
+    LearnState,
+    LearnConfig,
+    LagrangeMultiplier (..),
+    CtxCfg (..),
+    Hint (..),
+    Seed (..),
+    Uniform (..),
+    UniformCfg (..),
+    Armstat (..),
+    initialController,
+    enqueueAll,
   )
 where
 
@@ -52,11 +51,11 @@ import Protolude
 import Refined hiding (NonEmpty)
 import Refined.Unsafe
 
-type LearnState
-  = Learn
-      (Exp3 [V.Action])
-      (Uniform [V.Action])
-      (Exp4R () [V.Action] (ObliviousRep [V.Action]))
+type LearnState =
+  Learn
+    (Exp3 [V.Action])
+    (Uniform [V.Action])
+    (Exp4R () [V.Action] (ObliviousRep [V.Action]))
 
 type LearnConfig = Learn LagrangeMultiplier UniformCfg CtxCfg
 
@@ -81,12 +80,12 @@ data DecisionMetadata
   = InitialDecision
   | ReferenceMeasurementDecision
   | InnerDecision
-      { constraints :: [ConstraintValue]
-      , objectives :: [ObjectiveValue]
-      , loss :: ZeroOne Double
-      , reportEvaluatedObjectives :: [(ZeroOne Double, Maybe Double, Maybe (Interval Double))]
-      , reportNormalizedObjectives :: [(ZeroOne Double, ZeroOne Double)]
-      , reportEvaluatedConstraints :: [(Double, Double, Interval Double)]
+      { constraints :: [ConstraintValue],
+        objectives :: [ObjectiveValue],
+        loss :: ZeroOne Double,
+        reportEvaluatedObjectives :: [(ZeroOne Double, Maybe Double, Maybe (Interval Double))],
+        reportNormalizedObjectives :: [(ZeroOne Double, ZeroOne Double)],
+        reportEvaluatedConstraints :: [(Double, Double, Interval Double)]
       }
   deriving (Show, Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON DecisionMetadata
@@ -118,27 +117,27 @@ data Hint = Full | Only {only :: NonEmpty [Action]}
 
 newtype Actions = Actions [V.Action]
   deriving
-    ( MessagePack
-    , Show
-    , Eq
-    , Ord
-    , Generic
-    , ToJSONKey
-    , FromJSONKey
-    , FromDhall
-    , ToDhall
+    ( MessagePack,
+      Show,
+      Eq,
+      Ord,
+      Generic,
+      ToJSONKey,
+      FromJSONKey,
+      FromDhall,
+      ToDhall
     )
-  deriving (JSONSchema, IsString,ToJSON, FromJSON) via GenericJSON Actions
+  deriving (JSONSchema, IsString, ToJSON, FromJSON) via GenericJSON Actions
 
 data Controller
   = Controller
-      { integrator :: C.Integrator
-      , bandit :: Maybe LearnState
-      , lastA :: Maybe Actions
-      , armstats :: Map Actions Armstat
-      , bufferedMeasurements :: Maybe (Map SensorID Double)
-      , referenceMeasurements :: Map SensorID MemBuffer
-      , referenceMeasurementCounter :: Refined NonNegative Int
+      { integrator :: C.Integrator,
+        bandit :: Maybe LearnState,
+        lastA :: Maybe Actions,
+        armstats :: Map Actions Armstat,
+        bufferedMeasurements :: Maybe (Map SensorID Double),
+        referenceMeasurements :: Map SensorID MemBuffer,
+        referenceMeasurementCounter :: Refined NonNegative Int
       }
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Controller
   deriving (Show, Generic, MessagePack, Interpret, Inject)
@@ -163,19 +162,19 @@ enqueueAll m mapBuffers =
     m
     mapBuffers
 
-initialController
-  :: Time
-  -> Time
-  -> [SensorID]
-  -> Controller
+initialController ::
+  Time ->
+  Time ->
+  [SensorID] ->
+  Controller
 initialController time minTime sensorIDs = Controller
-  { integrator = initIntegrator time minTime sensorIDs
-  , lastA = Nothing
-  , bandit = Nothing
-  , armstats = M.empty
-  , bufferedMeasurements = Nothing
-  , referenceMeasurements = M.fromList $ sensorIDs <&> (,MemBuffer.empty)
-  , referenceMeasurementCounter = unsafeRefine 0
+  { integrator = initIntegrator time minTime sensorIDs,
+    lastA = Nothing,
+    bandit = Nothing,
+    armstats = M.empty,
+    bufferedMeasurements = Nothing,
+    referenceMeasurements = M.fromList $ sensorIDs <&> (,MemBuffer.empty),
+    referenceMeasurementCounter = unsafeRefine 0
   }
 
 newtype UniformCfg = UniformCfg {seed :: Maybe Seed}

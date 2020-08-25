@@ -1,5 +1,4 @@
 {-# LANGUAGE ScopedTypeVariables #-}
-
 {-# OPTIONS_GHC -fno-warn-missing-signatures #-}
 
 -- |
@@ -8,7 +7,7 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module PyExport
-  ( Ex
+  ( Ex,
   )
 where
 
@@ -74,14 +73,14 @@ mkSimpleRunExport = exportIO mkSimpleRun
     mkSimpleRun cmd args env manifest sliceID = do
       m <- processType (Proxy :: Proxy Manifest) Yaml (toS manifest)
       return $ Run
-        { manifest = m
-        , spec = CmdSpec
-          { cmd = Command cmd
-          , args = Arg <$> args
-          , env = Env $ M.fromList env
-          }
-        , runSliceID = parseSliceID sliceID
-        , detachCmd = True
+        { manifest = m,
+          spec = CmdSpec
+            { cmd = Command cmd,
+              args = Arg <$> args,
+              env = Env $ M.fromList env
+            },
+          runSliceID = parseSliceID sliceID,
+          detachCmd = True
         }
 
 pubAddressExport :: Ex
@@ -147,8 +146,8 @@ doReqRep common req eitherF = do
     UC.nextUpstreamClientID <&> \case
       Nothing -> panic "couldn't generate next client ID"
       Just c ->
-        restrict (toS $ UC.toText c)
-          :: Restricted (N1, N254) BS.ByteString
+        restrict (toS $ UC.toText c) ::
+          Restricted (N1, N254) BS.ByteString
   ZMQ.runZMQ $ do
     s <- ZMQ.socket ZMQ.Dealer
     connectWithOptions uuid common s

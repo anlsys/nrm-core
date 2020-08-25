@@ -38,10 +38,10 @@ import Control.Monad.Trans.Maybe
 import Data.Aeson
 import Data.Data
 import Data.Generics.Labels ()
+import qualified Data.Map as M
 import Data.MessagePack
 import Data.Metrology.Show ()
 import Data.Text as T (length, lines)
-import qualified Data.Map as M
 import NRM.Types.Topology.PackageID
 import NRM.Types.Units
 import Protolude

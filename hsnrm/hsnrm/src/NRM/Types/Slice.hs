@@ -19,10 +19,10 @@ import Control.Lens
 import Data.Aeson
 import Data.Generics.Labels ()
 import Data.JSON.Schema
+import Data.Map as M
 import Data.MessagePack
 import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
-import Data.Map as M
 import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Types.Cmd (Cmd (..), CmdCore (..))

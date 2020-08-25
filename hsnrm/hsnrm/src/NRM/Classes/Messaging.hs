@@ -1,6 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
@@ -9,10 +8,10 @@
 -- License     : BSD3
 -- Maintainer  : fre@freux.fr
 module NRM.Classes.Messaging
-  ( NRMMessage (..)
-  , GenericJSON (..)
-  , AnyJSON (..)
-  , JSONSchema (..)
+  ( NRMMessage (..),
+    GenericJSON (..),
+    AnyJSON (..),
+    JSONSchema (..),
   )
 where
 
@@ -52,45 +51,45 @@ class (Generic a, SG.GJSONSchema (Rep a), AG.GfromJson (Rep a), AG.GtoJson (Rep 
 newtype GenericJSON (a :: Type) = GenericJSON {unGenericJSON :: a}
 
 instance
-  ( GIsEnum (Rep a)
-  , ConNames (Rep a)
-  , GJSONSchema (Rep a)
-  , Generic a
-  )
-  => S.JSONSchema (GenericJSON a) where
-
+  ( GIsEnum (Rep a),
+    ConNames (Rep a),
+    GJSONSchema (Rep a),
+    Generic a
+  ) =>
+  S.JSONSchema (GenericJSON a)
+  where
   schema _ = gSchema (Proxy :: Proxy a)
 
 instance
-  ( GIsEnum (Rep a)
-  , ConNames (Rep a)
-  , GfromJson (Rep a)
-  , Generic a
-  )
-  => A.FromJSON (GenericJSON a) where
-
+  ( GIsEnum (Rep a),
+    ConNames (Rep a),
+    GfromJson (Rep a),
+    Generic a
+  ) =>
+  A.FromJSON (GenericJSON a)
+  where
   parseJSON x = GenericJSON <$> AG.gparseJson x
 
 instance
-  ( GIsEnum (Rep a)
-  , ConNames (Rep a)
-  , GtoJson (Rep a)
-  , Generic a
-  )
-  => A.ToJSON (GenericJSON a) where
-
+  ( GIsEnum (Rep a),
+    ConNames (Rep a),
+    GtoJson (Rep a),
+    Generic a
+  ) =>
+  A.ToJSON (GenericJSON a)
+  where
   toJSON = AG.gtoJson . unGenericJSON
 
 instance
-  ( A.FromJSON a
-  , A.ToJSON a
-  , GIsEnum (Rep a)
-  , ConNames (Rep a)
-  , GfromJson (Rep a)
-  , Generic a
-  )
-  => IsString (GenericJSON a) where
-
+  ( A.FromJSON a,
+    A.ToJSON a,
+    GIsEnum (Rep a),
+    ConNames (Rep a),
+    GfromJson (Rep a),
+    Generic a
+  ) =>
+  IsString (GenericJSON a)
+  where
   fromString s =
     A.decode (toS s) & \case
       Nothing -> ""
@@ -99,5 +98,4 @@ instance
 newtype AnyJSON (a :: Type) = AnyJSON {unAnyJSON :: a}
 
 instance S.JSONSchema (AnyJSON a) where
-
   schema _ = S.Any

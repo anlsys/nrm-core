@@ -14,8 +14,8 @@ import Control.Lens hiding ((...))
 import Data.Aeson hiding ((.=))
 import Data.Generics.Labels ()
 import Data.JSON.Schema
-import Data.MessagePack
 import Data.Map as M
+import Data.MessagePack
 import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Types.DownstreamThreadID

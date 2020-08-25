@@ -14,9 +14,9 @@ where
 import Control.Lens hiding ((...))
 import Data.Aeson hiding ((.=))
 import Data.Generics.Labels ()
+import Data.Map as M
 import Data.Maybe (fromJust)
 import Data.MessagePack
-import Data.Map as M
 import LensMap.Core
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal

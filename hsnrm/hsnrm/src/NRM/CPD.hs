@@ -7,10 +7,10 @@
 -- This module is responsible for runtime generation of the CPD
 -- description to be optimized by the control loop.
 module NRM.CPD
-  ( toCPD
-  , throughputConstrained
-  , addAll
-  , maybeMinus
+  ( toCPD,
+    throughputConstrained,
+    addAll,
+    maybeMinus,
   )
 where
 
@@ -39,25 +39,25 @@ toCPD cfg st = Problem {..}
 
 -- | This problem generator produces a global energy minimization problem under a
 -- throughput constraint.
-throughputConstrained
-  :: -- | Control configuration
-  ControlCfg
-  -> -- | State
-  NRMState
-  -> ( [(ZeroOne Double, OExpr)]
-     , [(Double, OExpr)]
-     )
+throughputConstrained ::
+  -- | Control configuration
+  ControlCfg ->
+  -- | State
+  NRMState ->
+  ( [(ZeroOne Double, OExpr)],
+    [(Double, OExpr)]
+  )
 throughputConstrained cfg st =
   ( idsToMinimize & \case
       Nothing -> []
       Just ids ->
         let powerTerm =
-              coerce (foldMap (OExprSum . sID) ids) \+
-                scalar (fromWatts $ staticPower cfg)
-         in [(Bandit.Types.one, maybe powerTerm (powerTerm \/) normalizedSumSlowdown)]
-  , normalizedSumSlowdown & \case
-    Nothing -> []
-    Just expr -> [(speedThreshold cfg, expr)]
+              coerce (foldMap (OExprSum . sID) ids)
+                \+ scalar (fromWatts $ staticPower cfg)
+         in [(Bandit.Types.one, maybe powerTerm (powerTerm \/) normalizedSumSlowdown)],
+    normalizedSumSlowdown & \case
+      Nothing -> []
+      Just expr -> [(speedThreshold cfg, expr)]
   )
   where
     normalizedSumSlowdown :: Maybe OExpr
@@ -73,8 +73,8 @@ throughputConstrained cfg st =
     allSensorMeta :: Map SensorID S.SensorMeta
     allSensorMeta =
       M.fromList
-        ( (bimap toS (\(ScopedLens l) -> st ^. l . _meta) <$> lA) <>
-          (bimap toS (\(ScopedLens l) -> st ^. l . _meta) <$> lP)
+        ( (bimap toS (\(ScopedLens l) -> st ^. l . _meta) <$> lA)
+            <> (bimap toS (\(ScopedLens l) -> st ^. l . _meta) <$> lP)
         )
     lA = M.toList (lenses st :: LensMap NRMState ActiveSensorKey ActiveSensor)
     lP = M.toList (lenses st :: LensMap NRMState PassiveSensorKey PassiveSensor)

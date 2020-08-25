@@ -26,10 +26,10 @@ import Control.Lens
 import Data.Aeson as A
 import Data.Generics.Labels ()
 import Data.JSON.Schema
+import Data.Map as M
 import Data.MessagePack
 import Data.String (IsString (..))
 import Dhall hiding (field)
-import Data.Map as M
 import LensMap.Core
 import NRM.Classes.Messaging
 import NRM.Orphans.ExitCode ()

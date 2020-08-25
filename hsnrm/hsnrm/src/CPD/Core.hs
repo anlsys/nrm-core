@@ -60,9 +60,9 @@ import Data.Coerce
 import Data.Data
 import Data.Generics.Labels ()
 import Data.JSON.Schema
+import Data.Map as M
 import Data.MessagePack
 import Dhall
-import Data.Map as M
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import NRM.Orphans.ZeroOne ()
