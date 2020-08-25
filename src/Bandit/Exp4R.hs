@@ -93,6 +93,7 @@ instance
   (Eq a, ExpertRepresentation er s a) =>
   ContextualBandit (Exp4R s a er) (Exp4RCfg s a er) s a (Maybe Feedback) er
   where
+
   initCtx Exp4RCfg {..} =
     Exp4R
       { t = 1,

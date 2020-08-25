@@ -63,6 +63,7 @@ instance
   (Eq a) =>
   Bandit (Exp3 a) (Arms a) a (ZeroOne Double)
   where
+
   init g (Arms as) =
     ( Exp3
         { t = 1,

@@ -58,18 +58,18 @@ toW (loss, action) = Weight loss 1 action
 -- | The variable rate \(\epsilon\)-Greedy MAB algorithm.
 -- Offers no interesting guarantees, works well in practice.
 instance (InvLFPhi p, Eq a) => Bandit (UCB a p) (UCBHyper a p) a (ZeroOne Double) where
+
   init g (UCBHyper invLFPhiUCB alphaUCB (Arms (a :| as))) =
     ( UCB
         { t = 1,
           alpha = alphaUCB,
           invLFPhi = invLFPhiUCB,
           lastAction = a,
-          params =
-            InitialScreening $
-              Screening
-                { screened = [],
-                  screenQueue = as
-                }
+          params = InitialScreening $
+            Screening
+              { screened = [],
+                screenQueue = as
+              }
         },
       a,
       g

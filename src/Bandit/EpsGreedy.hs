@@ -87,17 +87,17 @@ data EpsGreedyHyper a r
 -- | The variable rate \(\epsilon\)-Greedy MAB algorithm.
 -- Offers no interesting guarantees, works well in practice.
 instance (Rate r, Eq a) => Bandit (EpsGreedy a r) (EpsGreedyHyper a r) a Double where
+
   init g (EpsGreedyHyper r (Arms (a :| as))) =
     ( EpsGreedy
         { t = 1,
           rate = r,
           lastAction = a,
-          params =
-            InitialScreening $
-              Screening
-                { screened = [],
-                  screenQueue = as
-                }
+          params = InitialScreening $
+            Screening
+              { screened = [],
+                screenQueue = as
+              }
         },
       a,
       g

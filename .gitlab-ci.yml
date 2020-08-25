@@ -27,13 +27,6 @@ make:shellcheck:
     - nix
   script: nix-shell -p gnumake --run "make shellcheck"
 
-make:dhall-format:
-  stage: source
-  tags:
-    - kvm
-    - nix
-  script: nix-shell -p gnumake --run "make dhall-format"
-
 nix:package:
   stage: build
   tags:

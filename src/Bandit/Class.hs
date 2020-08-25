@@ -51,6 +51,7 @@ import System.Random
 -- * @l@ is a superset of admissible losses \(\mathbb{L}\) (statically
 -- known).
 class Bandit b hyper a l | b -> l, b -> hyper, b -> a where
+
   -- | Init hyper returns the initial state of the algorithm and the
   -- first action.
   init :: (RandomGen g) => g -> hyper -> (b, a, g)
@@ -63,6 +64,7 @@ class Bandit b hyper a l | b -> l, b -> hyper, b -> a where
 --
 -- * @er@ is an expert representation (see 'ExpertRepresentation')
 class (ExpertRepresentation er s a) => ContextualBandit b hyper s a l er | b -> l, b -> hyper, b -> s, b -> a, b -> er where
+
   -- | Init hyper returns the initial state of the algorithm
   initCtx :: hyper -> b
 

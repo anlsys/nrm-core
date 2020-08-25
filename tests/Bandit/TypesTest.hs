@@ -1,4 +1,5 @@
-{-#language TypeSynonymInstances#-}
+{-# LANGUAGE TypeSynonymInstances #-}
+
 module Bandit.TypesTest where
 
 import Bandit.Types
