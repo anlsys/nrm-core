@@ -1,5 +1,6 @@
 {-# LANGUAGE DerivingVia #-}
 {-# LANGUAGE QuasiQuotes #-}
+
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 -- |
@@ -9,46 +10,39 @@
 -- Maintainer  : fre@freux.fr
 module CPD.Core
   ( -- * Metadata
-    Problem (..),
-    emptyProblem,
-    Interval,
-    Admissible (..),
-    Discrete (..),
-
-    -- * Sensors
+    Problem (..)
+  , emptyProblem
+  , Interval
+  , Admissible (..)
+  , Discrete (..)
+  , -- * Sensors
 
     -- ** Definitions
-    SensorID (..),
-    Sensor (..),
-
-    -- * Actuators
+    SensorID (..)
+  , Sensor (..)
+  , -- * Actuators
 
     -- ** Classes
-    ActuatorID (..),
-    CPDLActuator (..),
-
-    -- ** Definitions
-    Actuator (..),
-
-    -- * Objective/Constraint Epxression language
-    OExpr (..),
-
-    -- * Objective contstructor helpers
-    sID,
-    sRef,
-    scalar,
-    (\+),
-    (\-),
-    (\/),
-    (\*),
-    thresholded,
-
-    -- * Pretty printers
-    prettyCPD,
-    prettyExpr,
-
-    -- * Useful Newtypes
-    OExprSum (..),
+    ActuatorID (..)
+  , CPDLActuator (..)
+  , -- ** Definitions
+    Actuator (..)
+  , -- * Objective/Constraint Epxression language
+    OExpr (..)
+  , -- * Objective contstructor helpers
+    sID
+  , sRef
+  , scalar
+  , (\+)
+  , (\-)
+  , (\/)
+  , (\*)
+  , thresholded
+  , -- * Pretty printers
+    prettyCPD
+  , prettyExpr
+  , -- * Useful Newtypes
+    OExprSum (..)
   )
 where
 
@@ -56,13 +50,13 @@ import Bandit.Types
 import Control.Arrow
 import Control.Lens
 import qualified Data.Aeson as A
-import Data.Coerce
 import Data.Data
 import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.Map as M
 import Data.MessagePack
 import Dhall
+import Generic.Data
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import NRM.Orphans.ZeroOne ()
@@ -75,20 +69,20 @@ import Refined
 -- METADATA
 newtype Discrete = DiscreteDouble {getDiscrete :: Double}
   deriving
-    ( Show,
-      Eq,
-      Ord,
-      Generic,
-      MessagePack
+    ( Show
+    , Eq
+    , Ord
+    , Generic
+    , MessagePack
     )
   deriving (JSONSchema, A.ToJSON, A.FromJSON, FromDhall, ToDhall) via Double
 
 data Problem
   = Problem
-      { sensors :: Map SensorID Sensor,
-        actuators :: Map ActuatorID Actuator,
-        objectives :: [(ZeroOne Double, OExpr)],
-        constraints :: [(Double, OExpr)]
+      { sensors :: Map SensorID Sensor
+      , actuators :: Map ActuatorID Actuator
+      , objectives :: [(ZeroOne Double, OExpr)]
+      , constraints :: [(Double, OExpr)]
       }
   deriving (Show, Generic, MessagePack, FromDhall, ToDhall)
   deriving (JSONSchema, A.ToJSON, A.FromJSON) via GenericJSON Problem
@@ -122,42 +116,43 @@ newtype Admissible = Admissible {admissibleValues :: [Discrete]}
 -- | An unique identifier for a sensor.
 newtype SensorID = SensorID {sensorID :: Text}
   deriving
-    ( Ord,
-      Eq,
-      Show,
-      Generic,
-      MessagePack,
-      A.ToJSONKey,
-      A.FromJSONKey,
-      FromDhall,
-      ToDhall,
-      Data
+    ( Ord
+    , Eq
+    , Show
+    , Generic
+    , MessagePack
+    , A.ToJSONKey
+    , A.FromJSONKey
+    , FromDhall
+    , ToDhall
+    , Data
     )
   deriving (IsString, JSONSchema, A.ToJSON, A.FromJSON) via Text
 
 ------- ACTUATORS
 class CPDLActuator a where
+
   toActuator :: a -> Actuator
 
 -- | An unique identifier for an actuator.
 newtype ActuatorID = ActuatorID {actuatorID :: Text}
   deriving
-    ( Ord,
-      Eq,
-      Show,
-      Read,
-      Generic,
-      MessagePack,
-      A.ToJSONKey,
-      A.FromJSONKey
+    ( Ord
+    , Eq
+    , Show
+    , Read
+    , Generic
+    , MessagePack
+    , A.ToJSONKey
+    , A.FromJSONKey
     )
   deriving
-    ( JSONSchema,
-      A.ToJSON,
-      A.FromJSON,
-      IsString,
-      FromDhall,
-      ToDhall
+    ( JSONSchema
+    , A.ToJSON
+    , A.FromJSON
+    , IsString
+    , FromDhall
+    , ToDhall
     )
     via Text
 
@@ -254,10 +249,13 @@ prettyCPD p =
     mcUnlines = mconcat . intersperse "\n"
 
 --- Useful newtypes
-newtype OExprSum = OExprSum {getOExprSum :: OExpr}
+newtype OExprSum a = OExprSum {getOExprSum :: a}
+  deriving Generic1
 
-instance Semigroup OExprSum where
-  (coerce -> x) <> (coerce -> y) = coerce (x \+ y)
+instance Semigroup (OExprSum OExpr) where
 
-instance Monoid OExprSum where
-  mempty = coerce $ OScalar 0
+  (<>) = gliftA2 (\+)
+
+instance Monoid (OExprSum OExpr) where
+
+  mempty = gpure $ OScalar 0
