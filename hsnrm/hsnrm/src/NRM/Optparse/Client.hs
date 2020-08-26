@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeApplications #-}
+
 -- |
 -- Module      : NRM.Optparse.Client
 -- Copyright   : (c) UChicago Argonne, 2019
@@ -290,11 +292,12 @@ load RunCfg {..} =
       makeAbsolute (toS filename) >>= readFile >>= (process sourceType . toS)
     (FinallyStdin sourceType) ->
       B.getContents >>= process sourceType
-    NoExt -> inputfile & \case
-      Nothing -> return def
-      Just s -> process stdinType (toS s)
+    NoExt ->
+      inputfile & \case
+        Nothing -> return def
+        Just s -> process stdinType (toS s)
   where
-    process = processType (Proxy :: Proxy Manifest)
+    process = processType @Manifest
 
 run :: RunCfg -> CommonOpts -> IO Opts
 run rc common = do
