@@ -17,7 +17,7 @@ module NRM.Node.Sysfs
   )
 where
 
-import Data.Map as LM
+import Data.Map as M
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Units
 import Protolude
@@ -28,7 +28,7 @@ getDefaultRAPLDirs = getRAPLDirs
 
 -- | Performs RAPL measurements.
 measureRAPLDirs :: RAPLDirs -> IO [RAPLMeasurement]
-measureRAPLDirs (RAPLDirs rapldirpaths) = catMaybes <$> for (LM.elems rapldirpaths) (measureRAPLDir . path)
+measureRAPLDirs (RAPLDirs rapldirpaths) = catMaybes <$> for (M.elems rapldirpaths) (measureRAPLDir . path)
 
 -- | Setting powercap values.
 setRAPLPowercapAllWindows :: RAPLConfig -> Power -> IO ()
