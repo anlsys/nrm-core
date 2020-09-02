@@ -71,17 +71,19 @@ mkSimpleRunExport = exportIO mkSimpleRun
   where
     mkSimpleRun :: Text -> [Text] -> [(Text, Text)] -> Text -> Text -> IO Run
     mkSimpleRun cmd args env manifest sliceID = do
-      m <- processType (Proxy :: Proxy Manifest) Yaml (toS manifest)
-      return $ Run
-        { manifest = m,
-          spec = CmdSpec
-            { cmd = Command cmd,
-              args = Arg <$> args,
-              env = Env $ M.fromList env
-            },
-          runSliceID = parseSliceID sliceID,
-          detachCmd = True
-        }
+      m <- processType @Manifest Yaml (toS manifest)
+      return $
+        Run
+          { manifest = m,
+            spec =
+              CmdSpec
+                { cmd = Command cmd,
+                  args = Arg <$> args,
+                  env = Env $ M.fromList env
+                },
+            runSliceID = parseSliceID sliceID,
+            detachCmd = True
+          }
 
 pubAddressExport :: Ex
 pubAddressExport = exportIO ((return :: a -> IO a) . pubAddress)
