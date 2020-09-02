@@ -75,12 +75,11 @@ mkSimpleRunExport = exportIO mkSimpleRun
       return $
         Run
           { manifest = m,
-            spec =
-              CmdSpec
-                { cmd = Command cmd,
-                  args = Arg <$> args,
-                  env = Env $ M.fromList env
-                },
+            spec = CmdSpec
+              { cmd = Command cmd,
+                args = Arg <$> args,
+                env = Env $ M.fromList env
+              },
             runSliceID = parseSliceID sliceID,
             detachCmd = True
           }
