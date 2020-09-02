@@ -56,13 +56,13 @@ import Bandit.Types
 import Control.Arrow
 import Control.Lens
 import qualified Data.Aeson as A
-import Data.Coerce
 import Data.Data
 import Data.Generics.Labels ()
 import Data.JSON.Schema
 import Data.Map as M
 import Data.MessagePack
 import Dhall
+import Generic.Data
 import NRM.Classes.Messaging
 import NRM.Orphans.UUID ()
 import NRM.Orphans.ZeroOne ()
@@ -254,10 +254,11 @@ prettyCPD p =
     mcUnlines = mconcat . intersperse "\n"
 
 --- Useful newtypes
-newtype OExprSum = OExprSum {getOExprSum :: OExpr}
+newtype OExprSum a = OExprSum {getOExprSum :: a}
+  deriving (Generic1)
 
-instance Semigroup OExprSum where
-  (coerce -> x) <> (coerce -> y) = coerce (x \+ y)
+instance Semigroup (OExprSum OExpr) where
+  (<>) = gliftA2 (\+)
 
-instance Monoid OExprSum where
-  mempty = coerce $ OScalar 0
+instance Monoid (OExprSum OExpr) where
+  mempty = gpure $ OScalar 0

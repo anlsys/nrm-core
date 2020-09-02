@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 
 -- |
 -- Module      : NRM.Optparse.Daemon
@@ -94,33 +95,33 @@ load MainCfg {..} =
         Nothing -> return def
         Just s -> process configType (toS s)
   where
-    process = processType (Proxy :: Proxy Cfg)
+    process = processType @Cfg
 
 processType ::
+  forall x.
   (Default x, Dhall.Interpret x, Dhall.Inject x) =>
-  Proxy x ->
   SourceType ->
   ByteString ->
   IO x
-processType proxy@(Proxy :: Proxy x) sourceType bs =
-  mergeAndExtract (def :: x) =<< toExpr proxy sourceType bs
+processType sourceType bs =
+  mergeAndExtract (def :: x) =<< toExpr @x sourceType bs
 
 toExpr ::
+  forall x.
   (Dhall.Inject x, Dhall.Interpret x, Default x) =>
-  Proxy x ->
   SourceType ->
   ByteString ->
   IO (Dhall.Expr Dhall.Src Void)
-toExpr _proxy Dhall s = Dhall.inputExpr $ toS s
-toExpr proxy Yaml s = sourceValueToExpr proxy $ Y.decodeEither' s
-toExpr proxy Json s = sourceValueToExpr proxy $ J.eitherDecode' (toS s)
+toExpr Dhall s = Dhall.inputExpr $ toS s
+toExpr Yaml s = sourceValueToExpr @x $ Y.decodeEither' s
+toExpr Json s = sourceValueToExpr @x $ J.eitherDecode' (toS s)
 
 sourceValueToExpr ::
+  forall x e.
   (Default x, Dhall.Interpret x, Dhall.Inject x) =>
-  Proxy x ->
   Either e Y.Value ->
   IO (Dhall.Expr Dhall.Src Void)
-sourceValueToExpr (Proxy :: Proxy x) = \case
+sourceValueToExpr = \case
   Left _ -> die "yaml parsing exception"
   Right v ->
     DJ.dhallToJSON exprValue & \case
@@ -135,8 +136,8 @@ sourceValueToExpr (Proxy :: Proxy x) = \case
             Right expr -> return expr
   where
     exprType :: Dhall.Expr Dhall.Src Void
-    exprType = typeToExpr (Proxy :: Proxy x)
-    exprValue = valueToExpr (def :: x)
+    exprType = typeToExpr (Proxy @x)
+    exprValue = valueToExpr (def @x)
 
 mergeAndExtract ::
   (Dhall.Interpret x, Dhall.Inject x) =>

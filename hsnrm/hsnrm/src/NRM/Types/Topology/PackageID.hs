@@ -24,4 +24,4 @@ newtype PackageID = PackageID Int
   deriving (FromJSON, ToJSON, JSONSchema) via GenericJSON PackageID
 
 instance ToHwlocType PackageID where
-  getType _ = "Package"
+  getType = "Package"

@@ -24,4 +24,4 @@ newtype CoreID = CoreID Int
   deriving (JSONSchema, FromJSON, ToJSON) via GenericJSON CoreID
 
 instance ToHwlocType CoreID where
-  getType _ = "Core"
+  getType = "Core"

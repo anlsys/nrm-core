@@ -1,4 +1,5 @@
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeApplications #-}
 
 -- |
 -- Module      : NRM.Node.Hwloc
@@ -37,28 +38,29 @@ newtype HwlocData = HwlocData XmlTrees
 
 -- | Lists all Core IDs from Hwloc topology information.
 selectCoreIDs :: HwlocData -> [CoreID]
-selectCoreIDs = extractOSindexes (Proxy :: Proxy CoreID)
+selectCoreIDs = extractOSindexes
 
 -- | Lists all Processing Unit IDs from Hwloc topology information.
 selectPUIDs :: HwlocData -> [PUID]
-selectPUIDs = extractOSindexes (Proxy :: Proxy PUID)
+selectPUIDs = extractOSindexes
 
 -- | Lists all Package IDs from Hwloc topology information.
 selectPackageIDs :: HwlocData -> [PackageID]
-selectPackageIDs = extractOSindexes (Proxy :: Proxy PackageID)
+selectPackageIDs = extractOSindexes
 
 -- | Runs the @hwloc@ binary in @$PATH@ to retrieve XML topology information.
 getHwlocData :: IO HwlocData
 getHwlocData =
   HwlocData <$> (readProcessStdout_ "hwloc-ls -p --whole-system --of xml" <&> xreadDoc . toS)
 
-extractOSindexes :: forall a. (ToHwlocType a, Coercible a Int) => Proxy a -> HwlocData -> [a]
-extractOSindexes typeAttr xml =
+extractOSindexes :: forall a. (ToHwlocType a, Coercible a Int) => HwlocData -> [a]
+extractOSindexes xml =
   catMaybes $
-    fmap (coerce :: Int -> a) . readMaybe
+    fmap (coerce :: Int -> a)
+      . readMaybe
       <$> concat
         ( runLA (deep (getAttrValue "os_index"))
-            <$> selectSubtreesOfType (getType typeAttr) xml
+            <$> selectSubtreesOfType (getType @a) xml
         )
 
 selectSubtreesOfType :: Text -> HwlocData -> XmlTrees

@@ -9,6 +9,7 @@
   - name: [NoOverloadedLists]
   - name: [QuasiQuotes]
   - name: [ScopedTypeVariables]
+  - name: [TypeApplications]
 
 - flags:
   - default: false

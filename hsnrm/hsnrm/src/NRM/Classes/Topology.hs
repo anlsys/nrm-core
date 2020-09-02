@@ -14,4 +14,4 @@ import Protolude
 
 -- | translating to hwloc XML "type" field.
 class ToHwlocType a where
-  getType :: Proxy a -> Text
+  getType :: Text

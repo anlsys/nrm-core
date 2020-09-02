@@ -23,4 +23,4 @@ newtype PUID = PUID Int
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON PUID
 
 instance ToHwlocType PUID where
-  getType _ = "PU"
+  getType = "PU"
