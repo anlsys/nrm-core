@@ -154,28 +154,27 @@ data Armstat
   deriving (Show, Generic, MessagePack, Interpret, Inject)
 
 enqueueAll :: (Ord k) => Map k Double -> Map k MemBuffer -> Map k MemBuffer
-enqueueAll m mapBuffers =
+enqueueAll =
   merge
     (mapMissing $ \_ a -> MemBuffer.singleton a)
     preserveMissing
     (zipWithMatched $ \_ a abuffer -> enqueue a abuffer)
-    m
-    mapBuffers
 
 initialController ::
   Time ->
   Time ->
   [SensorID] ->
   Controller
-initialController time minTime sensorIDs = Controller
-  { integrator = initIntegrator time minTime sensorIDs,
-    lastA = Nothing,
-    bandit = Nothing,
-    armstats = M.empty,
-    bufferedMeasurements = Nothing,
-    referenceMeasurements = M.fromList $ sensorIDs <&> (,MemBuffer.empty),
-    referenceMeasurementCounter = unsafeRefine 0
-  }
+initialController time minTime sensorIDs =
+  Controller
+    { integrator = initIntegrator time minTime sensorIDs,
+      lastA = Nothing,
+      bandit = Nothing,
+      armstats = M.empty,
+      bufferedMeasurements = Nothing,
+      referenceMeasurements = M.fromList $ sensorIDs <&> (,MemBuffer.empty),
+      referenceMeasurementCounter = unsafeRefine 0
+    }
 
 newtype UniformCfg = UniformCfg {seed :: Maybe Seed}
   deriving (Show, Eq, Generic) via (Maybe Seed)

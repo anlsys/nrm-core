@@ -43,7 +43,12 @@
             < Full
             | Only :
                 { only :
-                    List (List { actuatorID : Text, actuatorValue : Double })
+                    { neHead :
+                        List { actuatorID : Text, actuatorValue : Double }
+                    , neTail :
+                        List
+                          (List { actuatorID : Text, actuatorValue : Double })
+                    }
                 }
             >
         }
