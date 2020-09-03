@@ -106,7 +106,7 @@ in mkShell {
   in ''
     export PYNRMSO=${pwd}/hsnrm/bin/pynrm.so
     export NRMSO=${pwd}/hsnrm/bin/nrm.so
-    export PATH=:${pwd}/pynrm/bin:${pwd}/hsnrm/bin/nrm:$PATH
+    export PATH=:${pwd}/pynrm/bin:${pwd}/hsnrm/bin:$PATH
     export PYTHONPATH=${pwd}/pynrm/:$PYTHONPATH
     export NIX_GHC="${haskellPackages.hsnrm.env.NIX_GHC}"
     export NIX_GHCPKG="${haskellPackages.hsnrm.env.NIX_GHCPKG}"
