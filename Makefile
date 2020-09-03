@@ -49,8 +49,9 @@ notebooks:
 app-tests:
 	@nix-shell --pure -p \
 	'with (import <nixpkgs> {}); stream.override { nrmSupport = true; }' \
+	'with (import <nixpkgs> {}); amg.override { nrmSupport = true; }' \
 	'with (import <nixpkgs> {}); pythonPackages.python.withPackages (ps: with ps; [ msgpack warlock pyzmq pyyaml ]) ' \
-	procps nrm haskellPackages.shelltestrunner --run '
+	mpich2 procps nrm haskellPackages.shelltestrunner --run '
 	shelltest -a --execdir -o50 tests/apps
 	'
 	

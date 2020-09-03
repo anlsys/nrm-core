@@ -1,10 +1,10 @@
-{ stdenv, src, autoreconfHook, fetchgit, zeromq, gfortran, pkgconfig, openmpi
+{ stdenv, src, autoreconfHook, fetchgit, zeromq, gfortran, pkgconfig, mpich2
 , llvmPackages, czmq }:
 stdenv.mkDerivation {
   inherit src;
   name = "libnrm";
-  nativeBuildInputs = [ autoreconfHook pkgconfig openmpi ];
-  buildInputs = [ zeromq czmq gfortran openmpi llvmPackages.openmp ];
+  nativeBuildInputs = [ autoreconfHook pkgconfig mpich2 ];
+  buildInputs = [ zeromq czmq gfortran mpich2 llvmPackages.openmp ];
 
   configureFlags =
     [ "--enable-pmpi" "CC=mpicc" "FC=mpifort" "CFLAGS=-fopenmp" ];
