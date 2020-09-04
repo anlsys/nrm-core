@@ -141,6 +141,8 @@ pkgs // rec {
     nrmSupport = false;
   };
 
+  nas = callPackage ./pkgs/nas { };
+
   amg = callPackage ./pkgs/amg {
     inherit libnrm;
     nrmSupport = false;
