@@ -9,11 +9,14 @@
   - name: [NoOverloadedLists]
   - name: [QuasiQuotes]
   - name: [ScopedTypeVariables]
+  - name: [NoRecordWildCards]
   - name: [TypeApplications]
 
 - flags:
   - default: false
-  - {name: ["-fno-warn-partial-fields","-fno-warn-orphans"]}
+  - {name: ["-fno-warn-partial-fields","-fno-warn-orphans","-fno-warn-monomorphism-restriction",
+            "-fno-warn-missing-export-lists"]}
+  - {name: ["-F -pgmF tasty-discover -optF --tree-display"]}
   - {name: ["-fno-warn-missing-signatures"], within: ["Export", "PyExport"]}
 
 - modules:

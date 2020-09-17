@@ -1,3 +1,4 @@
 packages: hsnrm/
           hsnrm-bin/
           hsnrm-extra/
+tests: true

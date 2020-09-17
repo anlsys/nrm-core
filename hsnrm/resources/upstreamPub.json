@@ -934,6 +934,18 @@
                                                     },
                                                     {
                                                         "required": [
+                                                            "discarded"
+                                                        ],
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "discarded": {
+                                                                "type": "object",
+                                                                "properties": {}
+                                                            }
+                                                        }
+                                                    },
+                                                    {
+                                                        "required": [
                                                             "running"
                                                         ],
                                                         "type": "object",
@@ -943,14 +955,14 @@
                                                                     "firstTime",
                                                                     "lastTime",
                                                                     "lastValue",
-                                                                    "average"
+                                                                    "area"
                                                                 ],
                                                                 "type": "object",
                                                                 "properties": {
-                                                                    "firstTime": {
+                                                                    "area": {
                                                                         "type": "number"
                                                                     },
-                                                                    "average": {
+                                                                    "firstTime": {
                                                                         "type": "number"
                                                                     },
                                                                     "lastTime": {
@@ -971,19 +983,23 @@
                                                         "properties": {
                                                             "done": {
                                                                 "required": [
-                                                                    "totalAverageDone",
-                                                                    "lastTimeDone",
-                                                                    "lastValueDone"
+                                                                    "firstTime",
+                                                                    "lastTime",
+                                                                    "lastValue",
+                                                                    "area"
                                                                 ],
                                                                 "type": "object",
                                                                 "properties": {
-                                                                    "lastTimeDone": {
+                                                                    "area": {
                                                                         "type": "number"
                                                                     },
-                                                                    "totalAverageDone": {
+                                                                    "firstTime": {
                                                                         "type": "number"
                                                                     },
-                                                                    "lastValueDone": {
+                                                                    "lastTime": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "lastValue": {
                                                                         "type": "number"
                                                                     }
                                                                 }
