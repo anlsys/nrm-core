@@ -239,10 +239,14 @@ showExpr = prettyExpr . simplify
 
 prettyCPD :: Problem -> Text
 prettyCPD p =
-  [text| Actuators:     $a
-         Sensors:       $s
-         Objectives:    $objs
-         Constraints:   $csts |]
+  [text| Actuators:
+           $a
+         Sensors:
+           $s
+         Objectives:
+           $objs
+         Constraints:
+           $csts |]
   where
     s = mcUnlines $ p ^@.. #sensors . itraversed <&> ((sensorID *** show) >>> desc)
     a = mcUnlines $ p ^@.. #actuators . itraversed <&> ((actuatorID *** show) >>> desc)
