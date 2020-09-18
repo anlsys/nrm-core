@@ -32,6 +32,10 @@ newtype Dummy a = Dummy a
 emptyRuntime :: Dummy (Map SliceID a)
 emptyRuntime = Dummy $ fromList []
 
+killIfRegistered :: (MonadIO m) => ApplicationProcess -> m ()
+killIfRegistered (Registered _ pid) = liftIO $ signalProcess Signals.sigKILL pid
+killIfRegistered (Unregistered _) = pass
+
 instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
 
   doEnableRuntime _ = return $ Right emptyRuntime
@@ -39,10 +43,6 @@ instance (MonadIO m) => SliceRuntime m DummyRuntime () () where
   doDisableRuntime (Dummy m) = do
     for_ m $ mapM_ killIfRegistered
     return $ Right emptyRuntime
-    where
-      killIfRegistered :: (MonadIO m) => ApplicationProcess -> m ()
-      killIfRegistered (Registered _ pid) = liftIO $ signalProcess Signals.sigKILL pid
-      killIfRegistered (Unregistered _) = pass
 
   doCreateSlice runtime () =
     liftIO $

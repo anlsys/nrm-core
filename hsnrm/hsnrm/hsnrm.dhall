@@ -24,6 +24,27 @@ in    λ(ghcPath : Text)
                   }
                 ⫽ common.copts ([] : List Text)
               )
+        , test-suites =
+          [ { name = "discover"
+            , test-suite =
+                  λ(config : types.Config)
+                →   prelude.defaults.TestSuite
+                  ⫽ { type =
+                        types.TestType.exitcode-stdio { main-is = "Driver.hs" }
+                    , other-modules = [ "Test.CPD.Integrated" ]
+                    , build-depends =
+                      [ common.deps.base
+                      , common.deps.protolude
+                      , common.nobound "hsnrm"
+                      , common.deps.tasty-hunit
+                      , common.deps.tasty
+                      , common.deps.tasty-discover
+                      ]
+                    , hs-source-dirs = [ "tests" ]
+                    }
+                  ⫽ common.copts [ "-threaded" ]
+            }
+          ]
         , extra-source-files = [] : List Text
         , license = types.License.BSD3
         , license-files = [] : List Text

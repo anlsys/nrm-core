@@ -135,7 +135,7 @@ banditCartesianProductControl ccfg cpd (Event t ms) mRefActions = do
         delta
         ( measuredM
             & ix sensorID
-            %~ measureValue (tlast + delta) (sensorTime, sensorValue)
+            %~ measureValue delta (sensorTime, sensorValue)
         )
   tryControlStep ccfg cpd t mRefActions
 

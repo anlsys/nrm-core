@@ -12,8 +12,10 @@ let defexts =
       , types.Extension.RankNTypes True
       , types.Extension.TypeSynonymInstances True
       , types.Extension.StandaloneDeriving True
+      , types.Extension.NamedFieldPuns True
       , types.Extension.FlexibleInstances True
       , types.Extension.TupleSections True
+      , types.Extension.ScopedTypeVariables True
       , types.Extension.MultiParamTypeClasses True
       , types.Extension.ImplicitPrelude False
       , types.Extension.OverloadedStrings True
@@ -95,6 +97,9 @@ let deps =
       , iso-deriving = nobound "iso-deriving"
       , pretty-simple = nobound "pretty-simple"
       , protolude = nobound "protolude"
+      , tasty = nobound "tasty"
+      , tasty-hunit = nobound "tasty-hunit"
+      , tasty-discover = nobound "tasty-discover"
       , Chart = nobound "Chart"
       , Chart-cairo = nobound "Chart-cairo"
       , gtk3 = nobound "gtk3"
