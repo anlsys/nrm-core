@@ -14,6 +14,7 @@ module CPD.Integrated
     M (..),
     trapezoidArea,
     initIntegrator,
+    throughTuple,
     measureValue,
     squeeze,
     averageArea,
@@ -50,7 +51,7 @@ data MeasurementState a
 
 instance Applicative MeasurementState where
 
-  pure = Running
+  pure = Done
 
   Never <*> _ = Never
   Discarded <*> _ = Discarded
@@ -108,7 +109,10 @@ measureM newTime newValue M {firstTime, lastTime, lastValue, area} =
     }
 
 averageArea :: M -> Double
-averageArea M {firstTime, lastTime, area} = area / fromuS (lastTime - firstTime)
+averageArea M {firstTime, lastTime, lastValue, area} =
+  if deltaT <= 0 then lastValue else area / deltaT
+  where
+    deltaT = fromuS (lastTime - firstTime)
 
 squeeze ::
   Time ->
@@ -116,20 +120,11 @@ squeeze ::
   Maybe (Map SensorID Double, Map SensorID (MeasurementState M))
 squeeze _t mstM =
   case traverse throughTuple (M.toList mstM) of
-    Done (M.fromList -> m) -> Just (m <&> averageArea, m <&> newround)
+    Done (M.fromList -> m) -> Just (m <&> averageArea, m <&> const Never)
     _ -> Nothing
-  where
-    throughTuple :: Functor f => (a, f b) -> f (a, b)
-    throughTuple (id, m) = (id,) <$> m
-    newround :: M -> MeasurementState M
-    newround M {lastTime, lastValue} =
-      Running $
-        M
-          { firstTime = lastTime,
-            lastTime = lastTime,
-            lastValue = lastValue,
-            area = lastValue
-          }
+
+throughTuple :: Functor f => (a, f b) -> f (a, b)
+throughTuple (id, m) = (id,) <$> m
 
 initIntegrator ::
   Time ->
