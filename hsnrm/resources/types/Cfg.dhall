@@ -33,6 +33,7 @@
 , controlCfg :
     < ControlCfg :
         { minimumControlInterval : { fromuS : Double }
+        , minimumWaitInterval : { fromuS : Double }
         , staticPower : { fromuW : Double }
         , learnCfg :
             < Lagrange : { lagrange : Double }
@@ -54,9 +55,9 @@
                 }
             >
         }
-    | FixedCommand : { fixedPower : { fromuW : Double } }
+    | NoControl
     >
-, activeSensorFrequency : { fromHz : Double }
+, passiveSensorFrequency : { fromHz : Double }
 , extraStaticPassiveSensors :
     List
       { mapKey : Text

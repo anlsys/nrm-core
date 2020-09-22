@@ -74,6 +74,9 @@ newtype Energy = Energy {fromuJ :: Double}
   deriving (Eq, Ord, Generic, Data, Inject, Interpret, MessagePack)
   deriving (Show, Num, JSONSchema, ToJSON, FromJSON) via Double
 
+mil :: Double
+mil = 1000000
+
 -- | Microjoule value constructor.
 progress :: Int -> Progress
 progress = Progress
@@ -84,11 +87,11 @@ uJ = Energy
 
 -- | Joule value accessor.
 fromJoules :: Energy -> Double
-fromJoules = (/ 1000000) . fromuJ
+fromJoules = (/ mil) . fromuJ
 
 -- | Watt value constructor.
 joules :: Double -> Energy
-joules = Energy . (* 1000000.0)
+joules = Energy . (* mil)
 
 -- | Microwatt value constructor.
 uW :: Double -> Power
@@ -96,11 +99,11 @@ uW = Power
 
 -- | Watt value accessor.
 fromWatts :: Power -> Double
-fromWatts = (/ 1000000) . fromuW
+fromWatts = (/ mil) . fromuW
 
 -- | Watt value constructor.
 watts :: Double -> Power
-watts = Power . (* 1000000.0)
+watts = Power . (* mil)
 
 -- | Microsecond value constructor.
 uS :: Double -> Time
@@ -108,10 +111,10 @@ uS = Time
 
 -- | Second value constructor.
 seconds :: Double -> Time
-seconds = Time . (* 1000000)
+seconds = Time . (* mil)
 
 fromSeconds :: Time -> Double
-fromSeconds (Time t) = t / 1000000
+fromSeconds (Time t) = t / mil
 
 -- | Hertz value constructor.
 hz :: Double -> Frequency

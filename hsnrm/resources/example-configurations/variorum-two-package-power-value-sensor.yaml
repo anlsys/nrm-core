@@ -39,16 +39,12 @@ verbose: Error
 logfile: /tmp/nrm.log
 singularity: false
 argo_nodeos_config: argo_nodeos_config
-controlCfg:
-  fixedPower:
-    fromuW: 2.5e8
+controlCfg: NoControl
 upstreamCfg:
   upstreamBindAddress: '*'
   rpcPort: 3456
   pubPort: 2345
 libnrmPath: null
-activeSensorFrequency:
-  fromHz: 1
 perf: perf
 argo_perf_wrapper: nrm-perfwrapper
 downstreamCfg:
@@ -68,3 +64,5 @@ slice_runtime: Dummy
 hwmonCfg:
   hwmonPath: /sys/class/hwmon
   hwmonEnabled: true
+passiveSensorFrequency:
+  fromHz: 1

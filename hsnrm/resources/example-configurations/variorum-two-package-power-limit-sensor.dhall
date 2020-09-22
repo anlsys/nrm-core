@@ -31,6 +31,7 @@
 , controlCfg =
     < ControlCfg :
         { minimumControlInterval : { fromuS : Double }
+        , minimumWaitInterval : { fromuS : Double }
         , staticPower : { fromuW : Double }
         , learnCfg :
             < Lagrange : { lagrange : Double }
@@ -52,10 +53,9 @@
                 }
             >
         }
-    | FixedCommand : { fixedPower : { fromuW : Double } }
-    >.FixedCommand
-      { fixedPower = { fromuW = 2.5e8 } }
-, activeSensorFrequency = { fromHz = 1.0 }
+    | NoControl
+    >.NoControl
+, passiveSensorFrequency = { fromHz = 1.0 }
 , extraStaticPassiveSensors =
   [ { mapKey =
         "Sensor that gets package power limits for package 0 through variorum"

@@ -1080,7 +1080,7 @@
                                 "upstreamCfg",
                                 "hwmonCfg",
                                 "controlCfg",
-                                "activeSensorFrequency",
+                                "passiveSensorFrequency",
                                 "extraStaticPassiveSensors",
                                 "extraStaticActuators"
                             ],
@@ -1247,6 +1247,7 @@
                                                 "controlCfg": {
                                                     "required": [
                                                         "minimumControlInterval",
+                                                        "minimumWaitInterval",
                                                         "staticPower",
                                                         "learnCfg",
                                                         "speedThreshold",
@@ -1256,6 +1257,9 @@
                                                     "type": "object",
                                                     "properties": {
                                                         "referenceMeasurementRoundInterval": {
+                                                            "type": "number"
+                                                        },
+                                                        "minimumWaitInterval": {
                                                             "type": "number"
                                                         },
                                                         "hint": {
@@ -1421,20 +1425,13 @@
                                         },
                                         {
                                             "required": [
-                                                "fixedCommand"
+                                                "noControl"
                                             ],
                                             "type": "object",
                                             "properties": {
-                                                "fixedCommand": {
-                                                    "required": [
-                                                        "fixedPower"
-                                                    ],
+                                                "noControl": {
                                                     "type": "object",
-                                                    "properties": {
-                                                        "fixedPower": {
-                                                            "type": "number"
-                                                        }
-                                                    }
+                                                    "properties": {}
                                                 }
                                             }
                                         }
@@ -1461,9 +1458,6 @@
                                 },
                                 "libnrmPath": {
                                     "type": "string"
-                                },
-                                "activeSensorFrequency": {
-                                    "type": "number"
                                 },
                                 "perf": {
                                     "type": "string"
@@ -1575,6 +1569,9 @@
                                             "type": "boolean"
                                         }
                                     }
+                                },
+                                "passiveSensorFrequency": {
+                                    "type": "number"
                                 }
                             }
                         }

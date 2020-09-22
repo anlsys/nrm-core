@@ -31,6 +31,7 @@
 , controlCfg =
     < ControlCfg :
         { minimumControlInterval : { fromuS : Double }
+        , minimumWaitInterval : { fromuS : Double }
         , staticPower : { fromuW : Double }
         , learnCfg :
             < Lagrange : { lagrange : Double }
@@ -52,9 +53,10 @@
                 }
             >
         }
-    | FixedCommand : { fixedPower : { fromuW : Double } }
+    | NoControl
     >.ControlCfg
-      { minimumControlInterval = { fromuS = 100000.0 }
+      { minimumControlInterval = { fromuS = 1000000.0 }
+      , minimumWaitInterval = { fromuS = 1000000.0 }
       , staticPower = { fromuW = 2.0e8 }
       , learnCfg =
           < Lagrange : { lagrange : Double }
@@ -75,7 +77,7 @@
               }
           >.Full
       }
-, activeSensorFrequency = { fromHz = 1.0 }
+, passiveSensorFrequency = { fromHz = 1.0 }
 , extraStaticPassiveSensors =
     [] : List
            { mapKey : Text

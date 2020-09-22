@@ -7,6 +7,9 @@
     "argo_nodeos_config": "argo_nodeos_config",
     "controlCfg": {
         "referenceMeasurementRoundInterval": 6,
+        "minimumWaitInterval": {
+            "fromuS": 1000000
+        },
         "hint": "Full",
         "learnCfg": {
             "contextual": {
@@ -18,7 +21,7 @@
         },
         "speedThreshold": 1.1,
         "minimumControlInterval": {
-            "fromuS": 100000
+            "fromuS": 1000000
         }
     },
     "upstreamCfg": {
@@ -27,9 +30,6 @@
         "pubPort": 2345
     },
     "libnrmPath": null,
-    "activeSensorFrequency": {
-        "fromHz": 1
-    },
     "perf": "perf",
     "argo_perf_wrapper": "nrm-perfwrapper",
     "downstreamCfg": {
@@ -57,5 +57,8 @@
     "hwmonCfg": {
         "hwmonPath": "/sys/class/hwmon",
         "hwmonEnabled": true
+    },
+    "passiveSensorFrequency": {
+        "fromHz": 1
     }
 }

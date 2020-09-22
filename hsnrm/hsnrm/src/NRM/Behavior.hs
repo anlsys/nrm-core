@@ -212,7 +212,7 @@ nrm _callTime (ChildDied pid exitcode) = do
               put $
                 st
                   & #slices
-                  . at sliceID
+                    . at sliceID
                   ?~ (slice & #cmds . at cmdID ?~ cmd {processState = newPstate})
 nrm callTime (DownstreamEvent clientid msg) =
   nrmDownstreamEvent callTime clientid msg
@@ -253,7 +253,7 @@ doControl input = do
   zoom (#controller . _Just) $ do
     logInfo ("Control input:" <> show input)
     mccfg & \case
-      FixedCommand _ -> pass
+      NoControl -> pass
       ccfg@ControlCfg {} ->
         let cpd = NRMCPD.toCPD ccfg st
             mRefActions =
@@ -262,10 +262,11 @@ doControl input = do
                   ( M.toList (lenses st) ::
                       [(ActuatorKey, ScopedLens NRMState A.Actuator)]
                   )
-                    <&> \(k, ScopedLens l) -> CPD.Action
-                      { actuatorID = toS k,
-                        actuatorValue = CPD.DiscreteDouble $ st ^. l . #referenceAction
-                      }
+                    <&> \(k, ScopedLens l) ->
+                      CPD.Action
+                        { actuatorID = toS k,
+                          actuatorValue = CPD.DiscreteDouble $ st ^. l . #referenceAction
+                        }
                 else Nothing
          in banditCartesianProductControl ccfg cpd input mRefActions >>= \case
               DoNothing -> pass
@@ -388,8 +389,9 @@ nrmDownstreamEvent callTime clientid = \case
             Just c -> do
               put $
                 Just
-                  ( c & #downstreamCmds
-                      . at downstreamCmdID
+                  ( c
+                      & #downstreamCmds
+                        . at downstreamCmdID
                       .~ Nothing
                   )
               log "downstream cmd un-registered."
@@ -407,8 +409,9 @@ nrmDownstreamEvent callTime clientid = \case
         Just c -> do
           put $
             Just
-              ( c & #downstreamThreads
-                  . at downstreamThreadID
+              ( c
+                  & #downstreamThreads
+                    . at downstreamThreadID
                   .~ Nothing
               )
           log "downstream thread un-registered."

@@ -9,12 +9,12 @@
 -- Maintainer  : fre@freux.fr
 module CPD.Integrated
   ( Integrator (..),
+    IntegratorMeta (..),
     IntegratorAction (..),
     MeasurementState (..),
     M (..),
     trapezoidArea,
     initIntegrator,
-    throughTuple,
     measureValue,
     squeeze,
     averageArea,
@@ -25,6 +25,7 @@ import CPD.Core
 import Control.Lens
 import qualified Data.Aeson as A
 import Data.Data
+import Data.Functor (($>))
 import Data.Generics.Labels ()
 import Data.JSON.Schema
 import qualified Data.Map as M
@@ -36,9 +37,16 @@ import Protolude
 
 data Integrator
   = Integrator
-      { tLast :: Time,
-        minimumControlInterval :: Time,
-        measured :: Map SensorID (MeasurementState M)
+      { meta :: IntegratorMeta,
+        measured :: Map SensorID (MeasurementState M) -- measurement states
+      }
+  deriving (Generic)
+
+data IntegratorMeta
+  = IntegratorMeta
+      { tLast :: Time, -- time the last control loop was finished (init time)
+        minimumWaitInterval :: Time, -- wait period between measurement periods
+        minimumControlInterval :: Time -- delta min for measurement period
       }
   deriving (Generic)
 
@@ -84,13 +92,20 @@ trapezoidArea (t1, v1) (t2, v2) =
   where
     deltaT = fromuS (t2 - t1)
 
-measureValue :: Time -> (Time, Double) -> MeasurementState M -> MeasurementState M
-measureValue delta (newTime, newValue) = \case
-  Never -> Discarded
+measureValue ::
+  IntegratorMeta ->
+  (Time, Double) ->
+  MeasurementState M ->
+  MeasurementState M
+measureValue meta (newTime, newValue) = \case
+  Never ->
+    if minimumWaitInterval meta + tLast meta <= newTime
+      then Discarded
+      else Never
   Discarded -> Running initial
   Done m -> Done $ measure m
   Running m ->
-    ( if newTime >= delta + firstTime m
+    ( if newTime >= minimumControlInterval meta + firstTime m
         then Done
         else Running
     )
@@ -114,26 +129,23 @@ averageArea M {firstTime, lastTime, lastValue, area} =
   where
     deltaT = fromuS (lastTime - firstTime)
 
+-- | Tries to 'squeeze' the sensors for values. A squeeze is only successfull
+-- if all sensors are in the Done state.
 squeeze ::
   Time ->
   Map SensorID (MeasurementState M) ->
   Maybe (Map SensorID Double, Map SensorID (MeasurementState M))
 squeeze _t mstM =
-  case traverse throughTuple (M.toList mstM) of
-    Done (M.fromList -> m) -> Just (m <&> averageArea, m <&> const Never)
+  case traverse sequenceA (M.toList mstM) of
+    Done (M.fromList -> m) -> Just (m <&> averageArea, m $> Never)
     _ -> Nothing
 
-throughTuple :: Functor f => (a, f b) -> f (a, b)
-throughTuple (id, m) = (id,) <$> m
-
 initIntegrator ::
-  Time ->
-  Time ->
+  IntegratorMeta ->
   [SensorID] ->
   Integrator
-initIntegrator t tmin sensorIDs =
+initIntegrator meta sensorIDs =
   Integrator
-    { tLast = t,
-      minimumControlInterval = tmin,
+    { meta = meta,
       measured = M.fromList (sensorIDs <&> (,Never))
     }

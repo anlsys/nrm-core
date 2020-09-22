@@ -52,8 +52,8 @@ banditCartesianProductControl ::
   ControlM Decision
 banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
   pub (UPub.PubCPD t cpd)
-  minTime <- use $ #integrator . #minimumControlInterval
-  #integrator .= initIntegrator t minTime (M.keys $ sensors cpd)
+  meta <- use $ #integrator . #meta
+  #integrator .= initIntegrator meta (M.keys $ sensors cpd)
   case (CPD.Core.objectives cpd, M.toList (actuators cpd)) of
     ([], _) -> reset
     (_, l) ->
@@ -129,13 +129,12 @@ banditCartesianProductControl ccfg cpd (NoEvent t) mRefActions =
 banditCartesianProductControl ccfg cpd (Event t ms) mRefActions = do
   forM_ ms $ \m@(Measurement sensorID sensorValue sensorTime) -> do
     log $ "Processing measurement " <> show m
-    #integrator %= \(Integrator tlast delta measuredM) ->
-      Integrator
-        tlast
-        delta
-        ( measuredM
-            & ix sensorID
-            %~ measureValue delta (sensorTime, sensorValue)
+    #integrator
+      %= execState
+        ( do
+            meta <- use #meta
+            #measured . ix sensorID
+              %= measureValue meta (sensorTime, sensorValue)
         )
   tryControlStep ccfg cpd t mRefActions
 
@@ -196,6 +195,7 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
     Just (measurements, newMeasured) -> do
       -- squeeze was successfull: setting the new integrator state
       logInfo "control: integrator squeeze success"
+      #integrator . #meta . #tLast .= t
       #integrator . #measured .= newMeasured
       -- acquiring fields
       counter <- use #referenceMeasurementCounter

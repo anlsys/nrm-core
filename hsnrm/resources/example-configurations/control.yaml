@@ -15,6 +15,8 @@ singularity: false
 argo_nodeos_config: argo_nodeos_config
 controlCfg:
   referenceMeasurementRoundInterval: 6
+  minimumWaitInterval:
+    fromuS: 1000000.0
   hint: Full
   learnCfg:
     contextual:
@@ -23,14 +25,12 @@ controlCfg:
     fromuW: 2.0e8
   speedThreshold: 1.1
   minimumControlInterval:
-    fromuS: 100000.0
+    fromuS: 1000000.0
 upstreamCfg:
   upstreamBindAddress: '*'
   rpcPort: 3456
   pubPort: 2345
 libnrmPath: null
-activeSensorFrequency:
-  fromHz: 1
 perf: perf
 argo_perf_wrapper: nrm-perfwrapper
 downstreamCfg:
@@ -50,3 +50,5 @@ slice_runtime: Dummy
 hwmonCfg:
   hwmonPath: /sys/class/hwmon
   hwmonEnabled: true
+passiveSensorFrequency:
+  fromHz: 1

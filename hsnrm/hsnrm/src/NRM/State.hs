@@ -19,6 +19,7 @@ module NRM.State
   )
 where
 
+import CPD.Integrated as I
 import Control.Lens
 import Data.Map as M
 import Data.Map.Merge.Lazy
@@ -66,7 +67,7 @@ initialState c time = do
                 updater _pkgid package (packageRaplConfig, packageRaplDir) =
                   package
                     { rapl = Just Rapl
-                        { frequency = hz 3,
+                        { frequency = passiveSensorFrequency c,
                           raplCfg = packageRaplConfig,
                           maxEnergyCounterValue = packageRaplDir ^. #maxEnergy,
                           max = watts 150,
@@ -86,8 +87,16 @@ initialState c time = do
             return newPkgs
   return NRMState
     { controller = controlCfg c & \case
-        FixedCommand _ -> Nothing
-        ccfg -> Just $ initialController time (minimumControlInterval ccfg) [],
+        NoControl -> Nothing
+        ccfg ->
+          Just $
+            initialController
+              IntegratorMeta
+                { tLast = time,
+                  I.minimumWaitInterval = Cfg.minimumWaitInterval ccfg,
+                  I.minimumControlInterval = Cfg.minimumControlInterval ccfg
+                }
+              [],
       slices = M.fromList [],
       pus = M.fromList $ (,PU) <$> selectPUIDs hwl,
       cores = M.fromList $ (,Core) <$> selectCoreIDs hwl,
@@ -108,7 +117,7 @@ initialState c time = do
           <&> NRMState.ExtraActuator,
       extraStaticPassiveSensors =
         Cfg.extraStaticPassiveSensors c
-          <&> concretizeExtraPassiveSensor (activeSensorFrequency c),
+          <&> concretizeExtraPassiveSensor (passiveSensorFrequency c),
       ..
     }
 
@@ -116,12 +125,13 @@ concretizeExtraPassiveSensor ::
   Frequency ->
   Cfg.ExtraPassiveSensor ->
   NRMState.ExtraPassiveSensor
-concretizeExtraPassiveSensor f x = NRMState.ExtraPassiveSensor
-  { NRMState.extraPassiveSensor = x,
-    NRMState.history = [],
-    NRMState.lastRead = Nothing,
-    NRMState.frequency = f
-  }
+concretizeExtraPassiveSensor f x =
+  NRMState.ExtraPassiveSensor
+    { NRMState.extraPassiveSensor = x,
+      NRMState.history = [],
+      NRMState.lastRead = Nothing,
+      NRMState.frequency = f
+    }
 
 -- | Removes a slice from the state
 removeSlice :: SliceID -> NRMState -> (Maybe Slice, NRMState)

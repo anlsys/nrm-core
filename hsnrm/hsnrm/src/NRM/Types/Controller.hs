@@ -161,13 +161,12 @@ enqueueAll =
     (zipWithMatched $ \_ a abuffer -> enqueue a abuffer)
 
 initialController ::
-  Time ->
-  Time ->
+  IntegratorMeta ->
   [SensorID] ->
   Controller
-initialController time minTime sensorIDs =
+initialController integratorMeta sensorIDs =
   Controller
-    { integrator = initIntegrator time minTime sensorIDs,
+    { integrator = initIntegrator integratorMeta sensorIDs,
       lastA = Nothing,
       bandit = Nothing,
       armstats = M.empty,
@@ -325,6 +324,12 @@ deriving via (GenericJSON Integrator) instance A.ToJSON Integrator
 
 deriving via (GenericJSON Integrator) instance A.FromJSON Integrator
 
+deriving via (GenericJSON IntegratorMeta) instance JSONSchema IntegratorMeta
+
+deriving via (GenericJSON IntegratorMeta) instance A.ToJSON IntegratorMeta
+
+deriving via (GenericJSON IntegratorMeta) instance A.FromJSON IntegratorMeta
+
 deriving instance Show Integrator
 
 deriving instance MessagePack Integrator
@@ -332,6 +337,14 @@ deriving instance MessagePack Integrator
 deriving instance FromDhall Integrator
 
 deriving instance ToDhall Integrator
+
+deriving instance Show IntegratorMeta
+
+deriving instance MessagePack IntegratorMeta
+
+deriving instance FromDhall IntegratorMeta
+
+deriving instance ToDhall IntegratorMeta
 
 deriving via (GenericJSON (Arms [Action])) instance JSONSchema (Arms [Action])
 

@@ -67,7 +67,7 @@ data Cfg
         raplCfg :: Maybe RaplCfg,
         hwmonCfg :: HwmonCfg,
         controlCfg :: ControlCfg,
-        activeSensorFrequency :: Frequency,
+        passiveSensorFrequency :: Frequency,
         extraStaticPassiveSensors :: Map Text ExtraPassiveSensor,
         extraStaticActuators :: Map Text ExtraActuator
       }
@@ -98,15 +98,14 @@ data ExtraPassiveSensor
 data ControlCfg
   = ControlCfg
       { minimumControlInterval :: Time,
+        minimumWaitInterval :: Time,
         staticPower :: Power,
         learnCfg :: LearnConfig,
         speedThreshold :: Double,
         referenceMeasurementRoundInterval :: Refined (GreaterThan 5) Int,
         hint :: Hint
       }
-  | FixedCommand
-      { fixedPower :: Power
-      }
+  | NoControl
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON ControlCfg
 
@@ -145,7 +144,8 @@ data UpstreamCfg
 
 instance Default ControlCfg where
   def = ControlCfg
-    { minimumControlInterval = 0.1 & seconds,
+    { minimumControlInterval = 1 & seconds,
+      minimumWaitInterval = 1 & seconds,
       staticPower = watts 200,
       speedThreshold = 1.1,
       learnCfg = Contextual (CtxCfg 4000),
@@ -187,8 +187,8 @@ instance Default Cfg where
       raplCfg = Just def,
       hwmonCfg = def,
       verbose = NRM.Types.Configuration.Error,
-      controlCfg = FixedCommand (watts 250),
-      activeSensorFrequency = 1 & hz,
+      controlCfg = NoControl,
+      passiveSensorFrequency = 1 & hz,
       extraStaticPassiveSensors = [],
       extraStaticActuators = []
     }
