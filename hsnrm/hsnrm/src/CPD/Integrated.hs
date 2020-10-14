@@ -120,7 +120,7 @@ squeeze ::
   Maybe (Map SensorID Double, Map SensorID (MeasurementState M))
 squeeze _t mstM =
   case traverse throughTuple (M.toList mstM) of
-    Done (M.fromList -> m) -> Just (m <&> averageArea, m <&> const Never)
+    Done (M.fromList -> m) -> Just (m <&> averageArea, m $> Never)
     _ -> Nothing
 
 throughTuple :: Functor f => (a, f b) -> f (a, b)

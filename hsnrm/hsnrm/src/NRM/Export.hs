@@ -48,6 +48,7 @@ import qualified NRM.Types.Configuration as C
     UpstreamCfg (..),
     activeSensorFrequency,
     logfile,
+    toFrequency,
     verbose,
   )
 import qualified NRM.Types.Messaging.UpstreamRep as URep
@@ -65,7 +66,7 @@ parseDaemon = O.parseArgDaemonCli
 
 -- | Parses Daemon CLI arguments
 activeSensorFrequency :: C.Cfg -> Double
-activeSensorFrequency = fromHz . C.activeSensorFrequency
+activeSensorFrequency = fromHz . C.toFrequency . C.activeSensorFrequency
 
 -- | Queries configuration for 'verbose' verbosity
 verbosity :: C.Cfg -> Int

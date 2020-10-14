@@ -20,7 +20,6 @@ module NRM.Types.Controller
     LearnConfig,
     LagrangeMultiplier (..),
     CtxCfg (..),
-    Hint (..),
     Seed (..),
     Uniform (..),
     UniformCfg (..),
@@ -110,10 +109,6 @@ newtype Seed = Seed Int
 newtype CtxCfg = CtxCfg {horizon :: Int}
   deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON CtxCfg
-
-data Hint = Full | Only {only :: NonEmpty [Action]}
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Hint
 
 newtype Actions = Actions [V.Action]
   deriving

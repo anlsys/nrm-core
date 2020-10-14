@@ -30,7 +30,7 @@ import NRM.Slices.Nodeos as CN
 import NRM.Slices.Singularity as CS
 import NRM.Types.Cmd
 import NRM.Types.CmdID
-import NRM.Types.Configuration as Cfg
+import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.Controller
 import NRM.Types.MemBuffer as MemBuffer
 import NRM.Types.Process
@@ -43,7 +43,7 @@ import NRM.Types.UpstreamClient
 import Protolude
 
 -- | Populate the initial NRMState.
-initialState :: Cfg -> Time -> IO NRMState
+initialState :: Cfg.Cfg -> Time -> IO NRMState
 initialState c time = do
   hwl <- getHwlocData
   let packages' = M.fromList $ selectPackageIDs hwl <&> (,Package {rapl = Nothing})
@@ -70,8 +70,11 @@ initialState c time = do
                           raplCfg = packageRaplConfig,
                           maxEnergyCounterValue = packageRaplDir ^. #maxEnergy,
                           max = watts 150,
-                          defaultPower = referencePower raplc,
-                          discreteChoices = raplActions raplc,
+                          defaultPower =
+                            uW $
+                              Cfg.microwatts (Cfg.referencePower raplc),
+                          discreteChoices =
+                            uW . Cfg.microwatts <$> Cfg.raplActions raplc,
                           lastRead = Nothing,
                           history = MemBuffer.empty
                         }
@@ -85,30 +88,40 @@ initialState c time = do
                     fullMap
             return newPkgs
   return NRMState
-    { controller = controlCfg c & \case
-        FixedCommand _ -> Nothing
-        ccfg -> Just $ initialController time (minimumControlInterval ccfg) [],
+    { controller = Cfg.controlCfg c & \case
+        Cfg.ControlOff -> Nothing
+        ccfg ->
+          Just $
+            initialController
+              time
+              (Cfg.toTime $ Cfg.minimumControlInterval ccfg)
+              [],
       slices = M.fromList [],
       pus = M.fromList $ (,PU) <$> selectPUIDs hwl,
       cores = M.fromList $ (,Core) <$> selectCoreIDs hwl,
       dummyRuntime =
-        if dummy c
+        if Cfg.dummy c
           then Just CD.emptyRuntime
           else Nothing,
       singularityRuntime =
-        if singularity c
+        if Cfg.singularity c
           then Just SingularityRuntime
           else Nothing,
       nodeosRuntime =
-        if nodeos c
+        if Cfg.nodeos c
           then Just NodeosRuntime
           else Nothing,
       extraStaticActuators =
         Cfg.extraStaticActuators c
-          <&> NRMState.ExtraActuator,
+          & fmap (\(Cfg.StaticActuatorKV k v) -> (k, v))
+          & M.fromList,
       extraStaticPassiveSensors =
-        Cfg.extraStaticPassiveSensors c
-          <&> concretizeExtraPassiveSensor (activeSensorFrequency c),
+        ( Cfg.extraStaticPassiveSensors c
+            & fmap (\(Cfg.PassiveSensorKV k v) -> (k, v))
+            & M.fromList
+        )
+          <&> concretizeExtraPassiveSensor
+            (Cfg.toFrequency $ Cfg.activeSensorFrequency c),
       ..
     }
 

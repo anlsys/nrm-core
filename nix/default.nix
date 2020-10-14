@@ -37,8 +37,6 @@ let
 
       })
       (_: pkgs: {
-        dhall-to-cabal =
-          pkgs.haskell.lib.unmarkBroken pkgs.haskellPackages.dhall-to-cabal;
         haskellPackages = pkgs.haskell.packages.ghc865.override {
           overrides = self: super:
             with pkgs.haskell.lib; rec {
@@ -63,8 +61,16 @@ let
               Plot-ho-matic = unmarkBroken super.Plot-ho-matic;
               zeromq4-haskell = unmarkBroken super.zeromq4-haskell;
               time-parsers = unmarkBroken super.time-parsers;
-              dhall = super.dhall_1_29_0;
-              dhall-json = doJailbreak super.dhall-json_1_6_1;
+              dhall = overrideSrc super.dhall_1_29_0 {
+                version = "1.30.0";
+                src = builtins.fetchTarball
+                  "https://hackage.haskell.org/package/dhall-1.30.0/dhall-1.30.0.tar.gz";
+              };
+              dhall-json = (overrideSrc (super.dhall-json_1_6_1) {
+                version = "1.6.2";
+                src = builtins.fetchTarball
+                  "https://hackage.haskell.org/package/dhall-json-1.6.2/dhall-json-1.6.2.tar.gz";
+              }).override { inherit dhall; };
               ihaskell = unmarkBroken super.ihaskell;
               vinyl = doJailbreak (unmarkBroken super.vinyl);
               ihaskell-blaze = unmarkBroken super.ihaskell-blaze;
@@ -101,13 +107,6 @@ let
 
 in with pkgs;
 pkgs // rec {
-
-  dhall-to-cabal-resources = pkgs.stdenv.mkDerivation {
-    name = "dhall-to-cabal-resources";
-    src = pkgs.haskellPackages.dhall-to-cabal.src;
-    installPhase = "cp -r dhall $out";
-  };
-
   ormolu = let
     source = pkgs.fetchFromGitHub {
       owner = "tweag";

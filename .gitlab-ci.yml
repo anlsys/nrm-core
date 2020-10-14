@@ -23,26 +23,8 @@ hsnrm/hlint:
   tags:
     - nix
     - kvm
-hsnrm/hsnrm-bin/hsnrm-bin_cabal:
-  script: "nix-shell -p gnumake --run 'make hsnrm/hsnrm/hsnrm.cabal'"
-  stage: source
-  tags:
-    - nix
-    - kvm
-hsnrm/hsnrm/hsnrm_cabal:
-  script: "nix-shell -p gnumake --run 'make hsnrm/hsnrm-bin/hsnrm-bin.cabal'"
-  stage: source
-  tags:
-    - nix
-    - kvm
 hsnrm/ormolu:
   script: "nix-shell -p gnumake --run 'make hsnrm/ormolu'"
-  stage: source
-  tags:
-    - nix
-    - kvm
-hsnrm/resources:
-  script: "nix-shell -p gnumake --run 'make hsnrm/resources'"
   stage: source
   tags:
     - nix
@@ -120,6 +102,12 @@ readthedocs:
     - "echo \"token=$RTD_TOKEN\""
     - "nix run nixpkgs.curl -c curl --fail -X POST -d \"token=$RTD_TOKEN\" readthedocs.org/api/v2/webhook/hnrm/104604/"
   stage: deploy
+  tags:
+    - nix
+    - kvm
+resources:
+  script: "nix-shell -p gnumake --run 'make resources'"
+  stage: source
   tags:
     - nix
     - kvm

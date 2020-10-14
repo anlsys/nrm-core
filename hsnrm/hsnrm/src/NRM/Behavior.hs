@@ -128,11 +128,15 @@ nrm _callTime (Req clientid msg) =
             <&> fromMaybe (panic "couldn't generate next cmd id")
         let (runCmd, runArgs) =
               (spec ^. #cmd, spec ^. #args) & case Manifest.perfwrapper (Manifest.app manifest) of
-                Manifest.PerfwrapperDisabled -> identity
-                p@Manifest.Perfwrapper {} ->
+                Nothing -> identity
+                (Just p@Manifest.Perfwrapper {}) ->
                   wrapCmd
-                    (Cfg.argo_perf_wrapper c)
-                    ["-f", Arg . show . U.fromHz $ Manifest.perfFreq p]
+                    (Command $ Cfg.argo_perf_wrapper c)
+                    [ "-f",
+                      Arg . show . U.fromHz
+                        . Manifest.toFrequency
+                        $ Manifest.perfFreq p
+                    ]
         modify $
           registerAwaiting
             cmdID
@@ -253,7 +257,7 @@ doControl input = do
   zoom (#controller . _Just) $ do
     logInfo ("Control input:" <> show input)
     mccfg & \case
-      FixedCommand _ -> pass
+      ControlOff -> pass
       ccfg@ControlCfg {} ->
         let cpd = NRMCPD.toCPD ccfg st
             mRefActions =
@@ -490,7 +494,9 @@ injectDownstreamVars c manifest cmdID =
   execState $ do
     _Unwrapped . at cmdIDEnvVar ?= CmdID.toText cmdID
     for_
-      (manifest ^.. #app . #instrumentation . _Just . #ratelimit)
+      ( Manifest.toFrequency
+          <$> (manifest ^.. #app . #instrumentation . _Just . #ratelimit)
+      )
       modifyRatelimitLens
     for_ (c ^. #libnrmPath) modifyLDPreloadLens
   where

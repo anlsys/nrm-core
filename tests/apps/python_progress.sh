@@ -3,15 +3,16 @@
 # in case there is a daemon hanging somewhere.
 pkill -f nrmd
 
-nrmd '{ verbose = < Error | Info | Debug >.Debug,
-        raplCfg =  None { raplPath : Text ,
-                          raplActions : List { fromuW : Double } ,
-                          referencePower : { fromuW : Double } }}
+nrmd ' let t = ../../hsnrm/hsnrm/dhall/types/nrmd.dhall
+       let d = ../../hsnrm/hsnrm/dhall/defaults/nrmd.dhall
+       in d // { verbose = t.Verbosity.Debug,
+                 raplCfg =  None t.RaplCfg
+               }
      ' >/dev/null 2>/dev/null &
 
 # using python nrm library to report progress.
 PYTHONPATH=$PYTHONPATH:../../pynrm/ nrm run \
---manifest=../../hsnrm/resources/example-manifests/libnrm.dhall -d \
+--manifest=../../examples/manifests/libnrm.dhall -d \
 ../../pynrm/extra/test-progress.py >/dev/null 2>/dev/null
 
 # listening to the message on the upstream API

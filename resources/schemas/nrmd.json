@@ -1,0 +1,528 @@
+{
+    "required": [
+        "activeSensorFrequency",
+        "argo_nodeos_config",
+        "argo_perf_wrapper",
+        "controlCfg",
+        "downstreamCfg",
+        "dummy",
+        "extraStaticActuators",
+        "extraStaticPassiveSensors",
+        "hwloc",
+        "hwmonCfg",
+        "logfile",
+        "nodeos",
+        "perf",
+        "pmpi_lib",
+        "singularity",
+        "upstreamCfg",
+        "verbose"
+    ],
+    "type": "object",
+    "properties": {
+        "extraStaticPassiveSensors": {
+            "uniqueItems": false,
+            "items": {
+                "required": [
+                    "passiveSensorKey",
+                    "passiveSensorValue"
+                ],
+                "type": "object",
+                "properties": {
+                    "passiveSensorKey": {
+                        "type": "string"
+                    },
+                    "passiveSensorValue": {
+                        "required": [
+                            "range",
+                            "sensorArguments",
+                            "sensorBehavior",
+                            "sensorBinary",
+                            "tags"
+                        ],
+                        "type": "object",
+                        "properties": {
+                            "range": {
+                                "required": [
+                                    "lower",
+                                    "upper"
+                                ],
+                                "type": "object",
+                                "properties": {
+                                    "upper": {
+                                        "type": "number"
+                                    },
+                                    "lower": {
+                                        "type": "number"
+                                    }
+                                }
+                            },
+                            "sensorBehavior": {
+                                "oneOf": [
+                                    {
+                                        "required": [
+                                            "cumulative"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "cumulative": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "required": [
+                                            "cumulativeWithCapacity"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "cumulativeWithCapacity": {
+                                                "type": "number"
+                                            }
+                                        }
+                                    },
+                                    {
+                                        "required": [
+                                            "intervalBased"
+                                        ],
+                                        "type": "object",
+                                        "properties": {
+                                            "intervalBased": {
+                                                "type": "object",
+                                                "properties": {}
+                                            }
+                                        }
+                                    }
+                                ]
+                            },
+                            "sensorArguments": {
+                                "uniqueItems": false,
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            "tags": {
+                                "uniqueItems": false,
+                                "items": {
+                                    "oneOf": [
+                                        {
+                                            "const": "\"downstreamCmdSignal\""
+                                        },
+                                        {
+                                            "const": "\"downstreamThreadSignal\""
+                                        },
+                                        {
+                                            "const": "\"maximize\""
+                                        },
+                                        {
+                                            "const": "\"minimize\""
+                                        },
+                                        {
+                                            "const": "\"rapl\""
+                                        },
+                                        {
+                                            "const": "\"tagPower\""
+                                        }
+                                    ]
+                                },
+                                "type": "array"
+                            },
+                            "sensorBinary": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "type": "array"
+        },
+        "pmpi_lib": {
+            "type": "string"
+        },
+        "verbose": {
+            "oneOf": [
+                {
+                    "const": "\"debug\""
+                },
+                {
+                    "const": "\"error\""
+                },
+                {
+                    "const": "\"info\""
+                }
+            ]
+        },
+        "logfile": {
+            "type": "string"
+        },
+        "singularity": {
+            "type": "boolean"
+        },
+        "argo_nodeos_config": {
+            "type": "string"
+        },
+        "controlCfg": {
+            "oneOf": [
+                {
+                    "required": [
+                        "controlCfg"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "controlCfg": {
+                            "required": [
+                                "hint",
+                                "learnCfg",
+                                "minimumControlInterval",
+                                "referenceMeasurementRoundInterval",
+                                "speedThreshold",
+                                "staticPower"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "referenceMeasurementRoundInterval": {
+                                    "type": "number"
+                                },
+                                "hint": {
+                                    "oneOf": [
+                                        {
+                                            "required": [
+                                                "full"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "full": {
+                                                    "type": "object",
+                                                    "properties": {}
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "required": [
+                                                "only"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "only": {
+                                                    "required": [
+                                                        "neHead",
+                                                        "neTail"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "neHead": {
+                                                            "uniqueItems": false,
+                                                            "items": {
+                                                                "required": [
+                                                                    "actuatorID",
+                                                                    "actuatorValue"
+                                                                ],
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "actuatorValue": {
+                                                                        "type": "number"
+                                                                    },
+                                                                    "actuatorID": {
+                                                                        "type": "string"
+                                                                    }
+                                                                }
+                                                            },
+                                                            "type": "array"
+                                                        },
+                                                        "neTail": {
+                                                            "uniqueItems": false,
+                                                            "items": {
+                                                                "uniqueItems": false,
+                                                                "items": {
+                                                                    "required": [
+                                                                        "actuatorID",
+                                                                        "actuatorValue"
+                                                                    ],
+                                                                    "type": "object",
+                                                                    "properties": {
+                                                                        "actuatorValue": {
+                                                                            "type": "number"
+                                                                        },
+                                                                        "actuatorID": {
+                                                                            "type": "string"
+                                                                        }
+                                                                    }
+                                                                },
+                                                                "type": "array"
+                                                            },
+                                                            "type": "array"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "learnCfg": {
+                                    "oneOf": [
+                                        {
+                                            "required": [
+                                                "contextual"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "contextual": {
+                                                    "required": [
+                                                        "horizon"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "horizon": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "required": [
+                                                "lagrange"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "lagrange": {
+                                                    "required": [
+                                                        "lagrange"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "lagrange": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        {
+                                            "required": [
+                                                "random"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "random": {
+                                                    "required": [
+                                                        "seed"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "seed": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                "staticPower": {
+                                    "required": [
+                                        "microwatts"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "microwatts": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "speedThreshold": {
+                                    "type": "number"
+                                },
+                                "minimumControlInterval": {
+                                    "required": [
+                                        "microseconds"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "microseconds": {
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    "required": [
+                        "controlOff"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "controlOff": {
+                            "type": "object",
+                            "properties": {}
+                        }
+                    }
+                }
+            ]
+        },
+        "upstreamCfg": {
+            "required": [
+                "pubPort",
+                "rpcPort",
+                "upstreamBindAddress"
+            ],
+            "type": "object",
+            "properties": {
+                "upstreamBindAddress": {
+                    "type": "string"
+                },
+                "rpcPort": {
+                    "type": "number"
+                },
+                "pubPort": {
+                    "type": "number"
+                }
+            }
+        },
+        "libnrmPath": {
+            "type": "string"
+        },
+        "activeSensorFrequency": {
+            "required": [
+                "hertz"
+            ],
+            "type": "object",
+            "properties": {
+                "hertz": {
+                    "type": "number"
+                }
+            }
+        },
+        "perf": {
+            "type": "string"
+        },
+        "argo_perf_wrapper": {
+            "type": "string"
+        },
+        "downstreamCfg": {
+            "required": [
+                "downstreamBindAddress"
+            ],
+            "type": "object",
+            "properties": {
+                "downstreamBindAddress": {
+                    "type": "string"
+                }
+            }
+        },
+        "nodeos": {
+            "type": "boolean"
+        },
+        "hwloc": {
+            "type": "string"
+        },
+        "extraStaticActuators": {
+            "uniqueItems": false,
+            "items": {
+                "required": [
+                    "staticActuatorKey",
+                    "staticActuatorValue"
+                ],
+                "type": "object",
+                "properties": {
+                    "staticActuatorValue": {
+                        "required": [
+                            "actions",
+                            "actuatorArguments",
+                            "actuatorBinary",
+                            "referenceAction"
+                        ],
+                        "type": "object",
+                        "properties": {
+                            "actuatorBinary": {
+                                "type": "string"
+                            },
+                            "actions": {
+                                "uniqueItems": false,
+                                "items": {
+                                    "type": "number"
+                                },
+                                "type": "array"
+                            },
+                            "actuatorArguments": {
+                                "uniqueItems": false,
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            "referenceAction": {
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "staticActuatorKey": {
+                        "type": "string"
+                    }
+                }
+            },
+            "type": "array"
+        },
+        "raplCfg": {
+            "required": [
+                "raplActions",
+                "raplPath",
+                "referencePower"
+            ],
+            "type": "object",
+            "properties": {
+                "referencePower": {
+                    "required": [
+                        "microwatts"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "microwatts": {
+                            "type": "number"
+                        }
+                    }
+                },
+                "raplActions": {
+                    "uniqueItems": false,
+                    "items": {
+                        "required": [
+                            "microwatts"
+                        ],
+                        "type": "object",
+                        "properties": {
+                            "microwatts": {
+                                "type": "number"
+                            }
+                        }
+                    },
+                    "type": "array"
+                },
+                "raplPath": {
+                    "type": "string"
+                }
+            }
+        },
+        "dummy": {
+            "type": "boolean"
+        },
+        "hwmonCfg": {
+            "required": [
+                "hwmonEnabled",
+                "hwmonPath"
+            ],
+            "type": "object",
+            "properties": {
+                "hwmonPath": {
+                    "type": "string"
+                },
+                "hwmonEnabled": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}

@@ -15,18 +15,18 @@ module NRM.Optparse.Daemon
   )
 where
 
-import Codegen.Dhall
 import qualified Data.Aeson as J
 import Data.Aeson.Extra.Merge
 import qualified Data.ByteString as B (getContents)
 import Data.Default
 import Data.Either.Validation as V
 import qualified Data.Yaml as Y
-import qualified Dhall
+import Dhall
 import qualified Dhall.Core as Dhall
 import Dhall.JSON as DJ
 import Dhall.JSONToDhall as JSONToDhall
 import qualified Dhall.Src as Dhall
+import qualified Dhall.TypeCheck as Dhall
 import NRM.Types.Configuration
 import Options.Applicative
 import Protolude
@@ -156,3 +156,10 @@ mergeAndExtract x expr =
     & \case
       V.Failure _ -> die "dhall extraction error"
       V.Success a -> return a
+
+typeToExpr :: FromDhall x => Proxy x -> Dhall.Expr Dhall.Src b
+typeToExpr (Proxy :: Proxy x) =
+  Dhall.absurd <$> Dhall.expected (Dhall.auto :: Dhall.Decoder x)
+
+valueToExpr :: (Inject x) => x -> Dhall.Expr Dhall.Src Void
+valueToExpr x = Dhall.absurd <$> embed (injectWith defaultInterpretOptions) x

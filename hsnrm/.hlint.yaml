@@ -11,6 +11,7 @@
   - name: [ScopedTypeVariables]
   - name: [NoRecordWildCards]
   - name: [TypeApplications]
+  - name: [TemplateHaskell]
 
 - flags:
   - default: false

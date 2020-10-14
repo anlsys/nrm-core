@@ -13,7 +13,6 @@ module NRM.Types.Sensor
     PassiveSensor (..),
     SensorMeta (..),
     HasMeta (..),
-    Cumulative (..),
 
     -- * Keys for LensMap
     ActiveSensorKey (..),
@@ -27,13 +26,10 @@ where
 
 import qualified CPD.Core as CPD
 import Control.Lens
-import Data.Aeson
 import Data.Generics.Labels ()
-import Data.JSON.Schema
-import Data.MessagePack
 import Dhall
-import NRM.Classes.Messaging
 import NRM.Classes.Sensors
+import NRM.Types.Configuration (SensorBehavior (..), Tag (..))
 import NRM.Types.DownstreamCmdID
 import NRM.Types.DownstreamThreadID
 import NRM.Types.MemBuffer
@@ -42,24 +38,13 @@ import qualified NRM.Types.Units as U
 import Numeric.Interval
 import Protolude
 
--- | Sensor tags - used to build objectives and constraints.
-data Tag
-  = Power
-  | Rapl
-  | DownstreamThreadSignal
-  | DownstreamCmdSignal
-  | Minimize
-  | Maximize
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Tag
-
 data SensorMeta
   = SensorMeta
       { tags :: [Tag],
         range :: Interval Double,
         last :: Maybe (U.Time, Double),
         lastReferenceMeasurements :: MemBuffer,
-        cumulative :: Cumulative
+        cumulative :: SensorBehavior
       }
   deriving (Generic)
 
@@ -87,10 +72,6 @@ data ActiveSensor
 
 instance HasMeta ActiveSensor where
   _meta = #activeMeta
-
-data Cumulative = Cumulative | IntervalBased | CumulativeWithCapacity Double
-  deriving (Eq, Show, Generic, MessagePack, Interpret, Inject)
-  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Cumulative
 
 data ActiveSensorKey = DownstreamCmdKey DownstreamCmdID | DownstreamThreadKey DownstreamThreadID
   deriving (Ord, Eq, Show)

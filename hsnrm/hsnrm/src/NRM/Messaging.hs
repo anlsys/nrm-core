@@ -12,13 +12,7 @@ where
 
 import Data.Default
 import NRM.Types.Configuration
-import NRM.Types.Manifest
-import NRM.Types.Units
 import Protolude
-import Refined
-import Refined.Unsafe
-
-data V = Str Text | LLPos (Refined Positive Int)
 
 ratelimitEnvVar :: Text
 ratelimitEnvVar = "NRM_RATELIMIT"
@@ -30,16 +24,13 @@ libnrmVars :: Text
 libnrmVars =
   mconcat . intersperse "\n" $
     toHeader
-      <$> [ ("NRM_DEFAULT_URI", Str (downstreamBindAddress (def :: DownstreamCfg))),
-            ("NRM_ENV_URI", Str "NRM_DOWNSTREAM_EVENT_URI"),
-            ("NRM_ENV_CMDID", Str cmdIDEnvVar),
-            ("NRM_ENV_RATELIMIT", Str ratelimitEnvVar),
-            ("NRM_ENV_TRANSMIT", Str "NRM_TRANSMIT"),
-            ( "NRM_DEFAULT_RATELIMIT_THRESHOLD",
-              LLPos (unsafeRefine . floor . fromHz $ ratelimit (def :: Instrumentation))
-            )
+      <$> [ ("NRM_DEFAULT_URI", show (downstreamBindAddress $ downstreamCfg (def :: Cfg))),
+            ("NRM_ENV_URI", show ("NRM_DOWNSTREAM_EVENT_URI" :: Text)),
+            ("NRM_ENV_CMDID", show cmdIDEnvVar),
+            ("NRM_ENV_RATELIMIT", show ratelimitEnvVar),
+            ("NRM_ENV_TRANSMIT", show ("NRM_TRANSMIT" :: Text)),
+            ("NRM_DEFAULT_RATELIMIT_THRESHOLD", "(10000000LL)")
           ]
 
-toHeader :: (Text, V) -> Text
-toHeader (t, Str x) = "#define " <> t <> " " <> show x
-toHeader (t, LLPos x) = "#define " <> t <> " (" <> show (unrefine x) <> "LL)"
+toHeader :: (Text, Text) -> Text
+toHeader (t, x) = "#define " <> t <> " " <> x

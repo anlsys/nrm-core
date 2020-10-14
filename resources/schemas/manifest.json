@@ -1,0 +1,183 @@
+{
+    "required": [
+        "app",
+        "hwbind",
+        "name"
+    ],
+    "type": "object",
+    "properties": {
+        "image": {
+            "required": [
+                "imagetype",
+                "path"
+            ],
+            "type": "object",
+            "properties": {
+                "binds": {
+                    "uniqueItems": false,
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "imagetype": {
+                    "oneOf": [
+                        {
+                            "const": "\"docker\""
+                        },
+                        {
+                            "const": "\"sif\""
+                        }
+                    ]
+                }
+            }
+        },
+        "hwbind": {
+            "type": "boolean"
+        },
+        "app": {
+            "required": [
+                "powerCfg",
+                "scheduler",
+                "slice"
+            ],
+            "type": "object",
+            "properties": {
+                "scheduler": {
+                    "oneOf": [
+                        {
+                            "required": [
+                                "fIFO"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "fIFO": {
+                                    "type": "object",
+                                    "properties": {}
+                                }
+                            }
+                        },
+                        {
+                            "required": [
+                                "hPC"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "hPC": {
+                                    "type": "object",
+                                    "properties": {}
+                                }
+                            }
+                        },
+                        {
+                            "required": [
+                                "other"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "other": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "instrumentation": {
+                    "required": [
+                        "ratelimit"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "ratelimit": {
+                            "required": [
+                                "hertz"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "hertz": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    }
+                },
+                "perfwrapper": {
+                    "required": [
+                        "perfFreq",
+                        "perfLimit"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "perfLimit": {
+                            "type": "number"
+                        },
+                        "perfFreq": {
+                            "required": [
+                                "hertz"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "hertz": {
+                                    "type": "number"
+                                }
+                            }
+                        }
+                    }
+                },
+                "powerCfg": {
+                    "required": [
+                        "policy",
+                        "profile",
+                        "slowdown"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "slowdown": {
+                            "type": "number"
+                        },
+                        "profile": {
+                            "type": "boolean"
+                        },
+                        "policy": {
+                            "oneOf": [
+                                {
+                                    "const": "\"combined\""
+                                },
+                                {
+                                    "const": "\"dDCM\""
+                                },
+                                {
+                                    "const": "\"dVFS\""
+                                },
+                                {
+                                    "const": "\"noPowerPolicy\""
+                                }
+                            ]
+                        }
+                    }
+                },
+                "slice": {
+                    "required": [
+                        "cpus",
+                        "mems"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "cpus": {
+                            "type": "number"
+                        },
+                        "mems": {
+                            "type": "number"
+                        }
+                    }
+                }
+            }
+        },
+        "name": {
+            "type": "string"
+        }
+    }
+}

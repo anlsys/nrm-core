@@ -1,4 +1,3 @@
-{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- |
@@ -8,7 +7,6 @@
 -- Maintainer  : fre@freux.fr
 module NRM.Codegen
   ( main,
-    typeToFile,
     upstreamPubSchema,
     upstreamReqSchema,
     upstreamRepSchema,
@@ -17,27 +15,16 @@ module NRM.Codegen
     configurationSchema,
     libnrmHeader,
     licenseC,
-    licenseDhall,
-    licenseYaml,
   )
 where
 
 import Codegen.CHeader
-import Codegen.Dhall
 import Codegen.Schema (generatePretty)
 import Codegen.Schema as CS
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import Data.Default
 import Data.JSON.Schema as S
-import qualified Data.Map as M
-import Data.Yaml as Y
 import Dhall
-import qualified Dhall.Core as Dhall
-import Dhall.Import as Dhall
-import Dhall.JSON as DJ
-import qualified Dhall.Lint as Lint
-import qualified Dhall.Parser
-import qualified Dhall.TypeCheck as Dhall
 import NRM.Messaging
 import qualified NRM.Types.Configuration as C
 import qualified NRM.Types.Manifest as MI
@@ -46,9 +33,7 @@ import qualified NRM.Types.Messaging.DownstreamEvent as Down (Event (..))
 import NRM.Types.Messaging.UpstreamPub
 import NRM.Types.Messaging.UpstreamRep
 import NRM.Types.Messaging.UpstreamReq
-import NeatInterpolation
 import Protolude hiding (Rep)
-import System.Directory
 
 -- | The main code generation binary.
 main :: IO ()
@@ -58,16 +43,18 @@ main = do
   putText $ "  Writing libnrm header to " <> prefix <> "/nrm_messaging.h"
   writeFile (toS $ prefix <> "/nrm_messaging.h") $ toS (licenseC <> "\n\n" <> libnrmVars <> "\n\n" <> libnrmHeader)
   putText "Codegen: JSON schemas"
-  verboseWriteSchema prefix "upstreamPub" upstreamPubSchema
-  verboseWriteSchema prefix "upstreamRep" upstreamRepSchema
-  verboseWriteSchema prefix "upstreamReq" upstreamReqSchema
-  verboseWriteSchema prefix "downstreamEvent" downstreamEventSchema
-  verboseWriteSchema prefix "manifestSchema" manifestSchema
-  generateResources prefix
+  verboseWrite (prefix <> "/schemas") "upstream-pub" upstreamPubSchema
+  verboseWrite (prefix <> "/schemas") "upstream-rep" upstreamRepSchema
+  verboseWrite (prefix <> "/schemas") "upstream-req" upstreamReqSchema
+  verboseWrite (prefix <> "/schemas") "downstream" downstreamEventSchema
+  verboseWrite (prefix <> "/schemas") "manifest" manifestSchema
+  verboseWrite (prefix <> "/schemas") "nrmd" configurationSchema
+  verboseWrite (prefix <> "/defaults") "nrmd" (toS $ AP.encodePretty (def :: C.Cfg))
+  verboseWrite (prefix <> "/defaults") "manifest" (toS $ AP.encodePretty (def :: MI.Manifest))
   where
-    verboseWriteSchema :: Text -> Text -> Text -> IO ()
-    verboseWriteSchema prefix desc sch = do
-      putText $ toS ("  Writing schema for " <> toS desc <> " to " <> fp)
+    verboseWrite :: Text -> Text -> Text -> IO ()
+    verboseWrite prefix desc sch = do
+      putText $ toS ("  Writing file  " <> fp)
       writeFile (toS fp) sch
       where
         fp = prefix <> "/" <> desc <> ".json"
@@ -103,124 +90,20 @@ libnrmHeader = toS $ toCHeader (Proxy :: Proxy Down.Event)
 -- | A license for C headers.
 licenseC :: Text
 licenseC =
-  [text|
-    /*******************************************************************************
-     * Copyright 2019 UChicago Argonne, LLC.
-     * (c.f. AUTHORS, LICENSE)
-     *
-     * SPDX-License-Identifier: BSD-3-Clause
-    *******************************************************************************
-     *
-     *    this file is generated, modifications will be erased.
-    */
-
-  |]
-
--- | A license for Yaml files
-licenseYaml :: Text
-licenseYaml =
-  [text|
-    # ******************************************************************************
-    #  Copyright 2019 UChicago Argonne, LLC.
-    #  (c.f. AUTHORS, LICENSE)
-    #
-    #  SPDX-License-Identifier: BSD-3-Clause
-    # ******************************************************************************
-    #
-    #     this file is generated, modifications will be erased.
-    #
-
-  |]
-
--- | A license for Dhall files
-licenseDhall :: Text
-licenseDhall =
-  [text|
-    -- ******************************************************************************
-    --  Copyright 2019 UChicago Argonne, LLC.
-    --  (c.f. AUTHORS, LICENSE)
-    --
-    --  SPDX-License-Identifier: BSD-3-Clause
-    -- ******************************************************************************
-    --
-    --     this file is generated, modifications will be erased.
-    --
-
-  |]
-
-data KnownType
-  = Cfg
-  | Manifest
-  deriving (Bounded, Enum, Eq, Ord, Read, Show)
-
-dhallType :: KnownType -> Dhall.Expr Dhall.Parser.Src Dhall.Import
-dhallType =
-  fmap Dhall.absurd <$> \case
-    Cfg -> Dhall.expected (Dhall.auto :: Dhall.Decoder C.Cfg)
-    Manifest -> Dhall.expected (Dhall.auto :: Dhall.Decoder MI.Manifest)
-
-sandwich :: Semigroup a => a -> a -> a -> a
-sandwich a b x = a <> x <> b
-
-typeFile :: KnownType -> FilePath
-typeFile = sandwich "types/" ".dhall" . show
-
-getDefault :: KnownType -> Dhall.Expr Dhall.Parser.Src b
-getDefault x =
-  Dhall.absurd <$> case x of
-    Cfg -> embed (injectWith defaultInterpretOptions) (def :: C.Cfg)
-    Manifest -> embed (injectWith defaultInterpretOptions) (def :: MI.Manifest)
-
-generateResources :: Text -> IO ()
-generateResources prefix = do
-  putText "Codegen: Dhall types."
-  --typeToFile (Proxy :: Proxy [CPD.Values.Measurement]) $ prefix <> "/types/CPDMeasurements.dhall"
-  --typeToFile (Proxy :: Proxy [CPD.Values.Action]) $ prefix <> "/types/CPDActions.dhall"
-  --typeToFile (Proxy :: Proxy CPD.Core.Problem) $ toS prefix <> "/types/CPDProblem.dhall"
-  for_ ([minBound .. maxBound] :: [KnownType]) $ \t -> do
-    let dest = toS prefix <> typeFile t
-    putText $ "  Writing type for " <> show t <> " to " <> toS dest
-    createDirectoryIfMissing True (takeDirectory dest)
-    writeOutput licenseDhall dest (dhallType t)
-  putText "Codegen: defaults."
-  for_ ([minBound .. maxBound] :: [KnownType]) $ \defaultType ->
-    Dhall.load (Lint.lint (getDefault defaultType))
-      >>= exprToDir "defaults/" (show defaultType)
-  putText "Codegen: example manifests."
-  for_ (M.toList MI.examples) $ \(defName, defValue) ->
-    Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
-      >>= exprToDir "example-manifests/" defName
-  putText "Codegen: example configurations."
-  for_ (M.toList C.examples) $ \(defName, defValue) ->
-    Dhall.load (Lint.lint $ Dhall.absurd <$> embed (injectWith defaultInterpretOptions) defValue)
-      >>= exprToDir "example-configurations/" defName
-  where
-    exprToDir dir defName expr = do
-      let (dest, destJ, destY) = mkPaths dir defName
-      DJ.dhallToJSON expr & \case
-        Left e -> die $ "horrible internal dhall error: " <> show e
-        Right jsonValue -> do
-          putText $ "  Writing default for " <> defName <> " to " <> dest <> "."
-          createDirectoryIfMissing True (takeDirectory $ toS dest)
-          writeOutput
-            licenseDhall
-            (toS dest)
-            expr
-          writeFile (toS destJ) $ toS (AP.encodePretty jsonValue)
-          writeFile (toS destY) $ licenseYaml <> toS (Y.encode jsonValue)
-    resourcePath dir defName x = toS prefix <> dir <> defName <> x
-    mkPaths dir defName =
-      ( resourcePath dir defName ".dhall",
-        resourcePath dir defName ".json",
-        resourcePath dir defName ".yaml"
-      )
-
-typeToFile :: (Interpret x) => Proxy x -> Text -> IO ()
-typeToFile (Proxy :: Proxy x) fp = do
-  let destCPD = fp
-  putText $ "  Writing types for CPD format. " <> " to " <> toS destCPD
-  createDirectoryIfMissing True (takeDirectory $ toS destCPD)
-  writeOutput
-    licenseDhall
-    (toS destCPD)
-    (Dhall.expected (Dhall.auto :: Dhall.Decoder x))
+  "/*******************************************************************************" <> "\n"
+    <> " * Copyright 2019 UChicago Argonne, LLC."
+    <> "\n"
+    <> " * (c.f. AUTHORS, LICENSE)"
+    <> "\n"
+    <> " *"
+    <> "\n"
+    <> " * SPDX-License-Identifier: BSD-3-Clause"
+    <> "\n"
+    <> "*******************************************************************************"
+    <> "\n"
+    <> " *"
+    <> "\n"
+    <> " *    this file is generated, modifications will be erased."
+    <> "\n"
+    <> "*/"
+    <> "\n"

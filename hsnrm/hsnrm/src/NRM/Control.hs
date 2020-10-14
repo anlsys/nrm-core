@@ -82,7 +82,7 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
               g <- liftIO getStdGen
               (b, aInitial) <-
                 Cfg.learnCfg ccfg & \case
-                  Contextual (CtxCfg hrizon) -> do
+                  Cfg.Contextual hrizon -> do
                     -- per terminology of sun wen
                     let riskThreshold :: ZeroOne Double
                         riskThreshold =
@@ -95,19 +95,28 @@ banditCartesianProductControl ccfg cpd (Reconfigure t) _ = do
                             ( Exp4RCfg
                                 { expertsCfg = mkExperts availableActions,
                                   constraintCfg = riskThreshold,
-                                  horizonCfg = unsafeRefine hrizon,
+                                  horizonCfg = unsafeRefine (fromInteger hrizon),
                                   as = availableActions
                                 }
                             )
                     let ((a, g'), s') = runState (stepCtx g Nothing ()) b
                     liftIO $ setStdGen g'
                     return (Contextual s', a)
-                  Lagrange _ -> do
+                  Cfg.Lagrange _ -> do
                     let (b, a, g') = Bandit.Class.init g (Arms availableActions) & _1 %~ Lagrange
                     liftIO $ setStdGen g'
                     return (b, a)
-                  Random (UniformCfg seed) -> do
-                    let (b, a, g') = initUniform (maybe g (\(Seed s) -> mkStdGen s) seed) availableActions & _1 %~ Random
+                  Cfg.Random seed -> do
+                    let (b, a, g') =
+                          initUniform
+                            ( maybe
+                                g
+                                (\(Seed s) -> mkStdGen s)
+                                (Just . Seed . fromInteger $ seed)
+                            )
+                            availableActions
+                            & _1
+                            %~ Random
                     liftIO $ setStdGen g'
                     return (b, a)
               #bandit .= Just b
@@ -148,10 +157,11 @@ intersect (x : xs) l
 intersectNE :: Eq a => NonEmpty a -> NonEmpty a -> Maybe (NonEmpty a)
 intersectNE (NE.toList -> x) (NE.toList -> y) = nonEmpty (x `intersect` y)
 
-mkActions :: NonEmpty (ActuatorID, Actuator) -> Hint -> Maybe (NonEmpty [Action])
+mkActions :: NonEmpty (ActuatorID, Actuator) -> Cfg.Hint -> Maybe (NonEmpty [Action])
 mkActions actuators = \case
-  Full -> Just allA
-  (Only as) -> intersectNE allA as
+  Cfg.Full -> Just allA
+  (Cfg.Only (fmap Cfg.toAction -> neh) ((fmap . fmap) Cfg.toAction -> net)) ->
+    intersectNE allA (neh :| net)
   where
     allA = allActions actuators
 
@@ -198,7 +208,8 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
       logInfo "control: integrator squeeze success"
       #integrator . #measured .= newMeasured
       -- acquiring fields
-      counter <- use #referenceMeasurementCounter
+      (counter :: Refined NonNegative Int) <-
+        use #referenceMeasurementCounter
       bufM <- use #bufferedMeasurements
       refM <- use #referenceMeasurements
       let maxCounter = Cfg.referenceMeasurementRoundInterval cc
@@ -219,7 +230,7 @@ wrappedCStep cc stepObjectives stepConstraints sensorRanges t mRefActions = do
                   #bufferedMeasurements ?= measurements
                   -- take the reference actions
                   return $ Decision refActions ReferenceMeasurementDecision
-            if unrefine counterValue <= unrefine maxCounter
+            if unrefine counterValue <= (fromIntegral maxCounter :: Int)
               then case bufM of
                 Nothing -> do
                   logInfo "control: inner control"

@@ -1,0 +1,18 @@
+{
+    "hwbind": false,
+    "app": {
+        "scheduler": {
+            "fIFO": {}
+        },
+        "powerCfg": {
+            "slowdown": 1,
+            "profile": false,
+            "policy": "noPowerPolicy"
+        },
+        "slice": {
+            "cpus": 1,
+            "mems": 1
+        }
+    },
+    "name": "default"
+}

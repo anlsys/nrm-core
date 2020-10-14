@@ -107,14 +107,14 @@ addDownstreamCmdClient ::
   Maybe Cmd
 addDownstreamCmdClient c downstreamCmdClientID =
   c ^. #cmdCore . #manifest . #app . #perfwrapper & \case
-    PerfwrapperDisabled -> Nothing
-    Perfwrapper perfFreq perfLimit ->
+    Nothing -> Nothing
+    (Just (Perfwrapper perfFreq perfLimit)) ->
       Just $
         c
           & #downstreamCmds
           . at downstreamCmdClientID ?~ DownstreamCmd
-            { maxValue = perfLimit,
-              ratelimit = perfFreq,
+            { maxValue = Operations (fromInteger perfLimit),
+              ratelimit = toFrequency perfFreq,
               dtLastReferenceMeasurements = MemBuffer.empty,
               lastRead = Nothing
             }
@@ -127,7 +127,7 @@ addDownstreamThreadClient c downstreamThreadClientID =
   c ^. #cmdCore . #manifest . #app . #instrumentation <&> \(Manifest.Instrumentation ratelimit) ->
     c & #downstreamThreads . at downstreamThreadClientID ?~ DownstreamThread
       { maxValue = 1 & progress,
-        ratelimit = ratelimit,
+        ratelimit = toFrequency ratelimit,
         dtLastReferenceMeasurements = MemBuffer.empty,
         lastRead = Nothing
       }

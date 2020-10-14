@@ -1,0 +1,46 @@
+{
+    "extraStaticPassiveSensors": [],
+    "pmpi_lib": "pmpi_lib",
+    "verbose": "error",
+    "logfile": "/tmp/nrm.log",
+    "singularity": false,
+    "argo_nodeos_config": "argo_nodeos_config",
+    "controlCfg": {
+        "controlOff": {}
+    },
+    "upstreamCfg": {
+        "upstreamBindAddress": "*",
+        "rpcPort": 3456,
+        "pubPort": 2345
+    },
+    "activeSensorFrequency": {
+        "hertz": 1
+    },
+    "perf": "perf",
+    "argo_perf_wrapper": "nrm-perfwrapper",
+    "downstreamCfg": {
+        "downstreamBindAddress": "ipc:///tmp/nrm-downstream-event"
+    },
+    "nodeos": false,
+    "hwloc": "hwloc",
+    "extraStaticActuators": [],
+    "raplCfg": {
+        "referencePower": {
+            "microwatts": 250000000
+        },
+        "raplActions": [
+            {
+                "microwatts": 100000000
+            },
+            {
+                "microwatts": 200000000
+            }
+        ],
+        "raplPath": "/sys/devices/virtual/powercap/intel-rapl"
+    },
+    "dummy": true,
+    "hwmonCfg": {
+        "hwmonPath": "/sys/class/hwmon",
+        "hwmonEnabled": true
+    }
+}
