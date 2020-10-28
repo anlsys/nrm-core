@@ -75,7 +75,7 @@ instance Default Manifest where
             V.Success a -> a
 
 jsonOptions :: Options
-jsonOptions = defaultOptions {omitNothingFields = True}
+jsonOptions = defaultOptions {omitNothingFields = False}
 
 instance MessagePack Integer where
 

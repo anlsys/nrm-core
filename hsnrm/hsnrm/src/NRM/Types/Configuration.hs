@@ -521,4 +521,4 @@ deriving via (GenericJSON Cfg) instance ToJSON Cfg
 deriving via (GenericJSON Cfg) instance JSONSchema Cfg
 
 jsonOptions :: Options
-jsonOptions = defaultOptions {omitNothingFields = True}
+jsonOptions = defaultOptions {omitNothingFields = False}

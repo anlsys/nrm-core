@@ -63,7 +63,7 @@ class Daemon(object):
 
         # setup periodic sensor updates
         self.sensor_cb = ioloop.PeriodicCallback(
-            self.wrap("doSensor"), 1000 / self.lib.activeSensorFrequency(self.cfg)
+            self.wrap("doSensor"), 1000 / self.lib.passiveSensorFrequency(self.cfg)
         )
         self.sensor_cb.start()
 

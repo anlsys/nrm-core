@@ -1063,7 +1063,15 @@
                                 "pmpi_lib",
                                 "singularity",
                                 "upstreamCfg",
+<<<<<<< HEAD:resources/schemas/upstream-rep.json
                                 "verbose"
+=======
+                                "hwmonCfg",
+                                "controlCfg",
+                                "passiveSensorFrequency",
+                                "extraStaticPassiveSensors",
+                                "extraStaticActuators"
+>>>>>>> sensor-fix:hsnrm/resources/upstreamRep.json
                             ],
                             "type": "object",
                             "properties": {
@@ -1220,7 +1228,13 @@
                                             "properties": {
                                                 "controlCfg": {
                                                     "required": [
+<<<<<<< HEAD:resources/schemas/upstream-rep.json
                                                         "hint",
+=======
+                                                        "minimumControlInterval",
+                                                        "minimumWaitInterval",
+                                                        "staticPower",
+>>>>>>> sensor-fix:hsnrm/resources/upstreamRep.json
                                                         "learnCfg",
                                                         "minimumControlInterval",
                                                         "referenceMeasurementRoundInterval",
@@ -1230,6 +1244,9 @@
                                                     "type": "object",
                                                     "properties": {
                                                         "referenceMeasurementRoundInterval": {
+                                                            "type": "number"
+                                                        },
+                                                        "minimumWaitInterval": {
                                                             "type": "number"
                                                         },
                                                         "hint": {
@@ -1399,11 +1416,19 @@
                                         },
                                         {
                                             "required": [
+<<<<<<< HEAD:resources/schemas/upstream-rep.json
                                                 "controlOff"
                                             ],
                                             "type": "object",
                                             "properties": {
                                                 "controlOff": {
+=======
+                                                "noControl"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "noControl": {
+>>>>>>> sensor-fix:hsnrm/resources/upstreamRep.json
                                                     "type": "object",
                                                     "properties": {}
                                                 }
@@ -1433,6 +1458,7 @@
                                 "libnrmPath": {
                                     "type": "string"
                                 },
+<<<<<<< HEAD:resources/schemas/upstream-rep.json
                                 "activeSensorFrequency": {
                                     "required": [
                                         "hertz"
@@ -1444,6 +1470,8 @@
                                         }
                                     }
                                 },
+=======
+>>>>>>> sensor-fix:hsnrm/resources/upstreamRep.json
                                 "perf": {
                                     "type": "string"
                                 },
@@ -1570,6 +1598,9 @@
                                             "type": "boolean"
                                         }
                                     }
+                                },
+                                "passiveSensorFrequency": {
+                                    "type": "number"
                                 }
                             }
                         }

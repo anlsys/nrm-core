@@ -19,6 +19,7 @@ module NRM.State
   )
 where
 
+import CPD.Integrated as I
 import Control.Lens
 import Data.Map as M
 import Data.Map.Merge.Lazy
@@ -66,7 +67,7 @@ initialState c time = do
                 updater _pkgid package (packageRaplConfig, packageRaplDir) =
                   package
                     { rapl = Just Rapl
-                        { frequency = hz 3,
+                        { frequency = Cfg.toFrequency $ Cfg.passiveSensorFrequency c,
                           raplCfg = packageRaplConfig,
                           maxEnergyCounterValue = packageRaplDir ^. #maxEnergy,
                           max = watts 150,
@@ -93,8 +94,11 @@ initialState c time = do
         ccfg ->
           Just $
             initialController
-              time
-              (Cfg.toTime $ Cfg.minimumControlInterval ccfg)
+              IntegratorMeta
+                { tLast = time,
+                  I.minimumWaitInterval = Cfg.toTime $ Cfg.minimumWaitInterval ccfg,
+                  I.minimumControlInterval =Cfg.toTime $ Cfg.minimumControlInterval ccfg
+                }
               [],
       slices = M.fromList [],
       pus = M.fromList $ (,PU) <$> selectPUIDs hwl,
@@ -121,7 +125,7 @@ initialState c time = do
             & M.fromList
         )
           <&> concretizeExtraPassiveSensor
-            (Cfg.toFrequency $ Cfg.activeSensorFrequency c),
+            (Cfg.toFrequency $ Cfg.passiveSensorFrequency c),
       ..
     }
 
@@ -129,12 +133,13 @@ concretizeExtraPassiveSensor ::
   Frequency ->
   Cfg.ExtraPassiveSensor ->
   NRMState.ExtraPassiveSensor
-concretizeExtraPassiveSensor f x = NRMState.ExtraPassiveSensor
-  { NRMState.extraPassiveSensor = x,
-    NRMState.history = [],
-    NRMState.lastRead = Nothing,
-    NRMState.frequency = f
-  }
+concretizeExtraPassiveSensor f x =
+  NRMState.ExtraPassiveSensor
+    { NRMState.extraPassiveSensor = x,
+      NRMState.history = [],
+      NRMState.lastRead = Nothing,
+      NRMState.frequency = f
+    }
 
 -- | Removes a slice from the state
 removeSlice :: SliceID -> NRMState -> (Maybe Slice, NRMState)

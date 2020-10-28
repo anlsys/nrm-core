@@ -42,5 +42,8 @@
     "hwmonCfg": {
         "hwmonPath": "/sys/class/hwmon",
         "hwmonEnabled": true
+    },
+    "passiveSensorFrequency": {
+        "fromHz": 1
     }
 }

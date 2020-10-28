@@ -11,7 +11,7 @@ module NRM.Export
     verbosity,
     showConfiguration,
     C.logfile,
-    activeSensorFrequency,
+    passiveSensorFrequency,
     upstreamPubAddress,
     upstreamRpcAddress,
     downstreamEventAddress,
@@ -46,9 +46,9 @@ import qualified NRM.Types.Configuration as C
     DaemonVerbosity (..),
     DownstreamCfg (..),
     UpstreamCfg (..),
-    activeSensorFrequency,
     logfile,
     toFrequency,
+    passiveSensorFrequency,
     verbose,
   )
 import qualified NRM.Types.Messaging.UpstreamRep as URep
@@ -65,8 +65,8 @@ parseDaemon :: [Text] -> IO C.Cfg
 parseDaemon = O.parseArgDaemonCli
 
 -- | Parses Daemon CLI arguments
-activeSensorFrequency :: C.Cfg -> Double
-activeSensorFrequency = fromHz . C.toFrequency . C.activeSensorFrequency
+passiveSensorFrequency :: C.Cfg -> Double
+passiveSensorFrequency = fromHz . C.toFrequency . C.passiveSensorFrequency
 
 -- | Queries configuration for 'verbose' verbosity
 verbosity :: C.Cfg -> Int

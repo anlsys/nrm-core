@@ -102,6 +102,7 @@ let ControlCfg =
     -- ControlOff: bypass mode
       < ControlCfg :
           { minimumControlInterval : types.Time
+          , minimumWaitInterval : types.Time
           , staticPower : types.Power
           , learnCfg : LearnCfg
           , speedThreshold : Double
@@ -129,7 +130,7 @@ let Cfg =
       , raplCfg : Optional RaplCfg
       , hwmonCfg : Hwmon
       , controlCfg : ControlCfg
-      , activeSensorFrequency : types.Frequency
+      , passiveSensorFrequency : types.Frequency
       , extraStaticPassiveSensors : List PassiveSensorKV
       , extraStaticActuators : List StaticActuatorKV
       }

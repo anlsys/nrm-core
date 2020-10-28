@@ -33,12 +33,15 @@ toCPD cfg st = Problem {..}
   where
     sensors = cpdSensors st
     actuators = cpdActuators st
-    (objectives, constraints) = fromMaybe ([], []) (throughputConstrained <$> mcfg cfg <*> Just st)
+    (objectives, constraints) =
+      fromMaybe
+        ([], [])
+        (throughputConstrained <$> mcfg cfg <*> Just st)
     mcfg jc@ControlCfg {} = Just jc
     mcfg _ = Nothing
 
--- | This problem generator produces a global energy minimization problem under a
--- throughput constraint.
+-- | This problem generator produces a global energy minimization problem under
+--  a throughput constraint.
 throughputConstrained ::
   -- | Control configuration
   ControlCfg ->
@@ -63,13 +66,21 @@ throughputConstrained cfg st =
     normalizedSumSlowdown :: Maybe OExpr
     normalizedSumSlowdown =
       nonEmpty (M.toList constrained) <&> \(fmap fst -> ids) ->
-        thresholded 0.5 1.5 (coerce (foldMap (OExprSum . sID) ids) \/ (coerce (foldMap (OExprSum . sRef) ids) \+ scalar 1))
+        thresholded
+          0.5
+          1.5
+          ( coerce (foldMap (OExprSum . sRef) ids)
+              \/ (coerce (foldMap (OExprSum . sID) ids) \+ scalar 1)
+          )
     idsToMinimize :: Maybe (NonEmpty SensorID)
     idsToMinimize = nonEmpty (fst <$> M.toList toMinimize)
     toMinimize :: Map SensorID SensorMeta
     toMinimize = M.filterWithKey (\_ m -> TagPower `elem` S.tags m) allSensorMeta
     constrained :: Map SensorID SensorMeta
-    constrained = M.filterWithKey (\_ m -> DownstreamCmdSignal `elem` S.tags m) allSensorMeta
+    constrained =
+      M.filterWithKey
+        (\_ m -> DownstreamCmdSignal `elem` S.tags m)
+        allSensorMeta
     allSensorMeta :: Map SensorID S.SensorMeta
     allSensorMeta =
       M.fromList
@@ -81,7 +92,9 @@ throughputConstrained cfg st =
 
 -- | produces a sum objective normalized by #sensors
 addAll :: NonEmpty SensorID -> OExpr
-addAll ss = coerce (foldMap (OExprSum . sID) ss) \/ (scalar . fromIntegral $ length ss)
+addAll ss =
+  coerce (foldMap (OExprSum . sID) ss)
+    \/ (scalar . fromIntegral $ length ss)
 
 -- | Subtract two objectives, defaulting to either of them
 -- if one is absent.
