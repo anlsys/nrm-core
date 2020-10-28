@@ -11,7 +11,7 @@ module NRM.ExportIO
     verbosity,
     showConfiguration,
     logfile,
-    activeSensorFrequency,
+    passiveSensorFrequency,
     upstreamPubAddress,
     upstreamRpcAddress,
     downstreamEventAddress,
@@ -45,8 +45,8 @@ verbosity = return . E.verbosity
 logfile :: C.Cfg -> IO Text
 logfile = return . E.logfile
 
-activeSensorFrequency :: C.Cfg -> IO Double
-activeSensorFrequency = return . E.activeSensorFrequency
+passiveSensorFrequency :: C.Cfg -> IO Double
+passiveSensorFrequency = return . E.passiveSensorFrequency
 
 upstreamPubAddress :: C.Cfg -> IO Text
 upstreamPubAddress = return . E.upstreamPubAddress

@@ -1047,7 +1047,6 @@
                     "properties": {
                         "config": {
                             "required": [
-                                "activeSensorFrequency",
                                 "argo_nodeos_config",
                                 "argo_perf_wrapper",
                                 "controlCfg",
@@ -1059,6 +1058,7 @@
                                 "hwmonCfg",
                                 "logfile",
                                 "nodeos",
+                                "passiveSensorFrequency",
                                 "perf",
                                 "pmpi_lib",
                                 "singularity",
@@ -1223,6 +1223,7 @@
                                                         "hint",
                                                         "learnCfg",
                                                         "minimumControlInterval",
+                                                        "minimumWaitInterval",
                                                         "referenceMeasurementRoundInterval",
                                                         "speedThreshold",
                                                         "staticPower"
@@ -1231,6 +1232,17 @@
                                                     "properties": {
                                                         "referenceMeasurementRoundInterval": {
                                                             "type": "number"
+                                                        },
+                                                        "minimumWaitInterval": {
+                                                            "required": [
+                                                                "microseconds"
+                                                            ],
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "microseconds": {
+                                                                    "type": "number"
+                                                                }
+                                                            }
                                                         },
                                                         "hint": {
                                                             "oneOf": [
@@ -1433,17 +1445,6 @@
                                 "libnrmPath": {
                                     "type": "string"
                                 },
-                                "activeSensorFrequency": {
-                                    "required": [
-                                        "hertz"
-                                    ],
-                                    "type": "object",
-                                    "properties": {
-                                        "hertz": {
-                                            "type": "number"
-                                        }
-                                    }
-                                },
                                 "perf": {
                                     "type": "string"
                                 },
@@ -1568,6 +1569,17 @@
                                         },
                                         "hwmonEnabled": {
                                             "type": "boolean"
+                                        }
+                                    }
+                                },
+                                "passiveSensorFrequency": {
+                                    "required": [
+                                        "hertz"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "hertz": {
+                                            "type": "number"
                                         }
                                     }
                                 }

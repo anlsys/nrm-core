@@ -911,8 +911,7 @@
                                 },
                                 "integrator": {
                                     "required": [
-                                        "tLast",
-                                        "minimumControlInterval",
+                                        "meta",
                                         "measured"
                                     ],
                                     "type": "object",
@@ -1010,11 +1009,24 @@
                                             },
                                             "type": "object"
                                         },
-                                        "minimumControlInterval": {
-                                            "type": "number"
-                                        },
-                                        "tLast": {
-                                            "type": "number"
+                                        "meta": {
+                                            "required": [
+                                                "tLast",
+                                                "minimumWaitInterval",
+                                                "minimumControlInterval"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "minimumWaitInterval": {
+                                                    "type": "number"
+                                                },
+                                                "minimumControlInterval": {
+                                                    "type": "number"
+                                                },
+                                                "tLast": {
+                                                    "type": "number"
+                                                }
+                                            }
                                         }
                                     }
                                 },

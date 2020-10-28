@@ -48,7 +48,7 @@ foreign export ccall verbosityExport :: Ex
 
 foreign export ccall logfileExport :: Ex
 
-foreign export ccall activeSensorFrequencyExport :: Ex
+foreign export ccall passiveSensorFrequencyExport :: Ex
 
 foreign export ccall upstreamRpcAddressExport :: Ex
 
@@ -88,7 +88,7 @@ verbosityExport = exportIO E.verbosity
 
 logfileExport = exportIO E.logfile
 
-activeSensorFrequencyExport = exportIO E.activeSensorFrequency
+passiveSensorFrequencyExport = exportIO E.passiveSensorFrequency
 
 upstreamRpcAddressExport = exportIO E.upstreamRpcAddress
 
