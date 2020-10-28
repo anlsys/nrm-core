@@ -15,12 +15,13 @@ in      default
         , controlCfg =
             types.ControlCfg.ControlCfg
               { minimumControlInterval.microseconds = 100000.0
+              , minimumWaitInterval.microseconds = 100000.0
               , staticPower.microwatts = 2.0e8
               , learnCfg = types.LearnCfg.Contextual { horizon = +4000 }
               , speedThreshold = 1.1
               , referenceMeasurementRoundInterval = +6
               , hint = types.Hint.Full
               }
-        , activeSensorFrequency.hertz = 1.0
+        , passiveSensorFrequency.hertz = 1.0
         }
     : types.Cfg

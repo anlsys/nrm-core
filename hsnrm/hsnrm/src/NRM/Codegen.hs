@@ -11,8 +11,6 @@ module NRM.Codegen
     upstreamReqSchema,
     upstreamRepSchema,
     downstreamEventSchema,
-    manifestSchema,
-    configurationSchema,
     libnrmHeader,
     licenseC,
   )
@@ -20,11 +18,11 @@ where
 
 import Codegen.CHeader
 import Codegen.Schema (generatePretty)
-import Codegen.Schema as CS
 import Data.Aeson.Encode.Pretty as AP (encodePretty)
 import Data.Default
 import Data.JSON.Schema as S
 import Dhall
+import Dhall.JSON as DJ
 import NRM.Messaging
 import qualified NRM.Types.Configuration as C
 import qualified NRM.Types.Manifest as MI
@@ -47,10 +45,24 @@ main = do
   verboseWrite (prefix <> "/schemas") "upstream-rep" upstreamRepSchema
   verboseWrite (prefix <> "/schemas") "upstream-req" upstreamReqSchema
   verboseWrite (prefix <> "/schemas") "downstream" downstreamEventSchema
-  verboseWrite (prefix <> "/schemas") "manifest" manifestSchema
-  verboseWrite (prefix <> "/schemas") "nrmd" configurationSchema
-  verboseWrite (prefix <> "/defaults") "nrmd" (toS $ AP.encodePretty (def :: C.Cfg))
-  verboseWrite (prefix <> "/defaults") "manifest" (toS $ AP.encodePretty (def :: MI.Manifest))
+  verboseWrite
+    (prefix <> "/defaults")
+    "nrmd"
+    ( toS
+        . AP.encodePretty
+        . fromRight (panic "generatio error")
+        . dhallToJSON
+        $ Dhall.embed Dhall.inject (def :: C.Cfg)
+    )
+  verboseWrite
+    (prefix <> "/defaults")
+    "manifest"
+    ( toS
+        . AP.encodePretty
+        . fromRight (panic "generatio error")
+        . dhallToJSON
+        $ Dhall.embed Dhall.inject (def :: MI.Manifest)
+    )
   where
     verboseWrite :: Text -> Text -> Text -> IO ()
     verboseWrite prefix desc sch = do
@@ -74,14 +86,6 @@ upstreamPubSchema = generatePretty (Proxy :: Proxy Pub)
 -- | The downstream Event schema.
 downstreamEventSchema :: Text
 downstreamEventSchema = generatePretty (Proxy :: Proxy Event)
-
--- | The manifest schema.
-manifestSchema :: Text
-manifestSchema = toS . AP.encodePretty . CS.toAeson $ S.schema (Proxy :: Proxy MI.Manifest)
-
--- | The configuration schema.
-configurationSchema :: Text
-configurationSchema = toS . AP.encodePretty . CS.toAeson $ S.schema (Proxy :: Proxy C.Cfg)
 
 -- | The libnrm C header.
 libnrmHeader :: Text

@@ -37,11 +37,11 @@ let Tag =
     -- Available tags for describing sensors. Tags are used for setting
     -- objective functions up.
       < TagPower
-      | Rapl
-      | DownstreamThreadSignal
-      | DownstreamCmdSignal
-      | Minimize
-      | Maximize
+      | TagRapl
+      | TagDownstreamThreadSignal
+      | TagDownstreamCmdSignal
+      | TagMinimize
+      | TagMaximize
       >
 
 let Sensor =
@@ -61,15 +61,17 @@ let Actuator =
       , referenceAction : Double
       }
 
-let StaticActuatorKV =
+let ActuatorKV =
     -- Key-value representation for an actuator.
-      { staticActuatorKey : Text, staticActuatorValue : Actuator }
+      { actuatorID : Text, actuator : Actuator }
 
-let PassiveSensorKV =
-    -- Key-value representation for a passive sensor.
-      { passiveSensorKey : Text, passiveSensorValue : Sensor }
+let SensorKV =
+    -- Key-value representation for a sensor.
+      { sensorID : Text, sensor : Sensor }
 
-let Hwmon = { hwmonEnabled : Bool, hwmonPath : Text }
+let Hwmon =
+    --- Temperature sensor config (imported from NRM1, placeholder)
+      { hwmonEnabled : Bool, hwmonPath : Text }
 
 let RaplCfg =
     -- Configuration for auto-discovered RAPL power sensors/actuators
@@ -80,7 +82,7 @@ let RaplCfg =
 
 let ActuatorValue =
     -- Actuator value configuration for the internal control loop configuration.
-      { actuatorID : Text, actuatorValue : Double }
+      { actuatorValueID : Text, actuatorValue : Double }
 
 let Hint =
     -- Action space configuration for internal control loop.
@@ -131,8 +133,8 @@ let Cfg =
       , hwmonCfg : Hwmon
       , controlCfg : ControlCfg
       , passiveSensorFrequency : types.Frequency
-      , extraStaticPassiveSensors : List PassiveSensorKV
-      , extraStaticActuators : List StaticActuatorKV
+      , extraStaticPassiveSensors : List SensorKV
+      , extraStaticActuators : List ActuatorKV
       }
 
 let output =
@@ -142,9 +144,9 @@ let output =
       , Tag = Tag
       , SensorBehavior = SensorBehavior
       , Actuator = Actuator
-      , PassiveSensorKV = PassiveSensorKV
-      , PassiveSensor = Sensor
-      , StaticActuatorKV = StaticActuatorKV
+      , SensorKV = SensorKV
+      , Sensor = Sensor
+      , ActuatorKV = ActuatorKV
       , Range = Range
       , PassiveSensorCfg = Sensor
       , ActuatorValue = ActuatorValue

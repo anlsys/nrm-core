@@ -4,9 +4,9 @@ let default = ../../hsnrm/hsnrm/dhall/defaults/nrmd.dhall
 
 in      default
       ⫽ { extraStaticPassiveSensors =
-          [ { passiveSensorKey =
+          [ { sensorID =
                 "Sensor that gets package power limits for package 0 through variorum"
-            , passiveSensorValue =
+            , sensor =
                 { sensorBinary = "bash"
                 , sensorArguments =
                   [ "-c"
@@ -17,9 +17,9 @@ in      default
                 , sensorBehavior = types.SensorBehavior.Cumulative
                 }
             }
-          , { passiveSensorKey =
+          , { sensorID =
                 "Sensor that gets package power limits for package 1 through variorum"
-            , passiveSensorValue =
+            , sensor =
                 { sensorBinary = "bash"
                 , sensorArguments =
                   [ "-c"

@@ -1071,15 +1071,15 @@
                                     "uniqueItems": false,
                                     "items": {
                                         "required": [
-                                            "passiveSensorKey",
-                                            "passiveSensorValue"
+                                            "sensor",
+                                            "sensorID"
                                         ],
                                         "type": "object",
                                         "properties": {
-                                            "passiveSensorKey": {
+                                            "sensorID": {
                                                 "type": "string"
                                             },
-                                            "passiveSensorValue": {
+                                            "sensor": {
                                                 "required": [
                                                     "range",
                                                     "sensorArguments",
@@ -1155,22 +1155,22 @@
                                                         "items": {
                                                             "oneOf": [
                                                                 {
-                                                                    "const": "\"downstreamCmdSignal\""
+                                                                    "const": "\"tagDownstreamCmdSignal\""
                                                                 },
                                                                 {
-                                                                    "const": "\"downstreamThreadSignal\""
+                                                                    "const": "\"tagDownstreamThreadSignal\""
                                                                 },
                                                                 {
-                                                                    "const": "\"maximize\""
+                                                                    "const": "\"tagMaximize\""
                                                                 },
                                                                 {
-                                                                    "const": "\"minimize\""
-                                                                },
-                                                                {
-                                                                    "const": "\"rapl\""
+                                                                    "const": "\"tagMinimize\""
                                                                 },
                                                                 {
                                                                     "const": "\"tagPower\""
+                                                                },
+                                                                {
+                                                                    "const": "\"tagRapl\""
                                                                 }
                                                             ]
                                                         },
@@ -1275,15 +1275,15 @@
                                                                                     "uniqueItems": false,
                                                                                     "items": {
                                                                                         "required": [
-                                                                                            "actuatorID",
-                                                                                            "actuatorValue"
+                                                                                            "actuatorValue",
+                                                                                            "actuatorValueID"
                                                                                         ],
                                                                                         "type": "object",
                                                                                         "properties": {
                                                                                             "actuatorValue": {
                                                                                                 "type": "number"
                                                                                             },
-                                                                                            "actuatorID": {
+                                                                                            "actuatorValueID": {
                                                                                                 "type": "string"
                                                                                             }
                                                                                         }
@@ -1296,15 +1296,15 @@
                                                                                         "uniqueItems": false,
                                                                                         "items": {
                                                                                             "required": [
-                                                                                                "actuatorID",
-                                                                                                "actuatorValue"
+                                                                                                "actuatorValue",
+                                                                                                "actuatorValueID"
                                                                                             ],
                                                                                             "type": "object",
                                                                                             "properties": {
                                                                                                 "actuatorValue": {
                                                                                                     "type": "number"
                                                                                                 },
-                                                                                                "actuatorID": {
+                                                                                                "actuatorValueID": {
                                                                                                     "type": "string"
                                                                                                 }
                                                                                             }
@@ -1472,12 +1472,12 @@
                                     "uniqueItems": false,
                                     "items": {
                                         "required": [
-                                            "staticActuatorKey",
-                                            "staticActuatorValue"
+                                            "actuator",
+                                            "actuatorID"
                                         ],
                                         "type": "object",
                                         "properties": {
-                                            "staticActuatorValue": {
+                                            "actuator": {
                                                 "required": [
                                                     "actions",
                                                     "actuatorArguments",
@@ -1508,7 +1508,7 @@
                                                     }
                                                 }
                                             },
-                                            "staticActuatorKey": {
+                                            "actuatorID": {
                                                 "type": "string"
                                             }
                                         }

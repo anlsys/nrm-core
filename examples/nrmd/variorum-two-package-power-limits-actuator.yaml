@@ -1,6 +1,6 @@
 extraStaticActuators:
-  - staticActuatorKey: "example extra actuator"
-    staticActuatorValue:
+  - actuatorID: "example extra actuator"
+    actuator:
       actions:
         - 100
         - 150

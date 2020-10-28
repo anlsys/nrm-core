@@ -22,7 +22,7 @@ in    { verbose = t.Verbosity.Error
       , hwmonCfg = { hwmonEnabled = True, hwmonPath = "/sys/class/hwmon" }
       , controlCfg = t.ControlCfg.ControlOff
       , passiveSensorFrequency.hertz = 1.0
-      , extraStaticPassiveSensors = [] : List t.PassiveSensorKV
-      , extraStaticActuators = [] : List t.StaticActuatorKV
+      , extraStaticPassiveSensors = [] : List t.SensorKV
+      , extraStaticActuators = [] : List t.ActuatorKV
       }
     : t.Cfg

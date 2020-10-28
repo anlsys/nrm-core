@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingVia #-}
+{-# LANGUAGE NumericUnderscores #-}
 
 -- |
 -- Module      : NRM.Types.Units
@@ -74,9 +75,6 @@ newtype Energy = Energy {fromuJ :: Double}
   deriving (Eq, Ord, Generic, Data, Inject, Interpret, MessagePack)
   deriving (Show, Num, JSONSchema, ToJSON, FromJSON) via Double
 
-mil :: Double
-mil = 1000000
-
 -- | Microjoule value constructor.
 progress :: Int -> Progress
 progress = Progress
@@ -87,11 +85,11 @@ uJ = Energy
 
 -- | Joule value accessor.
 fromJoules :: Energy -> Double
-fromJoules = (/ mil) . fromuJ
+fromJoules = (/ 1_000_000) . fromuJ
 
 -- | Watt value constructor.
 joules :: Double -> Energy
-joules = Energy . (* mil)
+joules = Energy . (* 1_000_000)
 
 -- | Microwatt value constructor.
 uW :: Double -> Power
@@ -99,11 +97,11 @@ uW = Power
 
 -- | Watt value accessor.
 fromWatts :: Power -> Double
-fromWatts = (/ mil) . fromuW
+fromWatts = (/ 1_000_000) . fromuW
 
 -- | Watt value constructor.
 watts :: Double -> Power
-watts = Power . (* mil)
+watts = Power . (* 1_000_000)
 
 -- | Microsecond value constructor.
 uS :: Double -> Time
@@ -111,10 +109,10 @@ uS = Time
 
 -- | Second value constructor.
 seconds :: Double -> Time
-seconds = Time . (* mil)
+seconds = Time . (* 1_000_000)
 
 fromSeconds :: Time -> Double
-fromSeconds (Time t) = t / mil
+fromSeconds (Time t) = t / 1_000_000
 
 -- | Hertz value constructor.
 hz :: Double -> Frequency

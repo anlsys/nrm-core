@@ -4,8 +4,8 @@ let default = ../../hsnrm/hsnrm/dhall/defaults/nrmd.dhall
 
 in      default
       ⫽ { extraStaticPassiveSensors =
-          [ { passiveSensorKey = "example extra static passive power sensor"
-            , passiveSensorValue =
+          [ { sensorID = "example extra static passive power sensor"
+            , sensor =
                 { sensorBinary = "echo"
                 , sensorArguments = [ "30" ]
                 , range = { lower = 1.0, upper = 40.0 }

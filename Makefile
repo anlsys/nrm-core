@@ -31,6 +31,7 @@ pre-commit: hsnrm/pre-commit\
 	pynrm/pre-commit\
 	libnrm/pre-commit\
 	dhall-format\
+	examples\
 	shellcheck\
 	nixfmt\
 	resource-propagation\
@@ -123,6 +124,10 @@ resources:
 	' --run bash <<< '
 		cd hsnrm; cabal v2-run hsnrm-extra/Codegen.hs ../resources
 	'
+
+.PHONY: examples
+examples:
+	@nix-shell --pure -p yq -p dhall -p haskellPackages.dhall-json --run ./tests/example-test.sh
 
 ############################# SECTION: libnrm pseudo-recursive targets (directory uses autotools)
 

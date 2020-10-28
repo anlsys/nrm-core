@@ -1,13 +1,14 @@
 {
+    "image": null,
     "hwbind": false,
     "app": {
-        "scheduler": {
-            "fIFO": {}
-        },
+        "scheduler": "FIFO",
+        "instrumentation": null,
+        "perfwrapper": null,
         "powerCfg": {
             "slowdown": 1,
             "profile": false,
-            "policy": "noPowerPolicy"
+            "policy": "NoPowerPolicy"
         },
         "slice": {
             "cpus": 1,

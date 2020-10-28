@@ -20,7 +20,6 @@ module NRM.Types.Manifest
     Perfwrapper (..),
     Image (..),
     toFrequency,
-    jsonOptions,
   )
 where
 
@@ -73,9 +72,6 @@ instance Default Manifest where
           & \case
             V.Failure _ -> panic "Error in default cfg"
             V.Success a -> a
-
-jsonOptions :: Options
-jsonOptions = defaultOptions {omitNothingFields = False}
 
 instance MessagePack Integer where
 

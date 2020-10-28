@@ -1,8 +1,8 @@
 {
   "extraStaticPassiveSensors": [
     {
-      "passiveSensorKey": "example extra static passive power sensor",
-      "passiveSensorValue": {
+      "sensorID": "example extra static passive power sensor",
+      "sensor": {
         "range": {
           "lower": 1,
           "upper": 40

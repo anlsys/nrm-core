@@ -110,7 +110,7 @@ library
                         OverloadedLabels DeriveFoldable DerivingStrategies TypeApplications
                         MultiWayIf NoTemplateHaskell BlockArguments GADTs FlexibleContexts
                         TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
-                        FunctionalDependencies UndecidableInstances CPP
+                        FunctionalDependencies UndecidableInstances NumericUnderscores
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
