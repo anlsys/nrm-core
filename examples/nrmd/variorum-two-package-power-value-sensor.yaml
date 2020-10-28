@@ -1,0 +1,25 @@
+extraStaticPassiveSensors:
+  - passiveSensorKey: "Sensor that gets package power limits for package 0 through variorum"
+    passiveSensorValue:
+      range:
+        lower: 1
+        upper: 40
+      sensorArguments:
+        - "-c"
+        - "variorum-print-power-limits-example | awk '{ if ($1 == \"_PACKAGE_ENERGY_STATUS\" && $2 == \"0x610\" && $4 == 0 ) { print $6 } }'"
+      sensorBehavior: Cumulative
+      sensorBinary: bash
+      tags:
+        - TagPower
+  - passiveSensorKey: "Sensor that gets package power limits for package 1 through variorum"
+    passiveSensorValue:
+      range:
+        lower: 1
+        upper: 40
+      sensorArguments:
+        - "-c"
+        - "variorum-print-power-limits-example | awk '{ if ($1 == \"_PACKAGE_ENERGY_STATUS\" && $2 == \"0x610\" && $4 == 1 ) { print $6 } }'"
+      sensorBehavior: Cumulative
+      sensorBinary: bash
+      tags:
+        - TagPower

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 -- |
 -- Module      : NRM.Types.State
 -- Copyright   : (c) UChicago Argonne, 2019
@@ -5,7 +7,6 @@
 -- Maintainer  : fre@freux.fr
 module NRM.Types.State
   ( NRMState (..),
-    ExtraActuator (..),
     ExtraPassiveSensor (..),
 
     -- * Useful maps
@@ -26,7 +27,6 @@ module NRM.Types.State
   )
 where
 
-import qualified CPD.Core as CPD
 import Control.Lens
 import Data.Aeson hiding ((.=))
 import Data.Coerce
@@ -67,12 +67,9 @@ data NRMState
         singularityRuntime :: Maybe SingularityRuntime,
         nodeosRuntime :: Maybe NodeosRuntime,
         controller :: Maybe Controller,
-        extraStaticActuators :: Map Text ExtraActuator,
+        extraStaticActuators :: Map Text Cfg.ExtraActuator,
         extraStaticPassiveSensors :: Map Text ExtraPassiveSensor
       }
-  deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
-
-newtype ExtraActuator = ExtraActuator {getExtraActuator :: Cfg.ExtraActuator}
   deriving (Show, Generic, MessagePack, ToJSON, FromJSON)
 
 type Parser = Parsec Void Text
@@ -87,7 +84,7 @@ sc =
 lexeme :: Parser a -> Parser a
 lexeme = L.lexeme sc
 
-instance HasLensMap (Text, ExtraActuator) A.ActuatorKey A.Actuator where
+instance HasLensMap (Text, Cfg.ExtraActuator) A.ActuatorKey A.Actuator where
   lenses (actuatorID, _) =
     M.singleton
       (A.ExtraActuatorKey actuatorID)
@@ -95,17 +92,21 @@ instance HasLensMap (Text, ExtraActuator) A.ActuatorKey A.Actuator where
           (_2 . lens getter setter)
       )
     where
-      getter :: ExtraActuator -> A.Actuator
+      getter :: Cfg.ExtraActuator -> A.Actuator
       getter (coerce -> extraActuator) = A.Actuator
-        { actions = Cfg.actions extraActuator <&> CPD.getDiscrete,
-          referenceAction = CPD.getDiscrete $ Cfg.referenceAction extraActuator,
-          go = \value -> runProcess_ $ System.Process.Typed.proc (toS $ Cfg.actuatorBinary extraActuator) ((toS <$> Cfg.actuatorArguments extraActuator) <> [show value])
+        { actions = Cfg.actions extraActuator,
+          referenceAction = Cfg.referenceAction extraActuator,
+          go = \value ->
+            runProcess_ $
+              System.Process.Typed.proc
+                (toS $ Cfg.actuatorBinary extraActuator)
+                ((toS <$> Cfg.actuatorArguments extraActuator) <> [show value])
         }
-      setter :: ExtraActuator -> A.Actuator -> ExtraActuator
-      setter (getExtraActuator -> oldExtraActuator) actuator = coerce $
+      setter :: Cfg.ExtraActuator -> A.Actuator -> Cfg.ExtraActuator
+      setter oldExtraActuator actuator = coerce $
         oldExtraActuator &~ do
-          #referenceAction . #_DiscreteDouble .= A.referenceAction actuator
-          #actions .= (A.actions actuator <&> CPD.DiscreteDouble)
+          #referenceAction .= A.referenceAction actuator
+          #actions .= A.actions actuator
 
 data ExtraPassiveSensor
   = ExtraPassiveSensor
@@ -116,7 +117,12 @@ data ExtraPassiveSensor
       }
   deriving (Eq, Show, Generic, MessagePack, ToJSON, FromJSON)
 
-instance HasLensMap (Text, ExtraPassiveSensor) PassiveSensorKey PassiveSensor where
+instance
+  HasLensMap
+    (Text, ExtraPassiveSensor)
+    PassiveSensorKey
+    PassiveSensor
+  where
   lenses (sensorID, _) =
     M.singleton
       (S.ExtraPassiveSensorKey sensorID)
@@ -129,15 +135,15 @@ instance HasLensMap (Text, ExtraPassiveSensor) PassiveSensorKey PassiveSensor wh
         S.PassiveSensor
           { passiveMeta = S.SensorMeta
               { tags = Cfg.tags extraPassiveSensor,
-                range = Cfg.range extraPassiveSensor,
+                range = Cfg.toInterval $ Cfg.range extraPassiveSensor,
                 lastReferenceMeasurements = history,
                 last = lastRead,
                 cumulative = Cfg.sensorBehavior extraPassiveSensor
               },
             frequency = frequency,
             perform =
-              -- this megaparsec-based code might be given a module and improved if/when the
-              -- need arises
+              -- this megaparsec-based code might be given a module and improved
+              -- if/when the need arises
               fmap toRealFloat
                 . parseMaybe (lexeme L.scientific)
                 . toS
@@ -150,7 +156,8 @@ instance HasLensMap (Text, ExtraPassiveSensor) PassiveSensorKey PassiveSensor wh
       setter :: ExtraPassiveSensor -> S.PassiveSensor -> ExtraPassiveSensor
       setter p passiveSensor =
         p &~ do
-          #extraPassiveSensor . #range .= passiveSensor ^. S._meta . #range
+          #extraPassiveSensor . #range
+            .= Cfg.toRange (passiveSensor ^. S._meta . #range)
           #history .= passiveSensor ^. S._meta . #lastReferenceMeasurements
           #lastRead .= passiveSensor ^. S._meta . #last
 

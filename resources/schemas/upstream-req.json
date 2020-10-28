@@ -1,0 +1,401 @@
+{
+    "oneOf": [
+        {
+            "required": [
+                "reqSliceList"
+            ],
+            "type": "object",
+            "properties": {
+                "reqSliceList": {
+                    "const": "\"sliceList\""
+                }
+            }
+        },
+        {
+            "required": [
+                "reqRun"
+            ],
+            "type": "object",
+            "properties": {
+                "reqRun": {
+                    "required": [
+                        "manifest",
+                        "spec",
+                        "runSliceID",
+                        "detachCmd"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "detachCmd": {
+                            "type": "boolean"
+                        },
+                        "runSliceID": {
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        "manifest": {
+                            "required": [
+                                "app",
+                                "hwbind",
+                                "name"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "image": {
+                                    "required": [
+                                        "imagetype",
+                                        "path"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "binds": {
+                                            "uniqueItems": false,
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "type": "array"
+                                        },
+                                        "path": {
+                                            "type": "string"
+                                        },
+                                        "imagetype": {
+                                            "oneOf": [
+                                                {
+                                                    "const": "\"docker\""
+                                                },
+                                                {
+                                                    "const": "\"sif\""
+                                                }
+                                            ]
+                                        }
+                                    }
+                                },
+                                "hwbind": {
+                                    "type": "boolean"
+                                },
+                                "app": {
+                                    "required": [
+                                        "powerCfg",
+                                        "scheduler",
+                                        "slice"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "scheduler": {
+                                            "oneOf": [
+                                                {
+                                                    "required": [
+                                                        "fIFO"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "fIFO": {
+                                                            "type": "object",
+                                                            "properties": {}
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "required": [
+                                                        "hPC"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "hPC": {
+                                                            "type": "object",
+                                                            "properties": {}
+                                                        }
+                                                    }
+                                                },
+                                                {
+                                                    "required": [
+                                                        "other"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "other": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        },
+                                        "instrumentation": {
+                                            "required": [
+                                                "ratelimit"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "ratelimit": {
+                                                    "required": [
+                                                        "hertz"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "hertz": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "perfwrapper": {
+                                            "required": [
+                                                "perfFreq",
+                                                "perfLimit"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "perfLimit": {
+                                                    "type": "number"
+                                                },
+                                                "perfFreq": {
+                                                    "required": [
+                                                        "hertz"
+                                                    ],
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "hertz": {
+                                                            "type": "number"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "powerCfg": {
+                                            "required": [
+                                                "policy",
+                                                "profile",
+                                                "slowdown"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "slowdown": {
+                                                    "type": "number"
+                                                },
+                                                "profile": {
+                                                    "type": "boolean"
+                                                },
+                                                "policy": {
+                                                    "oneOf": [
+                                                        {
+                                                            "const": "\"combined\""
+                                                        },
+                                                        {
+                                                            "const": "\"dDCM\""
+                                                        },
+                                                        {
+                                                            "const": "\"dVFS\""
+                                                        },
+                                                        {
+                                                            "const": "\"noPowerPolicy\""
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        },
+                                        "slice": {
+                                            "required": [
+                                                "cpus",
+                                                "mems"
+                                            ],
+                                            "type": "object",
+                                            "properties": {
+                                                "cpus": {
+                                                    "type": "number"
+                                                },
+                                                "mems": {
+                                                    "type": "number"
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "spec": {
+                            "required": [
+                                "cmd",
+                                "args",
+                                "env"
+                            ],
+                            "type": "object",
+                            "properties": {
+                                "args": {
+                                    "uniqueItems": false,
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                },
+                                "env": {
+                                    "required": [
+                                        "fromEnv"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "fromEnv": {
+                                            "additionalProperties": {
+                                                "type": "string"
+                                            },
+                                            "type": "object"
+                                        }
+                                    }
+                                },
+                                "cmd": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "reqKillSlice"
+            ],
+            "type": "object",
+            "properties": {
+                "reqKillSlice": {
+                    "required": [
+                        "killSliceID"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "killSliceID": {
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "sliceID"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "sliceID": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                {
+                                    "required": [
+                                        "name"
+                                    ],
+                                    "type": "object",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "reqCPD"
+            ],
+            "type": "object",
+            "properties": {
+                "reqCPD": {
+                    "const": "\"cPD\""
+                }
+            }
+        },
+        {
+            "required": [
+                "reqKillCmd"
+            ],
+            "type": "object",
+            "properties": {
+                "reqKillCmd": {
+                    "required": [
+                        "killCmdID"
+                    ],
+                    "type": "object",
+                    "properties": {
+                        "killCmdID": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "required": [
+                "reqActuate"
+            ],
+            "type": "object",
+            "properties": {
+                "reqActuate": {
+                    "uniqueItems": false,
+                    "items": {
+                        "required": [
+                            "actuatorID",
+                            "actuatorValue"
+                        ],
+                        "type": "object",
+                        "properties": {
+                            "actuatorValue": {
+                                "type": "number"
+                            },
+                            "actuatorID": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "type": "array"
+                }
+            }
+        },
+        {
+            "required": [
+                "reqGetState"
+            ],
+            "type": "object",
+            "properties": {
+                "reqGetState": {
+                    "const": "\"getState\""
+                }
+            }
+        },
+        {
+            "required": [
+                "reqGetConfig"
+            ],
+            "type": "object",
+            "properties": {
+                "reqGetConfig": {
+                    "const": "\"getConfig\""
+                }
+            }
+        }
+    ]
+}

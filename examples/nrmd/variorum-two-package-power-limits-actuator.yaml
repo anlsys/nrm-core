@@ -1,0 +1,9 @@
+extraStaticActuators:
+  - staticActuatorKey: "example extra actuator"
+    staticActuatorValue:
+      actions:
+        - 100
+        - 150
+      actuatorArguments: []
+      actuatorBinary: variorum-set-socket-power-limits-example
+      referenceAction: 100

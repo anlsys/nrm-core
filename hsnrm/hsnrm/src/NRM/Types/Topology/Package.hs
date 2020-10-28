@@ -21,6 +21,7 @@ import LensMap.Core
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
 import NRM.Types.Actuator as A
+import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.MemBuffer
 import NRM.Types.Sensor as S
 import NRM.Types.Topology.PackageID
@@ -91,11 +92,11 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
       getter (NRM.Types.Topology.Package.Rapl cfg maxPower maxCounter freq _discreteChoices _defaultPower lastRead history) =
         S.PassiveSensor
           { passiveMeta = S.SensorMeta
-              { tags = [S.Minimize, S.Power, S.Rapl],
+              { tags = [Cfg.Minimize, Cfg.TagPower, Cfg.Rapl],
                 range = 0 ... fromWatts maxPower,
                 S.lastReferenceMeasurements = history,
                 last = lastRead <&> fmap fromJoules,
-                cumulative = S.CumulativeWithCapacity (fromJoules maxCounter)
+                cumulative = Cfg.CumulativeWithCapacity (fromJoules maxCounter)
               },
             frequency = freq,
             perform = measureRAPLDir (configPath cfg) <&> fmap (fromJoules . energy)

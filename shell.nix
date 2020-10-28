@@ -56,7 +56,6 @@ in mkShell {
         haskellPackages.cabal-install
         haskellPackages.graphmod
         haskellPackages.hdevtools
-        pkgs.dhall-to-cabal
         haskellPackages.wreq
         haskellPackages.hlint
         haskellPackages.fix-imports

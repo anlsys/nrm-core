@@ -18,6 +18,7 @@ import Data.Map as M
 import Data.MessagePack
 import LensMap.Core
 import NRM.Classes.Messaging
+import qualified NRM.Types.Configuration as Cfg
 import NRM.Types.DownstreamThreadID
 import NRM.Types.MemBuffer
 import NRM.Types.Sensor
@@ -52,7 +53,7 @@ instance
                 range = 0 ... (maxValue downstreamThread & fromProgress & fromIntegral),
                 lastReferenceMeasurements = dtLastRef,
                 last = lastRead <&> fmap (fromIntegral . fromProgress),
-                cumulative = IntervalBased
+                cumulative = Cfg.IntervalBased
               },
             maxFrequency = ratelimit,
             process = identity

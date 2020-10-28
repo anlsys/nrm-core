@@ -53,7 +53,7 @@ throughputConstrained cfg st =
       Just ids ->
         let powerTerm =
               coerce (foldMap (OExprSum . sID) ids)
-                \+ scalar (fromWatts $ staticPower cfg)
+                \+ scalar (fromWatts . toPower $ staticPower cfg)
          in [(Bandit.Types.one, maybe powerTerm (powerTerm \/) normalizedSumSlowdown)],
     normalizedSumSlowdown & \case
       Nothing -> []
@@ -67,7 +67,7 @@ throughputConstrained cfg st =
     idsToMinimize :: Maybe (NonEmpty SensorID)
     idsToMinimize = nonEmpty (fst <$> M.toList toMinimize)
     toMinimize :: Map SensorID SensorMeta
-    toMinimize = M.filterWithKey (\_ m -> Power `elem` S.tags m) allSensorMeta
+    toMinimize = M.filterWithKey (\_ m -> TagPower `elem` S.tags m) allSensorMeta
     constrained :: Map SensorID SensorMeta
     constrained = M.filterWithKey (\_ m -> DownstreamCmdSignal `elem` S.tags m) allSensorMeta
     allSensorMeta :: Map SensorID S.SensorMeta

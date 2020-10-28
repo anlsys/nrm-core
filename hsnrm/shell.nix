@@ -4,9 +4,10 @@ haskellPackages.shellFor {
   packages = p: [ haskellPackages.hsnrm haskellPackages.hsnrm-extra ];
   withHoogle = true;
   buildInputs = [
+    jq
+    yq
     haskellPackages.ghcid
     dhall
-    dhall-to-cabal
     cabal2nix
     ormolu
     hlint

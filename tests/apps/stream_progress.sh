@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-nrmd '{ verbose = < Error | Info | Debug >.Debug,
-        raplCfg = None { raplPath : Text,
-                         raplActions : List { fromuW : Double },
-                         referencePower : { fromuW : Double } }
-                       }' >/dev/null 2>/dev/null &
+nrmd ' let t = ../../hsnrm/hsnrm/dhall/types/nrmd.dhall
+       let d = ../../hsnrm/hsnrm/dhall/defaults/nrmd.dhall
+       in d // { verbose = t.Verbosity.Debug,
+                 raplCfg =  None t.RaplCfg
+               }
+     ' >/dev/null 2>/dev/null &
 
-nrm run --manifest=../../hsnrm/resources/example-manifests/libnrm.dhall -d \
+nrm run --manifest=../../examples/manifests/libnrm.dhall -d \
   stream_c >/dev/null 2>/dev/null
 
 timeout 10 nrm listen-cpd

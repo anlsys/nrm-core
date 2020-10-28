@@ -46,7 +46,7 @@ data CommonOpts
   deriving (Generic, MessagePack)
 
 instance Default CommonOpts where
-  def = CommonOpts Normal False False pub rpc addr
+  def = CommonOpts Normal False False (fromInteger pub) (fromInteger rpc) addr
     where
       rpc = Cfg.rpcPort . Cfg.upstreamCfg $ def
       pub = Cfg.pubPort . Cfg.upstreamCfg $ def

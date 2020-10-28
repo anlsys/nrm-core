@@ -107,13 +107,24 @@ dhall-format:
 resource-propagation: pynrm/nrm/schemas/downstreamEvent.json\
 	libnrm/src/nrm_messaging.h
 
-pynrm/nrm/schemas/downstreamEvent.json: hsnrm/resources
-	cp hsnrm/resources/downstreamEvent.json $@
+pynrm/nrm/schemas/downstreamEvent.json: resources
+	cp resources/schemas/downstream.json $@
 
-libnrm/src/nrm_messaging.h: hsnrm/resources
-	cp hsnrm/resources/nrm_messaging.h $@
+libnrm/src/nrm_messaging.h: resources
+	cp resources/nrm_messaging.h $@
 
-############################# SECTION: libnrm pseudo-recursive targets (actual directory uses autotools)
+resources:
+	@nix-shell --pure -E '
+		let pkgs = import <nixpkgs> {};
+		in with pkgs; haskellPackages.shellFor {
+			packages = p: [ haskellPackages.hsnrm haskellPackages.hsnrm-extra ];
+			  buildInputs = [ cabal-install ];
+		}
+	' --run bash <<< '
+		cd hsnrm; cabal v2-run hsnrm-extra/Codegen.hs ../resources
+	'
+
+############################# SECTION: libnrm pseudo-recursive targets (directory uses autotools)
 
 libnrm/all: libnrm/autotools
 
@@ -157,7 +168,7 @@ libnrm/clang-format:
 
 .PHONY: ci
 ci:
-	@nix-shell --pure -p yq jq --run bash <<< '
+	@nix-shell -p yq jq --run bash <<< '
 		for jobname in $$(yq -r "keys| .[]" .gitlab-ci.yml); do
 			if [ "$$jobname" != "stages" ]; then
 				gitlab-runner exec shell "$$jobname"

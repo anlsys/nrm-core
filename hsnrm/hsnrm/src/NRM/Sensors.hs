@@ -24,6 +24,7 @@ import Data.Generics.Labels ()
 import Data.Map as M
 import LensMap.Core
 import NRM.Classes.Sensors
+import NRM.Types.Configuration
 import NRM.Types.Sensor as S
 import NRM.Types.State
 import NRM.Types.Units
