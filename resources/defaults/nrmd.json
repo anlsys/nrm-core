@@ -13,9 +13,6 @@
         "rpcPort": 3456,
         "pubPort": 2345
     },
-    "activeSensorFrequency": {
-        "hertz": 1
-    },
     "perf": "perf",
     "argo_perf_wrapper": "nrm-perfwrapper",
     "downstreamCfg": {
@@ -44,6 +41,6 @@
         "hwmonEnabled": true
     },
     "passiveSensorFrequency": {
-        "fromHz": 1
+        "hertz": 1
     }
 }
