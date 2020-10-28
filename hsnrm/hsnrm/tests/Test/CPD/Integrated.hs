@@ -91,6 +91,5 @@ unit_measureValue = do
     feed :: MeasurementState M -> [(Time, Double)] -> MeasurementState M
     feed initialState ts = execState (for_ ts (modify . measure)) initialState
     feedAvg i ts = area <$> feed i ts
-    measure = measureValue deltaValue
-    deltaValue = 10
+    measure = measureValue $ IntegratorMeta {tLast = 0, minimumWaitInterval = 0, minimumControlInterval = 10}
     arbitrary = 6543
