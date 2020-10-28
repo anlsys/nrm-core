@@ -97,7 +97,7 @@ initialState c time = do
               IntegratorMeta
                 { tLast = time,
                   I.minimumWaitInterval = Cfg.toTime $ Cfg.minimumWaitInterval ccfg,
-                  I.minimumControlInterval =Cfg.toTime $ Cfg.minimumControlInterval ccfg
+                  I.minimumControlInterval = Cfg.toTime $ Cfg.minimumControlInterval ccfg
                 }
               [],
       slices = M.fromList [],

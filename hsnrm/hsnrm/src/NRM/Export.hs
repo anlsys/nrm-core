@@ -47,8 +47,8 @@ import qualified NRM.Types.Configuration as C
     DownstreamCfg (..),
     UpstreamCfg (..),
     logfile,
-    toFrequency,
     passiveSensorFrequency,
+    toFrequency,
     verbose,
   )
 import qualified NRM.Types.Messaging.UpstreamRep as URep
