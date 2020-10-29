@@ -15,7 +15,6 @@ module NRM.Types.Configuration
     DaemonVerbosity (..),
     ControlCfg (..),
     RaplCfg (..),
-    HwmonCfg (..),
     ExtraPassiveSensor (..),
     ActuatorKV (..),
     SensorKV (..),
@@ -71,7 +70,6 @@ makeHaskellTypes $
         dSum "Tag" "Tag",
         dRec "Range" "Range",
         dRec "Frequency" "Frequency",
-        dRec "HwmonCfg" "HwmonCfg",
         dRec "ExtraActuator" "Actuator",
         dRec "ActuatorValue" "ActuatorValue",
         dSum "Hint" "Hint",
@@ -157,26 +155,6 @@ deriving via (GenericJSON RaplCfg) instance FromJSON RaplCfg
 deriving via (GenericJSON RaplCfg) instance ToJSON RaplCfg
 
 deriving via (GenericJSON RaplCfg) instance JSONSchema RaplCfg
-
-deriving instance Generic HwmonCfg
-
-deriving instance Eq HwmonCfg
-
-deriving instance Ord HwmonCfg
-
-deriving instance Show HwmonCfg
-
-deriving instance MessagePack HwmonCfg
-
-deriving instance FromDhall HwmonCfg
-
-deriving instance ToDhall HwmonCfg
-
-deriving via (GenericJSON HwmonCfg) instance FromJSON HwmonCfg
-
-deriving via (GenericJSON HwmonCfg) instance ToJSON HwmonCfg
-
-deriving via (GenericJSON HwmonCfg) instance JSONSchema HwmonCfg
 
 deriving instance Generic Tag
 

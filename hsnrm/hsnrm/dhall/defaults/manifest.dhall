@@ -9,21 +9,7 @@ let t = ../types/manifest.dhall
 
 in  { name = "default"
     , app =
-        { slice = { cpus = +1, mems = +1 }
-        , scheduler = t.Scheduler.FIFO
-        , perfwrapper = None t.Perfwrapper
-        , powerCfg =
-            { policy = < NoPowerPolicy | DDCM | DVFS | Combined >.NoPowerPolicy
-            , profile = False
-            , slowdown = +1
-            }
+        { perfwrapper = None t.Perfwrapper
         , instrumentation = None t.Instrumentation
         }
-    , hwbind = False
-    , image =
-        None
-          { path : Text
-          , imagetype : < Sif | Docker >
-          , binds : Optional (List Text)
-          }
     }

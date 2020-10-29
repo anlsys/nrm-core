@@ -8,7 +8,10 @@
 -- types used by nrmd's configuration.
 --
 --
-let types = ./types.dhall
+let types =
+    -- This import defines a few base types that are common to manifest and
+    -- configuration formats.
+      ./types.dhall
 
 let Verbosity =
     -- Daemon verbosity:
@@ -19,7 +22,15 @@ let Verbosity =
 
 let SensorBehavior =
     -- Sensor Behavior.
-      < Cumulative | IntervalBased | CumulativeWithCapacity : Double >
+    -- IntervalBased: a sensor that measures an average value for the time
+    -- period since its last reading.
+    -- Cumulative: a sensor that measures a counter. NRM must substract between
+    -- subsequent counter values to obtain a reading for the corresponding time
+    -- period.
+    -- CumulativeWithCapacity: same as `Cumulative`, except the sensor gives
+    -- bounded values that go back to zero after a given threshold. Typical of
+    -- RAPL sysfs sensors, for instance .
+      < IntervalBased | Cumulative | CumulativeWithCapacity : Double >
 
 let Range =
     -- An inclusive range of values
@@ -69,10 +80,6 @@ let SensorKV =
     -- Key-value representation for a sensor.
       { sensorID : Text, sensor : Sensor }
 
-let Hwmon =
-    --- Temperature sensor config (imported from NRM1, placeholder)
-      { hwmonEnabled : Bool, hwmonPath : Text }
-
 let RaplCfg =
     -- Configuration for auto-discovered RAPL power sensors/actuators
       { raplPath : Text
@@ -115,22 +122,29 @@ let ControlCfg =
       >
 
 let Cfg =
-    -- The configuration type for nrmd.
+    -- The configuration type for `nrmd`.
+    -- verbose : a verbosity level configuration.
+    -- logfile : the main log file for the daemon.
+    -- perfPath : the path/binary name of the linux perf executable.
+    -- perfwrapperPath : the path/binary name of the nrm-perfwrapper executable
+    -- libnrmPath : the path to the libnrm.so to use. leave at None to disable
+    --              the feature globally (for all apps).
+    -- downstreamCfg : Downstream API configuration.
+    -- upstreamCfg : Upstream API configuration.
+    -- raplCfg : RAPL configuration. Leave at None to disable the feature
+    --           globally.
+    -- controlCfg : resource control configuration
+    -- passiveSensorFrequency : unified frequency for all NRM's passive sensors.
+    -- extraStaticPassiveSensors : list of extra static passive sensors.
+    -- extraStaticActuators : list of extra actuators.
       { verbose : Verbosity
       , logfile : Text
-      , hwloc : Text
-      , perf : Text
-      , argo_perf_wrapper : Text
-      , argo_nodeos_config : Text
+      , perfPath : Text
+      , perfwrapperPath : Text
       , libnrmPath : Optional Text
-      , pmpi_lib : Text
-      , singularity : Bool
-      , dummy : Bool
-      , nodeos : Bool
       , downstreamCfg : DownstreamCfg
       , upstreamCfg : UpstreamCfg
       , raplCfg : Optional RaplCfg
-      , hwmonCfg : Hwmon
       , controlCfg : ControlCfg
       , passiveSensorFrequency : types.Frequency
       , extraStaticPassiveSensors : List SensorKV
@@ -151,7 +165,6 @@ let output =
       , PassiveSensorCfg = Sensor
       , ActuatorValue = ActuatorValue
       , ActuatorCfg = Actuator
-      , HwmonCfg = Hwmon
       , LearnCfg = LearnCfg
       , RaplCfg = RaplCfg
       , ControlCfg = ControlCfg
