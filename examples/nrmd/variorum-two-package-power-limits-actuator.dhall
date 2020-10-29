@@ -4,8 +4,8 @@ let default = ../../hsnrm/hsnrm/dhall/defaults/nrmd.dhall
 
 in      default
       ⫽ { extraStaticActuators =
-          [ { staticActuatorKey = "example extra actuator"
-            , staticActuatorValue =
+          [ { actuatorID = "example extra actuator"
+            , actuator =
                 { actuatorBinary = "variorum-set-socket-power-limits-example"
                 , actuatorArguments = [] : List Text
                 , actions = [ 100.0, 150.0 ]

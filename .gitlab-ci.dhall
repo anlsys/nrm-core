@@ -34,6 +34,7 @@ in  { stages = [ "source", "build", "test", "deploy" ]
     , tests/apps = mkT "app-tests"
     , tests/rapl = mkT "tests-rapl" ⫽ { tags = [ "chimera" ] }
     , tests/perf = mkT "tests-perf" ⫽ { tags = [ "chimera" ] }
+    , examples = mkT "examples"
     , libnrm/autotools = mkB "libnrm/autotools"
     , hsnrm/all = mkB "hsnrm/all"
     , resources = mkS "resources"

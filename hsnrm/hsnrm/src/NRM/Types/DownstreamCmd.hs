@@ -51,7 +51,7 @@ instance
       getter (DownstreamCmd _maxValue ratelimit dtLastRef lastRead) =
         ActiveSensor
           { activeMeta = SensorMeta
-              { tags = [Maximize, DownstreamCmdSignal],
+              { tags = [TagMaximize, TagDownstreamCmdSignal],
                 range = 0 ... (maxValue downstreamCmd & fromOps & fromIntegral),
                 lastReferenceMeasurements = dtLastRef,
                 last = lastRead <&> fmap (fromIntegral . fromProgress),

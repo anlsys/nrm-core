@@ -17,8 +17,8 @@ module NRM.Types.Configuration
     RaplCfg (..),
     HwmonCfg (..),
     ExtraPassiveSensor (..),
-    StaticActuatorKV (..),
-    PassiveSensorKV (..),
+    ActuatorKV (..),
+    SensorKV (..),
     Power (..),
     Tag (..),
     Hint (..),
@@ -35,10 +35,8 @@ module NRM.Types.Configuration
   )
 where
 
--- examples,
-
 import CPD.Core
-import CPD.Values
+import CPD.Values hiding (actuatorValue)
 import Data.Aeson
 import Data.Default
 import Data.Either.Validation as V
@@ -80,9 +78,9 @@ makeHaskellTypes $
         dRec "Cfg" "Cfg",
         dSum "ControlCfg" "ControlCfg",
         dSum "LearnCfg" "LearnCfg",
-        dRec "StaticActuatorKV" "StaticActuatorKV",
-        dRec "PassiveSensorKV" "PassiveSensorKV",
-        dRec "ExtraPassiveSensor" "PassiveSensor",
+        dRec "ActuatorKV" "ActuatorKV",
+        dRec "SensorKV" "SensorKV",
+        dRec "ExtraPassiveSensor" "Sensor",
         dRec "DownstreamCfg" "DownstreamCfg",
         dSum "SensorBehavior" "SensorBehavior",
         dRec "UpstreamCfg" "UpstreamCfg",
@@ -109,7 +107,7 @@ toRange :: Interval Double -> Range
 toRange i = Range (inf i) (sup i)
 
 toAction :: ActuatorValue -> Action
-toAction (ActuatorValue i v) = Action (ActuatorID i) (DiscreteDouble v)
+toAction a = Action (ActuatorID $ actuatorValueID a) (DiscreteDouble $ actuatorValue a)
 
 toTime :: Time -> U.Time
 toTime t@Time {} = U.uS $ microseconds t
@@ -260,25 +258,25 @@ deriving via (GenericJSON ExtraPassiveSensor) instance ToJSON ExtraPassiveSensor
 
 deriving via (GenericJSON ExtraPassiveSensor) instance JSONSchema ExtraPassiveSensor
 
-deriving instance Generic PassiveSensorKV
+deriving instance Generic SensorKV
 
-deriving instance Eq PassiveSensorKV
+deriving instance Eq SensorKV
 
-deriving instance Ord PassiveSensorKV
+deriving instance Ord SensorKV
 
-deriving instance Show PassiveSensorKV
+deriving instance Show SensorKV
 
-deriving instance MessagePack PassiveSensorKV
+deriving instance MessagePack SensorKV
 
-deriving instance FromDhall PassiveSensorKV
+deriving instance FromDhall SensorKV
 
-deriving instance ToDhall PassiveSensorKV
+deriving instance ToDhall SensorKV
 
-deriving via (GenericJSON PassiveSensorKV) instance FromJSON PassiveSensorKV
+deriving via (GenericJSON SensorKV) instance FromJSON SensorKV
 
-deriving via (GenericJSON PassiveSensorKV) instance ToJSON PassiveSensorKV
+deriving via (GenericJSON SensorKV) instance ToJSON SensorKV
 
-deriving via (GenericJSON PassiveSensorKV) instance JSONSchema PassiveSensorKV
+deriving via (GenericJSON SensorKV) instance JSONSchema SensorKV
 
 deriving instance Generic ExtraActuator
 
@@ -320,25 +318,25 @@ deriving via (GenericJSON DownstreamCfg) instance ToJSON DownstreamCfg
 
 deriving via (GenericJSON DownstreamCfg) instance JSONSchema DownstreamCfg
 
-deriving instance Generic StaticActuatorKV
+deriving instance Generic ActuatorKV
 
-deriving instance Eq StaticActuatorKV
+deriving instance Eq ActuatorKV
 
-deriving instance Ord StaticActuatorKV
+deriving instance Ord ActuatorKV
 
-deriving instance Show StaticActuatorKV
+deriving instance Show ActuatorKV
 
-deriving instance MessagePack StaticActuatorKV
+deriving instance MessagePack ActuatorKV
 
-deriving instance FromDhall StaticActuatorKV
+deriving instance FromDhall ActuatorKV
 
-deriving instance ToDhall StaticActuatorKV
+deriving instance ToDhall ActuatorKV
 
-deriving via (GenericJSON StaticActuatorKV) instance FromJSON StaticActuatorKV
+deriving via (GenericJSON ActuatorKV) instance FromJSON ActuatorKV
 
-deriving via (GenericJSON StaticActuatorKV) instance ToJSON StaticActuatorKV
+deriving via (GenericJSON ActuatorKV) instance ToJSON ActuatorKV
 
-deriving via (GenericJSON StaticActuatorKV) instance JSONSchema StaticActuatorKV
+deriving via (GenericJSON ActuatorKV) instance JSONSchema ActuatorKV
 
 deriving instance Generic Power
 
@@ -521,4 +519,4 @@ deriving via (GenericJSON Cfg) instance ToJSON Cfg
 deriving via (GenericJSON Cfg) instance JSONSchema Cfg
 
 jsonOptions :: Options
-jsonOptions = defaultOptions {omitNothingFields = False}
+jsonOptions = defaultOptions

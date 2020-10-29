@@ -4,8 +4,8 @@ let default = ../../hsnrm/hsnrm/dhall/defaults/nrmd.dhall
 
 in      default
       ⫽ { extraStaticActuators =
-          [ { staticActuatorKey = "example extra actuator ID"
-            , staticActuatorValue =
+          [ { actuatorID = "example extra actuator ID"
+            , actuator =
                 { actuatorBinary = "bash"
                 , actuatorArguments =
                   [ "-c"

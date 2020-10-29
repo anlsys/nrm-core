@@ -117,11 +117,11 @@ initialState c time = do
           else Nothing,
       extraStaticActuators =
         Cfg.extraStaticActuators c
-          & fmap (\(Cfg.StaticActuatorKV k v) -> (k, v))
+          & fmap (\Cfg.ActuatorKV {actuatorID, actuator} -> (actuatorID, actuator))
           & M.fromList,
       extraStaticPassiveSensors =
         ( Cfg.extraStaticPassiveSensors c
-            & fmap (\(Cfg.PassiveSensorKV k v) -> (k, v))
+            & fmap (\Cfg.SensorKV {sensorID, sensor} -> (sensorID, sensor))
             & M.fromList
         )
           <&> concretizeExtraPassiveSensor

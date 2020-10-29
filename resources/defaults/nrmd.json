@@ -1,18 +1,17 @@
 {
     "extraStaticPassiveSensors": [],
     "pmpi_lib": "pmpi_lib",
-    "verbose": "error",
+    "verbose": "Error",
     "logfile": "/tmp/nrm.log",
     "singularity": false,
     "argo_nodeos_config": "argo_nodeos_config",
-    "controlCfg": {
-        "controlOff": {}
-    },
+    "controlCfg": "ControlOff",
     "upstreamCfg": {
         "upstreamBindAddress": "*",
         "rpcPort": 3456,
         "pubPort": 2345
     },
+    "libnrmPath": null,
     "perf": "perf",
     "argo_perf_wrapper": "nrm-perfwrapper",
     "downstreamCfg": {

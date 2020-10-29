@@ -92,7 +92,7 @@ instance HasLensMap (PackageID, Package) S.PassiveSensorKey S.PassiveSensor wher
       getter (NRM.Types.Topology.Package.Rapl cfg maxPower maxCounter freq _discreteChoices _defaultPower lastRead history) =
         S.PassiveSensor
           { passiveMeta = S.SensorMeta
-              { tags = [Cfg.Minimize, Cfg.TagPower, Cfg.Rapl],
+              { tags = [Cfg.TagMinimize, Cfg.TagPower, Cfg.TagRapl],
                 range = 0 ... fromWatts maxPower,
                 S.lastReferenceMeasurements = history,
                 last = lastRead <&> fmap fromJoules,

@@ -4,6 +4,8 @@ controlCfg:
   hint: Full
   learnCfg:
     horizon: 4000
+  minimumWaitInterval:
+    microseconds: 100000
   minimumControlInterval:
     microseconds: 100000
   referenceMeasurementRoundInterval: 6

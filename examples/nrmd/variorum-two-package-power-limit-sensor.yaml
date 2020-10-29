@@ -1,6 +1,6 @@
 extraStaticPassiveSensors:
-  - passiveSensorKey: "Sensor that gets package power limits for package 0 through variorum"
-    passiveSensorValue:
+  - sensorID: "Sensor that gets package power limits for package 0 through variorum"
+    sensor:
       range:
         lower: 1
         upper: 40
@@ -10,8 +10,8 @@ extraStaticPassiveSensors:
       sensorBehavior: IntervalBased
       sensorBinary: bash
       tags: []
-  - passiveSensorKey: "Sensor that gets package power limits for package 1 through variorum"
-    passiveSensorValue:
+  - sensorID: "Sensor that gets package power limits for package 1 through variorum"
+    sensor:
       range:
         lower: 1
         upper: 40

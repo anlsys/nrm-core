@@ -5,6 +5,12 @@ dhall-format:
   tags:
     - nix
     - kvm
+examples:
+  script: "nix-shell -p gnumake --run 'make examples'"
+  stage: test
+  tags:
+    - nix
+    - kvm
 hsnrm-/dhall-format:
   script: "nix-shell -p gnumake --run 'make hsnrm/dhall-format'"
   stage: source

@@ -79,7 +79,7 @@ throughputConstrained cfg st =
     constrained :: Map SensorID SensorMeta
     constrained =
       M.filterWithKey
-        (\_ m -> DownstreamCmdSignal `elem` S.tags m)
+        (\_ m -> TagDownstreamCmdSignal `elem` S.tags m)
         allSensorMeta
     allSensorMeta :: Map SensorID S.SensorMeta
     allSensorMeta =

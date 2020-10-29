@@ -30,13 +30,12 @@ nrm --help
 JSON schemas (raw) and Dhall types (documented with comments, for now)
 are available.
 
-when using JSON/YAML,  
-- JSON schemas: `resources/schemas/{nrmd,manifest}.json`
-- default values: `resources/defauts/{nrmd,manifest}.json`
-
 when using Dhall,  
 - types: `hsnrm/hsnrm/dhall/types/{nrmd,manifest}.dhall`
 - default values: `hsnrm/hsnrm/dhall/defaults/{nrmd,manifest}.dhall`
+
+when using JSON/YAML,  
+- default values: `resources/defauts/{nrmd,manifest}.json`
 
 Example `nrmd` configurations and `nrm` manifests are available in the
 `examples` folder in JSON,YAML and Dhall format.
