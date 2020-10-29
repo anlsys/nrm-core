@@ -1,19 +1,7 @@
 {
-    "image": null,
-    "hwbind": false,
     "app": {
-        "scheduler": "FIFO",
         "instrumentation": null,
-        "perfwrapper": null,
-        "powerCfg": {
-            "slowdown": 1,
-            "profile": false,
-            "policy": "NoPowerPolicy"
-        },
-        "slice": {
-            "cpus": 1,
-            "mems": 1
-        }
+        "perfwrapper": null
     },
     "name": "default"
 }

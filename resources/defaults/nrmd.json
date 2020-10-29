@@ -1,10 +1,8 @@
 {
     "extraStaticPassiveSensors": [],
-    "pmpi_lib": "pmpi_lib",
+    "perfPath": "perf",
     "verbose": "Error",
     "logfile": "/tmp/nrm.log",
-    "singularity": false,
-    "argo_nodeos_config": "argo_nodeos_config",
     "controlCfg": "ControlOff",
     "upstreamCfg": {
         "upstreamBindAddress": "*",
@@ -12,13 +10,10 @@
         "pubPort": 2345
     },
     "libnrmPath": null,
-    "perf": "perf",
-    "argo_perf_wrapper": "nrm-perfwrapper",
     "downstreamCfg": {
         "downstreamBindAddress": "ipc:///tmp/nrm-downstream-event"
     },
-    "nodeos": false,
-    "hwloc": "hwloc",
+    "perfwrapperPath": "nrm-perfwrapper",
     "extraStaticActuators": [],
     "raplCfg": {
         "referencePower": {
@@ -33,11 +28,6 @@
             }
         ],
         "raplPath": "/sys/devices/virtual/powercap/intel-rapl"
-    },
-    "dummy": true,
-    "hwmonCfg": {
-        "hwmonPath": "/sys/class/hwmon",
-        "hwmonEnabled": true
     },
     "passiveSensorFrequency": {
         "hertz": 1

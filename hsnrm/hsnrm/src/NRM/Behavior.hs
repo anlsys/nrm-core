@@ -131,7 +131,7 @@ nrm _callTime (Req clientid msg) =
                 Nothing -> identity
                 (Just p@Manifest.Perfwrapper {}) ->
                   wrapCmd
-                    (Command $ Cfg.argo_perf_wrapper c)
+                    (Command $ Cfg.perfwrapperPath c)
                     [ "-f",
                       Arg . show . U.fromHz
                         . Manifest.toFrequency

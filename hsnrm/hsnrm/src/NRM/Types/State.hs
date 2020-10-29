@@ -37,9 +37,6 @@ import Data.Map as M
 import Data.MessagePack
 import Data.Scientific
 import LensMap.Core
-import NRM.Slices.Dummy
-import NRM.Slices.Nodeos
-import NRM.Slices.Singularity
 import qualified NRM.Types.Actuator as A
 import NRM.Types.Cmd
 import NRM.Types.CmdID as CmdID
@@ -63,9 +60,6 @@ data NRMState
         cores :: M.Map CoreID Core,
         packages :: M.Map PackageID Package,
         slices :: Map SliceID Slice,
-        dummyRuntime :: Maybe DummyRuntime,
-        singularityRuntime :: Maybe SingularityRuntime,
-        nodeosRuntime :: Maybe NodeosRuntime,
         controller :: Maybe Controller,
         extraStaticActuators :: Map Text Cfg.ExtraActuator,
         extraStaticPassiveSensors :: Map Text ExtraPassiveSensor

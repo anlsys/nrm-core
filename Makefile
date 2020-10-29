@@ -31,6 +31,7 @@ pre-commit: hsnrm/pre-commit\
 	pynrm/pre-commit\
 	libnrm/pre-commit\
 	dhall-format\
+	resources\
 	examples\
 	shellcheck\
 	nixfmt\
@@ -114,6 +115,7 @@ pynrm/nrm/schemas/downstreamEvent.json: resources
 libnrm/src/nrm_messaging.h: resources
 	cp resources/nrm_messaging.h $@
 
+.PHONY:resources
 resources:
 	@nix-shell --pure -E '
 		let pkgs = import <nixpkgs> {};

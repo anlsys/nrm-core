@@ -26,9 +26,6 @@ import Data.Map.Merge.Lazy
 import NRM.Node.Hwloc
 import NRM.Node.Sysfs
 import NRM.Node.Sysfs.Internal
-import NRM.Slices.Dummy as CD
-import NRM.Slices.Nodeos as CN
-import NRM.Slices.Singularity as CS
 import NRM.Types.Cmd
 import NRM.Types.CmdID
 import qualified NRM.Types.Configuration as Cfg
@@ -103,18 +100,6 @@ initialState c time = do
       slices = M.fromList [],
       pus = M.fromList $ (,PU) <$> selectPUIDs hwl,
       cores = M.fromList $ (,Core) <$> selectCoreIDs hwl,
-      dummyRuntime =
-        if Cfg.dummy c
-          then Just CD.emptyRuntime
-          else Nothing,
-      singularityRuntime =
-        if Cfg.singularity c
-          then Just SingularityRuntime
-          else Nothing,
-      nodeosRuntime =
-        if Cfg.nodeos c
-          then Just NodeosRuntime
-          else Nothing,
       extraStaticActuators =
         Cfg.extraStaticActuators c
           & fmap (\Cfg.ActuatorKV {actuatorID, actuator} -> (actuatorID, actuator))
