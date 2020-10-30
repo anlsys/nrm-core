@@ -1,16 +1,31 @@
 import nrm.sharedlib
+import signal
 import os
 import yaml
 import json
 import subprocess
 import shutil
+from contextlib import contextmanager
 import nrm.messaging
-
+from multiprocessing import Process
 from typing import NamedTuple, List, NewType
 
 
 ActuatorID = NewType("ActuatorID", str)
+SensorID = NewType("SensorID", str)
 ActuatorValue = NewType("ActuatorValue", float)
+
+
+class Actuator(NamedTuple):
+    actuatorID: ActuatorID
+    admissibleActions: List[ActuatorValue]
+
+
+class Sensor(NamedTuple):
+    sensorID: SensorID
+    maxFrequency: float
+    lowerbound: float
+    upperbound: float
 
 
 class Action(NamedTuple):
@@ -33,19 +48,35 @@ def _exitCodeBool(*args, **kwargs):
     return _doesntThrow(subprocess.check_call, *args, **kwargs)
 
 
-class CPD(object):
-    def __init__(self, cpd):
+class CPD:
+    def __init__(self, cpd: str):
         self.cpd = cpd
 
     def __str__(self):
         return lib.showCpd(self.cpd)
 
     def __iter__(self):
-        for key, value in json.loads(lib.jsonCpd(self.cpd)).items():
-            yield key, value
+        yield from json.loads(lib.jsonCpd(self.cpd)).items()
+
+    def actuators(self) -> List[Actuator]:
+        return [
+            Actuator(actuatorID=a[0], admissibleActions=a[1]["actions"])
+            for a in json.loads(lib.jsonCpd(self.cpd))["actuators"]
+        ]
+
+    def sensors(self) -> List[Sensor]:
+        return [
+            Sensor(
+                sensorID=a[0],
+                maxFrequency=a[1]["maxFrequency"],
+                lowerbound=a[1]["range"]["i"][0],
+                upperbound=a[1]["range"]["i"][1],
+            )
+            for a in json.loads(lib.jsonCpd(self.cpd))["sensors"]
+        ]
 
 
-class NRMState(object):
+class NRMState:
     def __init__(self, cpd):
         self.state = cpd
 
@@ -53,146 +84,89 @@ class NRMState(object):
         return lib.showState(self.state)
 
     def __iter__(self):
-        for key, value in json.loads(lib.jsonState(self.state)).items():
-            yield key, value
+        yield from json.loads(lib.jsonState(self.state)).items()
 
 
-class Remote(object):
-    def __init__(self, target):
-        self.target = target
+@contextmanager
+def nrmd(configuration):
+    """
+    The nrmd context manager is the proper way to initialize the NRM daemon
+    via this module.
+    SIGTERM will be sent to the process that performed the resource acquisition
+    if the daemon terminates illegally.
 
-    def start_daemon(self, configuration):
-        """ start nrmd """
-        if self.check_daemon():
-            self.stop_daemon()
-        return subprocess.check_call(
-            [
-                "ssh",
-                "%s" % (self.target),
-                "/home/cc/.nix-profile/bin/daemonize /home/cc/.nix-profile/bin/nrmd "
-                + configuration,
-            ],
-            stderr=subprocess.STDOUT,
+    Example:
+        with nrmd({}) as d:
+            cpd = d.get_cpd()
+            print(cpd.actuators())
+            print(cpd.sensors())
+            print(d.upstream_recv())
+            print("done.")
+
+    """
+
+    def daemon():
+        subprocess.run(["pkill", "-f", "nrmd"])
+        subprocess.run(["pkill", "nrmd"])
+        completed = subprocess.run(
+            [shutil.which("nrmd"), "-y", json.dumps(configuration),]
         )
+        if completed.returncode != 0:
+            print("NRM daemon exited with exit code %d" % completed.returncode)
+            os.kill(os.getppid(), signal.SIGTERM)
 
-    def check_daemon(self):
-        """ checks if nrmd is alive """
-        return _exitCodeBool(["ssh", "%s" % self.target, "pgrep nrmd"])
-
-    def stop_daemon(self):
-        """ stops nrmd """
-        subprocess.check_call(["ssh", "%s" % self.target, "pkill nrmd"])
-
-    def run_workload(self, workload):
-        """ Runs a workload via NRM. The `nrmd` daemon must be running. """
-        pass
-
-    def get_state(self):
-        pass
-
-    def get_cpd(self):
-        pass
-
-    def workload_finished(self):
-        """ Checks NRM to see whether all tasks are finished. """
-        return True
-
-    def workload_recv(self):
-        """ Receive a message from NRM's upstream API. """
-        pass
-
-    def workload_send(self, message):
-        """ Send a message to NRM's upstream API. """
-        pass
-
-    def workload_exit_status(self):
-        """ Check the workload's exit status. """
-        pass
+    p = Process(target=daemon)
+    p.start()
+    try:
+        yield NRMD(p)
+    finally:
+        p.kill()
+        subprocess.run(["pkill", "-f", "nrmd"])
+        subprocess.run(["pkill", "nrmd"])
 
 
-class Local(object):
-    def __init__(self):
+class NRMD:
+    def __init__(self, daemon):
+        self.daemon = daemon
         self.commonOpts = lib.defaultCommonOpts()
-
-    def start_daemon(
-        self, configuration, outfile="/tmp/nrmd_out", errfile="/tmp/nrmd_err"
-    ):
-        """ start nrmd """
-        if self.check_daemon():
-            self.stop_daemon()
-        subprocess.Popen(
-            [
-                "daemonize",
-                "-o",
-                outfile,
-                "-e",
-                errfile,
-                shutil.which("nrmd"),
-                "-y",
-                json.dumps(configuration),
-            ],
-            stderr=subprocess.STDOUT,
-            stdin=subprocess.PIPE,
-        )
         self.upstreampub = nrm.messaging.UpstreamPubClient(
             lib.pubAddress(self.commonOpts)
         )
-        print("connecting")
         self.upstreampub.connect(wait=False)
-        print("connected to %s" % lib.pubAddress(self.commonOpts))
-        return
 
-    def check_daemon(self):
-        """ checks if nrmd is alive """
-        return _exitCodeBool(["pgrep", "-f", "nrmd"]) or _exitCodeBool(
-            ["pgrep", "nrmd"]
+    def run(self, cmd: str, args: List[str], manifest, sliceID: str):
+        """ Upstream request: Run an application via NRM."""
+        lib.run(
+            self.commonOpts,
+            lib.mkSimpleRun(
+                cmd,
+                args,
+                list(dict(os.environ).items()),
+                json.dumps(manifest),
+                sliceID,
+            ),
         )
 
-    def stop_daemon(self):
-        """ stops nrmd """
-        if not (
-            _exitCodeBool(["pkill", "-f", "nrmd"]) or _exitCodeBool(["pkill", "nrmd"])
-        ):
-            raise (Exception)
-
-    def run_workload(self, workloads):
-        """ Runs a workload via NRM. The `nrmd` daemon must be running. """
-        for w in workloads:
-            lib.run(
-                self.commonOpts,
-                lib.mkSimpleRun(
-                    w["cmd"],
-                    w["args"],
-                    list(dict(os.environ).items()),
-                    json.dumps(w["manifest"]),
-                    w["sliceID"],
-                ),
-            )
-
-    def get_cpd(self):
-        """ Obtain the current Control Problem Description """
-        return CPD(lib.cpd(self.commonOpts))
-
-    def get_state(self):
-        """ Obtain the current daemon state """
-        return NRMState(lib.state(self.commonOpts))
-
-    def workload_finished(self):
-        """ Checks NRM to see whether all tasks are finished. """
-        return lib.finished(self.commonOpts)
-
-    def workload_recv(self):
-        """ Receive a message from NRM's upstream API. """
-        return self.upstreampub.recv()
-
-    def workload_action(self, actionList: List[Action]):
-        """ Send a message to NRM's upstream API. """
+    def actuate(self, actionList: List[Action]) -> None:
+        """ Upstream request: Run an available action """
         actionList = [(str(a.actuatorID), float(a.actuatorValue)) for a in actionList]
         if lib.action(self.commonOpts, actionList):
             pass
         else:
             raise (Exception("couldn't actuate"))
 
-    def workload_exit_status(self):
-        """ Check the workload's exit status. """
-        pass
+    def get_cpd(self) -> str:
+        """ Upstream request: Obtain the current Control Problem Description """
+        return CPD(lib.cpd(self.commonOpts))
+
+    def get_state(self) -> str:
+        """ Upstream request: Obtain the current daemon state """
+        return NRMState(lib.state(self.commonOpts))
+
+    def all_finished(self) -> None:
+        """ Upstream request: Checks NRM to see whether all tasks are finished. """
+        return lib.finished(self.commonOpts)
+
+    def upstream_recv(self) -> {}:
+        """ Upstream listen: Receive a message from NRM's upstream API. """
+        return json.loads(self.upstreampub.recv())

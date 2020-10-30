@@ -1,5 +1,5 @@
 {
-  "activeSensorFrequency": {
+  "passiveSensorFrequency": {
     "hertz": 1
   },
   "controlCfg": {
