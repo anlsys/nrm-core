@@ -38,16 +38,6 @@ pre-commit: hsnrm/pre-commit\
 	resource-propagation\
 	.gitlab-ci.yml
 
-.PHONY: notebooks
-notebooks:
-	@nix-shell --pure --run <<< bash '
-		notebooks/batchnb.py notebooks/configuration.ipynb
-		jupyter nbconvert doc/notebooks/notebooks/configuration.ipynb --output-dir=doc/notebooks/notebooks
-		rm doc/notebooks/notebooks/configuration.ipynb
-		jupyter nbconvert notebooks/tutorial.ipynb --output-dir=doc/notebooks/notebooks
-		jupyter nbconvert notebooks/internal-control.ipynb --output-dir=doc/notebooks/notebooks
-	'
-	
 app-tests:
 	@nix-shell --pure -p \
 	'with (import <nixpkgs> {}); stream.override { nrmSupport = true; }' \

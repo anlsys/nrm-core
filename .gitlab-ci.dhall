@@ -29,7 +29,6 @@ in  { stages = [ "source", "build", "test", "deploy" ]
     , nix/pynrm = mkNixB "pythonPackages.pynrm"
     , nix/libnrm = mkNixB "libnrm"
     , nix/stream = mkNixB "stream"
-    , notebooks = mkT "notebooks"
     , tests/kvm = mkT "tests-kvm"
     , tests/apps = mkT "app-tests"
     , tests/rapl = mkT "tests-rapl" ⫽ { tags = [ "chimera" ] }

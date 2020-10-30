@@ -89,12 +89,6 @@ nixfmt:
   tags:
     - nix
     - kvm
-notebooks:
-  script: "nix-shell -p gnumake --run 'make notebooks'"
-  stage: test
-  tags:
-    - nix
-    - kvm
 pynrm/black:
   script: "nix-shell -p gnumake --run 'make pynrm/black'"
   stage: source
