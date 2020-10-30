@@ -35,19 +35,6 @@ class Action(NamedTuple):
 
 lib = nrm.sharedlib.UnsafeLib(os.environ["PYNRMSO"])
 
-
-def _doesntThrow(f, *args, **kwargs):
-    try:
-        f(*args, **kwargs)
-        return True
-    except:
-        return False
-
-
-def _exitCodeBool(*args, **kwargs):
-    return _doesntThrow(subprocess.check_call, *args, **kwargs)
-
-
 class CPD:
     def __init__(self, cpd: str):
         self.cpd = cpd
@@ -149,24 +136,21 @@ class NRMD:
 
     def actuate(self, actionList: List[Action]) -> None:
         """ Upstream request: Run an available action """
-        actionList = [(str(a.actuatorID), float(a.actuatorValue)) for a in actionList]
-        if lib.action(self.commonOpts, actionList):
-            pass
-        else:
+        if not lib.action(self.commonOpts, actionList):
             raise (Exception("couldn't actuate"))
 
-    def get_cpd(self) -> str:
+    def get_cpd(self) -> CPD:
         """ Upstream request: Obtain the current Control Problem Description """
         return CPD(lib.cpd(self.commonOpts))
 
-    def get_state(self) -> str:
+    def get_state(self) -> NRMState:
         """ Upstream request: Obtain the current daemon state """
         return NRMState(lib.state(self.commonOpts))
 
-    def all_finished(self) -> None:
+    def all_finished(self) -> bool:
         """ Upstream request: Checks NRM to see whether all tasks are finished. """
         return lib.finished(self.commonOpts)
 
-    def upstream_recv(self) -> {}:
+    def upstream_recv(self) -> dict:
         """ Upstream listen: Receive a message from NRM's upstream API. """
         return json.loads(self.upstreampub.recv())
