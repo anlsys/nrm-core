@@ -49,6 +49,7 @@ in mkShell {
       withHoogle = true;
       buildInputs = [
         pkgs.git
+        pkgs.pythonPackages.mypy
         pkgs.hwloc
         pkgs.htop
         pkgs.jq
@@ -78,7 +79,6 @@ in mkShell {
 
   ] ++ lib.optional ihaskell [ pkgs.ihaskell ] ++ lib.optionals experiment [
     pandoc
-    daemonize
     pythonPackages.pandas
     pythonPackages.matplotlib
     pythonPackages.seaborn
