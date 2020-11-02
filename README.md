@@ -50,6 +50,11 @@ manifest files is contained in Dhall type definitions:
 JSON schema files for upstream and downstream APIs are available:  
 - JSON/YAML schemas: `resources/schemas/{upstream-*,downstream}.json`
 
+### notebooks
+
+Tutorial notebooks for configuration and upstream python bindings are available
+in the `notebooks` folder.
+
 ## Development
 
 - building: `make`
