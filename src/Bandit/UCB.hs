@@ -18,9 +18,9 @@ where
 import Bandit.Class
 import Bandit.EpsGreedy
 import Bandit.Types
+import Bandit.Util (argmax')
 import Control.Lens
 import Data.Generics.Labels ()
-import Data.List.Extras.Argmax
 import Protolude
 import Refined
 
@@ -114,7 +114,7 @@ pickreturn ::
   ExploreExploit a ->
   m a
 pickreturn t phiInv alpha (ExploreExploit weights) =
-  return . action . argmax f $ toList weights
+  return . action . argmax' f $ toList weights
   where
     f Weight {..} =
       averageLoss + phiInv (alpha * log (fromIntegral t) / fromIntegral hits)

@@ -51,7 +51,7 @@ library
         refined -any,
         intervals -any,
         MonadRandom -any,
-        list-extras -any,
+        -- list-extras -any,
         lens -any,
         generic-lens -any
 
