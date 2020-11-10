@@ -53,7 +53,7 @@ data Exp4R s a er
         k :: Int,
         n :: Int,
         lambda :: R.Refined R.NonNegative Double,
-        constraint :: ZeroOne Double,
+        constraint :: Double,
         experts ::
           NonEmpty
             ( ZeroOne Double,
@@ -75,7 +75,7 @@ data LastAction a
 data Feedback
   = Feedback
       { cost :: ZeroOne Double,
-        risk :: ZeroOne Double
+        risk :: R.Refined R.NonPositive Double
       }
   deriving (Generic)
 
@@ -83,7 +83,7 @@ data Feedback
 data Exp4RCfg s a er
   = Exp4RCfg
       { expertsCfg :: NonEmpty er,
-        constraintCfg :: ZeroOne Double,
+        constraintCfg :: Double,
         horizonCfg :: R.Refined R.Positive Int,
         as :: NonEmpty a
       }
@@ -145,7 +145,7 @@ update
     lam <- R.unrefine <$> use #lambda
     delta <- get <&> mkDelta
     mu <- get <&> mkMu
-    beta <- use #constraint <&> R.unrefine
+    beta <- use #constraint
     let numeratorTerm (R.unrefine -> w, _) p =
           w * exp (- mu * (p * (lam * r + c) / p_a))
         wUpdate = NE.zipWith numeratorTerm weightedAdvice pPolicy_a

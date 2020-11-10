@@ -12,7 +12,7 @@ SHELL := $(shell which bash)
 NIX_PATH := nixpkgs=./.
 
 .PHONY: all
-all: hbandit.nix ghcid pre-commit
+all:  ghcid pre-commit
 
 
 #generating the vendored cabal file.
@@ -35,7 +35,7 @@ ci-%:
 .PHONY: ghcid
 ghcid: ghcid-hbandit
 
-ghcid-hbandit: hbandit.cabal .hlint.yaml hbandit.nix
+ghcid-hbandit: hbandit.cabal .hlint.yaml 
 	@nix-shell -E '
 		with import <nixpkgs> {};
 		with haskellPackages;
@@ -50,7 +50,7 @@ ghcid-hbandit: hbandit.cabal .hlint.yaml hbandit.nix
 			-l
 	'
 
-ghcid-test: hbandit.cabal .hlint.yaml hbandit.nix
+ghcid-test: hbandit.cabal .hlint.yaml 
 	@nix-shell --pure --run bash <<< '
 		ghcid --command "cabal v2-repl test " \
 			--restart=hbandit.cabal \
@@ -99,7 +99,7 @@ ormolu:
 	'
 
 .PHONY: doc
-doc: hbandit.cabal hbandit.nix 
+doc: hbandit.cabal  
 	@nix-shell -E '
 		with import <nixpkgs> {};
 		with haskellPackages;
@@ -116,5 +116,5 @@ clean:
 	rm -rf .build
 	rm -rf dist*
 	rm -f extras/main.hs
-	rm -f hbandit.nix
+	rm -f 
 	rm -f hbandit.cabal

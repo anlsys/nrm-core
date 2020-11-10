@@ -11,6 +11,8 @@ module Bandit.Util
     unsafeNormalizePanic,
     normalizeDistribution,
     normalizedSum,
+    argmax,
+    argmax',
   )
 where
 
@@ -80,3 +82,41 @@ unsafeNormalizePanic v m =
   fromMaybe
     (panic "normalizePanic error.")
     (normalize v m)
+
+emptyListError :: Text -> a
+emptyListError fun = panic $ "Utils.argmax" <> fun <> ": empty list"
+
+argmax' :: (Ord b) => (a -> b) -> [a] -> a
+argmax' _ [] = emptyListError "argmax'"
+argmax' f (x : xs) = _argmaxBy (>) f xs (x, f x)
+
+argmax :: (Ord b) => (a -> b) -> [a] -> Maybe a
+argmax _ [] = Nothing
+argmax f xs@(_ : _) = Just (argmax' f xs)
+
+-- | Direct version of 'argmaxBy' which doesn't catch the empty
+-- list error.
+argmaxBy' :: (b -> b -> Ordering) -> (a -> b) -> [a] -> a
+argmaxBy' _ _ [] = emptyListError "argmaxBy'"
+argmaxBy' ord f (x : xs) = _argmaxBy boolOrd f xs (x, f x)
+  where
+    boolOrd a b = GT == ord a b
+
+-- | Returns the element of the list which maximizes a function
+-- according to a user-defined ordering, or @Nothing@ if the list
+-- was empty.
+argmaxBy :: (b -> b -> Ordering) -> (a -> b) -> [a] -> Maybe a
+argmaxBy _ _ [] = Nothing
+argmaxBy ord f xs@(_ : _) = Just (argmaxBy' ord f xs)
+
+-- | Tail-recursive driver
+_argmaxBy :: (b -> b -> Bool) -> (a -> b) -> [a] -> (a, b) -> a
+_argmaxBy isBetterThan f = go
+  where
+    go [] (b, _) = b
+    go (x : xs) (b, fb) = go xs $! cmp x (b, fb)
+    cmp a (b, fb) =
+      let fa = f a
+       in if fa `isBetterThan` fb
+            then (a, fa)
+            else (b, fb)
