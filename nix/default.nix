@@ -142,6 +142,11 @@ pkgs // rec {
 
   nas = callPackage ./pkgs/nas { };
 
+  qmcpack = callPackage ./pkgs/qmcpack {
+    inherit libnrm;
+    nrmSupport = false;
+    };
+
   amg = callPackage ./pkgs/amg {
     inherit libnrm;
     nrmSupport = false;
