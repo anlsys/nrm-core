@@ -145,7 +145,7 @@ pkgs // rec {
   qmcpack = callPackage ./pkgs/qmcpack {
     inherit libnrm;
     nrmSupport = false;
-    };
+  };
 
   amg = callPackage ./pkgs/amg {
     inherit libnrm;
