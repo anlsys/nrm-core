@@ -27,4 +27,5 @@ black:
 		black bin/* nrm/*.py extra/*.py
 		RETURN=1
 	fi
+	if [ $$RETURN -ne 0 ]; then exit 1; fi
 	'

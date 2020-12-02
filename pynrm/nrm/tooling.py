@@ -35,6 +35,7 @@ class Action(NamedTuple):
 
 lib = nrm.sharedlib.UnsafeLib(os.environ["PYNRMSO"])
 
+
 class CPD:
     def __init__(self, cpd: str):
         self.cpd = cpd
