@@ -99,10 +99,10 @@ dhall-format:
 resource-propagation: pynrm/nrm/schemas/downstreamEvent.json\
 	libnrm/src/nrm_messaging.h
 
-pynrm/nrm/schemas/downstreamEvent.json: resources
+pynrm/nrm/schemas/downstreamEvent.json:
 	cp resources/schemas/downstream.json $@
 
-libnrm/src/nrm_messaging.h: resources
+libnrm/src/nrm_messaging.h:
 	cp resources/nrm_messaging.h $@
 
 .PHONY:resources
@@ -114,7 +114,7 @@ resources:
 			  buildInputs = [ cabal-install ];
 		}
 	' --run bash <<< '
-		cd hsnrm; cabal v2-run hsnrm-extra/Codegen.hs ../resources
+		cd hsnrm; cabal v2-run nrm-gen ../resources
 	'
 
 .PHONY: examples

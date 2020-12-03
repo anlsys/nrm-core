@@ -28,7 +28,6 @@ executable pynrm.so
                         MultiWayIf NoTemplateHaskell BlockArguments GADTs FlexibleContexts
                         TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
                         FunctionalDependencies UndecidableInstances
-    extra-lib-dirs: /nix/store/lz67bgzcwjf8wf23j2cb69g01pa7x4sf-ghc-8.6.5/lib/ghc-8.6.5/rts/
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -41,7 +40,6 @@ executable pynrm.so
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
                  -Wall-missed-specialisations -fPIC -shared -no-hs-main -dynamic
-                 -lHSrts-ghc8.6.5
     build-depends:
         hsnrm -any,
         base -any,
@@ -54,3 +52,10 @@ executable pynrm.so
         bytestring -any,
         enclosed-exceptions -any
 
+executable nrm-gen
+    main-is: Codegen.hs
+    default-language: Haskell2010
+    build-depends:
+        hsnrm,
+        base,
+        protolude
