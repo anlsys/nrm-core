@@ -107,7 +107,7 @@ in mkShell {
     export NRMSO=${pwd}/hsnrm/bin/nrm.so
     export PATH=:${pwd}/pynrm/bin:${pwd}/hsnrm/bin:$PATH
     export PYTHONPATH=${pwd}/pynrm/:$PYTHONPATH
-    export NIX_GHC="${haskellPackages.hsnrm.env.NIX_GHC}"
+    export GHCRTSPATH="${haskellPackages.ghc}/lib/ghc-$(ghc --numeric-version)/rts/"
     export NIX_GHCPKG="${haskellPackages.hsnrm.env.NIX_GHCPKG}"
     export NIX_GHC_DOCDIR="${haskellPackages.hsnrm.env.NIX_GHC_DOCDIR}"
     export NIX_GHC_LIBDIR="${haskellPackages.hsnrm.env.NIX_GHC_LIBDIR}"

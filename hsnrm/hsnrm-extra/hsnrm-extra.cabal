@@ -39,7 +39,8 @@ executable pynrm.so
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations -fPIC -shared -no-hs-main -dynamic
+                 -Wall-missed-specialisations -fPIC -shared -no-hs-main -dynamic -lHSrts-ghc8.6.5
+    extra-lib-dirs: ./lHSrts
     build-depends:
         hsnrm -any,
         base -any,

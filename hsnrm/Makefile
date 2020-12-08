@@ -14,15 +14,16 @@ NIX_PATH := nixpkgs=./.
 all: bin/nrm bin/nrm.so bin/pynrm.so
 
 .PHONY: bin/nrm
-bin/nrm.so bin/nrm: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal 
+bin/nrm.so bin/nrm: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal
 	@nix-shell --pure --run bash <<< '
 		cabal v2-install hsnrm-bin --installdir=./bin --overwrite-policy=always
 	'
-	
+
 .PHONY: bin/pynrm.so
-bin/pynrm.so: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal 
+bin/pynrm.so: hsnrm-extra/hsnrm-extra.cabal hsnrm-static/hsnrm-static.cabal hsnrm-bin/hsnrm-bin.cabal hsnrm/hsnrm.cabal
+	ln -s $$GHCRTSPATH hsnrm-extra/lHSrts
 	@nix-shell --pure --run bash <<< '
-		cabal v2-install hsnrm-extra --installdir=./bin --overwrite-policy=always
+		cabal v2-install hsnrm-extra:pynrm.so --installdir=./bin --overwrite-policy=always
 	'
 
 .PHONY: ghcid
@@ -91,6 +92,7 @@ hlint:
 
 .PHONY:clean
 clean:
+	rm -f hsnrm-extra/lHSrts/
 	rm -rf dist-newstyle
 	rm -f hsnrm.cabal
 	rm -f hsnrm.nix
