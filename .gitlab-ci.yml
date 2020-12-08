@@ -139,6 +139,12 @@ tests/perf:
   stage: test
   tags:
     - chimera
+tests/pyupstream:
+  script: "nix-shell -p gnumake --run 'make tests-pyupstream'"
+  stage: test
+  tags:
+    - nix
+    - kvm
 tests/rapl:
   script: "nix-shell -p gnumake --run 'make tests-rapl'"
   stage: test

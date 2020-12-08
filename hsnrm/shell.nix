@@ -17,5 +17,6 @@ haskellPackages.shellFor {
   shellHook = ''
     export LOCALE_ARCHIVE=${glibcLocales}/lib/locale/locale-archive
     export LANG=en_US.UTF-8
+    export GHCRTSPATH="${haskellPackages.ghc}/lib/ghc-$(ghc --numeric-version)/rts/"
   '';
 }

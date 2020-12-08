@@ -30,6 +30,7 @@ in  { stages = [ "source", "build", "test", "deploy" ]
     , nix/libnrm = mkNixB "libnrm"
     , nix/stream = mkNixB "stream"
     , tests/kvm = mkT "tests-kvm"
+    , tests/pyupstream = mkT "tests-pyupstream"
     , tests/apps = mkT "app-tests"
     , tests/rapl = mkT "tests-rapl" ⫽ { tags = [ "chimera" ] }
     , tests/perf = mkT "tests-perf" ⫽ { tags = [ "chimera" ] }

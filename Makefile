@@ -48,7 +48,17 @@ app-tests:
 	'
 	
 tests-%:
-	@nix-shell --pure -p procps nrm haskellPackages.shelltestrunner --run '
+	@nix-shell --pure -E '
+	with (import <nixpkgs> {});
+	mkShell {
+	  buildInputs = [
+	    (pythonPackages.python.withPackages (ps: with ps; [pynrm]))
+	    procps
+	    nrm
+	    haskellPackages.shelltestrunner
+	  ];
+	  shellHook = "export PYNRMSO=$${haskellPackages.hsnrm-extra}/bin/pynrm.so";
+	} ' --run bash <<< '
 	shelltest -a --execdir -o50 tests/$*
 	'
 	

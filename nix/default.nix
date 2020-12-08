@@ -128,6 +128,7 @@ pkgs // rec {
     paths = [
       haskellPackages.hsnrm
       haskellPackages.hsnrm-bin
+      haskellPackages.hsnrm-extra
       pynrm
       pkgs.linuxPackages.perf
       pkgs.hwloc
