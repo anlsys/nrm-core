@@ -122,8 +122,18 @@ class NRMD:
         )
         self.upstreampub.connect(wait=False)
 
-    def run(self, cmd: str, args: List[str], manifest, sliceID: str):
-        """ Upstream request: Run an application via NRM."""
+    def run(self, cmd: str, args: List[str], manifest: dict, sliceID: str):
+        """ Upstream request: Run an application via NRM.
+
+        Args:
+            cmd (str): The name of the binary (absolute or found in PATH)
+            args (List[str]): The list of arguments
+            manifest (dict): A dictionary containing the manifest, in the format
+              defined by hnrm/hsnrm/hsnrm/dhall/types/manifest.dhall.
+              Examples are available in the examples/manifests folder.
+            sliceID (str): An identifier for the sliceID to run the application
+              into.
+        """
         lib.run(
             self.commonOpts,
             lib.mkSimpleRun(
@@ -136,22 +146,50 @@ class NRMD:
         )
 
     def actuate(self, actionList: List[Action]) -> None:
-        """ Upstream request: Run an available action """
-        if not lib.action(self.commonOpts, actionList):
-            raise (Exception("couldn't actuate"))
+        """ Upstream request: Run a list of actions
 
-    def get_cpd(self) -> CPD:
-        """ Upstream request: Obtain the current Control Problem Description """
+        Args:
+            actionList (List[Action]): A list of actions to run.
+        """
+        if not lib.action(self.commonOpts, actionList):
+            raise (Exception("Could not actuate."))
+
+    def req_cpd(self) -> CPD:
+        """ Upstream request: Obtain the current Control Problem Description.
+        This is a blocking call.
+
+        Returns:
+            CPD: The description of the current Control Problem Description.
+        """
         return CPD(lib.cpd(self.commonOpts))
 
-    def get_state(self) -> NRMState:
-        """ Upstream request: Obtain the current daemon state """
+    def req_state(self) -> NRMState:
+        """ Upstream request: Obtain the current daemon state.
+        This is a blocking call.
+
+        Returns:
+            NRMState: The full data structure that entirely describes the
+            current state of the NRM daemon. This is useful for debugging
+            or general inspection.
+        """
         return NRMState(lib.state(self.commonOpts))
 
     def all_finished(self) -> bool:
-        """ Upstream request: Checks NRM to see whether all tasks are finished. """
+        """ Upstream request: Checks NRM to see whether all tasks are finished.
+        This is a blocking call.
+
+        Returns:
+            bool: True if no tasks are running, False if a task is still
+            runninng.
+        """
         return lib.finished(self.commonOpts)
 
     def upstream_recv(self) -> dict:
-        """ Upstream listen: Receive a message from NRM's upstream API. """
+        """ Upstream listen: Receive a message from NRM's upstream PUB API.
+        This is a blocking call.
+
+        Returns:
+            dict: A dictionary containing the message that respects the JSON
+            schema description in hnrm/resources/schemas/upstream-pub.json.
+        """
         return json.loads(self.upstreampub.recv())
