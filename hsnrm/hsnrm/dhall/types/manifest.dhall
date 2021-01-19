@@ -18,7 +18,7 @@ let Perfwrapper =
       { perfFreq : types.Frequency, perfLimit : Integer }
 
 let Instrumentation =
-    -- Libnrm instrumentation. The only attribute that configures this feature
+    -- Activate LD_PRELOAD based `libnrm` instrumentation. The only attribute that configures this feature
     -- is a message rate limitation.
       { ratelimit : types.Frequency }
 
