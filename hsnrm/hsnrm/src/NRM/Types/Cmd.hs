@@ -122,15 +122,17 @@ addDownstreamCmdClient c downstreamCmdClientID =
 addDownstreamThreadClient ::
   Cmd ->
   DownstreamThreadID ->
-  Maybe Cmd
+  Cmd
 addDownstreamThreadClient c downstreamThreadClientID =
-  c ^. #cmdCore . #manifest . #app . #instrumentation <&> \(Manifest.Instrumentation ratelimit) ->
-    c & #downstreamThreads . at downstreamThreadClientID ?~ DownstreamThread
-      { maxValue = 1 & progress,
-        ratelimit = toFrequency ratelimit,
-        dtLastReferenceMeasurements = MemBuffer.empty,
-        lastRead = Nothing
-      }
+  c & #downstreamThreads . at downstreamThreadClientID ?~ DownstreamThread
+    { maxValue = 1 & progress,
+      ratelimit = c ^. #cmdCore . #manifest . #app . #instrumentation
+        & \case
+          Just (Manifest.Instrumentation ratelimit) -> toFrequency ratelimit
+          Nothing -> 1 & hz,
+      dtLastReferenceMeasurements = MemBuffer.empty,
+      lastRead = Nothing
+    }
 
 -- | newtype wrapper for an argument.
 newtype Arg = Arg Text

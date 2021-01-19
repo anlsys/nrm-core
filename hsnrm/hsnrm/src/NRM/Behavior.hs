@@ -429,7 +429,7 @@ nrmDownstreamEvent callTime clientid = \case
       DownstreamThreadID ->
       RWST Cfg [Behavior] (Maybe Cmd) IO (CommonOutcome a)
     registerDTT c dtid = do
-      put $ addDownstreamThreadClient c dtid
+      put . Just $ addDownstreamThreadClient c dtid
       log "downstream thread registered."
       return OAdjustment
 
