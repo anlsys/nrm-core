@@ -11,6 +11,8 @@
 module NRM.Types.Manifest
   ( Manifest (..),
     App (..),
+    AppActuator (..),
+    AppActuatorKV (..),
     Instrumentation (..),
     Perfwrapper (..),
     toFrequency,
@@ -39,6 +41,8 @@ makeHaskellTypes $
    in [ dRec "Frequency" "Frequency",
         dRec "Perfwrapper" "Perfwrapper",
         dRec "Instrumentation" "Instrumentation",
+        dRec "AppActuator" "AppActuator",
+        dRec "AppActuatorKV" "AppActuatorKV",
         dRec "App" "App",
         dRec "Manifest" "Manifest"
       ]
@@ -64,6 +68,59 @@ instance MessagePack Integer where
   toObject = toObject . (fromInteger :: Integer -> Int)
 
   fromObject x = (toInteger :: Int -> Integer) <$> fromObject x
+
+
+
+
+deriving instance Generic AppActuatorKV
+
+deriving instance Eq AppActuatorKV
+
+deriving instance Ord AppActuatorKV
+
+deriving instance Show AppActuatorKV
+
+deriving instance MessagePack AppActuatorKV
+
+deriving instance FromDhall AppActuatorKV
+
+deriving instance ToDhall AppActuatorKV
+
+deriving via (GenericJSON AppActuatorKV) instance FromJSON AppActuatorKV
+
+deriving via (GenericJSON AppActuatorKV) instance ToJSON AppActuatorKV
+
+deriving via (GenericJSON AppActuatorKV) instance JSONSchema AppActuatorKV
+
+
+
+
+
+
+deriving instance Generic AppActuator
+
+deriving instance Eq AppActuator
+
+deriving instance Ord AppActuator
+
+deriving instance Show AppActuator
+
+deriving instance MessagePack AppActuator
+
+deriving instance FromDhall AppActuator
+
+deriving instance ToDhall AppActuator
+
+deriving via (GenericJSON AppActuator) instance FromJSON AppActuator
+
+deriving via (GenericJSON AppActuator) instance ToJSON AppActuator
+
+deriving via (GenericJSON AppActuator) instance JSONSchema AppActuator
+
+
+
+
+
 
 deriving instance Generic Frequency
 

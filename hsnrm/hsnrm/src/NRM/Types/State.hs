@@ -159,6 +159,7 @@ instance HasLensMap NRMState A.ActuatorKey A.Actuator where
   lenses s =
     mconcat
       [ addPath #packages <$> lenses (packages s),
+        addPath #slices <$> lenses (slices s),
         addPath #extraStaticActuators <$> lenses (extraStaticActuators s)
       ]
 

@@ -25,7 +25,7 @@ data Actuator
       }
   deriving (Generic)
 
-data ActuatorKey = RaplKey PackageID | ExtraActuatorKey Text
+data ActuatorKey = RaplKey PackageID | ExtraActuatorKey Text | CmdActuatorKey Text
   deriving (Show, Read, Eq, Ord)
 
 instance StringConv ActuatorKey CPD.ActuatorID where

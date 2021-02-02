@@ -28,6 +28,7 @@ import NRM.Classes.Messaging
 import NRM.Types.Cmd (Cmd (..), CmdCore (..))
 import NRM.Types.CmdID (CmdID (..))
 import NRM.Types.Sensor
+import NRM.Types.Actuator
 import Protolude
 
 -- | NRM's internal view of the state of a slice.
@@ -65,5 +66,9 @@ toText (SliceID u) = U.toText u
 toText (Name n) = n
 
 instance HasLensMap (SliceID, Slice) ActiveSensorKey ActiveSensor where
+  lenses (_sliceID, slice) =
+    addPath (_2 . #cmds) <$> lenses (cmds slice)
+
+instance HasLensMap (SliceID, Slice) ActuatorKey Actuator where
   lenses (_sliceID, slice) =
     addPath (_2 . #cmds) <$> lenses (cmds slice)
