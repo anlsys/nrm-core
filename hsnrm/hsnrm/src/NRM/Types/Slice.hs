@@ -25,10 +25,10 @@ import qualified Data.UUID as U (UUID, fromText, toText)
 import Data.UUID.V1
 import LensMap.Core
 import NRM.Classes.Messaging
+import NRM.Types.Actuator
 import NRM.Types.Cmd (Cmd (..), CmdCore (..))
 import NRM.Types.CmdID (CmdID (..))
 import NRM.Types.Sensor
-import NRM.Types.Actuator
 import Protolude
 
 -- | NRM's internal view of the state of a slice.

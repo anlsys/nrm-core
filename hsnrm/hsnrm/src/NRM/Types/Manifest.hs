@@ -69,9 +69,6 @@ instance MessagePack Integer where
 
   fromObject x = (toInteger :: Int -> Integer) <$> fromObject x
 
-
-
-
 deriving instance Generic AppActuatorKV
 
 deriving instance Eq AppActuatorKV
@@ -92,11 +89,6 @@ deriving via (GenericJSON AppActuatorKV) instance ToJSON AppActuatorKV
 
 deriving via (GenericJSON AppActuatorKV) instance JSONSchema AppActuatorKV
 
-
-
-
-
-
 deriving instance Generic AppActuator
 
 deriving instance Eq AppActuator
@@ -116,11 +108,6 @@ deriving via (GenericJSON AppActuator) instance FromJSON AppActuator
 deriving via (GenericJSON AppActuator) instance ToJSON AppActuator
 
 deriving via (GenericJSON AppActuator) instance JSONSchema AppActuator
-
-
-
-
-
 
 deriving instance Generic Frequency
 
