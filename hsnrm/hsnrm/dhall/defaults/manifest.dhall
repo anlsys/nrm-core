@@ -11,6 +11,6 @@ in  { name = "default"
     , app =
         { perfwrapper = None t.Perfwrapper
         , instrumentation = None t.Instrumentation
-        , actuators = [] : List t.AppActuatorKV
+        , actuators = None (List t.AppActuatorKV)
         }
     }

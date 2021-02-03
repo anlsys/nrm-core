@@ -40,7 +40,7 @@ let App =
     -- instrumentation: an optional libnrm instrumentation configuration
       { perfwrapper : Optional Perfwrapper
       , instrumentation : Optional Instrumentation
-      , actuators : List AppActuatorKV
+      , actuators : Optional (List AppActuatorKV)
       }
 
 let Manifest =

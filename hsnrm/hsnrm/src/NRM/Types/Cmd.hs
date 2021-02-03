@@ -106,7 +106,7 @@ registerPID c pid = Cmd
     downstreamThreads = M.empty,
     pid = pid,
     appActuators =
-      fromList . fmap (\(AppActuatorKV v k) -> (k, v)) $
+      fromList . fmap (\(AppActuatorKV v k) -> (k, v)) . fromMaybe [] $
         c & manifest & app & Ma.actuators
   }
 
@@ -171,7 +171,7 @@ instance HasLensMap (CmdID, Cmd) ActiveSensorKey ActiveSensor where
 
 instance HasLensMap (CmdID, Cmd) ActuatorKey Actuator where
   lenses (_cmdID, cmd) =
-    (addPath (_2 . #appActuators) <$> lenses (appActuators cmd))
+    addPath (_2 . #appActuators) <$> lenses (appActuators cmd)
 
 instance HasLensMap (Text, AppActuator) ActuatorKey Actuator where
   lenses (t, _) =
