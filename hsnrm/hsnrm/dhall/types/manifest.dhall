@@ -22,12 +22,25 @@ let Instrumentation =
     -- is a message rate limitation.
       { ratelimit : types.Frequency }
 
+let AppActuator =
+    -- Configuration for an arbitrary actuator.
+      { actuatorBinary : Text
+      , actuatorArguments : List Text
+      , actions : List Double
+      , referenceAction : Double
+      }
+
+let AppActuatorKV =
+    -- Key-value representation for an actuator.
+      { actuatorID : Text, actuator : AppActuator }
+
 let App =
     -- Application configuration. Two features can be enabled or disabled:
     -- perfwrapper: an optional linux perf configuration
     -- instrumentation: an optional libnrm instrumentation configuration
       { perfwrapper : Optional Perfwrapper
       , instrumentation : Optional Instrumentation
+      , actuators : Optional (List AppActuatorKV)
       }
 
 let Manifest =
@@ -39,4 +52,6 @@ in    types
       , Instrumentation = Instrumentation
       , App = App
       , Manifest = Manifest
+      , AppActuator = AppActuator
+      , AppActuatorKV = AppActuatorKV
       }
