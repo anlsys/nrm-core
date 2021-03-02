@@ -31,7 +31,8 @@ data Event
   = -- | Performance wrapping operation count report.
     CmdPerformance
       { cmdID :: CmdID,
-        perf :: Operations
+        perf :: Operations,
+        timestamp :: Time
       }
   | -- | Pausing performance wrapping operation reports.
     CmdPause

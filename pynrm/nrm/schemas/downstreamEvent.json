@@ -9,7 +9,8 @@
                 "cmdPerformance": {
                     "required": [
                         "cmdID",
-                        "perf"
+                        "perf",
+                        "timestamp"
                     ],
                     "type": "object",
                     "properties": {
@@ -17,6 +18,9 @@
                             "type": "string"
                         },
                         "perf": {
+                            "type": "number"
+                        },
+                        "timestamp": {
                             "type": "number"
                         }
                     }
