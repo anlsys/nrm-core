@@ -300,8 +300,17 @@ nrmDownstreamEvent ::
   DC.DownstreamClientID ->
   DEvent.Event ->
   NRM (CommonOutcome CPD.Measurement)
-nrmDownstreamEvent callTime clientid = \case
-  DEvent.CmdPerformance cmdID perf timestamp ->
+nrmDownstreamEvent callTime clientid (DEvent.Event timestamp info) = 
+  nrmDownstreamEventInfo call clientid timestamp info
+
+nrmDownstreamEventInfo ::
+  U.Time ->
+  DC.DownstreamClientID ->
+  U.Time ->
+  DEvent.EventInfo ->
+  NRM (CommonOutcome CPD.Measurement)
+nrmDowstreamEventInfo callTime clientid timestamp = \case
+  DEvent.CmdPerformance cmdID perf ->
     DCmID.fromText (toS clientid) & \case
       Nothing -> log "couldn't decode clientID to UUID" >> return ONotFound
       Just downstreamCmdID ->

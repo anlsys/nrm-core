@@ -11,6 +11,7 @@
 -- for reporting application performance and progress.
 module NRM.Types.Messaging.DownstreamEvent
   ( Event (..),
+    EventInfo (..),
     PhaseContext (..),
   )
 where
@@ -28,11 +29,17 @@ import Protolude
 -- They make the top level of the serialized JSON message format
 -- more readable by embedding tags.
 data Event
+  = Event
+      { timestamp :: Int64
+      , info :: EventInfo
+      }
+  deriving (Generic, MessagePack, NRMMessage)
+
+data EventInfo
   = -- | Performance wrapping operation count report.
     CmdPerformance
       { cmdID :: CmdID,
-        perf :: Operations,
-        timestamp :: Double
+        perf :: Operations
       }
   | -- | Pausing performance wrapping operation reports.
     CmdPause
@@ -56,7 +63,8 @@ data Event
     ThreadPhasePause
       { downstreamThreadID :: DownstreamThreadID
       }
-  deriving (Generic, MessagePack, NRMMessage)
+  deriving (Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON EventInfo
 
 data PhaseContext
   = PhaseContext
