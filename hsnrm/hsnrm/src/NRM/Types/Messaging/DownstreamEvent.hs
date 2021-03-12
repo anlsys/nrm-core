@@ -32,7 +32,7 @@ data Event
     CmdPerformance
       { cmdID :: CmdID,
         perf :: Operations,
-        timestamp :: Time
+        timestamp :: Double
       }
   | -- | Pausing performance wrapping operation reports.
     CmdPause

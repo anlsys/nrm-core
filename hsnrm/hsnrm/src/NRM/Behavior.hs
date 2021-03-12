@@ -306,7 +306,7 @@ nrmDownstreamEvent callTime clientid = \case
       Nothing -> log "couldn't decode clientID to UUID" >> return ONotFound
       Just downstreamCmdID ->
         commonSP
-          timestamp
+          (U.seconds timestamp)
           (Sensor.DownstreamCmdKey downstreamCmdID)
           (U.fromOps perf & fromIntegral)
           >>= \case
@@ -325,7 +325,7 @@ nrmDownstreamEvent callTime clientid = \case
                     return OAdjustment
             OAdjustment -> return OAdjustment
             OOk m ->
-              pub (UPub.PubPerformance timestamp cmdID perf)
+              pub (UPub.PubPerformance (U.seconds timestamp) cmdID perf)
                 >> return (OOk m)
   DEvent.ThreadProgress downstreamThreadID payload ->
     commonSP
