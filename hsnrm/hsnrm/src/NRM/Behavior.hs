@@ -301,16 +301,15 @@ nrmDownstreamEvent ::
   DEvent.Event ->
   NRM (CommonOutcome CPD.Measurement)
 nrmDownstreamEvent callTime clientid (DEvent.Event timestamp info) = 
-  nrmDownstreamEventInfo callTime clientid (U.nanoS t) info
+  nrmDownstreamEventHandleInfo clientid (U.nanoS t) info
   where (DEvent.Timestamp t) = timestamp
 
-nrmDownstreamEventInfo ::
-  U.Time ->
+nrmDownstreamEventHandleInfo ::
   DC.DownstreamClientID ->
   U.Time ->
   DEvent.EventInfo ->
   NRM (CommonOutcome CPD.Measurement)
-nrmDownstreamEventInfo callTime clientid timestamp = \case
+nrmDownstreamEventHandleInfo clientid timestamp = \case
   DEvent.CmdPerformance cmdID perf ->
     DCmID.fromText (toS clientid) & \case
       Nothing -> log "couldn't decode clientID to UUID" >> return ONotFound
@@ -339,7 +338,7 @@ nrmDownstreamEventInfo callTime clientid timestamp = \case
                 >> return (OOk m)
   DEvent.ThreadProgress downstreamThreadID payload ->
     commonSP
-      callTime
+      timestamp
       (Sensor.DownstreamThreadKey downstreamThreadID)
       (payload & U.fromProgress & fromIntegral)
       >>= \case
@@ -355,11 +354,11 @@ nrmDownstreamEventInfo callTime clientid timestamp = \case
               Just c -> registerDTT c downstreamThreadID
         OAdjustment -> return OAdjustment
         OOk m ->
-          pub (UPub.PubProgress callTime downstreamThreadID payload)
+          pub (UPub.PubProgress timestamp downstreamThreadID payload)
             >> return (OOk m)
   DEvent.ThreadPhaseContext downstreamThreadID phaseContext ->
     commonSP
-      callTime
+      timestamp
       (Sensor.DownstreamThreadKey downstreamThreadID)
       (DEvent.computetime phaseContext & fromIntegral)
       >>= \case
@@ -383,7 +382,7 @@ nrmDownstreamEventInfo callTime clientid timestamp = \case
             Just (_, sliceID, _) ->
               pub
                 ( UPub.PubPhaseContext
-                    callTime
+                    timestamp
                     downstreamThreadID
                     sliceID
                     phaseContext
