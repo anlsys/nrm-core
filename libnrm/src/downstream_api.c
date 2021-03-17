@@ -131,8 +131,9 @@ int nrm_fini(struct nrm_context *ctxt) {
   tn = nrm_timeconv(now);
   assert(ctxt != NULL);
   if (ctxt->acc != 0) {
-    snprintf(buf, 512, NRM_THREADPROGRESS_FORMAT, tn, (int)ctxt->acc, ctxt->cmd_id,
-             ctxt->task_id, ctxt->process_id, ctxt->rank_id, ctxt->thread_id);
+    snprintf(buf, 512, NRM_THREADPROGRESS_FORMAT, tn, (int)ctxt->acc,
+             ctxt->cmd_id, ctxt->task_id, ctxt->process_id, ctxt->rank_id,
+             ctxt->thread_id);
     err = nrm_net_send(ctxt, buf, 512, 0);
   }
   snprintf(buf, 512, NRM_THREADPAUSE_FORMAT, tn, ctxt->cmd_id, ctxt->task_id,
@@ -152,8 +153,8 @@ int nrm_send_progress(struct nrm_context *ctxt, unsigned long progress) {
   long long int tn = nrm_timeconv(now);
   ctxt->acc += progress;
   if (timediff > nrm_ratelimit_threshold) {
-    snprintf(buf, 512, NRM_THREADPROGRESS_FORMAT, tn, (int)ctxt->acc, ctxt->cmd_id,
-             ctxt->task_id, (int)ctxt->process_id, ctxt->rank_id,
+    snprintf(buf, 512, NRM_THREADPROGRESS_FORMAT, tn, (int)ctxt->acc,
+             ctxt->cmd_id, ctxt->task_id, (int)ctxt->process_id, ctxt->rank_id,
              ctxt->thread_id);
     int err = nrm_net_send(ctxt, buf, 512, ZMQ_DONTWAIT);
     if (err == -1) {

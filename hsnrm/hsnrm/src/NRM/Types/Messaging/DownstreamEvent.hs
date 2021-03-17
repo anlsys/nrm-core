@@ -33,7 +33,7 @@ data Event
   = Event Timestamp EventInfo
   deriving (Generic, MessagePack, NRMMessage)
 
-newtype Timestamp = Timestamp { timestamp :: Int64 }
+newtype Timestamp = Timestamp {timestamp :: Int64}
   deriving (Generic, MessagePack)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Timestamp
 

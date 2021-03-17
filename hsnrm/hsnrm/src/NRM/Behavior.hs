@@ -300,9 +300,10 @@ nrmDownstreamEvent ::
   DC.DownstreamClientID ->
   DEvent.Event ->
   NRM (CommonOutcome CPD.Measurement)
-nrmDownstreamEvent callTime clientid (DEvent.Event timestamp info) = 
+nrmDownstreamEvent callTime clientid (DEvent.Event timestamp info) =
   nrmDownstreamEventHandleInfo clientid (U.nanoS t) info
-  where (DEvent.Timestamp t) = timestamp
+  where
+    (DEvent.Timestamp t) = timestamp
 
 nrmDownstreamEventHandleInfo ::
   DC.DownstreamClientID ->

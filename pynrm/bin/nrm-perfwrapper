@@ -42,11 +42,9 @@ class PerfWrapper(object):
         # we want to provide the time of the event to nrm, but perf only gives
         # us the timing since the start of the monitoring, so we use a second
         # call to the clock here to get a time since epoch in nanoseconds
-        self.downstream_event.send(timestamp=time.time_ns(),
-                cmdPerformance={
-                    "cmdID": self.cmdID,
-                    "perf": performance,
-                }
+        self.downstream_event.send(
+            timestamp=time.time_ns(),
+            cmdPerformance={"cmdID": self.cmdID, "perf": performance,},
         )
 
     def setup(self):

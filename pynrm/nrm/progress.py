@@ -28,8 +28,9 @@ class Progress(object):
         self.progress_acc = 0
 
     def shutdown(self):
-        self.downstream_event.send(timestamp=time.time_ns(),
-                threadPause={
+        self.downstream_event.send(
+            timestamp=time.time_ns(),
+            threadPause={
                 "downstreamThreadID": {
                     "cmdID": self.cmdID,
                     "taskID": self.taskID,
@@ -37,7 +38,7 @@ class Progress(object):
                     "rankID": -1,
                     "threadID": 0,
                 }
-            }
+            },
         )
 
     def progress_report(self, progress):
@@ -46,7 +47,8 @@ class Progress(object):
         timediff = timediff / 1000
         self.progress_acc += progress
         if timediff > self.ratelimit_threshold:
-            self.downstream_event.send(timestamp=current_time,
+            self.downstream_event.send(
+                timestamp=current_time,
                 threadProgress={
                     "progress": self.progress_acc,
                     "downstreamThreadID": {
@@ -56,7 +58,7 @@ class Progress(object):
                         "rankID": -1,
                         "threadID": 0,
                     },
-                }
+                },
             )
             self.progress_acc = 0
             self.timestamp = current_time
