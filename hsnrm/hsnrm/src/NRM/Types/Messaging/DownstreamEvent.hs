@@ -11,6 +11,7 @@
 -- for reporting application performance and progress.
 module NRM.Types.Messaging.DownstreamEvent
   ( Event (..),
+    Timestamp (..),
     EventInfo (..),
     PhaseContext (..),
   )
@@ -29,11 +30,12 @@ import Protolude
 -- They make the top level of the serialized JSON message format
 -- more readable by embedding tags.
 data Event
-  = Event
-      { timestamp :: Int64
-      , info :: EventInfo
-      }
+  = Event Timestamp EventInfo
   deriving (Generic, MessagePack, NRMMessage)
+
+newtype Timestamp = Timestamp { timestamp :: Int64 }
+  deriving (Generic, MessagePack)
+  deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Timestamp
 
 data EventInfo
   = -- | Performance wrapping operation count report.

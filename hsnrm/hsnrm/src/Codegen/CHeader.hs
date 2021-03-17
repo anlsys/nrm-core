@@ -33,11 +33,14 @@ toHeader h =
       "#define NRM_"
         <> toUpper msgname
         <> "_FORMAT "
-        <> show (A.encode (AT.Object $ H.singleton msgname khl))
+        <> show (A.encode (AT.Array $ V.fromList
+                   [AT.Object $ H.singleton "timestamp" "%lld",
+                    AT.Object $ H.singleton msgname khl]))
 
 goToplevel :: S.Schema -> [(Text, AT.Value)]
 goToplevel (S.Choice schemas) = mconcat $ goToplevel <$> schemas
-goToplevel (S.Object [S.Field key _ content]) = [(key, go content)]
+goToplevel (S.Object [(S.Field key _ content)]) = [(key, go content)]
+goToplevel (S.Tuple [_timestamp, info]) = goToplevel info
 goToplevel _ = panic "schema first level malformed"
 
 go :: S.Schema -> AT.Value

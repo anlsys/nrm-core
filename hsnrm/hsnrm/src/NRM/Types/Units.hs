@@ -24,6 +24,7 @@ module NRM.Types.Units
     Time,
     uS,
     seconds,
+    nanoS,
     fromuS,
     fromSeconds,
 
@@ -111,8 +112,13 @@ uS = Time
 seconds :: Double -> Time
 seconds = Time . (* 1_000_000)
 
+-- | value constructor from nano seconds
+nanoS :: Int64 -> Time
+nanoS = Time . (/ 1_000) . fromIntegral
+
 fromSeconds :: Time -> Double
 fromSeconds (Time t) = t / 1_000_000
+
 
 -- | Hertz value constructor.
 hz :: Double -> Frequency

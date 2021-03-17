@@ -12,7 +12,7 @@ from __future__ import print_function
 
 import logging
 import os
-from time import time
+import time
 import nrm.messaging as msg
 
 logger = logging.getLogger("nrm")
@@ -28,8 +28,8 @@ class Progress(object):
         self.progress_acc = 0
 
     def shutdown(self):
-        self.downstream_event.send(
-            threadPause={
+        self.downstream_event.send(timestamp=time.time_ns(),
+                threadPause={
                 "downstreamThreadID": {
                     "cmdID": self.cmdID,
                     "taskID": self.taskID,
@@ -41,12 +41,12 @@ class Progress(object):
         )
 
     def progress_report(self, progress):
-        current_time = time()
+        current_time = time.time_ns()
         timediff = current_time - self.timestamp
-        timediff = timediff * 1e6
+        timediff = timediff / 1000
         self.progress_acc += progress
         if timediff > self.ratelimit_threshold:
-            self.downstream_event.send(
+            self.downstream_event.send(timestamp=current_time,
                 threadProgress={
                     "progress": self.progress_acc,
                     "downstreamThreadID": {
@@ -76,4 +76,4 @@ class Progress(object):
         if self.cmdID is None:
             logger.error("missing NRM_CMDID in environment")
             exit(1)
-        self.timestamp = time()
+        self.timestamp = time_ns()

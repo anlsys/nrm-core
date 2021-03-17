@@ -301,7 +301,8 @@ nrmDownstreamEvent ::
   DEvent.Event ->
   NRM (CommonOutcome CPD.Measurement)
 nrmDownstreamEvent callTime clientid (DEvent.Event timestamp info) = 
-  nrmDownstreamEventInfo call clientid timestamp info
+  nrmDownstreamEventInfo callTime clientid (U.nanoS t) info
+  where (DEvent.Timestamp t) = timestamp
 
 nrmDownstreamEventInfo ::
   U.Time ->
@@ -309,13 +310,13 @@ nrmDownstreamEventInfo ::
   U.Time ->
   DEvent.EventInfo ->
   NRM (CommonOutcome CPD.Measurement)
-nrmDowstreamEventInfo callTime clientid timestamp = \case
+nrmDownstreamEventInfo callTime clientid timestamp = \case
   DEvent.CmdPerformance cmdID perf ->
     DCmID.fromText (toS clientid) & \case
       Nothing -> log "couldn't decode clientID to UUID" >> return ONotFound
       Just downstreamCmdID ->
         commonSP
-          (U.seconds timestamp)
+          timestamp
           (Sensor.DownstreamCmdKey downstreamCmdID)
           (U.fromOps perf & fromIntegral)
           >>= \case
@@ -334,7 +335,7 @@ nrmDowstreamEventInfo callTime clientid timestamp = \case
                     return OAdjustment
             OAdjustment -> return OAdjustment
             OOk m ->
-              pub (UPub.PubPerformance (U.seconds timestamp) cmdID perf)
+              pub (UPub.PubPerformance timestamp cmdID perf)
                 >> return (OOk m)
   DEvent.ThreadProgress downstreamThreadID payload ->
     commonSP
