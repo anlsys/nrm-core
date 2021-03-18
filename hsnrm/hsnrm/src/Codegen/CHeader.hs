@@ -23,7 +23,7 @@ import qualified NRM.Classes.Messaging as M
 import Protolude hiding (Any)
 
 toCHeader :: (M.NRMMessage a) => Proxy a -> Text
-toCHeader = replld. repd . toHeader . goToplevel . M.messageSchema
+toCHeader = replld . repd . toHeader . goToplevel . M.messageSchema
   where
     repd = Data.Text.replace "\\\"%d\\\"" "%d"
     replld = Data.Text.replace "\\\"%lld\\\"" "%lld"
