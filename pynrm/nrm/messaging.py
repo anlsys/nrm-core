@@ -258,12 +258,14 @@ class DownstreamEventServer(RPCServer):
 
     """Implements the message layer server for the downstream event API."""
 
+
 def downHeader(*args, **kwargs):
-    assert(len(kwargs) == 2)
-    assert(len(args) == 0)
-    ret = {'timestamp': kwargs.pop('timestamp')}
-    ret['info'] = kwargs
+    assert len(kwargs) == 2
+    assert len(args) == 0
+    ret = {"timestamp": kwargs.pop("timestamp")}
+    ret["info"] = kwargs
     return ret
+
 
 @send("downstreamEvent", downHeader)
 class DownstreamEventClient(RPCClient):

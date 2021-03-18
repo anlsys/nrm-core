@@ -16,8 +16,8 @@ import Data.Aeson as A
 import Data.Aeson.Types as AT
 import qualified Data.HashMap.Strict as H
 import qualified Data.JSON.Schema as S
-import Data.Text (replace, toUpper)
 import Data.String (fromString)
+import Data.Text (replace, toUpper)
 import qualified Data.Vector as V (fromList)
 import qualified NRM.Classes.Messaging as M
 import Protolude hiding (Any)
@@ -58,7 +58,7 @@ toHeader h =
 -- disappear from the result. Since info is a Choice and all the other objects
 -- only have one field, the bypass is pretty straightforward
 goToplevel :: S.Schema -> [(Text, AT.Value)]
-goToplevel (S.Object [_,(S.Field _ _ content)]) = goToplevel content
+goToplevel (S.Object [_, (S.Field _ _ content)]) = goToplevel content
 goToplevel (S.Choice schemas) = mconcat $ goToplevel <$> schemas
 goToplevel (S.Object [(S.Field key _ content)]) = [(key, go content)]
 goToplevel s = panic . fromString $ "schema first level malformed: " ++ show s

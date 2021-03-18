@@ -34,15 +34,16 @@ import Protolude
 -- messages is generated directly from this type definition.
 --
 -- As the schema validator only accepts Objects at the top level, we use record
--- syntax exclusively to ensure proper schema generation and consistent 
+-- syntax exclusively to ensure proper schema generation and consistent
 -- pack/unpack logic everywhere.
 --
 -- The resulting schema uses records as key:values, and value constructor names
 -- as keys for embedded objects.
 data Event
-  = Event { timestamp :: Int64,
-            info :: EventInfo
-	  }
+  = Event
+      { timestamp :: Int64,
+        info :: EventInfo
+      }
   deriving (Generic, MessagePack, NRMMessage)
   deriving (JSONSchema, ToJSON, FromJSON) via GenericJSON Event
 
