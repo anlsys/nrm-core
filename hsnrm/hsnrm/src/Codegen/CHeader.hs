@@ -23,9 +23,10 @@ import qualified NRM.Classes.Messaging as M
 import Protolude hiding (Any)
 
 toCHeader :: (M.NRMMessage a) => Proxy a -> Text
-toCHeader = rep . toHeader . goToplevel . M.messageSchema
+toCHeader = replld. repd . toHeader . goToplevel . M.messageSchema
   where
-    rep = Data.Text.replace "\\\"%d\\\"" "%d"
+    repd = Data.Text.replace "\\\"%d\\\"" "%d"
+    replld = Data.Text.replace "\\\"%lld\\\"" "%lld"
 
 -- | takes a list of (msgtype, json object) in to #define printf format string
 -- to add to a C header.

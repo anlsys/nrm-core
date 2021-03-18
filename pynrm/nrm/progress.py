@@ -78,4 +78,4 @@ class Progress(object):
         if self.cmdID is None:
             logger.error("missing NRM_CMDID in environment")
             exit(1)
-        self.timestamp = time_ns()
+        self.timestamp = time.time_ns()
