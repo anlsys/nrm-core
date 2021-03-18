@@ -1,17 +1,14 @@
 {
-    "items": [
-        {
-            "required": [
-                "timestamp"
-            ],
-            "type": "object",
-            "properties": {
-                "timestamp": {
-                    "type": "number"
-                }
-            }
+    "required": [
+        "timestamp",
+        "info"
+    ],
+    "type": "object",
+    "properties": {
+        "timestamp": {
+            "type": "number"
         },
-        {
+        "info": {
             "oneOf": [
                 {
                     "required": [
@@ -257,6 +254,5 @@
                 }
             ]
         }
-    ],
-    "type": "array"
+    }
 }

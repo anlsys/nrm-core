@@ -295,16 +295,21 @@ doControl input = do
     getTime (Controller.Reconfigure t) = t
 
 -- | Downstream event handler.
+-- Downstream message are events related to the performance or behavior of an
+-- application under control. This handler mostly deals with recording those
+-- event as part of the monitoring and handling discovery of process start/exit
+--
+-- To ensure decent timings on the monitoring side, downstream events all
+-- contain a timestamps in nanoseconds since the epoch.
 nrmDownstreamEvent ::
   U.Time ->
   DC.DownstreamClientID ->
   DEvent.Event ->
   NRM (CommonOutcome CPD.Measurement)
-nrmDownstreamEvent callTime clientid (DEvent.Event timestamp info) =
-  nrmDownstreamEventHandleInfo clientid (U.nanoS t) info
-  where
-    (DEvent.Timestamp t) = timestamp
+nrmDownstreamEvent _callTime clientid (DEvent.Event timestamp info) =
+  nrmDownstreamEventHandleInfo clientid (U.nanoS timestamp) info
 
+-- | EventInfo handling, using lambda-case to do pattern matching
 nrmDownstreamEventHandleInfo ::
   DC.DownstreamClientID ->
   U.Time ->
