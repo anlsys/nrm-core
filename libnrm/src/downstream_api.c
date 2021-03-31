@@ -117,7 +117,7 @@ int nrm_init(struct nrm_context *ctxt, const char *task_id) {
 
   /* app init */
   char buf[512];
-  assert(!clock_gettime(CLOCK_MONOTONIC, &ctxt->time));
+  assert(!clock_gettime(CLOCK_REALTIME, &ctxt->time));
   ctxt->acc = 0;
   return 0;
 }
@@ -127,7 +127,7 @@ int nrm_fini(struct nrm_context *ctxt) {
   int err;
   struct timespec now;
   long long int tn;
-  clock_gettime(CLOCK_MONOTONIC, &now);
+  clock_gettime(CLOCK_REALTIME, &now);
   tn = nrm_timeconv(now);
   assert(ctxt != NULL);
   if (ctxt->acc != 0) {
@@ -148,7 +148,7 @@ int nrm_fini(struct nrm_context *ctxt) {
 int nrm_send_progress(struct nrm_context *ctxt, unsigned long progress) {
   char buf[512];
   struct timespec now;
-  clock_gettime(CLOCK_MONOTONIC, &now);
+  clock_gettime(CLOCK_REALTIME, &now);
   long long int timediff = nrm_timediff(ctxt, now);
   long long int tn = nrm_timeconv(now);
   ctxt->acc += progress;
@@ -173,7 +173,7 @@ int nrm_send_phase_context(struct nrm_context *ctxt, unsigned int cpu,
                            unsigned long long int computeTime) {
   char buf[512];
   struct timespec now;
-  clock_gettime(CLOCK_MONOTONIC, &now);
+  clock_gettime(CLOCK_REALTIME, &now);
   long long int timediff = nrm_timediff(ctxt, now);
   long long int tn = nrm_timeconv(now);
   ctxt->acc++;
