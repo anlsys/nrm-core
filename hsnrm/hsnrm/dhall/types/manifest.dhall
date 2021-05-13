@@ -22,10 +22,15 @@ let Instrumentation =
     -- is a message rate limitation.
       { ratelimit : types.Frequency }
 
+let EnvVar =
+    -- Key-value representation of environment variables
+      { envName : Text, envValue : Text }
+
 let AppActuator =
     -- Configuration for an arbitrary actuator.
       { actuatorBinary : Text
       , actuatorArguments : List Text
+      , actuatorEnv : List EnvVar
       , actions : List Double
       , referenceAction : Double
       }
@@ -54,4 +59,5 @@ in    types
       , Manifest = Manifest
       , AppActuator = AppActuator
       , AppActuatorKV = AppActuatorKV
+      , EnvVar = EnvVar
       }

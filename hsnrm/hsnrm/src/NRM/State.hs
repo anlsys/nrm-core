@@ -198,7 +198,7 @@ registerLaunched cmdID pid st =
       Right
         ( st & #slices . at sliceID
             ?~ ( slice &~ do
-                   #cmds . at cmdID ?= registerPID cmdCore pid
+                   #cmds . at cmdID ?= registerPID cmdID cmdCore pid
                    #awaiting %= sans cmdID
                ),
           sliceID,

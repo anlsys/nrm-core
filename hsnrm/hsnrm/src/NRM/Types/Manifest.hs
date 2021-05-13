@@ -13,6 +13,7 @@ module NRM.Types.Manifest
     App (..),
     AppActuator (..),
     AppActuatorKV (..),
+    EnvVar (..),
     Instrumentation (..),
     Perfwrapper (..),
     toFrequency,
@@ -42,6 +43,7 @@ makeHaskellTypes $
         dRec "Perfwrapper" "Perfwrapper",
         dRec "Instrumentation" "Instrumentation",
         dRec "AppActuator" "AppActuator",
+        dRec "EnvVar" "EnvVar",
         dRec "AppActuatorKV" "AppActuatorKV",
         dRec "App" "App",
         dRec "Manifest" "Manifest"
@@ -68,6 +70,26 @@ instance MessagePack Integer where
   toObject = toObject . (fromInteger :: Integer -> Int)
 
   fromObject x = (toInteger :: Int -> Integer) <$> fromObject x
+
+deriving instance Generic EnvVar
+
+deriving instance Eq EnvVar
+
+deriving instance Ord EnvVar
+
+deriving instance Show EnvVar
+
+deriving instance MessagePack EnvVar
+
+deriving instance FromDhall EnvVar
+
+deriving instance ToDhall EnvVar
+
+deriving via (GenericJSON EnvVar) instance FromJSON EnvVar
+
+deriving via (GenericJSON EnvVar) instance ToJSON EnvVar
+
+deriving via (GenericJSON EnvVar) instance JSONSchema EnvVar
 
 deriving instance Generic AppActuatorKV
 

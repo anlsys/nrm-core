@@ -72,6 +72,7 @@ data CmdCore
   = CmdCore
       { cmdPath :: Command,
         arguments :: [Arg],
+        cmdEnv :: Env,
         upstreamClientID :: Maybe UC.UpstreamClientID,
         manifest :: Manifest
       }
@@ -94,12 +95,18 @@ mkCmd :: CmdSpec -> Manifest -> Maybe UC.UpstreamClientID -> CmdCore
 mkCmd s manifest clientID = CmdCore
   { cmdPath = cmd s,
     arguments = args s,
+    cmdEnv = env s,
     upstreamClientID = clientID,
     manifest = manifest
   }
 
-registerPID :: CmdCore -> ProcessID -> Cmd
-registerPID c pid = Cmd
+-- | This function registers the pid associated with a command, and also
+-- materializes cmd-level actuators based on their manifest description.
+-- As a way to allow actuators to access environment variables related to the
+-- NRM, we inject extra variables in the environment used to materialize
+-- actuators
+registerPID :: CmdID -> CmdCore -> ProcessID -> Cmd
+registerPID id c pid = injectActuatorEnv id Cmd
   { cmdCore = c,
     processState = blankState,
     downstreamCmds = M.empty,
@@ -109,6 +116,34 @@ registerPID c pid = Cmd
       fromList . fmap (\(AppActuatorKV v k) -> (k, v)) . fromMaybe [] $
         c & manifest & app & Ma.actuators
   }
+
+-- | inject the command environment into each of the cmd-specific actuators
+injectActuatorEnv :: CmdID -> Cmd -> Cmd
+injectActuatorEnv id c = Cmd
+  { cmdCore = cmdCore c,
+    processState = processState c,
+    downstreamCmds = downstreamCmds c,
+    downstreamThreads = downstreamThreads c,
+    pid = pid c,
+    appActuators = fmap (\a -> injectAAEnv id c a) (appActuators c)
+  }
+  where
+    injectAAEnv :: CmdID -> Cmd -> Ma.AppActuator -> Ma.AppActuator
+    injectAAEnv id c a = Ma.AppActuator
+      { actuatorBinary = Ma.actuatorBinary a,
+        actuatorArguments = Ma.actuatorArguments a,
+        actuatorEnv =
+          (Ma.actuatorEnv a)
+            ++ envConvert (c & cmdCore & cmdEnv)
+            ++ [ (Ma.EnvVar (fromString k) (fromString v))
+                 | (k, v) <-
+                     [("NRM_CMDPID", show $ pid c), ("NRM_CMDID", show id)]
+               ],
+        actions = Ma.actions a,
+        referenceAction = Ma.referenceAction a
+      }
+    envConvert :: Env -> [Ma.EnvVar]
+    envConvert e = [(Ma.EnvVar k v) | (k, v) <- (M.toList $ fromEnv e)]
 
 addDownstreamCmdClient ::
   Cmd ->
@@ -189,9 +224,12 @@ instance HasLensMap (Text, AppActuator) ActuatorKey Actuator where
           referenceAction = Ma.referenceAction extraActuator,
           go = \value ->
             runProcess_ $
-              System.Process.Typed.proc
-                (toS $ Ma.actuatorBinary extraActuator)
-                ((toS <$> Ma.actuatorArguments extraActuator) <> [show value])
+              System.Process.Typed.setEnv
+                ([(toS k, toS v) | (EnvVar k v) <- Ma.actuatorEnv extraActuator])
+                ( System.Process.Typed.proc
+                    (toS $ Ma.actuatorBinary extraActuator)
+                    ((toS <$> Ma.actuatorArguments extraActuator) <> [show value])
+                )
         }
       setter :: Ma.AppActuator -> Actuator -> Ma.AppActuator
       setter oldExtraActuator actuator = coerce $
