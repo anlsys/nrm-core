@@ -152,7 +152,7 @@ addDownstreamCmdClient ::
 addDownstreamCmdClient c downstreamCmdClientID =
   c ^. #cmdCore . #manifest . #app . #perfwrapper & \case
     Nothing -> Nothing
-    (Just (Perfwrapper perfFreq perfLimit)) ->
+    (Just (Perfwrapper _ perfFreq perfLimit)) ->
       Just $
         c
           & #downstreamCmds

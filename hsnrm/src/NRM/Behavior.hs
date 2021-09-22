@@ -135,7 +135,9 @@ nrm _callTime (Req clientid msg) =
                     [ "-f",
                       Arg . show . U.fromHz
                         . Manifest.toFrequency
-                        $ Manifest.perfFreq p
+                        $ Manifest.perfFreq p,
+		      "-e",
+		      Arg . show $ Manifest.perfEvent p
                     ]
         modify $
           registerAwaiting
