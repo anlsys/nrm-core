@@ -6,7 +6,9 @@ in      default
       ⫽ { name = "linuxperf-wrapped"
         , app =
               default.app
-            ⫽ { perfwrapper = Some { perfFreq.hertz = 1.0, perfLimit = +100000 }
+            ⫽ { perfwrapper = Some { perfFreq.hertz = 1.0,
+	    			     perfLimit = +100000,
+				     perfEvent = "instructions" }
               }
         }
     : types.Manifest

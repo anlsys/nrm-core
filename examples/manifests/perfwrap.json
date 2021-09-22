@@ -5,7 +5,8 @@
       "perfFreq": {
         "hertz": 1
       },
-      "perfLimit": 100000
+      "perfLimit": 100000,
+      "perfEvent": "instructions"
     }
   }
 }

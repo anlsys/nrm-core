@@ -15,7 +15,10 @@ let Perfwrapper =
     -- the sensor. This upper bound should be set to a low positive value if
     -- no a-priori information is known; NRM will then use a recursive-doubling
     -- strategy to maintain its own bound.
-      { perfFreq : types.Frequency, perfLimit : Integer }
+      { perfFreq : types.Frequency
+      , perfLimit : Integer
+      , perfEvent : Text
+      }
 
 let Instrumentation =
     -- Activate LD_PRELOAD based `libnrm` instrumentation. The only attribute that configures this feature
