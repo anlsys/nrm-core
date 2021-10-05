@@ -17,4 +17,5 @@ jobs:
           apk add wget pkgconf zeromq
       - name: cabal build
         run: |
+          cabal v2-update
           cabal v2-build --disable-shared --enable-static hsnrm
