@@ -1,0 +1,17 @@
+name: builds
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+jobs:
+  binaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        uses: docker://alpine/egde
+        run: |
+          apk add ghc cabal
+          cabal update
+          cabal v2-build
