@@ -17,5 +17,5 @@ jobs:
           apk add wget
       - name: cabal build
         run: |
-          cabal update
+          cabal update all
           cabal v2-build
