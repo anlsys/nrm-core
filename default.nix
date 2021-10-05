@@ -19,7 +19,8 @@ let
                 super.callCabal2nix "hsnrm-extra" ./hsnrm-extra { };
               hsnrm-bin =
                 super.callCabal2nix "hsnrm-bin" ./hsnrm-bin { };
-              hbandit = self.callPackage ./nix/hbandit.nix { };
+                hbandit = 
+                super.callCabal2nix "hbandit" ./hbandit { };
               iso-deriving = self.callCabal2nix "iso-deriving"
                 (builtins.fetchTarball
                   "https://github.com/hanshoglund/iso-deriving/archive/master.tar.gz")
