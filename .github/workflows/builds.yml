@@ -12,4 +12,4 @@ jobs:
       - name: build
         run: |
           docker --version
-          docker run -d docker/alpine/edge
+          docker pull alpine:edge
