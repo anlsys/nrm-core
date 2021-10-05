@@ -17,5 +17,6 @@ haskellPackages.shellFor {
         haskellPackages.shelltestrunner
         haskellPackages.dhall-json
         haskellPackages.cabal2nix
+        haskellPackages.cabal-plan
       ];
 }

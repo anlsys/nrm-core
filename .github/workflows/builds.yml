@@ -14,8 +14,8 @@ jobs:
         run: |
           apk update
           apk add ghc cabal
-          apk add wget
+          apk add wget pkgconf zeromq
       - name: cabal build
         run: |
-          cabal update all
-          cabal v2-build
+          cabal update
+          cabal v2-build --disable-shared --enable-static nrm-core-module
