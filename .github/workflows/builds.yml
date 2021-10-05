@@ -10,8 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: build
-        uses: docker://alpine/egde
         run: |
-          apk add ghc cabal
-          cabal update
-          cabal v2-build
+          docker --version
+          docker run -d docker://alpine/edge
