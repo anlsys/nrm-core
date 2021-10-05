@@ -7,10 +7,10 @@ on:
 jobs:
   binaries:
     runs-on: ubuntu-latest
+    container: alpine:edge
     steps:
       - uses: actions/checkout@v2
-      - name: build
+      - name: setup
         run: |
-          docker --version
-          docker pull alpine:edge
-          docker run -d alpine
+          apk update
+          apk add ghc cabal
