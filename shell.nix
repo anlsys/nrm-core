@@ -5,6 +5,8 @@ haskellPackages.shellFor {
       withHoogle = true;
       buildInputs = [
         pkgs.hwloc
+        pkgs.pkg-config
+        pkgs.zeromq
         haskellPackages.cabal-install
         haskellPackages.wreq
         haskellPackages.hlint
