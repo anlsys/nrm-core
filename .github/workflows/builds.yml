@@ -7,15 +7,24 @@ on:
 jobs:
   binaries:
     runs-on: ubuntu-latest
-    container: alpine:3.11
     steps:
       - uses: actions/checkout@v2
+      - name: cache static ghc
+      - uses: actions/cache@v2
+        id: ghc-static
+        env:
+          cache-name: cache-ghc-static
+        with:
+          path: ~/.ghcup
+      - name: compile ghc for static link
+      - if: steps.ghc-static.outputs.cache-hit != 'true'
+      - run: |
+          ghcup install ghc 8.6.5
+          ghcup compile ghc -j 4 -v 8.6.5 -b 8.6.5 --set -c `pwd`/resources/bdist/build.mk -p `pwd`/resources/bdist
       - name: setup
         run: |
-          apk update
-          apk add ghc cabal
-          apk add wget pkgconf zeromq
+          apt install pkg-config libzmq3-dev
       - name: cabal build
         run: |
           cabal v2-update
-          cabal v2-build --disable-shared --enable-static hsnrm
+          cabal v2-build all
