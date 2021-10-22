@@ -17,8 +17,8 @@ jobs:
         with:
           path: ~/.ghcup
       - name: compile ghc for static link
-      - if: steps.ghc-static.outputs.cache-hit != 'true'
-      - run: |
+        if: steps.ghc-static.outputs.cache-hit != 'true'
+        run: |
           ghcup install ghc 8.6.5
           ghcup compile ghc -j 4 -v 8.6.5 -b 8.6.5 --set -c `pwd`/resources/bdist/build.mk -p `pwd`/resources/bdist
       - name: setup
