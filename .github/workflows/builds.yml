@@ -35,6 +35,7 @@ jobs:
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}
       - name: cabal build
         run: | 
+          ls -aRl ~/.ghcup
           ghcup list
           ghcup set ghc 8.6.5
           cabal v2-update
