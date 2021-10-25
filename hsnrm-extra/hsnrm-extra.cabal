@@ -17,7 +17,7 @@ source-repository head
 foreign-library nrm-core-python
     type: native-shared
     options: standalone
-    other-modules: PyExport.hs
+    other-modules: PyExport
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         OverloadedLists ExistentialQuantification RecordWildCards
