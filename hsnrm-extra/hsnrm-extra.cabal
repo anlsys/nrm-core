@@ -14,8 +14,10 @@ source-repository head
     type: git
     location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
 
-executable pynrm.so
-    main-is: PyExport.hs
+foreign-library nrm-core-python
+    type: native-shared
+    options: standalone
+    other-modules: PyExport.hs
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         OverloadedLists ExistentialQuantification RecordWildCards
@@ -39,8 +41,7 @@ executable pynrm.so
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations -fPIC -shared -no-hs-main -dynamic -lHSrts-ghc8.6.5
-    extra-lib-dirs: ./lHSrts
+                 -Wall-missed-specialisations
     build-depends:
         hsnrm -any,
         base -any,

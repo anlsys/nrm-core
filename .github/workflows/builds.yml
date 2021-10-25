@@ -25,6 +25,14 @@ jobs:
       - name: setup
         run: |
           sudo apt-get install pkg-config libzmq3-dev
+      - name: cache static cabal deps
+        uses: actions/cache@v2
+        id: cabal-static
+        env:
+          cache-name: cache-cabal-static
+        with:
+          path: ~/.cabal
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}
       - name: cabal build
         run: | 
           ghcup set ghc 8.6.5
