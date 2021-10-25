@@ -33,6 +33,10 @@ jobs:
         with:
           path: ~/.cabal
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}
+      - name: force standalone binaries
+        run: |
+          sed -i -e 's/    options:.*$/    options: standalone/g' hsnrm-bin/hsnrm-bin.cabal
+          sed -i -e 's/    options:.*$/    options: standalone/g' hsnrm-extra/hsnrm-extra.cabal
       - name: cabal build
         run: | 
           ls -aRl ~/.ghcup/
