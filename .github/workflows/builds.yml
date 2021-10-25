@@ -15,7 +15,7 @@ jobs:
         env:
           cache-name: cache-ghc-static
         with:
-          path: ~/.ghcup
+          path: ~/.ghcup/ghc/8.6.5
           key: ${{ runner.os }}-build-${{ env.cache-name }}
       - name: compile ghc for static link
         if: steps.ghc-static.outputs.cache-hit != 'true'
