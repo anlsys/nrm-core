@@ -1,0 +1,14 @@
+builds
+*.pdf
+*/__pycache__
+__pycache__
+*/.ipynb_checkpoints
+.ipynb_checkpoints
+skeleton.cabal
+a.out
+result*
+dhall-to-cabal
+.ghc*
+dist*
+.build
+.shake

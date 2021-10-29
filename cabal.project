@@ -1,4 +1,5 @@
 packages: hsnrm/
           hsnrm-bin/
           hsnrm-extra/
+	  hbandit
 tests: true

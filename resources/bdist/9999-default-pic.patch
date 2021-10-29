@@ -1,0 +1,12 @@
+diff --git a/compiler/main/DynFlags.hs b/compiler/main/DynFlags.hs
+index 5391326..8ab720f 100644
+--- a/compiler/main/DynFlags.hs
++++ b/compiler/main/DynFlags.hs
+@@ -4331,6 +4331,7 @@ default_PIC platform =
+                                          -- always generate PIC. See
+                                          -- #10597 for more
+                                          -- information.
++    (OSLinux, ArchX86_64) -> [Opt_PIC, Opt_ExternalDynamicRefs]
+     _                      -> []
+ 
+ -- General flags that are switched on/off when other general flags are switched
