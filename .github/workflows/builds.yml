@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - master
-  pull_request:
 jobs:
   binaries:
     runs-on: ubuntu-latest
@@ -33,14 +32,31 @@ jobs:
         with:
           path: ~/.cabal
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}
+      - name: restore ghc-static
+        run: |
+          ghcup list
+          ghcup set ghc 8.6.5
       - name: force standalone binaries
         run: |
           sed -i -e 's/    options:.*$/    options: standalone/g' hsnrm-bin/hsnrm-bin.cabal
           sed -i -e 's/    options:.*$/    options: standalone/g' hsnrm-extra/hsnrm-extra.cabal
       - name: cabal build
         run: | 
-          ls -aRl ~/.ghcup/
-          ghcup list
-          ghcup set ghc 8.6.5
           cabal v2-update
           cabal v2-build all
+      - name: package files
+        run: |
+          mkdir nrm-core-master
+          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/f/nrm-core/build/nrm-core/libnrm-core.so nrm-core-master/
+          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/x/nrm/build/nrm/nrm nrm-core-master/
+          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-extra-1.0.0/f/nrm-core-python/build/nrm-core-python/libnrm-core-python.so nrm-core-master/
+          tar -czvf nrm-core-master.tar.gz nrm-core-master
+      - name: update artefacts
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          allowUpdates: true
+          artifacts: "nrm-core-master.tar.gz"
+          draft: true
+          omitBody: true
+          replacesArtifacts: true
