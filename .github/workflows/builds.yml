@@ -47,9 +47,11 @@ jobs:
       - name: package files
         run: |
           mkdir nrm-core-master
-          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/f/nrm-core/build/nrm-core/libnrm-core.so nrm-core-master/
-          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/x/nrm/build/nrm/nrm nrm-core-master/
-          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-extra-1.0.0/f/nrm-core-python/build/nrm-core-python/libnrm-core-python.so nrm-core-master/
+          mkdir -p nrm-core-master/bin
+          mkdir -p nrm-core-master/lib
+          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/x/nrm/build/nrm/nrm nrm-core-master/bin/
+          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/f/nrm-core/build/nrm-core/libnrm-core.so nrm-core-master/lib/
+          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-extra-1.0.0/f/nrm-core-python/build/nrm-core-python/libnrm-core-python.so nrm-core-master/lib/
           tar -czvf nrm-core-master.tar.gz nrm-core-master
       - name: update artefacts
         uses: ncipollo/release-action@v1
@@ -60,5 +62,5 @@ jobs:
           draft: false
           omitBody: true
           replacesArtifacts: true
-          tag: master
+          tag: master-build
           commit: master
