@@ -57,7 +57,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           allowUpdates: true
           artifacts: "nrm-core-master.tar.gz"
-          draft: true
+          draft: false
           omitBody: true
           replacesArtifacts: true
           tag: master
