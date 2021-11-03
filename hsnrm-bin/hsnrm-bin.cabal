@@ -1,9 +1,9 @@
 cabal-version: 2.0
 name: hsnrm-bin
-version: 1.0.0
+version: 0.2.0
 license: BSD3
-maintainer: fre@freux.fr
-author: Valentin Reis
+maintainer: swann@anl.gov
+author: Valentin Reis, Swann Perarnau
 synopsis: hsnrm
 description:
     The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications.
@@ -12,7 +12,7 @@ build-type: Simple
 
 source-repository head
     type: git
-    location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
+    location: https://github.com/anlsys/nrm-core.git
 
 foreign-library nrm-core
     type: native-shared

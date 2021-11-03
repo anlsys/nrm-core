@@ -4,8 +4,8 @@
 -- |
 -- Module      : Bandit.Exp4R
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
--- License     : MIT
--- Maintainer  : fre@freux.fr
+-- License     : BSD3
+-- Maintainer  : swann@anl.gov
 --
 -- The contextual exponential-weight algorithm for Exploration and Exploitation
 -- with Experts and Risk Constraints (EXP4R). See [1]

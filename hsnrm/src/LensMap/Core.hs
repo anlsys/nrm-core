@@ -2,7 +2,7 @@
 -- Module      : LensMap.Core
 -- Copyright   : (c) UChicago Argonne, 2019
 -- License     : BSD3
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 module LensMap.Core
   ( ScopedLens (..),
     LensMap,

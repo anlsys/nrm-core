@@ -1,8 +1,8 @@
 -- |
 -- Module      : Bandit.Util
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
--- License     : MIT
--- Maintainer  : fre@freux.fr
+-- License     : BSD3
+-- Maintainer  : swann@anl.gov
 --
 -- Utility functions for MAB algorithms.
 module Bandit.Types

@@ -5,7 +5,7 @@
 -- Module      : NRM.Types.Messaging.DownstreamEvent
 -- Copyright   : (c) UChicago Argonne, 2019
 -- License     : BSD3
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 --
 -- This module implements NRM's Downstream messaging API, which is used
 -- for reporting application performance and progress.

@@ -2,7 +2,7 @@
 -- Module      : Codegen.Schema
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 module Codegen.Schema
   ( NSchema (..),
     generatePretty,

@@ -4,7 +4,7 @@
 -- Module      : NRM.Slices.Nodeos
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : BSD3
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 --
 -- This module offers an interface to NodeOS slices.
 module NRM.Slices.Nodeos

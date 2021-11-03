@@ -1,9 +1,9 @@
 cabal-version: 2.0
 name: hsnrm-extra
-version: 1.0.0
+version: 0.2.0
 license: BSD3
-maintainer: fre@freux.fr
-author: Valentin Reis
+maintainer: swann@anl.gov
+author: Valentin Reis, Swann Perarnau
 synopsis: hsnrm-extra
 description:
     hsnrm utilities
@@ -12,7 +12,7 @@ build-type: Simple
 
 source-repository head
     type: git
-    location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
+    location: https://github.com/anlsys/nrm-core.git
 
 foreign-library nrm-core-python
     type: native-shared
@@ -54,11 +54,3 @@ foreign-library nrm-core-python
         data-default -any,
         bytestring -any,
         enclosed-exceptions -any
-
-executable nrm-gen
-    main-is: Codegen.hs
-    default-language: Haskell2010
-    build-depends:
-        hsnrm,
-        base,
-        protolude

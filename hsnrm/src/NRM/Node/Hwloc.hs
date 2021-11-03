@@ -6,7 +6,7 @@
 -- Description : Hwloc tree queries
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : BSD3
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 --
 -- This module offers a minimalistic interface to @hwloc@.
 module NRM.Node.Hwloc
