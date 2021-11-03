@@ -5,7 +5,7 @@
 -- Module      : NRM.Orphans.UUID
 -- Copyright   : (c) UChicago Argonne, 2019
 -- License     : BSD3
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 module NRM.Orphans.UUID
   (
   )

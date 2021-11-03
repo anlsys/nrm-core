@@ -2,8 +2,8 @@
 -- Module      : Bandit
 -- Description : The hbandit package
 -- Copyright   : (c) Argonne National Laboratory, 2019
--- License     : MIT
--- Maintainer  : fre@freux.fr
+-- License     : BSD3
+-- Maintainer  : swann@anl.gov
 module Bandit
   ( module Bandit.Class,
     module Bandit.Types,

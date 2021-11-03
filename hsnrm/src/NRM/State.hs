@@ -1,7 +1,7 @@
 -- |
 -- Copyright   : (c) 2019, UChicago Argonne, LL
 -- License     : BSD3
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 module NRM.State
   ( -- * Initial state
     initialState,

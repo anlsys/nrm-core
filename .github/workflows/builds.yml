@@ -49,9 +49,9 @@ jobs:
           mkdir nrm-core-master
           mkdir -p nrm-core-master/bin
           mkdir -p nrm-core-master/lib
-          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/x/nrm/build/nrm/nrm nrm-core-master/bin/
-          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-1.0.0/f/nrm-core/build/nrm-core/libnrm-core.so nrm-core-master/lib/
-          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-extra-1.0.0/f/nrm-core-python/build/nrm-core-python/libnrm-core-python.so nrm-core-master/lib/
+          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-*/x/nrm/build/nrm/nrm nrm-core-master/bin/
+          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-*/f/nrm-core/build/nrm-core/libnrm-core.so nrm-core-master/lib/
+          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-extra-*/f/nrm-core-python/build/nrm-core-python/libnrm-core-python.so nrm-core-master/lib/
           chmod 644 nrm-core-master/lib/*
           chmod 755 nrm-core-master/bin/*
           tar -czvf nrm-core-master.tar.gz nrm-core-master

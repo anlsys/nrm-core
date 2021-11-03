@@ -5,7 +5,7 @@
 -- Module      : NRM.Orphans.ZeroOne
 -- Copyright   : (c) UChicago Argonne, 2019
 -- License     : BSD3
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 --
 -- Instances for ZeroOne and Intervals of such.
 module NRM.Orphans.ZeroOne

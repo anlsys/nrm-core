@@ -2,7 +2,7 @@
 -- Module      : NRM.Actuators
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : BSD3
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 module NRM.Actuators
   ( cpdActuators,
   )

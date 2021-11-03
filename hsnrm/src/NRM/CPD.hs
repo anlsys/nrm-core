@@ -2,7 +2,7 @@
 -- Module      : NRM.CPD
 -- Copyright   : (c) UChicago Argonne, 2019
 -- License     : BSD3
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 --
 -- This module is responsible for runtime generation of the CPD
 -- description to be optimized by the control loop.

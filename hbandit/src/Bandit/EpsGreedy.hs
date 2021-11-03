@@ -3,8 +3,8 @@
 -- |
 -- Module      : Bandit.EpsGreedy
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
--- License     : MIT
--- Maintainer  : fre@freux.fr
+-- License     : BSD3
+-- Maintainer  : swann@anl.gov
 --
 -- This module implements the fixed rate \(\epsilon\)-Greedy MAB algorithm.
 --
