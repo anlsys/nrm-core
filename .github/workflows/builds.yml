@@ -3,66 +3,29 @@ on:
   push:
     branches:
       - master
+  pull_request:
+
 jobs:
-  binaries:
+  nix:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: cache static ghc
-        uses: actions/cache@v2
-        id: ghc-static
-        env:
-          cache-name: cache-ghc-static
+      - uses: cachix/install-nix-action@v13
         with:
-          path: ~/.ghcup/ghc/8.6.5
-          key: ${{ runner.os }}-build-${{ env.cache-name }}
-      - name: compile ghc for static link
-        if: steps.ghc-static.outputs.cache-hit != 'true'
+          nix_path: nixpkgs=channel:nixos-21.04
+      - run: nix-build -A nrm-core
+  generic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install the right ghc
         run: |
           ghcup install ghc 8.6.5
-          ghcup compile ghc -j 4 -v 8.6.5 -b 8.6.5 --set -c `pwd`/resources/bdist/build.mk -p `pwd`/resources/bdist
-      - name: setup
+          ghcup set ghc 8.6.5
+      - name: setup dependencies
         run: |
           sudo apt-get install pkg-config libzmq3-dev
-      - name: cache static cabal deps
-        uses: actions/cache@v2
-        id: cabal-static
-        env:
-          cache-name: cache-cabal-static
-        with:
-          path: ~/.cabal
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/*.cabal') }}
-      - name: restore ghc-static
-        run: |
-          ghcup list
-          ghcup set ghc 8.6.5
-      - name: force standalone binaries
-        run: |
-          sed -i -e 's/    options:.*$/    options: standalone/g' hsnrm-bin/hsnrm-bin.cabal
-          sed -i -e 's/    options:.*$/    options: standalone/g' hsnrm-extra/hsnrm-extra.cabal
       - name: cabal build
         run: | 
           cabal v2-update
           cabal v2-build all
-      - name: package files
-        run: |
-          mkdir nrm-core-master
-          mkdir -p nrm-core-master/bin
-          mkdir -p nrm-core-master/lib
-          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-*/x/nrm/build/nrm/nrm nrm-core-master/bin/
-          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-bin-*/f/nrm-core/build/nrm-core/libnrm-core.so nrm-core-master/lib/
-          cp dist-newstyle/build/x86_64-linux/ghc-8.6.5/hsnrm-extra-*/f/nrm-core-python/build/nrm-core-python/libnrm-core-python.so nrm-core-master/lib/
-          chmod 644 nrm-core-master/lib/*
-          chmod 755 nrm-core-master/bin/*
-          tar -czvf nrm-core-master.tar.gz nrm-core-master
-      - name: update artefacts
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          allowUpdates: true
-          artifacts: "nrm-core-master.tar.gz"
-          draft: false
-          body: "Portable binary distribution following the master branch"
-          replacesArtifacts: true
-          tag: master-build
-          commit: master
