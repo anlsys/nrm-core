@@ -1,9 +1,9 @@
 cabal-version: 2.0
 name: hsnrm-bin
-version: 1.0.0
+version: 0.2.0
 license: BSD3
-maintainer: fre@freux.fr
-author: Valentin Reis
+maintainer: swann@anl.gov
+author: Valentin Reis, Swann Perarnau
 synopsis: hsnrm
 description:
     The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications.
@@ -12,10 +12,13 @@ build-type: Simple
 
 source-repository head
     type: git
-    location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
+    location: https://github.com/anlsys/nrm-core.git
 
-executable nrm.so
-    main-is: Export.hs
+foreign-library nrm-core
+    type: native-shared
+-- do not remove: modified when we need to build standalone binaries
+    options:
+    other-modules: Export
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         OverloadedLists ExistentialQuantification RecordWildCards
@@ -28,7 +31,6 @@ executable nrm.so
                         MultiWayIf NoTemplateHaskell BlockArguments GADTs FlexibleContexts
                         TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
                         FunctionalDependencies UndecidableInstances
-    extra-lib-dirs: /nix/store/lz67bgzcwjf8wf23j2cb69g01pa7x4sf-ghc-8.6.5/lib/ghc-8.6.5/rts/
     ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
                  -Wmissing-home-modules -Widentities -Wredundant-constraints
                  -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
@@ -40,8 +42,7 @@ executable nrm.so
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations -fPIC -shared -no-hs-main -dynamic
-                 -lHSrts-ghc8.6.5
+                 -Wall-missed-specialisations
     build-depends:
         hsnrm -any,
         base -any,

@@ -4,7 +4,7 @@
 -- Module      : NRM.Types.Messaging.UpstreamReq
 -- Copyright   : (c) UChicago Argonne, 2019
 -- License     : BSD3
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 --
 -- This module implements NRM's upstream API message formats.
 module NRM.Types.Messaging.UpstreamReq

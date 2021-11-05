@@ -4,7 +4,7 @@
 -- Module      : Codegen.CHeader
 -- Copyright   : (c) 2019, UChicago Argonne, LLC.
 -- License     : MIT
--- Maintainer  : fre@freux.fr
+-- Maintainer  : swann@anl.gov
 module Codegen.CHeader
   ( toCHeader,
   )

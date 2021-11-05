@@ -1,12 +1,13 @@
 cabal-version: 2.0
 name: hsnrm
-version: 1.0.0
+version: 0.2.0
 license: BSD3
-maintainer: fre@freux.fr
-author: Valentin Reis
+maintainer: swann@anl.gov
+author: Valentin Reis, Swann Perarnau
 synopsis: hsnrm
 description:
     The Node Resource Manager(NRM) is a linux daemon that enables dynamic resource optimization for improving the power/performance tradeoff of HPC applications.
+    This is the core nrm haskell module containing most of the NRM logic.
 category: tools
 build-type: Simple
 
@@ -16,7 +17,7 @@ extra-source-files:
 
 source-repository head
     type: git
-    location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
+    location: https://github.com/anlsys/nrm-core.git
 
 library
     exposed-modules:
@@ -123,104 +124,71 @@ library
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wpartial-fields
     build-depends:
-        process -any,
-        base -any,
-        hbandit -any,
-        either -any,
-        protolude -any,
-        scientific -any,
-        megaparsec -any,
-        enclosed-exceptions -any,
-        MonadRandom -any,
-        mtl-compat -any,
-        vcs-revision -any,
-        transformers -any,
-        generic-data -any,
-        bytestring -any,
-        iso-deriving -any,
-        random -any,
-        prettyprinter -any,
-        zeromq4-haskell -any,
-        zeromq4-conduit -any,
-        generic-lens -any,
-        data-msgpack -any,
-        containers -any,
-        binary -any,
-        unordered-containers -any,
-        mtl -any,
-        aeson -any,
-        dhall >= 1.30.0,
-        dhall-json -any,
-        conduit -any,
-        conduit-extra -any,
-        aeson-extra -any,
-        resourcet -any,
-        intervals -any,
-        neat-interpolation -any,
-        generic-aeson -any,
-        aeson-pretty -any,
-        pretty-simple -any,
-        typed-process -any,
-        hxt -any,
-        recursion-schemes -any,
-        hxt-xpath -any,
-        json-schema -any,
-        yaml -any,
-        data-default -any,
-        flat -any,
-        refined -any,
-        vector -any,
-        optparse-applicative -any,
-        directory -any,
-        regex -any,
-        units -any,
-        unix -any,
-        generic-deriving -any,
-        uuid -any,
-        async -any,
-        text -any,
-        units-defs -any,
-        storable-endian -any,
-        template-haskell -any,
-        mtl -any,
-        brick -any,
-        filepath -any,
-        lens -any
-
-test-suite discover
-    type: exitcode-stdio-1.0
-    main-is: Driver.hs
-    hs-source-dirs: tests
-    other-modules:
-        Test.CPD.Integrated
-    default-language: Haskell2010
-    default-extensions: LambdaCase QuasiQuotes DefaultSignatures
-                        OverloadedLists ExistentialQuantification RecordWildCards
-                        RankNTypes TypeSynonymInstances StandaloneDeriving NamedFieldPuns
-                        FlexibleInstances TupleSections ScopedTypeVariables
-                        MultiParamTypeClasses NoImplicitPrelude OverloadedStrings
-                        ViewPatterns PatternSynonyms DeriveFunctor DeriveTraversable
-                        TypeFamilies DeriveAnyClass DeriveGeneric DeriveDataTypeable
-                        OverloadedLabels DeriveFoldable DerivingStrategies TypeApplications
-                        MultiWayIf NoTemplateHaskell BlockArguments GADTs FlexibleContexts
-                        TypeOperators DataKinds PolyKinds AllowAmbiguousTypes
-                        FunctionalDependencies UndecidableInstances
-    ghc-options: -Wall -O0 -Wcompat -Wincomplete-uni-patterns
-                 -Wmissing-home-modules -Widentities -Wredundant-constraints
-                 -Wcpp-undef -fwarn-tabs -fwarn-unused-imports
-                 -fwarn-missing-signatures -fwarn-name-shadowing
-                 -fprint-potential-instances -Wmissing-export-lists
-                 -fwarn-unused-do-bind -fwarn-wrong-do-bind
-                 -fwarn-incomplete-patterns -Wincomplete-record-updates
-                 -Wmonomorphism-restriction -Wimplicit-prelude
-                 -Wmissing-local-signatures -Wmissing-exported-signatures
-                 -Wmissing-export-lists -Wmissing-home-modules -Widentities
-                 -Wredundant-constraints -Wpartial-fields -threaded
-    build-depends:
-        base -any,
-        protolude -any,
-        hsnrm -any,
-        tasty-hunit -any,
-        tasty -any,
-        tasty-discover -any
-
+        aeson 			== 1.4.6.0,
+        aeson-extra 		== 0.4.1.3,
+        aeson-pretty 		== 0.8.8,
+        async 			== 2.2.2,
+        base			== 4.12.0.0,
+        binary 			== 0.8.6.0,
+        brick 			== 0.47.1,
+        bytestring 		== 0.10.8.2,
+        conduit 		== 1.3.1.2,
+        conduit-extra 		== 1.3.4,
+        containers 		>= 0.5.11.0,
+        data-default 		== 0.7.1.1,
+        data-msgpack 		== 0.0.12,
+        dhall 			== 1.30.0,
+        dhall-json 		== 1.6.2,
+        directory 		== 1.3.3.0,
+        either 			== 5.0.1.1,
+        enclosed-exceptions 	== 1.0.3,
+        filepath 		== 1.4.2.1,
+        flat 			== 0.3.4,
+        generic-aeson 		== 0.2.0.10,
+        generic-data 		== 0.7.0.0,
+        generic-deriving 	== 1.12.4,
+        generic-lens 		== 1.1.0.0,
+        hashable                == 1.2.7.0,
+        hbandit 		-any,
+        hxt 			== 9.3.1.18,
+        hxt-xpath 		== 9.1.2.2,
+        intervals 		== 0.8.1,
+        iso-deriving 		== 0.0.8,
+        json-schema 		== 0.7.4.2,
+        lens 			== 4.17.1,
+        linear                  == 1.20.9,
+        megaparsec 		== 7.0.5,
+        MonadRandom 		== 0.5.1.2,
+        mtl 			== 2.2.2,
+        mtl-compat 		== 0.2.2,
+        neat-interpolation 	== 0.3.2.6,
+        optparse-applicative 	== 0.14.3.0,
+        prettyprinter 		== 1.6.0,
+        pretty-simple 		== 2.2.0.1,
+        protolude 		== 0.2.3,
+        random 			== 1.1,
+        recursion-schemes 	== 5.1.3,
+        refined 		== 0.4.4,
+        regex 			== 1.0.2.0,
+        resourcet 		== 1.2.2,
+        scientific 		== 0.3.6.2,
+        semigroupoids           == 5.3.4,
+        storable-endian 	== 0.2.6,
+        text 			== 1.2.3.1,
+        th-abstraction          == 0.3.1.0,
+        th-desugar              == 1.9,
+        th-expand-syns          == 0.4.5.0,
+        transformers 		== 0.5.6.2,
+        typed-process 		== 0.2.6.0,
+        units 			== 2.4.1.2,
+        units-defs		== 2.1.0.1,
+        unix 			== 2.7.2.2,
+        unliftio-core           == 0.1.2.0,
+        unordered-containers	== 0.2.10.0,
+        uuid 			== 1.3.13,
+        uuid-types              == 1.0.3,
+        vcs-revision 		== 0.0.2,
+        vector 			== 0.12.1.2,
+        yaml 			== 0.11.2.0,
+        zeromq4-conduit 	== 0.1.0.0,
+        zeromq4-haskell 	== 0.8.0

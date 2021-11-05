@@ -1,9 +1,9 @@
 cabal-version: 2.0
 name: hsnrm-extra
-version: 1.0.0
+version: 0.2.0
 license: BSD3
-maintainer: fre@freux.fr
-author: Valentin Reis
+maintainer: swann@anl.gov
+author: Valentin Reis, Swann Perarnau
 synopsis: hsnrm-extra
 description:
     hsnrm utilities
@@ -12,10 +12,13 @@ build-type: Simple
 
 source-repository head
     type: git
-    location: https://xgitlab.cels.anl.gov/vreis/hsnrm.git
+    location: https://github.com/anlsys/nrm-core.git
 
-executable pynrm.so
-    main-is: PyExport.hs
+foreign-library nrm-core-python
+    type: native-shared
+-- do not remove: modified when we need to build binaries
+    options:
+    other-modules: PyExport
     default-language: Haskell2010
     default-extensions: LambdaCase QuasiQuotes DefaultSignatures
                         OverloadedLists ExistentialQuantification RecordWildCards
@@ -39,8 +42,7 @@ executable pynrm.so
                  -Wmissing-local-signatures -Wmissing-exported-signatures
                  -Wmissing-export-lists -Wmissing-home-modules -Widentities
                  -Wredundant-constraints -Wpartial-fields -Wmissed-specialisations
-                 -Wall-missed-specialisations -fPIC -shared -no-hs-main -dynamic -lHSrts-ghc8.6.5
-    extra-lib-dirs: ./lHSrts
+                 -Wall-missed-specialisations
     build-depends:
         hsnrm -any,
         base -any,
