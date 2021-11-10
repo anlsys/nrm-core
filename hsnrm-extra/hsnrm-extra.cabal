@@ -1,6 +1,6 @@
 cabal-version: 2.0
 name: hsnrm-extra
-version: 0.2.0
+version: 0.7.0
 license: BSD3
 maintainer: swann@anl.gov
 author: Valentin Reis, Swann Perarnau
@@ -55,6 +55,7 @@ foreign-library nrm-core-python
         bytestring -any,
         enclosed-exceptions -any
 
+-- still needed to avoid cabal2nix breaking the build
 executable nrm-gen
     main-is: Codegen.hs
     default-language: Haskell2010
