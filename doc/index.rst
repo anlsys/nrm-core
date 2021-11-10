@@ -16,7 +16,12 @@ Finally, the Haddock documentation is available below and to the left:
 .. toctree::
    :maxdepth: 2
 
-   NRM-Core Docs <http://hnrm.readthedocs.io/en/latest/_static/haddocks>
+   Haddock Documentation <http://hnrm.readthedocs.io/en/latest/_static/haddocks>
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Return to User Guides:
+
    NRM Home <https://nrm.readthedocs.io/en/main/>
    NRM-Python <https://nrm.readthedocs.io/projects/nrm-python/en/master/>
 
