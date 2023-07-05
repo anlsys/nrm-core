@@ -1,9 +1,13 @@
-{ nixpkgs ? (builtins.fetchTarball "https://github.com/NixOS/nixpkgs/archive/20.03.tar.gz")
+{ system ? builtins.currentSystem , nixpkgs ? (
+  builtins.fetchTarball { 
+    url = "https://github.com/NixOS/nixpkgs/archive/20.03.tar.gz";
+    sha256 = "0182ys095dfx02vl2a20j1hz92dx3mfgz2a6fhn31bqlp1wa8hlq";
+  }) 
 }:
 
 let
   pkgs = import nixpkgs {
-
+    inherit system;
     overlays = [
       (_: pkgs: {
 
@@ -22,8 +26,9 @@ let
               hbandit = 
                 super.callCabal2nix "hbandit" ./hbandit { };
               iso-deriving = self.callCabal2nix "iso-deriving"
-                (builtins.fetchTarball
-                  "https://github.com/hanshoglund/iso-deriving/archive/master.tar.gz")
+                (builtins.fetchTarball {
+                  url = "https://github.com/hanshoglund/iso-deriving/archive/master.tar.gz";
+                  sha256 = "102c7jhcnkfv8jsvf78qhfz9fa260n34g2lqdd55slwxwav1ics4";})
                 { };
               regex = doJailbreak super.regex;
               json-schema =
@@ -38,13 +43,17 @@ let
               time-parsers = unmarkBroken super.time-parsers;
               dhall = overrideSrc super.dhall_1_29_0 {
                 version = "1.30.0";
-                src = builtins.fetchTarball
-                  "https://hackage.haskell.org/package/dhall-1.30.0/dhall-1.30.0.tar.gz";
+                src = builtins.fetchTarball {
+                  url = "https://hackage.haskell.org/package/dhall-1.30.0/dhall-1.30.0.tar.gz";
+                  sha256 = "1iqvn3kalb5q8j1czx7r6qxfrsng5jrxzyx5gzzxcw46bpjig8n5";
+                };
               };
               dhall-json = (overrideSrc (super.dhall-json_1_6_1) {
                 version = "1.6.2";
-                src = builtins.fetchTarball
-                  "https://hackage.haskell.org/package/dhall-json-1.6.2/dhall-json-1.6.2.tar.gz";
+                src = builtins.fetchTarball {
+                  url = "https://hackage.haskell.org/package/dhall-json-1.6.2/dhall-json-1.6.2.tar.gz";
+                  sha256 = "18qyn7vivw6q32f3mcwj4xl5qdqyhk2kz4cqd4ar10fdbymf5xa2";
+		};
               }).override { inherit dhall; };
               vinyl = doJailbreak (unmarkBroken super.vinyl);
 
